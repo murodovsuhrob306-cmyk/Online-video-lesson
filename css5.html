@@ -493,7 +493,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   .auth-tab.active { background: #CC8B65; color: #100C0D; box-shadow: 0 6px 16px -6px rgba(204,139,101,.6); }
   .auth-field-label { font-size: .68rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: rgba(234,251,239,.4); }
   .auth-input-wrap { position: relative; margin-top: .4rem; }
-  .auth-input-wrap svg { position: absolute; left: .85rem; top: 50%; transform: translateY(-50%); color: rgba(234,251,239,.32); pointer-events: none; }
+  .auth-input-wrap > svg { position: absolute; left: .85rem; top: 50%; transform: translateY(-50%); color: rgba(234,251,239,.32); pointer-events: none; }
   .auth-input {
     width: 100%; background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.10); color: #EAFBEF;
     border-radius: .75rem; padding: .7rem .9rem .7rem 2.4rem; font-size: .88rem; outline: none;
@@ -501,12 +501,19 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   }
   .auth-input:focus { border-color: #CC8B65; box-shadow: 0 0 0 3px rgba(204,139,101,.16); }
   .auth-input::placeholder { color: rgba(234,251,239,.22); }
+  .auth-input-pw { padding-right: 2.6rem; }
+  .auth-input-eye {
+    position: absolute; right: .6rem; top: 50%; transform: translateY(-50%); background: transparent; border: none;
+    color: rgba(234,251,239,.45); cursor: pointer; display: flex; align-items: center; padding: .2rem; pointer-events: auto;
+  }
+  .auth-input-eye:hover { color: #CC8B65; }
   .auth-forgot { display: block; text-align: right; font-size: .76rem; color: #CC8B65; margin-top: .55rem; text-decoration: none; }
   .auth-forgot:hover { text-decoration: underline; }
   .auth-error { background: rgba(255,90,90,.10); border: 1px solid rgba(255,90,90,.3); color: #FF9A9A; font-size: .8rem; border-radius: .6rem; padding: .55rem .8rem; display: flex; align-items: center; gap: .4rem; }
   .auth-submit {
     width: 100%; margin-top: 1.3rem; background: #CC8B65; color: #100C0D; font-weight: 700; border: none;
     border-radius: .85rem; padding: .85rem 0; font-size: .9rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: .5rem;
     box-shadow: 0 10px 24px -8px rgba(204,139,101,.55); transition: transform .15s ease, box-shadow .15s ease;
   }
   .auth-submit:hover { transform: translateY(-2px); box-shadow: 0 14px 30px -8px rgba(204,139,101,.65); }
@@ -554,7 +561,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   }
 
   /* ================= Sidebar modern ================= */
-  aside.side-modern.bg-ink { background-image: linear-gradient(200deg, #10231C 0%, #100C0D 100%) !important; }
+  aside.side-modern.bg-ink { background-image: none !important; background-color: #10231C !important; }
   .side-modern nav.flex-1 { padding: 0 .55rem; gap: .2rem !important; }
   .side-modern .nav-pill { border-radius: .7rem; padding-top: .6rem; padding-bottom: .6rem; transition: background .15s ease, color .15s ease; }
   .side-modern .nav-pill:hover:not(.active) { background: rgba(255,255,255,.06); }
@@ -705,7 +712,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   /* ================= Topbar ================= */
   .topbar {
     height: 64px; display: flex; align-items: center; justify-content: space-between;
-    padding: 0 1.25rem; background-image: linear-gradient(200deg, #10231C 0%, #100C0D 100%);
+    padding: 0 1.25rem; background-image: none; background-color: #10231C;
     border-bottom: 1px solid rgba(255,255,255,.08);
     position: sticky; top: 0; z-index: 30; flex-shrink: 0;
   }
@@ -754,30 +761,70 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   .profile-dropdown-danger { color: #AC4B3B; }
   .profile-dropdown-danger:hover { background: rgba(172,75,59,.08); }
 
-  .modal-backdrop {
-    position: fixed; inset: 0; background: rgba(15,20,32,.45); z-index: 49;
-    display: flex; align-items: flex-start; justify-content: center; padding: 5rem 1rem;
+  /* Compact notification dropdown, anchored under the bell (same pattern as the profile menu) */
+  .topbar-notif-wrap { position: relative; }
+  .notif-dropdown {
+    position: absolute; top: calc(100% + 10px); right: -6px; width: 300px; max-height: 320px;
+    background: #fff; border: 1px solid rgba(1,51,40,.10); border-radius: .9rem;
+    box-shadow: 0 14px 34px -14px rgba(1,51,40,.32); z-index: 40;
+    display: flex; flex-direction: column; overflow: hidden;
   }
-  .notif-modal {
-    width: 100%; max-width: 420px; background: #fff; border-radius: 1rem;
-    box-shadow: 0 24px 60px -20px rgba(0,0,0,.4); max-height: 70vh; display: flex;
-    flex-direction: column; overflow: hidden;
-  }
-  .notif-modal-head {
+  .notif-dropdown-head {
     display: flex; align-items: center; justify-content: space-between;
-    padding: 1rem 1.1rem; border-bottom: 1px solid rgba(1,51,40,.08); flex-shrink: 0;
+    padding: .7rem .9rem; border-bottom: 1px solid rgba(1,51,40,.08); flex-shrink: 0;
   }
-  .notif-modal-head h3 { font-size: 1.05rem; color: #013328; }
-  .notif-modal-body { padding: .3rem .7rem .6rem; overflow-y: auto; }
-  .notif-item { display: flex; align-items: center; gap: .7rem; padding: .65rem .4rem; border-top: 1px solid rgba(1,51,40,.06); }
+  .notif-dropdown-head h3 { font-size: .86rem; font-weight: 700; color: #013328; }
+  .notif-dropdown-close {
+    width: 24px; height: 24px; border-radius: .5rem; border: none; background: rgba(1,51,40,.06);
+    display: flex; align-items: center; justify-content: center; color: #013328; cursor: pointer; flex-shrink: 0;
+  }
+  .notif-dropdown-close:hover { background: rgba(1,51,40,.12); }
+  .notif-dropdown-body { padding: .3rem .6rem .5rem; overflow-y: auto; }
+  .notif-item { display: flex; align-items: center; gap: .65rem; padding: .55rem .35rem; border-top: 1px solid rgba(1,51,40,.06); }
   .notif-item:first-child { border-top: none; }
   .notif-item-body { flex: 1; min-width: 0; }
-  .notif-item-title { font-size: .84rem; font-weight: 600; color: #013328; }
-  .notif-item-sub { font-size: .74rem; color: #5B6472; }
+  .notif-item-title { font-size: .82rem; font-weight: 600; color: #013328; }
+  .notif-item-sub { font-size: .72rem; color: #5B6472; }
+  @media (max-width: 480px) { .notif-dropdown { width: 82vw; right: -60px; } }
+
+  /* ================= Dashboard: chart + at-risk students in one row ================= */
+  .dash-combo-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 1.25rem; align-items: stretch; margin-top: 1.5rem; }
+  .dash-combo-grid .monthly-chart-card { margin-top: 0; height: 100%; display: flex; flex-direction: column; }
+  .dash-combo-grid .overdue-card { margin-top: 0; height: 100%; }
+  @media (max-width: 900px) { .dash-combo-grid { grid-template-columns: 1fr; } }
 
   /* ================= Overdue students card (single scrollable block) ================= */
-  .overdue-card { display: flex; flex-direction: column; max-height: 420px; }
+  .overdue-card { display: flex; flex-direction: column; max-height: 300px; }
   .overdue-card-list { overflow-y: auto; }
+
+  /* ================= Bootstrap-style dismissible alerts (bottom-right toast stack) ================= */
+  .bs-toast-stack {
+    position: fixed; bottom: 1.1rem; right: 1.1rem; z-index: 80;
+    display: flex; flex-direction: column-reverse; gap: .55rem; max-width: 340px;
+  }
+  .bs-alert {
+    display: flex; align-items: flex-start; gap: .55rem; padding: .75rem .9rem;
+    border-radius: .65rem; font-size: .83rem; font-weight: 600; line-height: 1.35;
+    border: 1px solid transparent; box-shadow: 0 10px 30px -10px rgba(0,0,0,.35);
+    animation: bsAlertIn .22s ease both;
+  }
+  .bs-alert-icon { flex-shrink: 0; margin-top: 1px; }
+  .bs-alert-text { flex: 1; }
+  .bs-alert-close {
+    background: transparent; border: none; cursor: pointer; font-size: .8rem; line-height: 1;
+    opacity: .55; flex-shrink: 0; color: inherit; padding: 0 0 0 .3rem;
+  }
+  .bs-alert-close:hover { opacity: 1; }
+  .bs-alert-success { background: #D1F5E0; border-color: #B7E9CC; color: #0F5132; }
+  .bs-alert-danger { background: #FDE2E1; border-color: #F8C9C7; color: #842029; }
+  .bs-alert-warning { background: #FFF3CD; border-color: #FFE69C; color: #664D03; }
+  .bs-alert-info { background: #DCEEFB; border-color: #B9E1FA; color: #055160; }
+  html.theme-dark .bs-alert-success { background: rgba(46,111,78,.28); border-color: rgba(46,111,78,.55); color: #8FE3B4; }
+  html.theme-dark .bs-alert-danger { background: rgba(172,75,59,.28); border-color: rgba(172,75,59,.55); color: #FFB4AE; }
+  html.theme-dark .bs-alert-warning { background: rgba(204,139,101,.26); border-color: rgba(204,139,101,.55); color: #F5D3A6; }
+  html.theme-dark .bs-alert-info { background: rgba(45,91,227,.26); border-color: rgba(45,91,227,.55); color: #B7D0FB; }
+  @keyframes bsAlertIn { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: translateX(0); } }
+  @media (max-width: 640px) { .bs-toast-stack { left: 1rem; right: 1rem; max-width: none; bottom: .85rem; } }
 
   /* ================= Course revenue chart extras ================= */
   .monthly-chart-total { font-size: .8rem; color: #5B6472; font-weight: 600; }
@@ -793,7 +840,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   html.theme-dark .bg-card, html.theme-dark .bg-white { background-color: #171D2C !important; }
   html.theme-dark .bg-card, html.theme-dark .bg-white,
   html.theme-dark .stat-modern, html.theme-dark .monthly-chart-card,
-  html.theme-dark .topbar, html.theme-dark .profile-dropdown, html.theme-dark .notif-modal,
+  html.theme-dark .topbar, html.theme-dark .profile-dropdown, html.theme-dark .notif-dropdown,
   html.theme-dark .topbar-icon-btn, html.theme-dark .topbar-profile-btn {
     border-color: rgba(255,255,255,.08) !important;
   }
@@ -801,16 +848,20 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   html.theme-dark .monthly-chart-card,
   html.theme-dark .topbar,
   html.theme-dark .profile-dropdown,
-  html.theme-dark .notif-modal,
+  html.theme-dark .notif-dropdown,
   html.theme-dark .topbar-icon-btn,
   html.theme-dark .topbar-profile-btn {
     background: #171D2C !important;
+  }
+  /* Sidebar follows the same dark-mode panel color as the topbar, so both always match */
+  html.theme-dark aside.side-modern.bg-ink {
+    background-image: none !important; background-color: #171D2C !important;
   }
   html.theme-dark .text-ink,
   html.theme-dark .stat-value,
   html.theme-dark .monthly-chart-title,
   html.theme-dark .profile-dropdown-name,
-  html.theme-dark .notif-modal-head h3,
+  html.theme-dark .notif-dropdown-head h3,
   html.theme-dark .notif-item-title,
   html.theme-dark .topbar-profile-name,
   html.theme-dark .topbar-icon-btn,
@@ -830,9 +881,11 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   html.theme-dark .table-row,
   html.theme-dark .profile-row,
   html.theme-dark .notif-item,
-  html.theme-dark .profile-dropdown-head {
+  html.theme-dark .profile-dropdown-head,
+  html.theme-dark .notif-dropdown-head {
     border-color: rgba(255,255,255,.08) !important;
   }
+  html.theme-dark .notif-dropdown-close { background: rgba(255,255,255,.08) !important; color: #EDEFF6 !important; }
   html.theme-dark .bg-line, html.theme-dark .bg-line\/70 { background-color: rgba(255,255,255,.08) !important; }
   html.theme-dark input, html.theme-dark select, html.theme-dark textarea {
     background-color: #10151F !important; color: #EDEFF6 !important; border-color: rgba(255,255,255,.12) !important;
@@ -994,11 +1047,22 @@ function Switch({ on, onToggle, disabled }) {
   );
 }
 
-function Toast({ text, onDone }) {
-  useEffect(() => { const t = setTimeout(onDone, 2600); return () => clearTimeout(t); }, []);
+/* Bootstrap-alert-styled toast: stacks bottom-right, auto-dismisses, closeable by hand */
+function BsAlert({ toast, onDismiss }) {
+  useEffect(() => { const t = setTimeout(onDismiss, 4000); return () => clearTimeout(t); }, []);
   return (
-    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-ink text-white text-sm px-4 py-3 rounded-lg shadow-lg z-50">
-      {text}
+    <div className={`bs-alert bs-alert-${toast.variant || 'success'}`} role="alert">
+      <Icon.check width="15" height="15" className="bs-alert-icon" />
+      <span className="bs-alert-text">{toast.text}</span>
+      <button type="button" className="bs-alert-close" aria-label="Yopish" onClick={onDismiss}>✕</button>
+    </div>
+  );
+}
+function ToastStack({ toasts, onDismiss }) {
+  if (!toasts.length) return null;
+  return (
+    <div className="bs-toast-stack">
+      {toasts.map((t) => (<BsAlert key={t.id} toast={t} onDismiss={() => onDismiss(t.id)} />))}
     </div>
   );
 }
@@ -1058,6 +1122,8 @@ const Icon = {
   moon: (p) => (<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M20.2 14.7A8.5 8.5 0 1 1 9.3 3.8a7 7 0 0 0 10.9 10.9Z"/></svg>),
   sun: (p) => (<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" {...p}><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M4.6 4.6l1.7 1.7M17.7 17.7l1.7 1.7M2.5 12h2.4M19.1 12h2.4M4.6 19.4l1.7-1.7M17.7 6.3l1.7-1.7"/></svg>),
   gear: (p) => (<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><circle cx="12" cy="12" r="3"/><path d="M12 3v2.2M12 18.8V21M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M3 12h2.2M18.8 12H21M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6"/></svg>),
+  eye: (p) => (<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>),
+  eyeOff: (p) => (<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M3 3l18 18"/><path d="M10.6 5.2A10.9 10.9 0 0 1 12 5c6.4 0 10 7 10 7a16.6 16.6 0 0 1-3.2 4.1M6.6 6.6C4 8.3 2 12 2 12s3.6 7 10 7a9.9 9.9 0 0 0 4.4-1"/><path d="M9.5 9.7a3 3 0 0 0 4.2 4.2"/></svg>),
 };
 const CATEGORY_STYLES = [
   { bg: 'rgba(204,139,101,.14)', fg: '#9C7A22', icon: Icon.layers },
@@ -1072,52 +1138,47 @@ const catStyle = (idx) => CATEGORY_STYLES[idx % CATEGORY_STYLES.length];
 const SUPPORT_TELEGRAM_URL = 'https://t.me/your_support_username';
 
 function LoginScreen({ onStudentLogin, onStaffLogin }) {
-  const startStaff = typeof window !== 'undefined' && window.location.search.includes('role=');
-  const [staffMode, setStaffMode] = useState(startStaff);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPw, setShowPw] = useState(false);
   const [error, setError] = useState('');
 
   const submit = (e) => {
     e.preventDefault();
     setError('');
-    // API: POST /api/auth/login/  yoki  /api/auth/staff-login/
-    const ok = staffMode ? onStaffLogin(username, password) : onStudentLogin(username, password);
+    // API: POST /api/auth/login/  (backend login/parolga qarab xodim yoki o'quvchi ekanini avtomatik aniqlaydi)
+    const ok = onStaffLogin(username, password) || onStudentLogin(username, password);
     if (!ok) setError("Login yoki parol noto'g'ri.");
   };
 
   return (
     <div className="auth-shell">
       <div className="auth-card">
-        <div className="auth-mark"><Icon.arrowRight width="24" height="24" /></div>
-        <h2 className="auth-title">{staffMode ? 'Xodim uchun kirish' : 'Kirish'}</h2>
-        <p className="auth-sub">
-          {staffMode ? "Jamoangizni va kurslarni boshqarish uchun tizimga kiring." : "Kurslaringizga davom etish uchun tizimga kiring."}
-        </p>
-
-        <div className="auth-tabbar">
-          <button type="button" onClick={() => setStaffMode(false)} className={`auth-tab ${!staffMode ? 'active' : ''}`}>O'quvchi</button>
-          <button type="button" onClick={() => setStaffMode(true)} className={`auth-tab ${staffMode ? 'active' : ''}`}>Xodim</button>
-        </div>
+        <div className="auth-mark"><Icon.lock width="22" height="22" /></div>
+        <h2 className="auth-title">Xush kelibsiz</h2>
+        <p className="auth-sub">Kurslaringiz va vazifalaringizga kirish uchun tizimga kiring</p>
 
         <form onSubmit={submit} className="space-y-4">
           <div>
-            <label className="auth-field-label">Login</label>
+            <label className="auth-field-label">Username</label>
             <div className="auth-input-wrap">
               <Icon.user width="15" height="15" />
-              <input value={username} onChange={(e) => setUsername(e.target.value)} className="auth-input" placeholder="login" autoComplete="username" />
+              <input value={username} onChange={(e) => setUsername(e.target.value)} className="auth-input" placeholder="username" autoComplete="username" />
             </div>
           </div>
           <div>
             <label className="auth-field-label">Parol</label>
             <div className="auth-input-wrap">
               <Icon.lock width="15" height="15" />
-              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="auth-input" placeholder="••••••••" autoComplete="current-password" />
+              <input type={showPw ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)} className="auth-input auth-input-pw" placeholder="••••••••" autoComplete="current-password" />
+              <button type="button" className="auth-input-eye" onClick={() => setShowPw((v) => !v)} aria-label={showPw ? "Parolni yashirish" : "Parolni ko'rsatish"}>
+                {showPw ? <Icon.eyeOff width="15" height="15" /> : <Icon.eye width="15" height="15" />}
+              </button>
             </div>
             <a href={SUPPORT_TELEGRAM_URL} target="_blank" rel="noreferrer" className="auth-forgot">Parolni unutdingizmi?</a>
           </div>
           {error && <div className="auth-error"><Icon.warn width="14" height="14"/> {error}</div>}
-          <button className="auth-submit">Kirish</button>
+          <button className="auth-submit"><Icon.lock width="14" height="14" /> Kirish</button>
         </form>
 
         <div className="auth-footer-note">
@@ -1210,7 +1271,7 @@ function CourseRevenueChart({ revenue }) {
   const rawMax = Math.max(1, ...data.map((d) => d.amount));
   const step = rawMax > 20000000 ? 5000000 : rawMax > 5000000 ? 1000000 : rawMax > 1000000 ? 500000 : rawMax > 100000 ? 100000 : 10000;
   const niceMax = Math.max(step, Math.ceil(rawMax / step) * step);
-  const width = 760, height = 260;
+  const width = 760, height = 208;
   const padding = { top: 26, right: 12, bottom: 34, left: 60 };
   const innerW = width - padding.left - padding.right;
   const innerH = height - padding.top - padding.bottom;
@@ -1359,7 +1420,6 @@ function Topbar({ me, roleLabel, initials, theme, onToggleTheme, notifications, 
             <Icon.menu width="18" height="18" />
           </button>
         )}
-        <Logo dark />
       </div>
 
       <div className="topbar-right">
@@ -1367,10 +1427,38 @@ function Topbar({ me, roleLabel, initials, theme, onToggleTheme, notifications, 
           {theme === 'dark' ? <Icon.sun width="17" height="17" /> : <Icon.moon width="17" height="17" />}
         </button>
 
-        <button className="topbar-icon-btn" onClick={() => setNotifOpen(true)} aria-label="Bildirishnomalar">
-          <Icon.bell width="17" height="17" />
-          {unread > 0 && <span className="notif-badge">{unread > 9 ? '9+' : unread}</span>}
-        </button>
+        <div className="topbar-notif-wrap">
+          <button className="topbar-icon-btn" onClick={() => setNotifOpen((v) => !v)} aria-label="Bildirishnomalar">
+            <Icon.bell width="17" height="17" />
+            {unread > 0 && <span className="notif-badge">{unread > 9 ? '9+' : unread}</span>}
+          </button>
+          {notifOpen && (
+            <React.Fragment>
+              <div className="dropdown-backdrop" onClick={() => setNotifOpen(false)} />
+              <div className="notif-dropdown">
+                <div className="notif-dropdown-head">
+                  <h3 className="font-display">Bildirishnomalar</h3>
+                  <button className="notif-dropdown-close" onClick={() => setNotifOpen(false)} aria-label="Yopish">
+                    <Icon.close width="12" height="12" />
+                  </button>
+                </div>
+                <div className="notif-dropdown-body">
+                  {notifications.length === 0 && <p className="text-sm text-slate p-3">Hozircha bildirishnoma yo'q.</p>}
+                  {notifications.map((n) => (
+                    <div key={n.id} className="notif-item">
+                      <span className="avatar w-8 h-8 bg-paper text-ink text-xs border border-line">{n.initials}</span>
+                      <div className="notif-item-body">
+                        <div className="notif-item-title">{n.name}</div>
+                        <div className="notif-item-sub">To'lov muddati o'tgan</div>
+                      </div>
+                      <span className="pill pill-warn shrink-0">Diqqat</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </React.Fragment>
+          )}
+        </div>
 
         <div className="topbar-profile-wrap">
           <button className="topbar-profile-btn" onClick={() => setProfileOpen((v) => !v)}>
@@ -1404,29 +1492,6 @@ function Topbar({ me, roleLabel, initials, theme, onToggleTheme, notifications, 
         </div>
       </div>
 
-      {notifOpen && (
-        <div className="modal-backdrop" onClick={() => setNotifOpen(false)}>
-          <div className="notif-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="notif-modal-head">
-              <h3 className="font-display">Bildirishnomalar</h3>
-              <button className="topbar-icon-btn" onClick={() => setNotifOpen(false)} aria-label="Yopish">✕</button>
-            </div>
-            <div className="notif-modal-body">
-              {notifications.length === 0 && <p className="text-sm text-slate p-3">Hozircha bildirishnoma yo'q.</p>}
-              {notifications.map((n) => (
-                <div key={n.id} className="notif-item">
-                  <span className="avatar w-8 h-8 bg-paper text-ink text-xs border border-line">{n.initials}</span>
-                  <div className="notif-item-body">
-                    <div className="notif-item-title">{n.name}</div>
-                    <div className="notif-item-sub">To'lov muddati o'tgan</div>
-                  </div>
-                  <span className="pill pill-warn shrink-0">Diqqat</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
     </header>
   );
 }
@@ -1521,26 +1586,28 @@ function StaffApp({ me, staff, setStaff, categories, setCategories, students, se
                 ))}
               </div>
 
-              <CourseRevenueChart revenue={revenue} />
+              <div className="dash-combo-grid">
+                <CourseRevenueChart revenue={revenue} />
 
-              <div className="mt-6 bg-card rounded-xl border border-line p-5 overdue-card">
-                <div className="flex items-center justify-between mb-3 shrink-0">
-                  <h3 className="font-semibold text-ink flex items-center gap-2"><Icon.warn className="text-clay" width="15" height="15"/> To'lov holati bo'yicha diqqat talab qiluvchi o'quvchilar</h3>
-                  {overdueStudents.length > 0 && <span className="text-xs text-slate shrink-0">Jami: {overdueStudents.length} ta</span>}
-                </div>
-                <div className="overdue-card-list">
-                  {overdueStudents.length === 0 && (
-                    <p className="text-sm text-slate">Hozircha muddati o'tgan to'lovlar yo'q.</p>
-                  )}
-                  {overdueStudents.map((s) => (
-                    <div key={s.id} className="flex items-center justify-between py-2.5 border-t border-line first:border-t-0">
-                      <span className="text-sm text-ink flex items-center gap-2">
-                        <span className="avatar w-7 h-7 bg-paper text-ink text-xs border border-line">{s.name.split(' ').map((w)=>w[0]).slice(0,2).join('')}</span>
-                        {s.name}
-                      </span>
-                      <span className="pill pill-warn shrink-0">To'lov muddati o'tgan</span>
-                    </div>
-                  ))}
+                <div className="bg-card rounded-xl border border-line p-5 overdue-card">
+                  <div className="flex items-center justify-between mb-3 shrink-0">
+                    <h3 className="font-semibold text-ink flex items-center gap-2"><Icon.warn className="text-clay" width="15" height="15"/> To'lov holati bo'yicha diqqat talab qiluvchi o'quvchilar</h3>
+                    {overdueStudents.length > 0 && <span className="text-xs text-slate shrink-0">Jami: {overdueStudents.length} ta</span>}
+                  </div>
+                  <div className="overdue-card-list">
+                    {overdueStudents.length === 0 && (
+                      <p className="text-sm text-slate">Hozircha muddati o'tgan to'lovlar yo'q.</p>
+                    )}
+                    {overdueStudents.map((s) => (
+                      <div key={s.id} className="flex items-center justify-between py-2.5 border-t border-line first:border-t-0">
+                        <span className="text-sm text-ink flex items-center gap-2">
+                          <span className="avatar w-7 h-7 bg-paper text-ink text-xs border border-line">{s.name.split(' ').map((w)=>w[0]).slice(0,2).join('')}</span>
+                          {s.name}
+                        </span>
+                        <span className="pill pill-warn shrink-0">To'lov muddati o'tgan</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
@@ -1797,7 +1864,7 @@ function PermissionsPage({ me, staff, setStaff, notify }) {
   };
   const removeUser = (id) => {
     setStaff(staff.filter((u) => u.id !== id));
-    notify("Foydalanuvchi o'chirildi");
+    notify("Foydalanuvchi o'chirildi", 'danger');
     // API: DELETE /api/admin/staff/{id}/
   };
   return (
@@ -2221,7 +2288,7 @@ function StaffProfile({ me, staff, setStaff, notify, onLogout }) {
 
   const removeUser = (id) => {
     setStaff(staff.filter((u) => u.id !== id));
-    notify("Foydalanuvchi o'chirildi");
+    notify("Foydalanuvchi o'chirildi", 'danger');
     // API: DELETE /api/admin/staff/{id}/
   };
 
@@ -2701,14 +2768,15 @@ function App() {
   const [staff, setStaff] = useState(() => loadLS('staff', null) || seedStaff());
   const [students, setStudents] = useState(() => loadLS('students', null) || seedStudents());
   const [session, setSession] = useState(() => loadLS('session', null)); // { type: 'staff'|'student', id }
-  const [toast, setToast] = useState(null);
+  const [toasts, setToasts] = useState([]);
 
   useEffect(() => { saveLS('categories', categories); }, [categories]);
   useEffect(() => { saveLS('staff', staff); }, [staff]);
   useEffect(() => { saveLS('students', students); }, [students]);
   useEffect(() => { saveLS('session', session); }, [session]);
 
-  const notify = (text) => setToast(text);
+  const notify = (text, variant) => setToasts((list) => [...list, { id: uid('toast'), text, variant }]);
+  const dismissToast = (id) => setToasts((list) => list.filter((t) => t.id !== id));
 
   const loginStudent = (username, password) => {
     const found = students.find((s) => s.username === username && s.password === password);
@@ -2730,7 +2798,7 @@ function App() {
       <React.Fragment>
         <StaffApp me={me} staff={staff} setStaff={setStaff} categories={categories} setCategories={setCategories}
           students={students} setStudents={setStudents} onLogout={() => setSession(null)} notify={notify} />
-        {toast && <Toast text={toast} onDone={() => setToast(null)} />}
+        <ToastStack toasts={toasts} onDismiss={dismissToast} />
       </React.Fragment>
     );
   }
@@ -2741,7 +2809,7 @@ function App() {
     <React.Fragment>
       <StudentApp me={me} categories={categories} students={students} setStudents={setStudents}
         onLogout={() => setSession(null)} notify={notify} />
-      {toast && <Toast text={toast} onDone={() => setToast(null)} />}
+      <ToastStack toasts={toasts} onDismiss={dismissToast} />
     </React.Fragment>
   );
 }
