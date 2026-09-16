@@ -529,6 +529,23 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   .bar-track { flex: 1; height: 8px; border-radius: 999px; background: rgba(21,33,58,.08); overflow: hidden; }
   .bar-fill { height: 100%; border-radius: 999px; background: linear-gradient(90deg, #21E27A, #0FAE5E); transition: width .5s ease; }
 
+  /* ================= Monthly revenue chart (dashboard) ================= */
+  .monthly-chart-card {
+    margin-top: 1.5rem; background: #fff; border: 1px solid rgba(21,33,58,.08); border-radius: 1rem;
+    padding: 1.25rem 1.25rem 1rem;
+  }
+  .monthly-chart-head { display: flex; align-items: center; justify-content: space-between; gap: .75rem; margin-bottom: 1rem; }
+  .monthly-chart-title {
+    display: flex; align-items: center; gap: .6rem; font-size: .85rem; font-weight: 700; letter-spacing: .03em;
+    color: #15213A; text-transform: uppercase;
+  }
+  .monthly-chart-accent { display: inline-block; width: 3px; height: 1rem; border-radius: 2px; background: #2D5BE3; }
+  .monthly-chart-year {
+    border: 1px solid rgba(21,33,58,.15); background: #fff; color: #15213A; font-size: .8rem; font-weight: 600;
+    border-radius: .5rem; padding: .3rem .6rem; outline: none; cursor: pointer;
+  }
+  .monthly-chart-svg { width: 100%; height: auto; display: block; }
+
   /* ================= Sidebar modern ================= */
   aside.side-modern.bg-ink { background-image: linear-gradient(200deg, #10231C 0%, #0A1712 100%) !important; }
   .side-modern nav.flex-1 { padding: 0 .55rem; gap: .2rem !important; }
@@ -567,34 +584,32 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   .side-modern.is-collapsed .side-footer { justify-content: center; }
   .side-expand-btn { display: none; margin: 0 auto; }
 
-  .mobile-topbar { display: none; }
-  .mobile-overlay { display: none; }
+  .mobile-bottom-nav { display: none; }
 
   @media (max-width: 860px) {
     .app-shell { display: block; }
-    .side-modern, .side-modern.is-collapsed {
-      position: fixed; top: 0; left: 0; bottom: 0; z-index: 60; width: 16rem !important;
-      transform: translateX(-100%); transition: transform .28s cubic-bezier(.4,0,.2,1);
+    /* Sidebar is desktop-only now; mobile uses the bottom nav bar instead */
+    .side-modern { display: none !important; }
+    .app-shell > main { padding-bottom: 5.75rem !important; }
+
+    .mobile-bottom-nav {
+      display: flex; align-items: stretch; gap: .15rem;
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 60;
+      background-image: linear-gradient(200deg, #10231C 0%, #0A1712 100%);
+      border-top: 1px solid rgba(255,255,255,.08);
+      padding: .45rem .3rem calc(.45rem + env(safe-area-inset-bottom, 0px));
+      overflow-x: auto; -ms-overflow-style: none; scrollbar-width: none;
+      box-shadow: 0 -10px 24px -18px rgba(0,0,0,.6);
     }
-    .side-modern.is-mobile-open { transform: translateX(0); }
-    .side-modern .side-collapse-btn, .side-modern .side-expand-btn { display: none !important; }
-    .side-modern .side-label, .side-modern .side-footer-info { opacity: 1 !important; max-width: 160px !important; }
-    .side-modern .side-badge-row { padding-left: 1.1rem !important; padding-right: 1.1rem !important; justify-content: flex-start !important; }
-    .side-modern .side-logo-row { justify-content: space-between !important; }
-    .side-modern nav.flex-1 button { justify-content: flex-start !important; padding-left: 1rem !important; padding-right: 1rem !important; }
-    .side-modern .side-footer { justify-content: flex-start !important; }
-    .mobile-topbar {
-      display: flex; align-items: center; justify-content: space-between; gap: .75rem;
-      padding: .8rem 1rem; background: #15213A; color: #fff; border-radius: .9rem; margin-bottom: 1.25rem;
-      box-shadow: 0 10px 22px -14px rgba(21,33,58,.4);
+    .mobile-bottom-nav::-webkit-scrollbar { display: none; }
+    .mobile-bottom-nav-item {
+      flex: 0 0 auto; min-width: 4.1rem; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: .25rem; padding: .35rem .3rem; border-radius: .7rem; border: none; background: none; cursor: pointer;
+      color: rgba(255,255,255,.55); font-size: .62rem; font-weight: 600; line-height: 1.1; white-space: nowrap;
+      transition: color .15s ease, background .15s ease;
     }
-    .mobile-menu-btn {
-      width: 2.1rem; height: 2.1rem; border-radius: .6rem; background: rgba(255,255,255,.1); border: none; color: #fff;
-      display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
-    }
-    .mobile-overlay {
-      display: block; position: fixed; inset: 0; background: rgba(10,15,25,.5); z-index: 50; animation: fadeUp .2s ease both; cursor: pointer;
-    }
+    .mobile-bottom-nav-item:active { background: rgba(255,255,255,.06); }
+    .mobile-bottom-nav-item.active { color: #21E27A; }
   }
 
   /* ================= Course thumbnail cards (Kurslar top level) ================= */
@@ -974,22 +989,88 @@ function ComboBarLineChart({ data, barLabel, lineLabel, barColor = '#4F7DF3', li
 }
 
 /* =========================================================================
+   MONTHLY REVENUE CHART (year selector + Jan-Dec bars)
+   ========================================================================= */
+const MONTH_LABELS = ['Yan', 'Fev', 'Mar', 'Apr', 'May', 'Iyun', 'Iyul', 'Avg', 'Sen', 'Okt', 'Noy', 'Dek'];
+
+function MonthlyRevenueChart({ students, categories }) {
+  const currentYear = new Date().getFullYear();
+  const years = useMemo(() => {
+    const set = new Set([currentYear]);
+    students.forEach((s) => Object.values(s.access || {}).forEach((a) => {
+      if (a && a.active && a.nextPaymentDate) set.add(new Date(a.nextPaymentDate).getFullYear());
+    }));
+    return Array.from(set).sort((a, b) => b - a);
+  }, [students]);
+  const [year, setYear] = useState(currentYear);
+
+  const monthly = useMemo(() => {
+    const totals = Array(12).fill(0);
+    students.forEach((s) => {
+      Object.entries(s.access || {}).forEach(([catId, a]) => {
+        if (!a || !a.active) return;
+        if (!a.nextPaymentDate) return;
+        const d = new Date(a.nextPaymentDate);
+        if (d.getFullYear() !== year) return;
+        const cat = categories.find((c) => c.id === catId);
+        if (!cat) return;
+        totals[d.getMonth()] += cat.monthlyPrice || 0;
+      });
+    });
+    return totals;
+  }, [students, categories, year]);
+
+  const rawMax = Math.max(1, ...monthly);
+  const step = 5000000;
+  const niceMax = Math.max(step, Math.ceil(rawMax / step) * step);
+  const width = 760, height = 260;
+  const padding = { top: 12, right: 12, bottom: 26, left: 52 };
+  const innerW = width - padding.left - padding.right;
+  const innerH = height - padding.top - padding.bottom;
+  const bandW = innerW / 12;
+  const barW = Math.min(30, bandW * 0.46);
+  const yFor = (v) => padding.top + innerH - (v / niceMax) * innerH;
+  const tickCount = 4;
+  const tickVals = Array.from({ length: tickCount + 1 }, (_, i) => Math.round((niceMax / tickCount) * i));
+
+  return (
+    <div className="monthly-chart-card">
+      <div className="monthly-chart-head">
+        <h3 className="monthly-chart-title"><span className="monthly-chart-accent" />OYLIK TO'LOV GRAFIGI</h3>
+        <select value={year} onChange={(e) => setYear(Number(e.target.value))} className="monthly-chart-year">
+          {years.map((y) => <option key={y} value={y}>{y}</option>)}
+        </select>
+      </div>
+      <svg viewBox={`0 0 ${width} ${height}`} className="monthly-chart-svg" preserveAspectRatio="xMidYMid meet">
+        {tickVals.map((v, i) => (
+          <g key={i}>
+            <line x1={padding.left} x2={width - padding.right} y1={yFor(v)} y2={yFor(v)} stroke="rgba(21,33,58,.08)" strokeWidth="1" />
+            <text x={padding.left - 10} y={yFor(v) + 3.5} textAnchor="end" fontSize="10" fill="#5B6472">{fmtMoneyShort(v)}</text>
+          </g>
+        ))}
+        {monthly.map((v, i) => {
+          const x = padding.left + bandW * i + (bandW - barW) / 2;
+          const y = yFor(v);
+          const h = padding.top + innerH - y;
+          return <rect key={i} x={x} y={y} width={barW} height={Math.max(0, h)} rx="5" fill="#2D5BE3" />;
+        })}
+        {MONTH_LABELS.map((m, i) => (
+          <text key={m} x={padding.left + bandW * i + bandW / 2} y={height - 6} textAnchor="middle" fontSize="11" fill="#5B6472">{m}</text>
+        ))}
+      </svg>
+    </div>
+  );
+}
+
+/* =========================================================================
    SIDEBAR (collapsible on desktop, slide-in drawer on mobile)
    ========================================================================= */
 function Sidebar({ roleLabel, navItems, activePage, onNavigate, footerName, footerSub, footerInitials, onFooterClick }) {
   const [collapsed, setCollapsed] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
     <React.Fragment>
-      <div className="mobile-topbar">
-        <button className="mobile-menu-btn" onClick={() => setMobileOpen(true)} aria-label="Menyu"><Icon.menu /></button>
-        <Logo dark />
-        <span style={{ width: '2.1rem' }} />
-      </div>
-      {mobileOpen && <div className="mobile-overlay" onClick={() => setMobileOpen(false)} />}
-
-      <aside className={`side-modern w-60 bg-ink text-white flex flex-col shrink-0 ${collapsed ? 'is-collapsed' : ''} ${mobileOpen ? 'is-mobile-open' : ''}`}>
+      <aside className={`side-modern w-60 bg-ink text-white flex flex-col shrink-0 ${collapsed ? 'is-collapsed' : ''}`}>
         <div className="side-top">
           <div className="side-logo-row">
             <Logo dark />
@@ -1000,20 +1081,13 @@ function Sidebar({ roleLabel, navItems, activePage, onNavigate, footerName, foot
               <Icon.chevron width="13" height="13" style={{ transform: 'rotate(-90deg)' }} />
             </button>
           </div>
-          {roleLabel && (
-            <div className="side-badge-row">
-              <span className="pill side-brand-badge">
-                <Icon.medal width="12" height="12" /> <span className="side-label">{roleLabel}</span>
-              </span>
-            </div>
-          )}
         </div>
 
         <nav className="mt-2 flex-1 space-y-1">
           {navItems.map((n) => (
             <React.Fragment key={n.id}>
               {n.dividerBefore && <div className="nav-pill-divider" />}
-              <button title={n.label} onClick={() => { onNavigate(n.id); setMobileOpen(false); }}
+              <button title={n.label} onClick={() => onNavigate(n.id)}
                 className={`nav-pill w-full flex items-center gap-3 text-left px-4 py-2.5 text-sm transition ${activePage === n.id ? 'active text-white' : 'text-white/60 hover:text-white'}`}>
                 <n.icon width="16" height="16" className="shrink-0" />
                 <span className="side-label">{n.label}</span>
@@ -1030,7 +1104,26 @@ function Sidebar({ roleLabel, navItems, activePage, onNavigate, footerName, foot
           </div>
         </div>
       </aside>
+
+      <MobileBottomNav navItems={navItems} activePage={activePage} onNavigate={onNavigate} />
     </React.Fragment>
+  );
+}
+
+/* =========================================================================
+   MOBILE BOTTOM NAVIGATION (mobile-only; replaces the old top drawer bar)
+   ========================================================================= */
+function MobileBottomNav({ navItems, activePage, onNavigate }) {
+  return (
+    <nav className="mobile-bottom-nav">
+      {navItems.map((n) => (
+        <button key={n.id} onClick={() => onNavigate(n.id)}
+          className={`mobile-bottom-nav-item ${activePage === n.id ? 'active' : ''}`}>
+          <n.icon width="19" height="19" />
+          <span>{n.label}</span>
+        </button>
+      ))}
+    </nav>
   );
 }
 
@@ -1108,15 +1201,7 @@ function StaffApp({ me, staff, setStaff, categories, setCategories, students, se
               ))}
             </div>
 
-            <div className="mt-6 bg-card rounded-xl border border-line p-4">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="font-semibold text-ink text-sm flex items-center gap-2"><Icon.chart width="14" height="14" className="text-forest" /> Qaysi kurs qancha pul keltiryapti</h3>
-                <span className="text-xs text-slate">Jami: <span className="text-ink font-semibold">{fmtMoney(revenue.total)}</span></span>
-              </div>
-              <ComboBarLineChart height={170}
-                data={revenue.byCategory.map((c) => ({ label: c.name, bar: c.payers, line: c.amount }))}
-                barLabel="To'lovchi o'quvchilar soni" lineLabel="Tushum (so'm)" />
-            </div>
+            <MonthlyRevenueChart students={students} categories={categories} />
 
             {(() => {
               const overdueStudents = students.filter((s) => Object.values(s.access).some(isOverdue));
