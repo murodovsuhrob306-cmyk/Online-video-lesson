@@ -430,6 +430,8 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   .mb-1\.5 { margin-bottom: .375rem; }
   .mt-1\.5 { margin-top: .375rem; }
   .w-44 { width: 11rem; }
+  .grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (min-width: 768px) { .md\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 
   /* ================= Combo bar+line revenue chart ================= */
   .chart-wrap { width: 100%; }
@@ -540,7 +542,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   /* ================= Monthly revenue chart (dashboard) ================= */
   .monthly-chart-card {
     margin-top: 1.5rem; background: #fff; border: 1px solid rgba(1,51,40,.08); border-radius: 1rem;
-    padding: 1.25rem 1.25rem 1rem;
+    padding: 1.05rem 1.1rem .9rem;
   }
   .monthly-chart-head { display: flex; align-items: center; justify-content: space-between; gap: .75rem; margin-bottom: 1rem; }
   .monthly-chart-title {
@@ -553,11 +555,10 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
     border-radius: .5rem; padding: .3rem .6rem; outline: none; cursor: pointer;
   }
   .monthly-chart-svg { width: 100%; height: auto; display: block; }
-  .monthly-chart-scroll { width: 100%; }
+  .monthly-chart-scroll { width: 100%; overflow: hidden; }
   @media (max-width: 640px) {
-    .monthly-chart-card { padding: 1.1rem .85rem .9rem; }
-    .monthly-chart-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-    .monthly-chart-svg { width: auto; min-width: 600px; height: auto; }
+    .monthly-chart-card { padding: 1rem .85rem .85rem; }
+    .monthly-chart-svg { width: 100%; min-width: 0; height: auto; }
   }
 
   /* ================= Sidebar modern ================= */
@@ -570,6 +571,11 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   .side-modern .nav-pill-divider { border-top: 1px solid rgba(255,255,255,.09); margin: .5rem .6rem .35rem; }
   .side-modern .avatar.bg-gold { background: #CC8B65 !important; color: #100C0D !important; background-image: none !important; }
   .side-brand-badge { background: rgba(204,139,101,.14) !important; color: #E5B896 !important; }
+
+  /* ================= App shell: sidebar to'liq balandlikda (100%), navbar sidebar yonida ================= */
+  .app-shell { align-items: stretch; }
+  .app-main { min-width: 0; }
+  .side-modern { align-self: stretch; }
 
   /* ================= Sidebar collapse (desktop) + mobile drawer ================= */
   .side-modern { transition: width .28s cubic-bezier(.4,0,.2,1); overflow: hidden; }
@@ -634,7 +640,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
     .mobile-menu-btn:hover { background: rgba(255,255,255,.12); }
     /* EduStream wordmark is a desktop-only label; mobile keeps just the mark */
     .topbar-brand .brand-text { display: none; }
-    .app-shell > main { padding-bottom: 5.75rem !important; }
+    .app-main > main { padding-bottom: 5.75rem !important; }
 
     .mobile-bottom-nav {
       display: flex; align-items: stretch; justify-content: space-evenly; gap: .15rem;
@@ -787,15 +793,14 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   .notif-item-sub { font-size: .72rem; color: #5B6472; }
   @media (max-width: 480px) { .notif-dropdown { width: 82vw; right: -60px; } }
 
-  /* ================= Dashboard: chart + at-risk students in one row ================= */
-  .dash-combo-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 1.25rem; align-items: stretch; margin-top: 1.5rem; }
-  .dash-combo-grid .monthly-chart-card { margin-top: 0; height: 100%; display: flex; flex-direction: column; }
-  .dash-combo-grid .overdue-card { margin-top: 0; height: 100%; }
-  @media (max-width: 900px) { .dash-combo-grid { grid-template-columns: 1fr; } }
+  /* ================= Dashboard: chart + at-risk students, ketma-ket (ustma-ust) ================= */
+  .dash-combo-grid { display: flex; flex-direction: column; gap: 1.25rem; margin-top: 1.5rem; }
+  .dash-combo-grid .monthly-chart-card { margin-top: 0; }
+  .dash-combo-grid .overdue-card { margin-top: 0; }
 
-  /* ================= Overdue students card (single scrollable block) ================= */
-  .overdue-card { display: flex; flex-direction: column; max-height: 300px; }
-  .overdue-card-list { overflow-y: auto; }
+  /* ================= Overdue students card (top-5 + pagination) ================= */
+  .overdue-card { display: flex; flex-direction: column; }
+  .overdue-card-list { }
 
   /* ================= Bootstrap-style dismissible alerts (bottom-right toast stack) ================= */
   .bs-toast-stack {
@@ -1271,8 +1276,8 @@ function CourseRevenueChart({ revenue }) {
   const rawMax = Math.max(1, ...data.map((d) => d.amount));
   const step = rawMax > 20000000 ? 5000000 : rawMax > 5000000 ? 1000000 : rawMax > 1000000 ? 500000 : rawMax > 100000 ? 100000 : 10000;
   const niceMax = Math.max(step, Math.ceil(rawMax / step) * step);
-  const width = 760, height = 208;
-  const padding = { top: 26, right: 12, bottom: 34, left: 60 };
+  const width = 760, height = 168;
+  const padding = { top: 22, right: 12, bottom: 30, left: 58 };
   const innerW = width - padding.left - padding.right;
   const innerH = height - padding.top - padding.bottom;
   const n = Math.max(1, data.length);
@@ -1527,6 +1532,14 @@ function StaffApp({ me, staff, setStaff, categories, setCategories, students, se
     () => students.filter((s) => Object.values(s.access).some(isOverdue)),
     [students]
   );
+  const OVERDUE_PAGE_SIZE = 5;
+  const [overduePage, setOverduePage] = useState(1);
+  const overduePageCount = Math.max(1, Math.ceil(overdueStudents.length / OVERDUE_PAGE_SIZE));
+  const overdueCurPage = Math.min(overduePage, overduePageCount);
+  const overdueShown = overdueStudents.slice(
+    (overdueCurPage - 1) * OVERDUE_PAGE_SIZE,
+    overdueCurPage * OVERDUE_PAGE_SIZE
+  );
   const notifications = useMemo(
     () => overdueStudents.map((s) => ({ id: s.id, name: s.name, initials: s.name.split(' ').map((w) => w[0]).slice(0, 2).join('') })),
     [overdueStudents]
@@ -1552,18 +1565,18 @@ function StaffApp({ me, staff, setStaff, categories, setCategories, students, se
   };
 
   return (
-    <div className="min-h-screen bg-paper flex flex-col">
-      <Topbar me={me} roleLabel={roleLabel} initials={initials}
-        theme={theme} onToggleTheme={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-        notifications={notifications} onGoProfile={() => goTo('profile')} onLogout={onLogout}
-        onOpenMenu={() => setMobileMenuOpen(true)} />
+    <div className="min-h-screen bg-paper flex app-shell">
+      <Sidebar roleLabel={roleLabel} navItems={nav}
+        activePage={page} onNavigate={goTo}
+        footerName={me.name} footerSub="Profilni ko'rish" footerInitials={initials}
+        onFooterClick={() => goTo('profile')}
+        mobileOpen={mobileMenuOpen} onCloseMobile={() => setMobileMenuOpen(false)} />
 
-      <div className="app-shell flex-1 flex">
-        <Sidebar roleLabel={roleLabel} navItems={nav}
-          activePage={page} onNavigate={goTo}
-          footerName={me.name} footerSub="Profilni ko'rish" footerInitials={initials}
-          onFooterClick={() => goTo('profile')}
-          mobileOpen={mobileMenuOpen} onCloseMobile={() => setMobileMenuOpen(false)} />
+      <div className="app-main flex-1 flex flex-col">
+        <Topbar me={me} roleLabel={roleLabel} initials={initials}
+          theme={theme} onToggleTheme={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+          notifications={notifications} onGoProfile={() => goTo('profile')} onLogout={onLogout}
+          onOpenMenu={() => setMobileMenuOpen(true)} />
 
         <main className="flex-1 p-8 overflow-y-auto max-h-screen">
           {page === 'overview' && (
@@ -1571,7 +1584,7 @@ function StaffApp({ me, staff, setStaff, categories, setCategories, students, se
               <h1 className="font-display text-3xl text-ink mb-1">Dashboard</h1>
               <p className="text-slate text-sm mb-6">Markazingiz bo'yicha bugungi holat.</p>
 
-              <div className="grid sm:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {[
                   ['O\'quvchilar', stats.students, Icon.users, '#2E6F4E', 'rgba(46,111,78,.12)'],
                   ['Kategoriyalar', stats.categories, Icon.layers, '#6D3FA0', 'rgba(109,63,160,.12)'],
@@ -1598,7 +1611,7 @@ function StaffApp({ me, staff, setStaff, categories, setCategories, students, se
                     {overdueStudents.length === 0 && (
                       <p className="text-sm text-slate">Hozircha muddati o'tgan to'lovlar yo'q.</p>
                     )}
-                    {overdueStudents.map((s) => (
+                    {overdueShown.map((s) => (
                       <div key={s.id} className="flex items-center justify-between py-2.5 border-t border-line first:border-t-0">
                         <span className="text-sm text-ink flex items-center gap-2">
                           <span className="avatar w-7 h-7 bg-paper text-ink text-xs border border-line">{s.name.split(' ').map((w)=>w[0]).slice(0,2).join('')}</span>
@@ -1608,6 +1621,7 @@ function StaffApp({ me, staff, setStaff, categories, setCategories, students, se
                       </div>
                     ))}
                   </div>
+                  <Pagination page={overdueCurPage} pageCount={overduePageCount} onChange={setOverduePage} />
                 </div>
               </div>
             </div>
@@ -1734,7 +1748,7 @@ function StatisticsPage({ stats, revenue, students, categories }) {
       <h1 className="font-display text-3xl text-ink mb-1">Statistika</h1>
       <p className="text-slate text-sm mb-6">Markaz bo'yicha umumiy ko'rsatkichlar.</p>
 
-      <div className="grid sm:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
           ['O\'quvchilar', stats.students, Icon.users, '#2E6F4E', 'rgba(46,111,78,.12)'],
           ['Kategoriyalar', stats.categories, Icon.layers, '#6D3FA0', 'rgba(109,63,160,.12)'],
