@@ -438,6 +438,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   .combo-chart { width: 100%; height: auto; display: block; overflow: visible; }
   .chart-legend { display: flex; align-items: center; justify-content: center; gap: 1.5rem; margin-top: .75rem; }
   .chart-legend-item { display: inline-flex; align-items: center; gap: .45rem; font-size: .8rem; color: #5B6472; font-weight: 500; }
+  @media (max-width: 640px) { .chart-legend-item { font-size: .95rem; gap: .55rem; } .chart-legend { gap: 1.1rem; flex-wrap: wrap; } }
   .page-btn { min-width: 30px; height: 30px; padding: 0 .4rem; border-radius: .5rem; border: 1px solid rgba(1,51,40,.12); background: #fff; color: #013328; font-size: .8rem; font-weight: 600; cursor: pointer; transition: all .15s; }
   .page-btn:hover:not(.page-btn-active) { background: rgba(1,51,40,.05); }
   .page-btn-active { background: #013328; color: #fff; border-color: #013328; }
@@ -453,6 +454,15 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   .btn-danger-ghost:hover { background: rgba(172,75,59,.08); }
   .icon-btn-danger { width: 28px; height: 28px; border-radius: .5rem; background: rgba(172,75,59,.1); color: #AC4B3B; display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; }
   .icon-btn-danger:hover { background: rgba(172,75,59,.18); }
+
+  /* ================= O'quvchi qatoridagi kichik amal tugmalari ================= */
+  .icon-btn-row { width: 28px; height: 28px; border-radius: .5rem; display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; transition: background .15s ease; }
+  .icon-btn-row-pay { background: rgba(46,111,78,.12); color: #2E6F4E; }
+  .icon-btn-row-pay:hover { background: rgba(46,111,78,.22); }
+  .icon-btn-row-lock { background: rgba(1,51,40,.08); color: #013328; }
+  .icon-btn-row-lock:hover { background: rgba(1,51,40,.16); }
+  .icon-btn-row-edit { background: rgba(204,139,101,.14); color: #9C7A22; }
+  .icon-btn-row-edit:hover { background: rgba(204,139,101,.24); }
   .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: .6rem; }
   .accent-bar { width: 4px; height: 16px; border-radius: 999px; background: #2E6F4E; display: inline-block; }
   .table-row { border-top: 1px solid rgba(1,51,40,.08); }
@@ -577,10 +587,13 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   @media (max-width: 640px) {
     .monthly-chart-card { padding: 1rem .85rem .85rem; }
     .monthly-chart-svg { width: 100%; min-width: 0; height: auto; }
-    .chart-tooltip { padding: .55rem .75rem; }
-    .chart-tooltip-title { font-size: 1.15rem; margin-bottom: .3rem; }
-    .chart-tooltip-row { font-size: 1.2rem; gap: .5rem; }
-    .chart-tooltip-swatch { width: .85rem; height: .85rem; }
+    /* Bu matn SVG ichidagi foreignObject orqali chiqadi, ya'ni butun grafik ekranga moslab
+       kichraytirilganda (masalan ~0.47x) ushbu matn ham shuncha marta kichraydi — shuning
+       uchun mobilda oddiy 1-1.2rem yetarli emas, real ko'rinishda ~2.5-2.8rem kerak bo'ladi. */
+    .chart-tooltip { padding: 1rem 1.2rem; border-radius: .9rem; }
+    .chart-tooltip-title { font-size: 2.5rem; margin-bottom: .5rem; }
+    .chart-tooltip-row { font-size: 2.7rem; gap: .8rem; }
+    .chart-tooltip-swatch { width: 1.6rem; height: 1.6rem; border-radius: .3rem; }
   }
 
   /* ================= Sidebar modern ================= */
@@ -776,6 +789,25 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   @media (max-width: 640px) { .topbar-profile-name { display: none; } }
 
   .dropdown-backdrop { position: fixed; inset: 0; z-index: 39; background: transparent; }
+
+  /* ================= Universal center modal ================= */
+  .modal-backdrop {
+    position: fixed; inset: 0; z-index: 70; background: rgba(1,14,10,.55);
+    display: flex; align-items: center; justify-content: center; padding: 1.25rem;
+    animation: fadeUp .18s ease both;
+  }
+  .modal-card {
+    width: 100%; max-width: 30rem; max-height: 88vh; overflow-y: auto;
+    background: #fff; border-radius: 1.1rem; border: 1px solid rgba(1,51,40,.08);
+    box-shadow: 0 30px 70px -20px rgba(0,0,0,.45); padding: 1.5rem;
+  }
+  .modal-card-lg { max-width: 34rem; padding: 2rem; }
+  html.theme-dark .modal-card { background: #10231C; border-color: rgba(255,255,255,.08); }
+  .modal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.1rem; gap: .75rem; }
+  .modal-close { width: 28px; height: 28px; border-radius: 999px; background: rgba(1,51,40,.06); color: #013328; display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; flex-shrink: 0; }
+  .modal-close:hover { background: rgba(1,51,40,.12); }
+  html.theme-dark .modal-close { background: rgba(255,255,255,.08); color: #EAFBEF; }
+  @media (max-width: 480px) { .modal-card { padding: 1.15rem; } .modal-card-lg { padding: 1.4rem; } }
   .profile-dropdown {
     position: absolute; top: calc(100% + 10px); right: 0; width: 240px; background: #fff;
     border: 1px solid rgba(1,51,40,.10); border-radius: .9rem; box-shadow: 0 14px 34px -14px rgba(1,51,40,.32);
@@ -1118,6 +1150,27 @@ function ToastStack({ toasts, onDismiss }) {
   );
 }
 
+/* Markazda ochiladigan universal modal oyna: qorong'i fon + o'rtada karta.
+   Fonga bosilganda yoki × tugmasi bosilganda yopiladi. size: 'md' (default) | 'lg' (katta xabar oynasi uchun) */
+function Modal({ title, onClose, children, size = 'md' }) {
+  useEffect(() => {
+    const onKey = (e) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+  return (
+    <div className="modal-backdrop" onClick={onClose}>
+      <div className={`modal-card ${size === 'lg' ? 'modal-card-lg' : ''}`} onClick={(e) => e.stopPropagation()}>
+        <div className="modal-head">
+          <h3 className="font-display text-xl text-ink">{title}</h3>
+          <button onClick={onClose} className="modal-close" aria-label="Yopish"><Icon.close width="16" height="16" /></button>
+        </div>
+        <div className="modal-body">{children}</div>
+      </div>
+    </div>
+  );
+}
+
 function Pagination({ page, pageCount, onChange }) {
   if (pageCount <= 1) return null;
   const nums = [];
@@ -1175,6 +1228,10 @@ const Icon = {
   gear: (p) => (<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><circle cx="12" cy="12" r="3"/><path d="M12 3v2.2M12 18.8V21M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M3 12h2.2M18.8 12H21M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6"/></svg>),
   eye: (p) => (<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>),
   eyeOff: (p) => (<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M3 3l18 18"/><path d="M10.6 5.2A10.9 10.9 0 0 1 12 5c6.4 0 10 7 10 7a16.6 16.6 0 0 1-3.2 4.1M6.6 6.6C4 8.3 2 12 2 12s3.6 7 10 7a9.9 9.9 0 0 0 4.4-1"/><path d="M9.5 9.7a3 3 0 0 0 4.2 4.2"/></svg>),
+  lock: (p) => (<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><rect x="4.5" y="10.5" width="15" height="10" rx="2"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></svg>),
+  card: (p) => (<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><rect x="2.5" y="5.5" width="19" height="13" rx="2"/><path d="M2.5 9.5h19"/><path d="M6 14.5h4"/></svg>),
+  send: (p) => (<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="m3 11 18-8-8 18-2.5-7.5L3 11Z"/></svg>),
+  copy: (p) => (<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>),
 };
 const CATEGORY_STYLES = [
   { bg: 'rgba(204,139,101,.14)', fg: '#9C7A22', icon: Icon.layers },
@@ -1247,8 +1304,18 @@ function LoginScreen({ onStudentLogin, onStaffLogin }) {
    COMBO BAR + LINE CHART (dual axis, no external chart lib needed)
    ========================================================================= */
 function ComboBarLineChart({ data, barLabel, lineLabel, barColor = '#4F7DF3', lineColor = '#F0883E', height = 300 }) {
+  const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth <= 640);
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth <= 640);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
   const width = 640;
-  const padding = { top: 16, right: 54, bottom: 30, left: 34 };
+  /* Bu ham viewBox birliklari — mobilda svg butunlay kichraytirilgani uchun matnlarni
+     bir necha barobar kattaroq berish kerak (aks holda ekranda juda mayda ko'rinadi). */
+  const tickFontSize = isMobile ? 26 : 10;
+  const xLabelFontSize = isMobile ? 26 : 11;
+  const padding = isMobile ? { top: 16, right: 96, bottom: 46, left: 74 } : { top: 16, right: 54, bottom: 30, left: 34 };
   const innerW = width - padding.left - padding.right;
   const innerH = height - padding.top - padding.bottom;
   const n = Math.max(1, data.length);
@@ -1275,10 +1342,10 @@ function ComboBarLineChart({ data, barLabel, lineLabel, barColor = '#4F7DF3', li
           <line key={`g${i}`} x1={padding.left} x2={width - padding.right} y1={yBar(v)} y2={yBar(v)} stroke="rgba(1,51,40,.08)" strokeWidth="1" />
         ))}
         {barTicks.map((v, i) => (
-          <text key={`bl${i}`} x={padding.left - 8} y={yBar(v) + 3.5} textAnchor="end" fontSize="10" fill="#5B6472">{v}</text>
+          <text key={`bl${i}`} x={padding.left - 8} y={yBar(v) + 3.5} textAnchor="end" fontSize={tickFontSize} fill="#5B6472">{v}</text>
         ))}
         {lineTicks.map((v, i) => (
-          <text key={`ll${i}`} x={width - padding.right + 8} y={yLine(v) + 3.5} textAnchor="start" fontSize="10" fill="#5B6472">{fmtMoneyShort(v)}</text>
+          <text key={`ll${i}`} x={width - padding.right + 8} y={yLine(v) + 3.5} textAnchor="start" fontSize={tickFontSize} fill="#5B6472">{fmtMoneyShort(v)}</text>
         ))}
         {data.map((d, i) => {
           const x = xCenter(i) - barW / 2;
@@ -1291,7 +1358,7 @@ function ComboBarLineChart({ data, barLabel, lineLabel, barColor = '#4F7DF3', li
           <circle key={`p${i}`} cx={xCenter(i)} cy={yLine(d.line)} r="4.5" fill={lineColor} stroke="#fff" strokeWidth="1.5" />
         ))}
         {data.map((d, i) => (
-          <text key={`x${i}`} x={xCenter(i)} y={height - padding.bottom + 18} textAnchor="middle" fontSize="11" fill="#013328" fontWeight="600">{d.label}</text>
+          <text key={`x${i}`} x={xCenter(i)} y={height - padding.bottom + (isMobile ? 30 : 18)} textAnchor="middle" fontSize={xLabelFontSize} fill="#013328" fontWeight="600">{d.label}</text>
         ))}
       </svg>
       <div className="chart-legend">
@@ -1330,8 +1397,11 @@ function CourseRevenueChart({ revenue }) {
   const rawMax = Math.max(1, ...data.map((d) => d.amount));
   const step = rawMax > 20000000 ? 5000000 : rawMax > 5000000 ? 1000000 : rawMax > 1000000 ? 500000 : rawMax > 100000 ? 100000 : 10000;
   const niceMax = Math.max(step, Math.ceil(rawMax / step) * step);
-  const width = 760, height = isMobile ? 230 : 168;
-  const padding = isMobile ? { top: 22, right: 12, bottom: 42, left: 92 } : { top: 22, right: 12, bottom: 30, left: 58 };
+  /* Diqqat: bu SVG viewBox birliklari, mobil ekranga torayganda butun svg (matnlar bilan birga)
+     kichrayadi (masalan viewBox 760 -> ekran ~360px bo'lsa ~0.47x). Shu sabab mobilda matnlar
+     ko'zga ko'rinadigan bo'lishi uchun font o'lchamlarini bir necha barobar kattaroq berish kerak. */
+  const width = 760, height = isMobile ? 300 : 168;
+  const padding = isMobile ? { top: 26, right: 14, bottom: 66, left: 140 } : { top: 22, right: 12, bottom: 30, left: 58 };
   const innerW = width - padding.left - padding.right;
   const innerH = height - padding.top - padding.bottom;
   const n = Math.max(1, data.length);
@@ -1344,9 +1414,9 @@ function CourseRevenueChart({ revenue }) {
   const shortName = (s) => (s.length > 11 ? s.slice(0, 10) + '…' : s);
 
   const hovered = hoverIdx != null ? data[hoverIdx] : null;
-  const tipW = isMobile ? 200 : 132, tipH = isMobile ? 66 : 46;
-  const axisFontSize = isMobile ? 19 : 10;
-  const nameFontSize = isMobile ? 19 : 11;
+  const tipW = isMobile ? 320 : 132, tipH = isMobile ? 110 : 46;
+  const axisFontSize = isMobile ? 28 : 10;
+  const nameFontSize = isMobile ? 28 : 11;
   let tipX = 0, tipY = 0;
   if (hovered) {
     const cx = padding.left + bandW * hoverIdx + bandW / 2;
@@ -2255,6 +2325,10 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
   const [draftAccess, setDraftAccess] = useState({});
   const [created, setCreated] = useState(null); // { name, username, password }
   const [copied, setCopied] = useState(false);
+  const [credsFor, setCredsFor] = useState(null); // student whose login/parol modali ochiq
+  const [credsCopied, setCredsCopied] = useState(false);
+  const [alertFor, setAlertFor] = useState(null); // student whose "to'lov so'rash" modali ochiq
+  const [alertText, setAlertText] = useState('');
 
   const filtered = students.filter((s) => (s.name + s.username).toLowerCase().includes(q.toLowerCase()));
 
@@ -2279,7 +2353,7 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
     const password = genPassword6();
     setStudents([...students, {
       id: uid('st'), name, phone: draft.phone.trim(), address: '', username, password,
-      access: draftAccess, progress: {},
+      access: draftAccess, progress: {}, alerts: [],
     }]);
     setCreated({ name, username, password });
     setStep('done');
@@ -2295,17 +2369,44 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const copyCredsFor = () => {
+    if (!credsFor) return;
+    const text = `Login: ${credsFor.username}\nParol: ${credsFor.password}`;
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).catch(() => {});
+    setCredsCopied(true);
+    setTimeout(() => setCredsCopied(false), 2000);
+  };
+
+  const openAlertModal = (s) => {
+    const overdueAccess = Object.values(s.access).find(isOverdue);
+    setAlertText(overdueAccess
+      ? `Hurmatli ${s.name}, to'lov muddati o'tgan. Iltimos, kursni davom ettirish uchun to'lovni amalga oshiring.`
+      : `Hurmatli ${s.name}, keyingi oylik to'lovni o'z vaqtida amalga oshirishingizni so'raymiz.`);
+    setAlertFor(s);
+  };
+
+  const sendAlert = () => {
+    if (!alertFor || !alertText.trim()) return;
+    setStudents(students.map((s) => s.id === alertFor.id
+      ? { ...s, alerts: [...(s.alerts || []), { id: uid('al'), text: alertText.trim(), read: false, createdAt: Date.now() }] }
+      : s));
+    notify("Xabar o'quvchiga yuborildi");
+    setAlertFor(null);
+    setAlertText('');
+    // API: POST /api/admin/students/{id}/alerts/  (text) — o'quvchi tizimga kirganda katta modal ko'rinishida chiqadi
+  };
+
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="font-display text-3xl text-ink">O'quvchilar</h1>
-        {canEdit && <button onClick={() => (showAdd ? resetAdd() : setShowAdd(true))} className="bg-ink text-white text-sm px-4 py-2 rounded-lg hover:bg-ink2">
-          {showAdd ? 'Bekor qilish' : '+ Yangi o\'quvchi'}
+        {canEdit && <button onClick={() => setShowAdd(true)} className="bg-ink text-white text-sm px-4 py-2 rounded-lg hover:bg-ink2">
+          + Yangi o'quvchi
         </button>}
       </div>
 
       {showAdd && (
-        <div className="bg-card border border-line rounded-xl p-5 mb-6 max-w-2xl">
+        <Modal title="Yangi o'quvchi" onClose={resetAdd}>
           {step !== 'done' && (
             <div className="flex items-center gap-2 mb-4 text-xs font-semibold uppercase tracking-wide">
               <span className={step === 'info' ? 'text-ink' : 'text-slate'}>1. Ma'lumotlar</span>
@@ -2375,7 +2476,44 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
               </div>
             </div>
           )}
-        </div>
+        </Modal>
+      )}
+
+      {credsFor && (
+        <Modal title="Login va parol" onClose={() => setCredsFor(null)}>
+          <p className="text-sm text-slate mb-4">{credsFor.name} tizimga shu login va parol orqali kiradi.</p>
+          <div className="bg-paper border border-line rounded-lg p-4 grid sm:grid-cols-2 gap-3">
+            <div>
+              <div className="text-xs font-semibold text-slate uppercase tracking-wide">Login</div>
+              <div className="text-lg font-semibold text-ink mt-0.5">{credsFor.username}</div>
+            </div>
+            <div>
+              <div className="text-xs font-semibold text-slate uppercase tracking-wide">Parol</div>
+              <div className="text-lg font-semibold text-ink mt-0.5">{credsFor.password}</div>
+            </div>
+          </div>
+          <div className="mt-4 flex items-center gap-2">
+            <button onClick={copyCredsFor} className="bg-ink text-white text-sm px-4 py-2 rounded-lg flex items-center gap-1.5">
+              <Icon.copy width="13" height="13" /> {credsCopied ? 'Nusxalandi ✓' : 'Nusxalash'}
+            </button>
+            <button onClick={() => setCredsFor(null)} className="px-4 py-2 rounded-lg text-sm text-slate hover:text-ink">Yopish</button>
+          </div>
+        </Modal>
+      )}
+
+      {alertFor && (
+        <Modal title={`${alertFor.name} ga xabar / to'lov so'rash`} onClose={() => setAlertFor(null)}>
+          <label className="text-xs font-semibold text-slate uppercase tracking-wide">Xabar matni</label>
+          <textarea value={alertText} onChange={(e) => setAlertText(e.target.value)} rows={5}
+            className="mt-1 w-full border border-line rounded-lg px-3 py-2 text-sm bg-white outline-none focus:border-gold resize-none" />
+          <p className="text-xs text-slate mt-2">Bu xabar o'quvchi tizimga kirganda ekranida katta modal ko'rinishida chiqadi.</p>
+          <div className="mt-4 flex items-center gap-2">
+            <button onClick={sendAlert} disabled={!alertText.trim()} className="bg-forest text-white text-sm px-4 py-2 rounded-lg disabled:opacity-50 flex items-center gap-1.5">
+              <Icon.send width="14" height="14" /> Yuborish
+            </button>
+            <button onClick={() => setAlertFor(null)} className="px-4 py-2 rounded-lg text-sm text-slate hover:text-ink">Bekor qilish</button>
+          </div>
+        </Modal>
       )}
 
       <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Ism yoki login bo'yicha qidirish..."
@@ -2391,19 +2529,30 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
               const overdue = Object.values(s.access).some(isOverdue);
               const activeCourses = Object.entries(s.access).filter(([, a]) => a.active).map(([cid]) => categories.find((c) => c.id === cid)?.name).filter(Boolean);
               return (
-                <tr key={s.id} className="border-t border-line hover:bg-paper/60 cursor-pointer transition" onClick={() => onOpen(s.id)}>
-                  <td className="px-5 py-3 font-medium text-ink">
+                <tr key={s.id} className="border-t border-line hover:bg-paper/60 transition">
+                  <td className="px-5 py-3 font-medium text-ink cursor-pointer" onClick={() => onOpen(s.id)}>
                     <span className="flex items-center gap-2.5">
                       <span className="avatar w-8 h-8 bg-paper border border-line text-ink text-xs">{s.name.split(' ').map((w)=>w[0]).slice(0,2).join('')}</span>
                       {s.name}
                     </span>
                   </td>
-                  <td className="px-5 py-3 text-slate">{s.username}</td>
-                  <td className="px-5 py-3 text-slate">{activeCourses.join(', ') || '—'}</td>
-                  <td className="px-5 py-3">
+                  <td className="px-5 py-3 text-slate cursor-pointer" onClick={() => onOpen(s.id)}>{s.username}</td>
+                  <td className="px-5 py-3 text-slate cursor-pointer" onClick={() => onOpen(s.id)}>{activeCourses.join(', ') || '—'}</td>
+                  <td className="px-5 py-3 cursor-pointer" onClick={() => onOpen(s.id)}>
                     {overdue ? <span className="pill pill-warn">To'lov o'tgan</span> : <span className="pill pill-ok">Faol</span>}
                   </td>
-                  <td className="px-5 py-3 text-right text-slate text-xs">Ochish →</td>
+                  <td className="px-5 py-3 text-right">
+                    <span className="flex items-center justify-end gap-1.5">
+                      {canEdit && (
+                        <button onClick={(e) => { e.stopPropagation(); openAlertModal(s); }} title="To'lov so'rash / xabar yuborish"
+                          className="icon-btn-row icon-btn-row-pay"><Icon.card width="14" height="14" /></button>
+                      )}
+                      <button onClick={(e) => { e.stopPropagation(); setCredsFor(s); }} title="Login va parolni ko'rish"
+                        className="icon-btn-row icon-btn-row-lock"><Icon.lock width="14" height="14" /></button>
+                      <button onClick={(e) => { e.stopPropagation(); onOpen(s.id); }} title="Tahrirlash"
+                        className="icon-btn-row icon-btn-row-edit"><Icon.chevron width="14" height="14" style={{ transform: 'rotate(-90deg)' }} /></button>
+                    </span>
+                  </td>
                 </tr>
               );
             })}
@@ -2690,8 +2839,28 @@ function StudentApp({ me, categories, students, setStudents, onLogout, notify })
     // API: POST /api/student/lessons/{id}/progress/
   };
 
+  /* O'qituvchi yuborgan o'qilmagan xabarlar (masalan to'lov haqida eslatma) —
+     tizimga kirganda birma-bir katta modal ko'rinishida chiqadi. */
+  const unreadAlert = (student.alerts || []).find((a) => !a.read);
+  const dismissAlert = () => {
+    setStudent({ ...student, alerts: student.alerts.map((a) => a.id === unreadAlert.id ? { ...a, read: true } : a) });
+    // API: POST /api/student/alerts/{id}/read/
+  };
+
   return (
     <div className="min-h-screen bg-paper">
+      {unreadAlert && (
+        <Modal title="Xabar" onClose={dismissAlert} size="lg">
+          <div className="flex items-center gap-2 text-forest mb-3">
+            <Icon.card width="18" height="18" />
+            <span className="font-semibold text-sm uppercase tracking-wide">O'qituvchidan xabar</span>
+          </div>
+          <p className="text-ink text-base leading-relaxed">{unreadAlert.text}</p>
+          <div className="mt-6">
+            <button onClick={dismissAlert} className="bg-forest text-white text-sm px-5 py-2.5 rounded-lg">Tushunarli</button>
+          </div>
+        </Modal>
+      )}
       <header className="bg-white border-b border-line sticky top-0 z-10">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <button onClick={() => { setPage('home'); setCatId(null); setSubId(null); }}><Logo /></button>
