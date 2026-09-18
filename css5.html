@@ -576,24 +576,27 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   html.theme-dark .chart-axis-label { fill: #9AA3B8; }
   html.theme-dark .chart-name-label { fill: #9AA3B8; }
   /* Ustun ustiga hover qilinganda chiqadigan qiymat oynachasi */
+  /* Tooltip endi SVG tashqarida (oddiy HTML) — shuning uchun grafik qanchalik kengaymasin,
+     matn o'lchami doim bir xil (kichik) qoladi. */
+  .chart-tooltip-anchor { position: relative; }
   .chart-tooltip {
-    background: #10151F; color: #fff; border-radius: .55rem; padding: .4rem .6rem;
-    font-family: 'Manrope', sans-serif; box-shadow: 0 10px 26px -10px rgba(0,0,0,.55);
-    border: 1px solid rgba(255,255,255,.1); line-height: 1.3;
+    position: absolute; z-index: 5; pointer-events: none; transform: translate(-50%, -100%);
+    max-width: 180px; width: max-content;
+    background: #10151F; color: #fff; border-radius: .5rem; padding: .3rem .55rem;
+    font-family: 'Manrope', sans-serif; box-shadow: 0 8px 20px -8px rgba(0,0,0,.55);
+    border: 1px solid rgba(255,255,255,.1); line-height: 1.25;
   }
-  .chart-tooltip-title { font-size: .7rem; font-weight: 700; margin-bottom: .2rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .chart-tooltip-row { display: flex; align-items: center; gap: .35rem; font-size: .74rem; font-weight: 600; white-space: nowrap; }
-  .chart-tooltip-swatch { width: .55rem; height: .55rem; border-radius: .15rem; flex-shrink: 0; }
+  .chart-tooltip-title { font-size: .68rem; font-weight: 700; margin-bottom: .15rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .chart-tooltip-row { display: flex; align-items: center; gap: .3rem; font-size: .7rem; font-weight: 600; white-space: nowrap; }
+  .chart-tooltip-swatch { width: .5rem; height: .5rem; border-radius: .13rem; flex-shrink: 0; }
   @media (max-width: 640px) {
     .monthly-chart-card { padding: 1rem .85rem .85rem; }
     .monthly-chart-svg { width: 100%; min-width: 0; height: auto; }
-    /* Bu matn SVG ichidagi foreignObject orqali chiqadi, ya'ni butun grafik ekranga moslab
-       kichraytirilganda (masalan ~0.47x) ushbu matn ham shuncha marta kichraydi — shuning
-       uchun mobilda oddiy 1-1.2rem yetarli emas, real ko'rinishda ~2.5-2.8rem kerak bo'ladi. */
-    .chart-tooltip { padding: 1rem 1.2rem; border-radius: .9rem; }
-    .chart-tooltip-title { font-size: 2.5rem; margin-bottom: .5rem; }
-    .chart-tooltip-row { font-size: 2.7rem; gap: .8rem; }
-    .chart-tooltip-swatch { width: 1.6rem; height: 1.6rem; border-radius: .3rem; }
+    /* Tooltip endi SVG tashqarida, shuning uchun mobilda ham oddiy kichik o'lchamlar yetarli. */
+    .chart-tooltip { padding: .28rem .5rem; border-radius: .45rem; max-width: 150px; }
+    .chart-tooltip-title { font-size: .62rem; margin-bottom: .1rem; }
+    .chart-tooltip-row { font-size: .66rem; gap: .25rem; }
+    .chart-tooltip-swatch { width: .45rem; height: .45rem; border-radius: .12rem; }
   }
 
   /* ================= Sidebar modern ================= */
@@ -893,6 +896,12 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
 
   /* ================= Course revenue chart extras ================= */
   .monthly-chart-total { font-size: .8rem; color: #5B6472; font-weight: 600; }
+  @media (max-width: 640px) {
+    .monthly-chart-head { gap: .5rem; margin-bottom: .75rem; }
+    .monthly-chart-title { font-size: .66rem; letter-spacing: .02em; gap: .4rem; }
+    .monthly-chart-accent { height: .8rem; }
+    .monthly-chart-total { font-size: .64rem; white-space: nowrap; }
+  }
 
   /* ================= Dark / light theme toggle ================= */
   html.theme-dark, html.theme-dark body {
@@ -1570,14 +1579,14 @@ function CourseRevenueChart({ revenue }) {
   const shortName = (s) => (s.length > 11 ? s.slice(0, 10) + '…' : s);
 
   const hovered = hoverIdx != null ? data[hoverIdx] : null;
-  const tipW = isMobile ? 320 : 132, tipH = isMobile ? 110 : 46;
   const axisFontSize = isMobile ? 28 : 10;
   const nameFontSize = isMobile ? 28 : 11;
-  let tipX = 0, tipY = 0;
+  /* Tooltip joyi foizda (SVG kengligiga nisbatan) — HTML qatlam sifatida SVG ustida turadi */
+  let tipLeftPct = 0, tipTopPct = 0;
   if (hovered) {
     const cx = padding.left + bandW * hoverIdx + bandW / 2;
-    tipX = Math.min(Math.max(cx - tipW / 2, 2), width - tipW - 2);
-    tipY = Math.max(yFor(hovered.amount) - tipH - 10, 2);
+    tipLeftPct = (cx / width) * 100;
+    tipTopPct = (yFor(hovered.amount) / height) * 100;
   }
 
   return (
@@ -1586,6 +1595,7 @@ function CourseRevenueChart({ revenue }) {
         <h3 className="monthly-chart-title"><span className="monthly-chart-accent" />KURSLARDAN TUSHUM</h3>
         <span className="monthly-chart-total">Jami: {fmtMoney(revenue.total)}</span>
       </div>
+      <div className="chart-tooltip-anchor">
       <div className="monthly-chart-scroll">
         <svg viewBox={`0 0 ${width} ${height}`} className="monthly-chart-svg" preserveAspectRatio="xMidYMid meet" style={{ overflow: 'visible' }}>
           {tickVals.map((v, i) => (
@@ -1615,18 +1625,21 @@ function CourseRevenueChart({ revenue }) {
               onMouseEnter={() => setHoverIdx(i)} onMouseLeave={() => setHoverIdx(null)}
               onTouchStart={() => setHoverIdx(i)} />
           ))}
-          {hovered && (
-            <foreignObject x={tipX} y={tipY} width={tipW} height={tipH} style={{ overflow: 'visible', pointerEvents: 'none' }}>
-              <div xmlns="http://www.w3.org/1999/xhtml" className="chart-tooltip">
-                <div className="chart-tooltip-title">{hovered.name}</div>
-                <div className="chart-tooltip-row">
-                  <span className="chart-tooltip-swatch" style={{ background: barColor(hoverIdx) }} />
-                  {fmtMoney(hovered.amount)}
-                </div>
-              </div>
-            </foreignObject>
-          )}
         </svg>
+      </div>
+      {hovered && (
+        <div className="chart-tooltip"
+          style={{
+            left: `clamp(70px, ${tipLeftPct}%, calc(100% - 70px))`,
+            top: `max(calc(${tipTopPct}% - 6px), 52px)`,
+          }}>
+          <div className="chart-tooltip-title">{hovered.name}</div>
+          <div className="chart-tooltip-row">
+            <span className="chart-tooltip-swatch" style={{ background: barColor(hoverIdx) }} />
+            {fmtMoney(hovered.amount)}
+          </div>
+        </div>
+      )}
       </div>
     </div>
   );
