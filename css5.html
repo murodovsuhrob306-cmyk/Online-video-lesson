@@ -1038,7 +1038,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   .stu-empty{ text-align:center; color:var(--sd-muted); font-size:.88rem; padding:2.2rem 0; }
 
   /* ---- Yangi o'quvchi modali ---- */
-  .sd-backdrop{ position:fixed; inset:0; background:var(--sd-backdrop); -webkit-backdrop-filter:blur(3px); backdrop-filter:blur(3px); display:flex; align-items:center; justify-content:center; padding:1rem; z-index:60; }
+  .sd-backdrop{ position:fixed; inset:0; background:var(--sd-backdrop); -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; padding:1rem; z-index:999; }
   .sd-modal{ width:100%; max-width:400px; background:var(--sd-modal); border:1px solid var(--sd-line); border-radius:1.1rem; box-shadow:var(--sd-shadow); padding:1.4rem; color:var(--sd-text); font-family:'Manrope', sans-serif; max-height:90vh; overflow-y:auto; }
   .sd-modal-lg{ max-width:460px; }
   .sd-title{ display:flex; align-items:center; gap:.5rem; font-size:1.1rem; font-weight:800; color:var(--sd-text); margin-bottom:1.1rem; }
@@ -1385,6 +1385,9 @@ const Icon = {
   card: (p) => (<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><rect x="2.5" y="5.5" width="19" height="13" rx="2"/><path d="M2.5 9.5h19"/><path d="M6 14.5h4"/></svg>),
   send: (p) => (<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="m3 11 18-8-8 18-2.5-7.5L3 11Z"/></svg>),
   copy: (p) => (<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>),
+  edit: (p) => (<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>),
+  trash: (p) => (<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M4 7h16"/><path d="M9 7V4.5A1.5 1.5 0 0 1 10.5 3h3A1.5 1.5 0 0 1 15 4.5V7"/><path d="M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13"/><path d="M10 11v6M14 11v6"/></svg>),
+  search: (p) => (<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>),
 };
 const CATEGORY_STYLES = [
   { bg: 'rgba(204,139,101,.14)', fg: '#9C7A22', icon: Icon.layers },
@@ -2486,6 +2489,7 @@ const avaColor = (key) => {
   return AVA_COLORS[h % AVA_COLORS.length];
 };
 const initials = (name) => (name || '?').trim().split(/\s+/).map((w) => w[0]).slice(0, 2).join('').toUpperCase();
+const MONTH_NAMES = ['Yanvar', 'Fevral', 'Mart', 'Aprel', 'May', 'Iyun', 'Iyul', 'Avgust', 'Sentyabr', 'Oktyabr', 'Noyabr', 'Dekabr'];
 const onlyDigits = (v) => String(v || '').replace(/[^0-9]/g, '');
 const groupDigits = (v) => {
   const d = onlyDigits(v);
@@ -2498,13 +2502,17 @@ function SdModal({ title, icon, onClose, children, size }) {
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, []);
-  return (
+  /* Rendered via a portal straight into <body> so the full-screen blurred
+     backdrop always covers the whole viewport (sidebar + topbar included),
+     regardless of any scrollable/overflow ancestor it's opened from. */
+  return ReactDOM.createPortal(
     <div className="sd-backdrop" onClick={onClose}>
       <div className={`sd-modal ${size === 'lg' ? 'sd-modal-lg' : ''}`} onClick={(e) => e.stopPropagation()}>
         <div className="sd-title">{icon ? <span>{icon}</span> : null}<span>{title}</span></div>
         {children}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
@@ -2512,13 +2520,12 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
   const staffList = staff && staff.length ? staff : (me ? [me] : []);
   const emptyDraft = () => ({
     fullName: '',
-    ownerId: me ? me.id : (staffList[0] ? staffList[0].id : ''),
-    groupId: '',
-    fee: '500,000',
-    discount: false,
+    phone: '',
   });
 
   const [q, setQ] = useState('');
+  const [pg, setPg] = useState(1);
+  const STU_PAGE_SIZE = 10;
   const [showAdd, setShowAdd] = useState(false);
   const [draft, setDraft] = useState(emptyDraft);
   const [created, setCreated] = useState(null);      // { name, username, password }
@@ -2529,6 +2536,9 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
   const [alertText, setAlertText] = useState('');
 
   const filtered = students.filter((s) => (s.name + ' ' + s.username).toLowerCase().includes(q.toLowerCase()));
+  const stuPageCount = Math.max(1, Math.ceil(filtered.length / STU_PAGE_SIZE));
+  const stuCurPage = Math.min(pg, stuPageCount);
+  const paged = filtered.slice((stuCurPage - 1) * STU_PAGE_SIZE, stuCurPage * STU_PAGE_SIZE);
 
   const resetAdd = () => {
     setDraft(emptyDraft());
@@ -2551,23 +2561,16 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
     if (!name) return;
     const username = genUniqueLogin(name.split(' ')[0], students.map((s) => s.username));
     const password = genPassword6();
-    const access = {};
-    if (draft.groupId) {
-      access[draft.groupId] = {
-        active: true, nextPaymentDate: addDays(todayISO(), 30),
-        isFullyPaid: false, schedule: 'daily', includeSunday: false,
-      };
-    }
     setStudents([...students, {
-      id: uid('st'), name, phone: '', address: '', username, password,
-      access, progress: {}, alerts: [],
-      ownerId: draft.ownerId,
-      monthlyFee: Number(onlyDigits(draft.fee)) || 0,
-      customPrice: !!draft.discount,
+      id: uid('st'), name, phone: draft.phone.trim(), address: '', username, password,
+      access: {}, progress: {}, alerts: [], payments: [],
+      ownerId: me ? me.id : (staffList[0] ? staffList[0].id : ''),
+      monthlyFee: 0,
+      customPrice: false,
     }]);
     setCreated({ name, username, password });
     notify("Yangi o'quvchi ro'yxatga olindi");
-    // API: POST /api/admin/students/  (name, ownerId, groupId, monthlyFee, customPrice)
+    // API: POST /api/admin/students/  (name, phone) — kurs, narx va boshqalar keyin Tahrirlash sahifasida beriladi
   };
 
   const removeStudent = (s) => {
@@ -2639,8 +2642,8 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
 
       <div className="stu-bar">
         <div className="stu-search">
-          <span>🔍</span>
-          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Ism bo'yicha izlash..." />
+          <Icon.search width="14" height="14" />
+          <input value={q} onChange={(e) => { setQ(e.target.value); setPg(1); }} placeholder="Ism bo'yicha izlash..." />
         </div>
         {canEdit && (
           <button className="stu-add" onClick={() => setShowAdd(true)}>
@@ -2650,7 +2653,7 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
       </div>
 
       <div className="stu-list">
-        {filtered.map((s) => {
+        {paged.map((s) => {
           const st = statusOf(s);
           const [bg, fg] = avaColor(s.id || s.name);
           return (
@@ -2677,12 +2680,12 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
                 </button>
                 <button className="stu-ib stu-ib-edit" title="Tahrirlash"
                   onClick={(e) => { e.stopPropagation(); onOpen(s.id); }}>
-                  <Icon.chevron width="14" height="14" style={{ transform: 'rotate(-90deg)' }} />
+                  <Icon.edit width="14" height="14" />
                 </button>
                 {canEdit && (
                   <button className="stu-ib stu-ib-del" title="O'chirish"
                     onClick={(e) => { e.stopPropagation(); removeStudent(s); }}>
-                    <Icon.close width="13" height="13" />
+                    <Icon.trash width="14" height="14" />
                   </button>
                 )}
               </div>
@@ -2691,6 +2694,7 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
         })}
         {filtered.length === 0 && <div className="stu-empty">Hech kim topilmadi.</div>}
       </div>
+      <Pagination page={stuCurPage} pageCount={stuPageCount} onChange={setPg} />
 
       {/* ---------- Yangi o'quvchi ---------- */}
       {showAdd && (
@@ -2706,41 +2710,20 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
               </div>
 
               <div className="sd-field">
-                <label className="sd-label">Egasi (foydalanuvchi)</label>
-                <select className="sd-select" value={draft.ownerId}
-                  onChange={(e) => setDraft({ ...draft, ownerId: e.target.value })}>
-                  {staffList.map((u) => <option key={u.id} value={u.id}>{u.name}</option>)}
-                </select>
+                <label className="sd-label">Telefon</label>
+                <input className="sd-input" placeholder="+998 9X XXX XX XX" value={draft.phone}
+                  onChange={(e) => setDraft({ ...draft, phone: e.target.value })}
+                  onKeyDown={(e) => { if (e.key === 'Enter') addStudent(); }} />
               </div>
 
-              <div className="sd-field">
-                <label className="sd-label">Guruh</label>
-                <select className="sd-select" value={draft.groupId} onChange={(e) => pickGroup(e.target.value)}>
-                  <option value="">— Guruh tanlanmagan —</option>
-                  {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-                </select>
-              </div>
-
-              <div className="sd-field">
-                <label className="sd-label">Oylik to'lov (so'm)</label>
-                <input className="sd-input" inputMode="numeric" value={draft.fee}
-                  onChange={(e) => setDraft({ ...draft, fee: groupDigits(e.target.value) })} />
-              </div>
-
-              <label className="sd-check">
-                <input type="checkbox" checked={draft.discount}
-                  onChange={(e) => setDraft({ ...draft, discount: e.target.checked })} />
-                Chegirma (individual narx)
-              </label>
-              <p className="sd-hint">
-                Belgilansa, yuqorida kiritilgan summa doimiy individual oylik narx sifatida saqlanadi
-                va keyingi oylarda guruh narxi o'zgarsa ham o'zgarmaydi.
+              <p className="sd-hint" style={{ marginTop: 0 }}>
+                Kurs, oylik to'lov va boshqa ma'lumotlar o'quvchi qo'shilgach, uning Tahrirlash sahifasida to'ldiriladi.
               </p>
 
               <div className="sd-foot">
                 <button className="sd-btn sd-btn-ghost" onClick={resetAdd}>Bekor</button>
                 <button className="sd-btn sd-btn-primary" onClick={addStudent} disabled={!draft.fullName.trim()}>
-                  💾 Saqlash
+                  <Icon.check width="14" height="14" /> Saqlash
                 </button>
               </div>
             </React.Fragment>
@@ -2824,12 +2807,50 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
 function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) {
   const [tab, setTab] = useState('info');
   const [form, setForm] = useState({ ...student });
+  const [courseQuery, setCourseQuery] = useState('');
+  const [expandedCourses, setExpandedCourses] = useState({});
+  const [payFor, setPayFor] = useState(null); // catId of course being paid
+  const [payAmount, setPayAmount] = useState('');
+  const [payMonth, setPayMonth] = useState(MONTH_NAMES[new Date().getMonth()]);
+  const [payYear, setPayYear] = useState(String(new Date().getFullYear()));
 
   useEffect(() => { setForm({ ...student }); }, [student.id]);
 
   const updateAccess = (catId, patch) => {
     const cur = form.access[catId] || { active: false, nextPaymentDate: todayISO(), isFullyPaid: false, schedule: 'daily', includeSunday: false };
     setForm({ ...form, access: { ...form.access, [catId]: { ...cur, ...patch } } });
+  };
+
+  const toggleExpanded = (catId) => setExpandedCourses((e) => ({ ...e, [catId]: !e[catId] }));
+
+  const openPayModal = (cat) => {
+    setPayFor(cat.id);
+    setPayAmount(groupDigits(feeOfCat(cat.id)));
+    setPayMonth(MONTH_NAMES[new Date().getMonth()]);
+    setPayYear(String(new Date().getFullYear()));
+  };
+
+  const feeOfCat = (cid) => {
+    if (form.customPrice && form.monthlyFee) return form.monthlyFee;
+    const c = categories.find((x) => x.id === cid);
+    return (c && c.monthlyPrice) || form.monthlyFee || 0;
+  };
+
+  const confirmPayment = () => {
+    if (!payFor) return;
+    const cat = categories.find((c) => c.id === payFor);
+    const cur = form.access[payFor] || { active: true, nextPaymentDate: todayISO(), isFullyPaid: false, schedule: 'daily', includeSunday: false };
+    const amount = Number(onlyDigits(payAmount)) || 0;
+    setForm({
+      ...form,
+      access: { ...form.access, [payFor]: { ...cur, nextPaymentDate: addDays(todayISO(), 30) } },
+      payments: [...(form.payments || []), {
+        id: uid('pay'), catId: payFor, courseName: cat ? cat.name : '',
+        amount, month: payMonth, year: payYear, date: todayISO(),
+      }],
+    });
+    setPayFor(null);
+    // API: POST /api/admin/students/{id}/payments/  (catId, amount, month, year)
   };
 
   const actives = Object.entries(form.access || {}).filter(([, a]) => a && a.active);
@@ -2858,7 +2879,7 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
       <div className="ed-top">
         <button className="ed-back" onClick={onBack}>← Orqaga</button>
         {canEdit && (
-          <button className="stu-add" onClick={() => onSave(form)}>💾 Saqlash</button>
+          <button className="stu-add" onClick={() => onSave(form)}><Icon.check width="14" height="14" /> Saqlash</button>
         )}
       </div>
 
@@ -2909,7 +2930,7 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
         {/* ---- O'ng ustun: tablar ---- */}
         <section className="ed-main">
           <div className="ed-tabs">
-            {[['info', "Ma'lumotlar"], ['courses', 'Kurslar']].map(([id, label]) => (
+            {[['info', "Ma'lumotlar"], ['payments', "To'lovlar tarixi"], ['courses', 'Kurslar']].map(([id, label]) => (
               <button key={id} onClick={() => setTab(id)} className={`ed-tab ${tab === id ? 'ed-tab-on' : ''}`}>{label}</button>
             ))}
           </div>
@@ -2917,7 +2938,7 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
           {tab === 'info' && (
             <React.Fragment>
               <div className="ed-fields">
-                {[['Ism familiya', 'name'], ['Telefon', 'phone'], ['Manzil', 'address'], ['Login', 'username'], ['Parol', 'password']].map(([label, key]) => (
+                {[['Ism familiya', 'name'], ['Telefon', 'phone'], ['Login', 'username'], ['Parol', 'password']].map(([label, key]) => (
                   <div key={key}>
                     <label className="sd-label">{label}</label>
                     <input className="sd-input" disabled={!canEdit} value={form[key] || ''}
@@ -2938,26 +2959,58 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
               </label>
               {canEdit && (
                 <div className="sd-foot" style={{ maxWidth: '260px' }}>
-                  <button className="sd-btn sd-btn-primary" onClick={() => onSave(form)}>💾 Saqlash</button>
+                  <button className="sd-btn sd-btn-primary" onClick={() => onSave(form)}><Icon.check width="14" height="14" /> Saqlash</button>
                 </div>
               )}
             </React.Fragment>
           )}
 
+          {tab === 'payments' && (
+            <React.Fragment>
+              {(form.payments || []).length === 0 && (
+                <p className="text-sm text-slate">Hali to'lovlar tarixi yo'q.</p>
+              )}
+              {(form.payments || []).slice().reverse().map((p) => (
+                <div key={p.id} className="ed-row" style={{ padding: '.7rem 0', borderBottom: '1px solid var(--sd-line)' }}>
+                  <span className="ed-row-k"><Icon.card width="13" height="13" /> {p.courseName || 'Kurs'} · {p.month} {p.year}</span>
+                  <span className="ed-row-v ed-v-green">{fmtMoney(p.amount)}</span>
+                </div>
+              ))}
+            </React.Fragment>
+          )}
+
           {tab === 'courses' && (
             <React.Fragment>
-              {categories.map((cat) => {
+              <div className="stu-search" style={{ marginBottom: '.9rem', maxWidth: '320px' }}>
+                <Icon.search width="14" height="14" />
+                <input value={courseQuery} onChange={(e) => setCourseQuery(e.target.value)} placeholder="Kursni qidirish..." />
+              </div>
+              {categories
+                .filter((cat) => cat.name.toLowerCase().includes(courseQuery.toLowerCase()))
+                .map((cat) => {
                 const a = form.access[cat.id] || { active: false, nextPaymentDate: todayISO(), isFullyPaid: false, schedule: 'daily', includeSunday: false };
+                const isOpen = !!expandedCourses[cat.id];
                 return (
                   <div key={cat.id} className="ed-course">
                     <div className="ed-course-head">
-                      <div>
-                        <div className="ed-course-name">{cat.name}</div>
-                        <div className="ed-course-sub">{cat.subtitle}</div>
+                      <div className="flex items-center gap-2 flex-1 min-w-0" style={{ cursor: a.active ? 'pointer' : 'default' }}
+                        onClick={() => a.active && toggleExpanded(cat.id)}>
+                        {a.active && <Icon.chevron width="13" height="13" className="text-slate shrink-0" style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(-90deg)', transition: 'transform .15s ease' }} />}
+                        <div className="min-w-0">
+                          <div className="ed-course-name">{cat.name}</div>
+                          <div className="ed-course-sub">{cat.subtitle}</div>
+                        </div>
                       </div>
-                      <Switch on={!!a.active} disabled={!canEdit} onToggle={(v) => updateAccess(cat.id, { active: v })} />
+                      <div className="flex items-center gap-2 shrink-0">
+                        {a.active && canEdit && (
+                          <button className="stu-ib stu-ib-pay" title="To'lov qilish" onClick={() => openPayModal(cat)}>
+                            <Icon.card width="14" height="14" />
+                          </button>
+                        )}
+                        <Switch on={!!a.active} disabled={!canEdit} onToggle={(v) => { updateAccess(cat.id, { active: v }); if (v) setExpandedCourses((e) => ({ ...e, [cat.id]: true })); }} />
+                      </div>
                     </div>
-                    {a.active && (
+                    {a.active && isOpen && (
                       <div className="ed-course-body">
                         <div>
                           <label className="sd-label">To'lov sanasi (keyingi)</label>
@@ -2986,7 +3039,7 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
                             Yakshanbani ham jadvalga qo'shish
                           </label>
                         )}
-                        {isOverdue(a) && <div className="ed-warn">Bu kurs to'lov muddati o'tgani uchun avtomatik bloklangan.</div>}
+                        {isOverdue(a) && !a.isFullyPaid && <div className="ed-warn">Bu kurs to'lov muddati o'tgani uchun avtomatik bloklangan.</div>}
                       </div>
                     )}
                   </div>
@@ -2994,13 +3047,53 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
               })}
               {canEdit && (
                 <div className="sd-foot" style={{ maxWidth: '260px' }}>
-                  <button className="sd-btn sd-btn-primary" onClick={() => onSave(form)}>💾 Saqlash</button>
+                  <button className="sd-btn sd-btn-primary" onClick={() => onSave(form)}><Icon.check width="14" height="14" /> Saqlash</button>
                 </div>
               )}
             </React.Fragment>
           )}
         </section>
       </div>
+
+      {payFor && (
+        <SdModal title="To'lov qilish" icon={<Icon.card width="16" height="16" />} onClose={() => setPayFor(null)}>
+          <p className="sd-hint" style={{ marginTop: 0, marginBottom: '.8rem' }}>
+            {student.name} — {(categories.find((c) => c.id === payFor) || {}).name}
+          </p>
+          <div className="sd-creds" style={{ marginBottom: '.9rem' }}>
+            <div>
+              <div className="sd-creds-k">Umumiy to'lov</div>
+              <div className="sd-creds-v">{fmtMoney(feeOfCat(payFor))}</div>
+            </div>
+            <div>
+              <div className="sd-creds-k">Qolgan qarz</div>
+              <div className="sd-creds-v">{fmtMoney(isOverdue(form.access[payFor]) ? feeOfCat(payFor) : 0)}</div>
+            </div>
+          </div>
+          <div className="sd-field">
+            <label className="sd-label">Summa (so'm) *</label>
+            <input className="sd-input" inputMode="numeric" value={payAmount}
+              onChange={(e) => setPayAmount(groupDigits(e.target.value))} />
+          </div>
+          <div className="sd-field">
+            <label className="sd-label">Oy</label>
+            <select className="sd-select" value={payMonth} onChange={(e) => setPayMonth(e.target.value)}>
+              {MONTH_NAMES.map((m) => <option key={m} value={m}>{m}</option>)}
+            </select>
+          </div>
+          <div className="sd-field">
+            <label className="sd-label">Yil</label>
+            <input className="sd-input" inputMode="numeric" value={payYear}
+              onChange={(e) => setPayYear(onlyDigits(e.target.value))} />
+          </div>
+          <div className="sd-foot">
+            <button className="sd-btn sd-btn-ghost" onClick={() => setPayFor(null)}>Bekor</button>
+            <button className="sd-btn sd-btn-primary" onClick={confirmPayment} disabled={!Number(onlyDigits(payAmount))}>
+              <Icon.check width="14" height="14" /> To'lov qilish
+            </button>
+          </div>
+        </SdModal>
+      )}
     </div>
   );
 }
