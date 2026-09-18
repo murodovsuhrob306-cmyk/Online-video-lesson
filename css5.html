@@ -597,7 +597,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   }
 
   /* ================= Sidebar modern ================= */
-  aside.side-modern.bg-ink { background-image: none !important; background-color: #10231C !important; }
+  aside.side-modern.bg-ink { background-image: none !important; background-color: #171D2C !important; }
   .side-modern nav.flex-1 { padding: 0 .55rem; gap: .2rem !important; }
   .side-modern .nav-pill { border-radius: .7rem; padding-top: .6rem; padding-bottom: .6rem; transition: background .15s ease, color .15s ease; }
   .side-modern .nav-pill:hover:not(.active) { background: rgba(255,255,255,.06); }
@@ -686,7 +686,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
     .mobile-bottom-nav {
       display: flex; align-items: stretch; justify-content: space-evenly; gap: .15rem;
       position: fixed; left: 0; right: 0; bottom: 0; z-index: 60;
-      background-image: linear-gradient(200deg, #10231C 0%, #100C0D 100%);
+      background-image: linear-gradient(200deg, #171D2C 0%, #100C0D 100%);
       border-top: 1px solid rgba(255,255,255,.08);
       padding: .45rem .3rem calc(.45rem + env(safe-area-inset-bottom, 0px));
       box-shadow: 0 -10px 24px -18px rgba(0,0,0,.6);
@@ -759,7 +759,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   /* ================= Topbar ================= */
   .topbar {
     height: 64px; display: flex; align-items: center; justify-content: space-between;
-    padding: 0 1.25rem; background-image: none; background-color: #10231C;
+    padding: 0 1.25rem; background-image: none; background-color: #171D2C;
     border-bottom: 1px solid rgba(255,255,255,.08);
     position: sticky; top: 0; z-index: 30; flex-shrink: 0;
   }
@@ -802,7 +802,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
     box-shadow: 0 30px 70px -20px rgba(0,0,0,.45); padding: 1.5rem;
   }
   .modal-card-lg { max-width: 34rem; padding: 2rem; }
-  html.theme-dark .modal-card { background: #10231C; border-color: rgba(255,255,255,.08); }
+  html.theme-dark .modal-card { background: #171D2C; border-color: rgba(255,255,255,.08); }
   .modal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.1rem; gap: .75rem; }
   .modal-close { width: 28px; height: 28px; border-radius: 999px; background: rgba(1,51,40,.06); color: #013328; display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; flex-shrink: 0; }
   .modal-close:hover { background: rgba(1,51,40,.12); }
@@ -961,6 +961,159 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   html.theme-dark .topbar-icon-btn:hover, html.theme-dark .topbar-profile-btn:hover { background: rgba(255,255,255,.06) !important; }
   html.theme-dark ::-webkit-scrollbar-thumb { background: #2A3242; }
   html.theme-dark .rail-dot { box-shadow: 0 0 0 4px #0F1420; }
+
+  /* ================= O'QUVCHILAR BO'LIMI — light / dark mavzuga moslashadi ================= */
+  .stu-dark{
+    /* ---- LIGHT (standart) ---- */
+    --sd-bg:#dcd6cd;
+    --sd-row:#EBE6DE;
+    --sd-card:#EBE6DE;
+    --sd-field:#FFFFFF;
+    --sd-hover:#F4F1EB;
+    --sd-line:rgba(1,51,40,.12);
+    --sd-text:#013328;
+    --sd-muted:#6B7A70;
+    --sd-modal:#F5F2EC;
+    --sd-ghost:#E2DCD2;
+    --sd-shadow:0 18px 45px rgba(1,51,40,.18);
+    --sd-backdrop:rgba(1,51,40,.45);
+    --c-red:#B3271A; --c-green:#1E7A4B; --c-amber:#9A6212; --c-blue:#1D4ED8; --c-slate:#4B5A52;
+    --sd-glow:rgba(46,111,78,.10);
+
+    background:var(--sd-bg);
+    background-image:radial-gradient(900px 420px at 85% -12%, var(--sd-glow), transparent 60%);
+    border:1px solid var(--sd-line);
+    border-radius:1.25rem; padding:1.1rem; color:var(--sd-text);
+    font-family:'Manrope', sans-serif;
+    min-height:calc(100vh - 7.5rem);
+    display:flex; flex-direction:column;
+  }
+  /* ---- DARK ---- */
+  html.theme-dark .stu-dark{
+    --sd-bg:#171D2C;
+    --sd-row:#171D2C;
+    --sd-card:#171D2C;
+    --sd-field:#10151F;
+    --sd-hover:#1D2436;
+    --sd-line:rgba(255,255,255,.08);
+    --sd-text:#EDEFF6;
+    --sd-muted:#9AA3B8;
+    --sd-modal:#171D2C;
+    --sd-ghost:#1D2436;
+    --sd-shadow:0 30px 70px rgba(0,0,0,.6);
+    --sd-backdrop:rgba(0,0,0,.6);
+    --c-red:#f87171; --c-green:#4ade80; --c-amber:#fbbf24; --c-blue:#60a5fa; --c-slate:#cbd5e1;
+    --sd-glow:rgba(59,130,246,.10);
+  }
+  .stu-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:.9rem; padding:.15rem .35rem; }
+  .stu-head h1{ font-family:'Fraunces', serif; font-size:1.5rem; color:var(--sd-text); }
+  .stu-count{ font-size:.78rem; color:var(--sd-muted); }
+  .stu-bar{ display:flex; gap:.8rem; align-items:center; background:var(--sd-card); border:1px solid var(--sd-line); border-radius:1rem; padding:.85rem; margin-bottom:1rem; }
+  .stu-search{ flex:1; display:flex; align-items:center; gap:.5rem; background:var(--sd-field); border:1px solid var(--sd-line); border-radius:.7rem; padding:.6rem .85rem; }
+  .stu-search input{ flex:1; background:transparent; border:0; outline:none; color:var(--sd-text); font-size:.9rem; }
+  .stu-search input::placeholder{ color:var(--sd-muted); }
+  .stu-add{ display:inline-flex; align-items:center; gap:.45rem; background:linear-gradient(180deg,#4b8dfb,#2f6fe4); color:#fff; border:0; border-radius:.7rem; padding:.65rem 1.05rem; font-size:.88rem; font-weight:700; box-shadow:0 6px 18px rgba(47,111,228,.35); transition:filter .15s ease; }
+  .stu-add:hover{ filter:brightness(1.08); }
+  .stu-list{ display:flex; flex-direction:column; gap:.7rem; flex:1; }
+  .stu-row{ display:flex; align-items:center; gap:.85rem; background:var(--sd-row); border:1px solid var(--sd-line); border-radius:1rem; padding:.8rem 1rem; transition:background .15s ease, border-color .15s ease; }
+  .stu-row:hover{ background:var(--sd-hover); }
+  .stu-ava{ width:38px; height:38px; border-radius:.7rem; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:.8rem; flex-shrink:0; letter-spacing:.02em; }
+  .stu-dark .stu-ava{ filter:saturate(1.5) brightness(.72); }
+  html.theme-dark .stu-dark .stu-ava{ filter:none; }
+  .stu-main{ flex:1; min-width:0; cursor:pointer; }
+  .stu-name{ font-weight:700; font-size:.97rem; color:var(--sd-text); margin-bottom:.22rem; }
+  .stu-meta{ display:flex; align-items:center; gap:.45rem; flex-wrap:wrap; font-size:.78rem; color:var(--sd-muted); }
+  .stu-pill{ display:inline-flex; align-items:center; gap:.3rem; padding:.16rem .55rem; border-radius:.5rem; font-size:.74rem; font-weight:700; border:1px solid transparent; }
+  .stu-pill-debt{ background:rgba(239,68,68,.14); color:var(--c-red); border-color:rgba(239,68,68,.30); }
+  .stu-pill-part{ background:rgba(245,158,11,.16); color:var(--c-amber); border-color:rgba(245,158,11,.32); }
+  .stu-pill-paid{ background:rgba(34,197,94,.15); color:var(--c-green); border-color:rgba(34,197,94,.30); }
+  .stu-pill-mut{ background:rgba(107,122,112,.14); color:var(--c-slate); border-color:rgba(107,122,112,.26); }
+  .stu-acts{ display:flex; align-items:center; gap:.4rem; flex-shrink:0; }
+  .stu-ib{ width:34px; height:27px; border-radius:.5rem; display:inline-flex; align-items:center; justify-content:center; border:1px solid transparent; transition:filter .15s ease; }
+  .stu-ib:hover{ filter:brightness(1.12); }
+  .stu-ib-pay{ background:rgba(34,197,94,.15); color:var(--c-green); border-color:rgba(34,197,94,.32); }
+  .stu-ib-key{ background:rgba(59,130,246,.15); color:var(--c-blue); border-color:rgba(59,130,246,.32); }
+  .stu-ib-edit{ background:rgba(107,122,112,.14); color:var(--c-slate); border-color:rgba(107,122,112,.26); }
+  .stu-ib-del{ background:rgba(239,68,68,.14); color:var(--c-red); border-color:rgba(239,68,68,.30); }
+  .stu-empty{ text-align:center; color:var(--sd-muted); font-size:.88rem; padding:2.2rem 0; }
+
+  /* ---- Yangi o'quvchi modali ---- */
+  .sd-backdrop{ position:fixed; inset:0; background:var(--sd-backdrop); -webkit-backdrop-filter:blur(3px); backdrop-filter:blur(3px); display:flex; align-items:center; justify-content:center; padding:1rem; z-index:60; }
+  .sd-modal{ width:100%; max-width:400px; background:var(--sd-modal); border:1px solid var(--sd-line); border-radius:1.1rem; box-shadow:var(--sd-shadow); padding:1.4rem; color:var(--sd-text); font-family:'Manrope', sans-serif; max-height:90vh; overflow-y:auto; }
+  .sd-modal-lg{ max-width:460px; }
+  .sd-title{ display:flex; align-items:center; gap:.5rem; font-size:1.1rem; font-weight:800; color:var(--sd-text); margin-bottom:1.1rem; }
+  .sd-field{ margin-bottom:.95rem; }
+  .sd-label{ display:block; font-size:.68rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:var(--sd-muted); margin-bottom:.4rem; }
+  .sd-input, .sd-select, .sd-textarea{ width:100%; background:var(--sd-field); border:1px solid var(--sd-line); border-radius:.55rem; padding:.62rem .75rem; font-size:.9rem; color:var(--sd-text); outline:none; transition:border-color .15s ease; }
+  .sd-input:focus, .sd-select:focus, .sd-textarea:focus{ border-color:#3b82f6; }
+  .sd-input::placeholder, .sd-textarea::placeholder{ color:var(--sd-muted); }
+  .sd-select option{ background:var(--sd-modal); color:var(--sd-text); }
+  .sd-textarea{ resize:none; line-height:1.55; }
+  .sd-check{ display:flex; align-items:center; gap:.5rem; font-size:.72rem; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:var(--sd-text); cursor:pointer; }
+  .sd-check input{ width:15px; height:15px; accent-color:#3b82f6; }
+  .sd-hint{ font-size:.76rem; line-height:1.55; color:var(--sd-muted); margin-top:.45rem; }
+  .sd-foot{ display:flex; gap:.7rem; margin-top:1.3rem; }
+  .sd-btn{ flex:1; border-radius:.6rem; padding:.65rem 1rem; font-size:.88rem; font-weight:700; display:inline-flex; align-items:center; justify-content:center; gap:.4rem; transition:filter .15s ease; }
+  .sd-btn:hover:not(:disabled){ filter:brightness(1.06); }
+  .sd-btn:disabled{ opacity:.5; }
+  .sd-btn-ghost{ background:var(--sd-ghost); border:1px solid var(--sd-line); color:var(--sd-text); }
+  .sd-btn-primary{ background:linear-gradient(180deg,#4b8dfb,#2f6fe4); color:#fff; border:0; box-shadow:0 6px 18px rgba(47,111,228,.35); }
+  .sd-creds{ background:var(--sd-field); border:1px solid var(--sd-line); border-radius:.7rem; padding:.9rem; display:grid; grid-template-columns:1fr 1fr; gap:.7rem; }
+  .sd-creds-k{ font-size:.66rem; letter-spacing:.08em; text-transform:uppercase; color:var(--sd-muted); }
+  .sd-creds-v{ font-size:1.05rem; font-weight:800; color:var(--sd-text); margin-top:.15rem; }
+  .sd-ok{ display:flex; align-items:center; gap:.45rem; color:var(--c-green); font-weight:700; font-size:.88rem; margin-bottom:.8rem; }
+  @media (max-width: 640px){
+    .stu-bar{ flex-direction:column; align-items:stretch; }
+    .stu-add{ justify-content:center; }
+    .stu-acts{ gap:.28rem; }
+    .stu-ib{ width:30px; }
+    .stu-dark{ padding:.7rem; }
+  }
+
+  /* ---- O'quvchi kartasi (ichki sahifa) ---- */
+  .stu-ed{ display:flex; flex-direction:column; }
+  .ed-top{ display:flex; align-items:center; justify-content:space-between; gap:.6rem; margin-bottom:1rem; flex-wrap:wrap; }
+  .ed-back{ display:inline-flex; align-items:center; gap:.4rem; font-size:.88rem; color:var(--sd-muted); background:transparent; border:0; padding:.35rem .2rem; }
+  .ed-back:hover{ color:var(--sd-text); }
+  .ed-grid{ display:grid; grid-template-columns:320px 1fr; gap:1rem; align-items:start; flex:1; }
+  .ed-card{ background:var(--sd-row); border:1px solid var(--sd-line); border-radius:1rem; padding:1.1rem; }
+  .ed-prof{ display:flex; align-items:center; gap:.85rem; margin-bottom:.8rem; }
+  .ed-ava{ width:56px; height:56px; border-radius:.9rem; font-size:1.05rem; }
+  .ed-name{ font-size:1.12rem; font-weight:800; color:var(--sd-text); line-height:1.25; }
+  .ed-sub{ display:flex; align-items:center; gap:.35rem; font-size:.8rem; color:var(--sd-muted); margin-top:.2rem; }
+  .ed-divider{ height:1px; background:var(--sd-line); margin:.9rem 0; }
+  .ed-row{ display:flex; align-items:center; justify-content:space-between; gap:.6rem; padding:.55rem 0; border-bottom:1px solid var(--sd-line); font-size:.86rem; }
+  .ed-row:last-child{ border-bottom:0; }
+  .ed-row-k{ display:flex; align-items:center; gap:.45rem; color:var(--sd-muted); }
+  .ed-row-v{ font-family:ui-monospace, SFMono-Regular, Menlo, monospace; font-weight:700; color:var(--sd-text); }
+  .ed-v-green{ color:var(--c-green); } .ed-v-red{ color:var(--c-red); }
+  .ed-main{ background:var(--sd-row); border:1px solid var(--sd-line); border-radius:1rem; padding:1.1rem; }
+  .ed-tabs{ display:flex; gap:.4rem; border-bottom:1px solid var(--sd-line); margin-bottom:1.1rem; }
+  .ed-tab{ background:transparent; border:0; border-bottom:2px solid transparent; margin-bottom:-1px; padding:.55rem .9rem; font-size:.88rem; font-weight:600; color:var(--sd-muted); }
+  .ed-tab-on{ color:var(--sd-text); border-bottom-color:#3b82f6; }
+  .ed-fields{ display:grid; grid-template-columns:1fr 1fr; gap:.9rem; }
+  .ed-course{ background:var(--sd-field); border:1px solid var(--sd-line); border-radius:.9rem; padding:.95rem 1rem; margin-bottom:.7rem; }
+  .ed-course-head{ display:flex; align-items:center; justify-content:space-between; gap:.6rem; }
+  .ed-course-name{ font-weight:700; color:var(--sd-text); font-size:.95rem; }
+  .ed-course-sub{ font-size:.76rem; color:var(--sd-muted); margin-top:.1rem; }
+  .ed-course-body{ margin-top:.9rem; padding-top:.9rem; border-top:1px solid var(--sd-line); display:grid; grid-template-columns:1fr 1fr; gap:.85rem; }
+  .ed-check{ grid-column:span 2; display:flex; align-items:center; gap:.5rem; font-size:.84rem; color:var(--sd-text); cursor:pointer; }
+  .ed-check input{ width:15px; height:15px; accent-color:#3b82f6; }
+  .ed-warn{ grid-column:span 2; font-size:.78rem; color:var(--c-red); font-weight:600; }
+  html.theme-dark .stu-dark .switch.bg-line{ background:#1d3a30 !important; }
+  html.theme-dark .stu-dark input[type=date]{ color-scheme:dark; }
+  /* light rejimda global dark-input qoidasi ta'sir qilmasligi uchun */
+  html.theme-dark .stu-dark .sd-input,
+  html.theme-dark .stu-dark .sd-select,
+  html.theme-dark .stu-dark .sd-textarea,
+  html.theme-dark .stu-dark .stu-search input{
+    background-color:var(--sd-field) !important; color:var(--sd-text) !important; border-color:var(--sd-line) !important;
+  }
+  @media (max-width: 900px){
+    .ed-grid{ grid-template-columns:1fr; }
+    .ed-fields, .ed-course-body{ grid-template-columns:1fr; }
+    .ed-check, .ed-warn{ grid-column:span 1; }
+  }
 </style>
 </head>
 <body>
@@ -1798,11 +1951,11 @@ function StaffApp({ me, staff, setStaff, categories, setCategories, students, se
 
         {page === 'students' && !editingStudentId && (
           <StudentsList students={students} setStudents={setStudents} categories={categories} canEdit={canEdit}
-            onOpen={setEditingStudentId} notify={notify} />
+            onOpen={setEditingStudentId} notify={notify} staff={staff} me={me} />
         )}
         {page === 'students' && editingStudentId && (
           <StudentEditor student={students.find((s) => s.id === editingStudentId)} categories={categories}
-            canEdit={canEdit} onBack={() => setEditingStudentId(null)}
+            canEdit={canEdit} staff={staff} onBack={() => setEditingStudentId(null)}
             onSave={(upd) => { setStudents(students.map((s) => (s.id === upd.id ? upd : s))); notify('O\'quvchi ma\'lumotlari saqlandi'); }} />
         )}
 
@@ -2317,64 +2470,116 @@ function StudentAccessFields({ categories, access, canEdit = true, onChange }) {
   );
 }
 
-function StudentsList({ students, setStudents, categories, canEdit, onOpen, notify }) {
+/* ====== O'quvchilar ro'yxati + "Yangi o'quvchi" modali (yangi dark dizayn) ====== */
+const AVA_COLORS = [
+  ['rgba(139,92,246,.18)', '#a78bfa'],
+  ['rgba(245,158,11,.18)', '#fbbf24'],
+  ['rgba(34,211,238,.18)', '#22d3ee'],
+  ['rgba(16,185,129,.18)', '#34d399'],
+  ['rgba(59,130,246,.18)', '#60a5fa'],
+  ['rgba(244,63,94,.18)', '#fb7185'],
+  ['rgba(132,204,22,.18)', '#a3e635'],
+];
+const avaColor = (key) => {
+  let h = 0;
+  for (let i = 0; i < (key || '').length; i++) h = (h * 31 + key.charCodeAt(i)) % 997;
+  return AVA_COLORS[h % AVA_COLORS.length];
+};
+const initials = (name) => (name || '?').trim().split(/\s+/).map((w) => w[0]).slice(0, 2).join('').toUpperCase();
+const onlyDigits = (v) => String(v || '').replace(/[^0-9]/g, '');
+const groupDigits = (v) => {
+  const d = onlyDigits(v);
+  return d ? Number(d).toLocaleString('en-US') : '';
+};
+
+function SdModal({ title, icon, onClose, children, size }) {
+  useEffect(() => {
+    const onKey = (e) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+  return (
+    <div className="sd-backdrop" onClick={onClose}>
+      <div className={`sd-modal ${size === 'lg' ? 'sd-modal-lg' : ''}`} onClick={(e) => e.stopPropagation()}>
+        <div className="sd-title">{icon ? <span>{icon}</span> : null}<span>{title}</span></div>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function StudentsList({ students, setStudents, categories, canEdit, onOpen, notify, staff, me }) {
+  const staffList = staff && staff.length ? staff : (me ? [me] : []);
+  const emptyDraft = () => ({
+    fullName: '',
+    ownerId: me ? me.id : (staffList[0] ? staffList[0].id : ''),
+    groupId: '',
+    fee: '500,000',
+    discount: false,
+  });
+
   const [q, setQ] = useState('');
   const [showAdd, setShowAdd] = useState(false);
-  const [step, setStep] = useState('info'); // 'info' | 'courses' | 'done'
-  const [draft, setDraft] = useState({ firstName: '', lastName: '', phone: '' });
-  const [draftAccess, setDraftAccess] = useState({});
-  const [created, setCreated] = useState(null); // { name, username, password }
+  const [draft, setDraft] = useState(emptyDraft);
+  const [created, setCreated] = useState(null);      // { name, username, password }
   const [copied, setCopied] = useState(false);
-  const [credsFor, setCredsFor] = useState(null); // student whose login/parol modali ochiq
+  const [credsFor, setCredsFor] = useState(null);
   const [credsCopied, setCredsCopied] = useState(false);
-  const [alertFor, setAlertFor] = useState(null); // student whose "to'lov so'rash" modali ochiq
+  const [alertFor, setAlertFor] = useState(null);
   const [alertText, setAlertText] = useState('');
 
-  const filtered = students.filter((s) => (s.name + s.username).toLowerCase().includes(q.toLowerCase()));
+  const filtered = students.filter((s) => (s.name + ' ' + s.username).toLowerCase().includes(q.toLowerCase()));
 
   const resetAdd = () => {
-    setDraft({ firstName: '', lastName: '', phone: '' });
-    setDraftAccess({});
+    setDraft(emptyDraft());
     setCreated(null);
     setCopied(false);
-    setStep('info');
     setShowAdd(false);
   };
 
-  const goToCourses = () => {
-    if (!draft.firstName.trim()) return;
-    setStep('courses');
+  const pickGroup = (gid) => {
+    const cat = categories.find((c) => c.id === gid);
+    setDraft((d) => ({
+      ...d,
+      groupId: gid,
+      fee: d.discount ? d.fee : (cat && cat.monthlyPrice ? groupDigits(cat.monthlyPrice) : d.fee),
+    }));
   };
 
   const addStudent = () => {
-    const name = `${draft.firstName.trim()} ${draft.lastName.trim()}`.trim();
+    const name = draft.fullName.trim().replace(/\s+/g, ' ');
     if (!name) return;
-    const username = genUniqueLogin(draft.firstName, students.map((s) => s.username));
+    const username = genUniqueLogin(name.split(' ')[0], students.map((s) => s.username));
     const password = genPassword6();
+    const access = {};
+    if (draft.groupId) {
+      access[draft.groupId] = {
+        active: true, nextPaymentDate: addDays(todayISO(), 30),
+        isFullyPaid: false, schedule: 'daily', includeSunday: false,
+      };
+    }
     setStudents([...students, {
-      id: uid('st'), name, phone: draft.phone.trim(), address: '', username, password,
-      access: draftAccess, progress: {}, alerts: [],
+      id: uid('st'), name, phone: '', address: '', username, password,
+      access, progress: {}, alerts: [],
+      ownerId: draft.ownerId,
+      monthlyFee: Number(onlyDigits(draft.fee)) || 0,
+      customPrice: !!draft.discount,
     }]);
     setCreated({ name, username, password });
-    setStep('done');
     notify("Yangi o'quvchi ro'yxatga olindi");
-    // API: POST /api/admin/students/  (name, phone, access) — login/parol backendda ham shu tarzda avtomatik yaratiladi
+    // API: POST /api/admin/students/  (name, ownerId, groupId, monthlyFee, customPrice)
   };
 
-  const copyCreds = () => {
-    if (!created) return;
-    const text = `Login: ${created.username}\nParol: ${created.password}`;
-    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).catch(() => {});
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const removeStudent = (s) => {
+    if (!window.confirm(`${s.name} ro'yxatdan o'chirilsinmi?`)) return;
+    setStudents(students.filter((x) => x.id !== s.id));
+    notify("O'quvchi o'chirildi");
   };
 
-  const copyCredsFor = () => {
-    if (!credsFor) return;
-    const text = `Login: ${credsFor.username}\nParol: ${credsFor.password}`;
+  const copyText = (text, cb) => {
     if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).catch(() => {});
-    setCredsCopied(true);
-    setTimeout(() => setCredsCopied(false), 2000);
+    cb(true);
+    setTimeout(() => cb(false), 2000);
   };
 
   const openAlertModal = (s) => {
@@ -2393,178 +2598,230 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
     notify("Xabar o'quvchiga yuborildi");
     setAlertFor(null);
     setAlertText('');
-    // API: POST /api/admin/students/{id}/alerts/  (text) — o'quvchi tizimga kirganda katta modal ko'rinishida chiqadi
+    // API: POST /api/admin/students/{id}/alerts/  (text)
+  };
+
+  /* Bitta o'quvchining to'lov holati */
+  const statusOf = (s) => {
+    const entries = Object.entries(s.access || {}).filter(([, a]) => a && a.active);
+    if (!entries.length) return { cls: 'stu-pill-mut', text: 'Kurs biriktirilmagan' };
+    const feeOf = (cid) => {
+      if (s.customPrice && s.monthlyFee) return s.monthlyFee;
+      const c = categories.find((x) => x.id === cid);
+      return (c && c.monthlyPrice) || s.monthlyFee || 0;
+    };
+    const debt = entries.filter(([, a]) => isOverdue(a));
+    const paid = entries.filter(([, a]) => a.isFullyPaid);
+    if (debt.length) {
+      const sum = debt.reduce((t, [cid]) => t + feeOf(cid), 0);
+      if (paid.length) return { cls: 'stu-pill-part', text: `⚠️ Qisman: ${fmtMoney(sum)} qarz` };
+      return { cls: 'stu-pill-debt', text: `Qarzdor: ${fmtMoney(sum)}` };
+    }
+    if (paid.length === entries.length) return { cls: 'stu-pill-paid', text: "To'langan ✅" };
+    const next = entries.map(([, a]) => a.nextPaymentDate).filter(Boolean).sort()[0];
+    return { cls: 'stu-pill-part', text: `Keyingi to'lov: ${fmtDate(next)}` };
+  };
+
+  const metaOf = (s) => {
+    const names = Object.entries(s.access || {})
+      .filter(([, a]) => a && a.active)
+      .map(([cid]) => { const c = categories.find((x) => x.id === cid); return c ? c.name : null; })
+      .filter(Boolean);
+    return names.length ? names.join(' · ') : s.username;
   };
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="font-display text-3xl text-ink">O'quvchilar</h1>
-        {canEdit && <button onClick={() => setShowAdd(true)} className="bg-ink text-white text-sm px-4 py-2 rounded-lg hover:bg-ink2">
-          + Yangi o'quvchi
-        </button>}
+    <div className="stu-dark">
+      <div className="stu-head">
+        <h1>O'quvchilar</h1>
+        <span className="stu-count">{filtered.length} ta o'quvchi</span>
       </div>
 
-      {showAdd && (
-        <Modal title="Yangi o'quvchi" onClose={resetAdd}>
-          {step !== 'done' && (
-            <div className="flex items-center gap-2 mb-4 text-xs font-semibold uppercase tracking-wide">
-              <span className={step === 'info' ? 'text-ink' : 'text-slate'}>1. Ma'lumotlar</span>
-              <span className="text-slate">→</span>
-              <span className={step === 'courses' ? 'text-ink' : 'text-slate'}>2. Kurslar</span>
-            </div>
-          )}
+      <div className="stu-bar">
+        <div className="stu-search">
+          <span>🔍</span>
+          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Ism bo'yicha izlash..." />
+        </div>
+        {canEdit && (
+          <button className="stu-add" onClick={() => setShowAdd(true)}>
+            <Icon.users width="16" height="16" /> O'quvchi qo'shish
+          </button>
+        )}
+      </div>
 
-          {step === 'info' && (
-            <React.Fragment>
-              <div className="grid sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="text-xs font-semibold text-slate uppercase tracking-wide">Ism</label>
-                  <input value={draft.firstName} onChange={(e) => setDraft({ ...draft, firstName: e.target.value })}
-                    className="mt-1 w-full border border-line rounded-lg px-3 py-2 text-sm bg-white outline-none focus:border-gold" />
-                </div>
-                <div>
-                  <label className="text-xs font-semibold text-slate uppercase tracking-wide">Familiya</label>
-                  <input value={draft.lastName} onChange={(e) => setDraft({ ...draft, lastName: e.target.value })}
-                    className="mt-1 w-full border border-line rounded-lg px-3 py-2 text-sm bg-white outline-none focus:border-gold" />
-                </div>
-                <div className="sm:col-span-2">
-                  <label className="text-xs font-semibold text-slate uppercase tracking-wide">Tel raqam</label>
-                  <input value={draft.phone} onChange={(e) => setDraft({ ...draft, phone: e.target.value })} placeholder="+998 9X XXX XX XX"
-                    className="mt-1 w-full border border-line rounded-lg px-3 py-2 text-sm bg-white outline-none focus:border-gold" />
+      <div className="stu-list">
+        {filtered.map((s) => {
+          const st = statusOf(s);
+          const [bg, fg] = avaColor(s.id || s.name);
+          return (
+            <div key={s.id} className="stu-row">
+              <span className="stu-ava" style={{ background: bg, color: fg }}>{initials(s.name)}</span>
+              <div className="stu-main" onClick={() => onOpen(s.id)}>
+                <div className="stu-name">{s.name}</div>
+                <div className="stu-meta">
+                  <span>{metaOf(s)}</span>
+                  <span>·</span>
+                  <span className={`stu-pill ${st.cls}`}>{st.text}</span>
                 </div>
               </div>
-              <div className="mt-4 flex items-center gap-2">
-                <button onClick={goToCourses} disabled={!draft.firstName.trim()} className="bg-forest text-white text-sm px-4 py-2 rounded-lg disabled:opacity-50">
-                  Davom etish: Kurslar →
+              <div className="stu-acts">
+                {canEdit && (
+                  <button className="stu-ib stu-ib-pay" title="To'lov so'rash / xabar yuborish"
+                    onClick={(e) => { e.stopPropagation(); openAlertModal(s); }}>
+                    <Icon.card width="14" height="14" />
+                  </button>
+                )}
+                <button className="stu-ib stu-ib-key" title="Login va parolni ko'rish"
+                  onClick={(e) => { e.stopPropagation(); setCredsFor(s); }}>
+                  <Icon.lock width="14" height="14" />
+                </button>
+                <button className="stu-ib stu-ib-edit" title="Tahrirlash"
+                  onClick={(e) => { e.stopPropagation(); onOpen(s.id); }}>
+                  <Icon.chevron width="14" height="14" style={{ transform: 'rotate(-90deg)' }} />
+                </button>
+                {canEdit && (
+                  <button className="stu-ib stu-ib-del" title="O'chirish"
+                    onClick={(e) => { e.stopPropagation(); removeStudent(s); }}>
+                    <Icon.close width="13" height="13" />
+                  </button>
+                )}
+              </div>
+            </div>
+          );
+        })}
+        {filtered.length === 0 && <div className="stu-empty">Hech kim topilmadi.</div>}
+      </div>
+
+      {/* ---------- Yangi o'quvchi ---------- */}
+      {showAdd && (
+        <SdModal title={created ? "O'quvchi qo'shildi" : "Yangi o'quvchi"} icon="🎓" onClose={resetAdd}>
+          {!created && (
+            <React.Fragment>
+              <div className="sd-field">
+                <label className="sd-label">Ism familiya *</label>
+                <input className="sd-input" autoFocus placeholder="To'liq ism"
+                  value={draft.fullName}
+                  onChange={(e) => setDraft({ ...draft, fullName: e.target.value })}
+                  onKeyDown={(e) => { if (e.key === 'Enter') addStudent(); }} />
+              </div>
+
+              <div className="sd-field">
+                <label className="sd-label">Egasi (foydalanuvchi)</label>
+                <select className="sd-select" value={draft.ownerId}
+                  onChange={(e) => setDraft({ ...draft, ownerId: e.target.value })}>
+                  {staffList.map((u) => <option key={u.id} value={u.id}>{u.name}</option>)}
+                </select>
+              </div>
+
+              <div className="sd-field">
+                <label className="sd-label">Guruh</label>
+                <select className="sd-select" value={draft.groupId} onChange={(e) => pickGroup(e.target.value)}>
+                  <option value="">— Guruh tanlanmagan —</option>
+                  {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                </select>
+              </div>
+
+              <div className="sd-field">
+                <label className="sd-label">Oylik to'lov (so'm)</label>
+                <input className="sd-input" inputMode="numeric" value={draft.fee}
+                  onChange={(e) => setDraft({ ...draft, fee: groupDigits(e.target.value) })} />
+              </div>
+
+              <label className="sd-check">
+                <input type="checkbox" checked={draft.discount}
+                  onChange={(e) => setDraft({ ...draft, discount: e.target.checked })} />
+                Chegirma (individual narx)
+              </label>
+              <p className="sd-hint">
+                Belgilansa, yuqorida kiritilgan summa doimiy individual oylik narx sifatida saqlanadi
+                va keyingi oylarda guruh narxi o'zgarsa ham o'zgarmaydi.
+              </p>
+
+              <div className="sd-foot">
+                <button className="sd-btn sd-btn-ghost" onClick={resetAdd}>Bekor</button>
+                <button className="sd-btn sd-btn-primary" onClick={addStudent} disabled={!draft.fullName.trim()}>
+                  💾 Saqlash
                 </button>
               </div>
-              <p className="text-xs text-slate mt-2">Login va parol saqlagandan so'ng avtomatik yaratiladi.</p>
             </React.Fragment>
           )}
 
-          {step === 'courses' && (
+          {created && (
             <React.Fragment>
-              <StudentAccessFields categories={categories} access={draftAccess} onChange={setDraftAccess} />
-              <div className="mt-4 flex items-center gap-2">
-                <button onClick={() => setStep('info')} className="px-4 py-2 rounded-lg text-sm text-slate hover:text-ink">← Orqaga</button>
-                <button onClick={addStudent} className="bg-forest text-white text-sm px-4 py-2 rounded-lg">Saqlash</button>
+              <div className="sd-ok"><Icon.check width="15" height="15" /> {created.name} muvaffaqiyatli qo'shildi</div>
+              <div className="sd-creds">
+                <div>
+                  <div className="sd-creds-k">Login</div>
+                  <div className="sd-creds-v">{created.username}</div>
+                </div>
+                <div>
+                  <div className="sd-creds-k">Parol</div>
+                  <div className="sd-creds-v">{created.password}</div>
+                </div>
+              </div>
+              <p className="sd-hint">Bu login va parolni o'quvchiga bering — u tizimga shular orqali kiradi.</p>
+              <div className="sd-foot">
+                <button className="sd-btn sd-btn-ghost" onClick={resetAdd}>Yopish</button>
+                <button className="sd-btn sd-btn-primary"
+                  onClick={() => copyText(`Login: ${created.username}\nParol: ${created.password}`, setCopied)}>
+                  {copied ? 'Nusxalandi ✓' : 'Nusxalash'}
+                </button>
               </div>
             </React.Fragment>
           )}
-
-          {step === 'done' && created && (
-            <div>
-              <div className="flex items-center gap-2 text-forest mb-3">
-                <Icon.check width="16" height="16" />
-                <span className="font-semibold text-sm">{created.name} muvaffaqiyatli qo'shildi</span>
-              </div>
-              <div className="bg-paper border border-line rounded-lg p-4 grid sm:grid-cols-2 gap-3">
-                <div>
-                  <div className="text-xs font-semibold text-slate uppercase tracking-wide">Login</div>
-                  <div className="text-lg font-semibold text-ink mt-0.5">{created.username}</div>
-                </div>
-                <div>
-                  <div className="text-xs font-semibold text-slate uppercase tracking-wide">Parol</div>
-                  <div className="text-lg font-semibold text-ink mt-0.5">{created.password}</div>
-                </div>
-              </div>
-              <p className="text-xs text-slate mt-2">Bu login va parolni o'quvchiga bering — u tizimga shular orqali kiradi.</p>
-              <div className="mt-4 flex items-center gap-2">
-                <button onClick={copyCreds} className="bg-ink text-white text-sm px-4 py-2 rounded-lg">{copied ? 'Nusxalandi ✓' : 'Nusxalash'}</button>
-                <button onClick={resetAdd} className="px-4 py-2 rounded-lg text-sm text-slate hover:text-ink">Yopish</button>
-              </div>
-            </div>
-          )}
-        </Modal>
+        </SdModal>
       )}
 
+      {/* ---------- Login va parol ---------- */}
       {credsFor && (
-        <Modal title="Login va parol" onClose={() => setCredsFor(null)}>
-          <p className="text-sm text-slate mb-4">{credsFor.name} tizimga shu login va parol orqali kiradi.</p>
-          <div className="bg-paper border border-line rounded-lg p-4 grid sm:grid-cols-2 gap-3">
+        <SdModal title="Login va parol" icon="🔐" onClose={() => setCredsFor(null)}>
+          <p className="sd-hint" style={{ marginTop: 0, marginBottom: '.8rem' }}>
+            {credsFor.name} tizimga shu login va parol orqali kiradi.
+          </p>
+          <div className="sd-creds">
             <div>
-              <div className="text-xs font-semibold text-slate uppercase tracking-wide">Login</div>
-              <div className="text-lg font-semibold text-ink mt-0.5">{credsFor.username}</div>
+              <div className="sd-creds-k">Login</div>
+              <div className="sd-creds-v">{credsFor.username}</div>
             </div>
             <div>
-              <div className="text-xs font-semibold text-slate uppercase tracking-wide">Parol</div>
-              <div className="text-lg font-semibold text-ink mt-0.5">{credsFor.password}</div>
+              <div className="sd-creds-k">Parol</div>
+              <div className="sd-creds-v">{credsFor.password}</div>
             </div>
           </div>
-          <div className="mt-4 flex items-center gap-2">
-            <button onClick={copyCredsFor} className="bg-ink text-white text-sm px-4 py-2 rounded-lg flex items-center gap-1.5">
+          <div className="sd-foot">
+            <button className="sd-btn sd-btn-ghost" onClick={() => setCredsFor(null)}>Yopish</button>
+            <button className="sd-btn sd-btn-primary"
+              onClick={() => copyText(`Login: ${credsFor.username}\nParol: ${credsFor.password}`, setCredsCopied)}>
               <Icon.copy width="13" height="13" /> {credsCopied ? 'Nusxalandi ✓' : 'Nusxalash'}
             </button>
-            <button onClick={() => setCredsFor(null)} className="px-4 py-2 rounded-lg text-sm text-slate hover:text-ink">Yopish</button>
           </div>
-        </Modal>
+        </SdModal>
       )}
 
+      {/* ---------- To'lov so'rash / xabar ---------- */}
       {alertFor && (
-        <Modal title={`${alertFor.name} ga xabar / to'lov so'rash`} onClose={() => setAlertFor(null)}>
-          <label className="text-xs font-semibold text-slate uppercase tracking-wide">Xabar matni</label>
-          <textarea value={alertText} onChange={(e) => setAlertText(e.target.value)} rows={5}
-            className="mt-1 w-full border border-line rounded-lg px-3 py-2 text-sm bg-white outline-none focus:border-gold resize-none" />
-          <p className="text-xs text-slate mt-2">Bu xabar o'quvchi tizimga kirganda ekranida katta modal ko'rinishida chiqadi.</p>
-          <div className="mt-4 flex items-center gap-2">
-            <button onClick={sendAlert} disabled={!alertText.trim()} className="bg-forest text-white text-sm px-4 py-2 rounded-lg disabled:opacity-50 flex items-center gap-1.5">
+        <SdModal title={`${alertFor.name} ga xabar`} icon="💬" size="lg" onClose={() => setAlertFor(null)}>
+          <div className="sd-field">
+            <label className="sd-label">Xabar matni</label>
+            <textarea className="sd-textarea" rows={5} value={alertText}
+              onChange={(e) => setAlertText(e.target.value)} />
+          </div>
+          <p className="sd-hint" style={{ marginTop: 0 }}>
+            Bu xabar o'quvchi tizimga kirganda ekranida katta modal ko'rinishida chiqadi.
+          </p>
+          <div className="sd-foot">
+            <button className="sd-btn sd-btn-ghost" onClick={() => setAlertFor(null)}>Bekor qilish</button>
+            <button className="sd-btn sd-btn-primary" onClick={sendAlert} disabled={!alertText.trim()}>
               <Icon.send width="14" height="14" /> Yuborish
             </button>
-            <button onClick={() => setAlertFor(null)} className="px-4 py-2 rounded-lg text-sm text-slate hover:text-ink">Bekor qilish</button>
           </div>
-        </Modal>
+        </SdModal>
       )}
-
-      <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Ism yoki login bo'yicha qidirish..."
-        className="w-full border border-line rounded-lg px-3 py-2.5 text-sm bg-white outline-none focus:border-gold mb-4" />
-
-      <div className="bg-card border border-line rounded-xl overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="bg-paper text-slate text-xs uppercase tracking-wide">
-            <tr><th className="text-left px-5 py-3">Ism</th><th className="text-left px-5 py-3">Login</th><th className="text-left px-5 py-3">Kurslar</th><th className="text-left px-5 py-3">Holat</th><th></th></tr>
-          </thead>
-          <tbody>
-            {filtered.map((s) => {
-              const overdue = Object.values(s.access).some(isOverdue);
-              const activeCourses = Object.entries(s.access).filter(([, a]) => a.active).map(([cid]) => categories.find((c) => c.id === cid)?.name).filter(Boolean);
-              return (
-                <tr key={s.id} className="border-t border-line hover:bg-paper/60 transition">
-                  <td className="px-5 py-3 font-medium text-ink cursor-pointer" onClick={() => onOpen(s.id)}>
-                    <span className="flex items-center gap-2.5">
-                      <span className="avatar w-8 h-8 bg-paper border border-line text-ink text-xs">{s.name.split(' ').map((w)=>w[0]).slice(0,2).join('')}</span>
-                      {s.name}
-                    </span>
-                  </td>
-                  <td className="px-5 py-3 text-slate cursor-pointer" onClick={() => onOpen(s.id)}>{s.username}</td>
-                  <td className="px-5 py-3 text-slate cursor-pointer" onClick={() => onOpen(s.id)}>{activeCourses.join(', ') || '—'}</td>
-                  <td className="px-5 py-3 cursor-pointer" onClick={() => onOpen(s.id)}>
-                    {overdue ? <span className="pill pill-warn">To'lov o'tgan</span> : <span className="pill pill-ok">Faol</span>}
-                  </td>
-                  <td className="px-5 py-3 text-right">
-                    <span className="flex items-center justify-end gap-1.5">
-                      {canEdit && (
-                        <button onClick={(e) => { e.stopPropagation(); openAlertModal(s); }} title="To'lov so'rash / xabar yuborish"
-                          className="icon-btn-row icon-btn-row-pay"><Icon.card width="14" height="14" /></button>
-                      )}
-                      <button onClick={(e) => { e.stopPropagation(); setCredsFor(s); }} title="Login va parolni ko'rish"
-                        className="icon-btn-row icon-btn-row-lock"><Icon.lock width="14" height="14" /></button>
-                      <button onClick={(e) => { e.stopPropagation(); onOpen(s.id); }} title="Tahrirlash"
-                        className="icon-btn-row icon-btn-row-edit"><Icon.chevron width="14" height="14" style={{ transform: 'rotate(-90deg)' }} /></button>
-                    </span>
-                  </td>
-                </tr>
-              );
-            })}
-            {filtered.length === 0 && <tr><td colSpan="5" className="px-5 py-6 text-center text-slate text-sm">Hech kim topilmadi.</td></tr>}
-          </tbody>
-        </table>
-      </div>
     </div>
   );
 }
 
-function StudentEditor({ student, categories, canEdit, onBack, onSave }) {
+function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) {
   const [tab, setTab] = useState('info');
   const [form, setForm] = useState({ ...student });
 
@@ -2575,80 +2832,175 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave }) {
     setForm({ ...form, access: { ...form.access, [catId]: { ...cur, ...patch } } });
   };
 
-  return (
-    <div>
-      <button onClick={onBack} className="text-sm text-slate hover:text-ink mb-4">← O'quvchilar ro'yxatiga qaytish</button>
-      <h1 className="font-display text-3xl text-ink mb-1">{student.name}</h1>
-      <p className="text-slate text-sm mb-6">Login: {student.username}</p>
+  const actives = Object.entries(form.access || {}).filter(([, a]) => a && a.active);
+  const feeOf = (cid) => {
+    if (form.customPrice && form.monthlyFee) return form.monthlyFee;
+    const c = categories.find((x) => x.id === cid);
+    return (c && c.monthlyPrice) || form.monthlyFee || 0;
+  };
+  const totalFee = actives.reduce((t, [cid]) => t + feeOf(cid), 0);
+  const paidSum = actives.filter(([, a]) => a.isFullyPaid).reduce((t, [cid]) => t + feeOf(cid), 0);
+  const debtSum = actives.filter(([, a]) => isOverdue(a)).reduce((t, [cid]) => t + feeOf(cid), 0);
+  const nextDate = actives.map(([, a]) => a.nextPaymentDate).filter(Boolean).sort()[0];
+  const owner = (staff || []).find((u) => u.id === form.ownerId);
+  const [avaBg, avaFg] = avaColor(student.id || student.name);
 
-      <div className="flex border-b border-line mb-6 text-sm font-medium">
-        {[['info', "Ma'lumotlar"], ['courses', 'Kurslar']].map(([id, label]) => (
-          <button key={id} onClick={() => setTab(id)} className={`px-4 py-2.5 border-b-2 -mb-px ${tab === id ? 'border-gold text-ink' : 'border-transparent text-slate'}`}>{label}</button>
-        ))}
+  const status = debtSum
+    ? { cls: 'stu-pill-debt', text: `Qarzdor: ${fmtMoney(debtSum)}` }
+    : (actives.length && paidSum === totalFee)
+      ? { cls: 'stu-pill-paid', text: "To'langan ✅" }
+      : actives.length
+        ? { cls: 'stu-pill-part', text: `Keyingi to'lov: ${fmtDate(nextDate)}` }
+        : { cls: 'stu-pill-mut', text: 'Kurs biriktirilmagan' };
+
+  return (
+    <div className="stu-dark stu-ed">
+      <div className="ed-top">
+        <button className="ed-back" onClick={onBack}>← Orqaga</button>
+        {canEdit && (
+          <button className="stu-add" onClick={() => onSave(form)}>💾 Saqlash</button>
+        )}
       </div>
 
-      {tab === 'info' && (
-        <div className="bg-card border border-line rounded-xl p-5 grid sm:grid-cols-2 gap-4 max-w-2xl">
-          {[['Ism familiya', 'name'], ['Telefon', 'phone'], ['Manzil', 'address'], ['Login', 'username'], ['Parol', 'password']].map(([label, key]) => (
-            <div key={key}>
-              <label className="text-xs font-semibold text-slate uppercase tracking-wide">{label}</label>
-              <input disabled={!canEdit} value={form[key] || ''} onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-                className="mt-1 w-full border border-line rounded-lg px-3 py-2 text-sm bg-white outline-none focus:border-gold disabled:opacity-60" />
+      <div className="ed-grid">
+        {/* ---- Chap ustun: o'quvchi kartasi ---- */}
+        <aside className="ed-card">
+          <div className="ed-prof">
+            <span className="stu-ava ed-ava" style={{ background: avaBg, color: avaFg }}>{initials(student.name)}</span>
+            <div>
+              <div className="ed-name">{student.name}</div>
+              <div className="ed-sub"><Icon.lock width="12" height="12" /> {student.username}</div>
             </div>
-          ))}
-          {canEdit && <div className="sm:col-span-2"><button onClick={() => onSave(form)} className="bg-forest text-white text-sm px-4 py-2 rounded-lg">Saqlash</button></div>}
-        </div>
-      )}
+          </div>
 
-      {tab === 'courses' && (
-        <div className="space-y-3 max-w-2xl">
-          {categories.map((cat) => {
-            const a = form.access[cat.id] || { active: false, nextPaymentDate: todayISO(), isFullyPaid: false, schedule: 'daily', includeSunday: false };
-            return (
-              <div key={cat.id} className="bg-card border border-line rounded-xl p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="font-semibold text-ink">{cat.name}</div>
-                    <div className="text-xs text-slate">{cat.subtitle}</div>
+          <span className={`stu-pill ${status.cls}`}>{status.text}</span>
+
+          <div className="ed-divider" />
+
+          <div className="ed-row">
+            <span className="ed-row-k">Joriy oy to'lovi</span>
+            <span className="ed-row-v">{fmtMoney(totalFee)}</span>
+          </div>
+          <div className="ed-row">
+            <span className="ed-row-k">To'langan</span>
+            <span className="ed-row-v ed-v-green">{fmtMoney(paidSum)}</span>
+          </div>
+          <div className="ed-row">
+            <span className="ed-row-k">Qolgan qarz</span>
+            <span className={`ed-row-v ${debtSum ? 'ed-v-red' : ''}`}>{fmtMoney(debtSum)}</span>
+          </div>
+
+          <div className="ed-divider" />
+
+          <div className="ed-row">
+            <span className="ed-row-k"><Icon.clock width="13" height="13" /> Keyingi to'lov</span>
+            <span className="ed-row-v">{fmtDate(nextDate)}</span>
+          </div>
+          <div className="ed-row">
+            <span className="ed-row-k"><Icon.book width="13" height="13" /> Faol kurslar</span>
+            <span className="ed-row-v">{actives.length}</span>
+          </div>
+          <div className="ed-row">
+            <span className="ed-row-k"><Icon.user width="13" height="13" /> O'qituvchi</span>
+            <span className="ed-row-v">{owner ? owner.name.split(' ')[0] : '—'}</span>
+          </div>
+        </aside>
+
+        {/* ---- O'ng ustun: tablar ---- */}
+        <section className="ed-main">
+          <div className="ed-tabs">
+            {[['info', "Ma'lumotlar"], ['courses', 'Kurslar']].map(([id, label]) => (
+              <button key={id} onClick={() => setTab(id)} className={`ed-tab ${tab === id ? 'ed-tab-on' : ''}`}>{label}</button>
+            ))}
+          </div>
+
+          {tab === 'info' && (
+            <React.Fragment>
+              <div className="ed-fields">
+                {[['Ism familiya', 'name'], ['Telefon', 'phone'], ['Manzil', 'address'], ['Login', 'username'], ['Parol', 'password']].map(([label, key]) => (
+                  <div key={key}>
+                    <label className="sd-label">{label}</label>
+                    <input className="sd-input" disabled={!canEdit} value={form[key] || ''}
+                      onChange={(e) => setForm({ ...form, [key]: e.target.value })} />
                   </div>
-                  <Switch on={!!a.active} disabled={!canEdit} onToggle={(v) => updateAccess(cat.id, { active: v })} />
+                ))}
+                <div>
+                  <label className="sd-label">Oylik to'lov (so'm)</label>
+                  <input className="sd-input" disabled={!canEdit} inputMode="numeric"
+                    value={groupDigits(form.monthlyFee || 0)}
+                    onChange={(e) => setForm({ ...form, monthlyFee: Number(onlyDigits(e.target.value)) || 0 })} />
                 </div>
-                {a.active && (
-                  <div className="mt-4 grid sm:grid-cols-2 gap-3 border-t border-line pt-4">
-                    <div>
-                      <label className="text-xs font-semibold text-slate uppercase tracking-wide">To'lov sanasi (keyingi)</label>
-                      <input disabled={!canEdit || a.isFullyPaid} type="date" value={a.nextPaymentDate}
-                        onChange={(e) => updateAccess(cat.id, { nextPaymentDate: e.target.value })}
-                        className="mt-1 w-full border border-line rounded-lg px-3 py-2 text-sm bg-white outline-none focus:border-gold disabled:opacity-50" />
-                    </div>
-                    <div>
-                      <label className="text-xs font-semibold text-slate uppercase tracking-wide">Dars kunlari jadvali</label>
-                      <select disabled={!canEdit} value={a.schedule} onChange={(e) => updateAccess(cat.id, { schedule: e.target.value })}
-                        className="mt-1 w-full border border-line rounded-lg px-3 py-2 text-sm bg-white outline-none focus:border-gold disabled:opacity-50">
-                        <option value="odd">Toq kunlar (Du/Chor/Ju)</option>
-                        <option value="even">Juft kunlar (Se/Pay/Sha)</option>
-                        <option value="daily">Har kuni</option>
-                      </select>
-                    </div>
-                    <label className="flex items-center gap-2 text-sm text-ink">
-                      <input disabled={!canEdit} type="checkbox" checked={!!a.isFullyPaid} onChange={(e) => updateAccess(cat.id, { isFullyPaid: e.target.checked })} />
-                      Kurs to'liq to'langan (muddatsiz ochiq)
-                    </label>
-                    {a.schedule === 'even' && (
-                      <label className="flex items-center gap-2 text-sm text-ink">
-                        <input disabled={!canEdit} type="checkbox" checked={!!a.includeSunday} onChange={(e) => updateAccess(cat.id, { includeSunday: e.target.checked })} />
-                        Yakshanbani ham jadvalga qo'shish
-                      </label>
-                    )}
-                    {isOverdue(a) && <div className="sm:col-span-2 text-xs text-clay font-medium">Bu kurs to'lov muddati o'tgani uchun avtomatik bloklangan.</div>}
-                  </div>
-                )}
               </div>
-            );
-          })}
-          {canEdit && <button onClick={() => onSave(form)} className="bg-forest text-white text-sm px-4 py-2 rounded-lg">Saqlash</button>}
-        </div>
-      )}
+              <label className="ed-check" style={{ marginTop: '.9rem' }}>
+                <input type="checkbox" disabled={!canEdit} checked={!!form.customPrice}
+                  onChange={(e) => setForm({ ...form, customPrice: e.target.checked })} />
+                Chegirma (individual narx)
+              </label>
+              {canEdit && (
+                <div className="sd-foot" style={{ maxWidth: '260px' }}>
+                  <button className="sd-btn sd-btn-primary" onClick={() => onSave(form)}>💾 Saqlash</button>
+                </div>
+              )}
+            </React.Fragment>
+          )}
+
+          {tab === 'courses' && (
+            <React.Fragment>
+              {categories.map((cat) => {
+                const a = form.access[cat.id] || { active: false, nextPaymentDate: todayISO(), isFullyPaid: false, schedule: 'daily', includeSunday: false };
+                return (
+                  <div key={cat.id} className="ed-course">
+                    <div className="ed-course-head">
+                      <div>
+                        <div className="ed-course-name">{cat.name}</div>
+                        <div className="ed-course-sub">{cat.subtitle}</div>
+                      </div>
+                      <Switch on={!!a.active} disabled={!canEdit} onToggle={(v) => updateAccess(cat.id, { active: v })} />
+                    </div>
+                    {a.active && (
+                      <div className="ed-course-body">
+                        <div>
+                          <label className="sd-label">To'lov sanasi (keyingi)</label>
+                          <input className="sd-input" type="date" disabled={!canEdit || a.isFullyPaid}
+                            value={a.nextPaymentDate}
+                            onChange={(e) => updateAccess(cat.id, { nextPaymentDate: e.target.value })} />
+                        </div>
+                        <div>
+                          <label className="sd-label">Dars kunlari jadvali</label>
+                          <select className="sd-select" disabled={!canEdit} value={a.schedule}
+                            onChange={(e) => updateAccess(cat.id, { schedule: e.target.value })}>
+                            <option value="odd">Toq kunlar (Du/Chor/Ju)</option>
+                            <option value="even">Juft kunlar (Se/Pay/Sha)</option>
+                            <option value="daily">Har kuni</option>
+                          </select>
+                        </div>
+                        <label className="ed-check">
+                          <input type="checkbox" disabled={!canEdit} checked={!!a.isFullyPaid}
+                            onChange={(e) => updateAccess(cat.id, { isFullyPaid: e.target.checked })} />
+                          Kurs to'liq to'langan (muddatsiz ochiq)
+                        </label>
+                        {a.schedule === 'even' && (
+                          <label className="ed-check">
+                            <input type="checkbox" disabled={!canEdit} checked={!!a.includeSunday}
+                              onChange={(e) => updateAccess(cat.id, { includeSunday: e.target.checked })} />
+                            Yakshanbani ham jadvalga qo'shish
+                          </label>
+                        )}
+                        {isOverdue(a) && <div className="ed-warn">Bu kurs to'lov muddati o'tgani uchun avtomatik bloklangan.</div>}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+              {canEdit && (
+                <div className="sd-foot" style={{ maxWidth: '260px' }}>
+                  <button className="sd-btn sd-btn-primary" onClick={() => onSave(form)}>💾 Saqlash</button>
+                </div>
+              )}
+            </React.Fragment>
+          )}
+        </section>
+      </div>
     </div>
   );
 }
