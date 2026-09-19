@@ -972,7 +972,9 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   html.theme-dark .rail-dot { box-shadow: 0 0 0 4px #0F1420; }
 
   /* ================= O'QUVCHILAR BO'LIMI — light / dark mavzuga moslashadi ================= */
-  .stu-dark{
+  /* Modallar <body> ga portal orqali chiqadi (.stu-dark ning tashqarisida), shuning uchun
+     ranglar o'zgaruvchilari .sd-backdrop uchun ham e'lon qilinadi — aks holda modal "yo'qolib" qoladi. */
+  .stu-dark, .sd-backdrop{
     /* ---- LIGHT (standart) ---- */
     --sd-bg:#dcd6cd;
     --sd-row:#EBE6DE;
@@ -988,7 +990,8 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
     --sd-backdrop:rgba(1,51,40,.45);
     --c-red:#B3271A; --c-green:#1E7A4B; --c-amber:#9A6212; --c-blue:#1D4ED8; --c-slate:#4B5A52;
     --sd-glow:rgba(46,111,78,.10);
-
+  }
+  .stu-dark{
     background:var(--sd-bg);
     background-image:radial-gradient(900px 420px at 85% -12%, var(--sd-glow), transparent 60%);
     border:1px solid var(--sd-line);
@@ -998,7 +1001,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
     display:flex; flex-direction:column;
   }
   /* ---- DARK ---- */
-  html.theme-dark .stu-dark{
+  html.theme-dark .stu-dark, html.theme-dark .sd-backdrop{
     --sd-bg:#171D2C;
     --sd-row:#171D2C;
     --sd-card:#171D2C;
@@ -1071,6 +1074,18 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   .sd-creds-k{ font-size:.66rem; letter-spacing:.08em; text-transform:uppercase; color:var(--sd-muted); }
   .sd-creds-v{ font-size:1.05rem; font-weight:800; color:var(--sd-text); margin-top:.15rem; }
   .sd-ok{ display:flex; align-items:center; gap:.45rem; color:var(--c-green); font-weight:700; font-size:.88rem; margin-bottom:.8rem; }
+
+  /* ---- To'lov qabul qilish (alohida modal) ---- */
+  .stu-acts .stu-ib.stu-ib-cash{ width:auto; padding:0 .65rem; gap:.35rem; background:linear-gradient(180deg,#22c55e,#16a34a); color:#fff; font-size:.72rem; font-weight:800; border-color:rgba(34,197,94,.55); box-shadow:0 4px 12px rgba(22,163,74,.28); }
+  .pay-sec{ font-size:.68rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:var(--sd-muted); margin-bottom:.35rem; }
+  .pay-name{ font-weight:800; font-size:1rem; color:var(--sd-text); margin-bottom:1rem; }
+  .pay-info{ border-bottom:1px solid var(--sd-line); padding-bottom:.9rem; margin-bottom:1rem; }
+  .pay-line{ display:flex; gap:.55rem; align-items:baseline; margin:.5rem 0; font-family:ui-monospace,'JetBrains Mono',Menlo,Consolas,monospace; font-size:.92rem; color:var(--sd-muted); }
+  .pay-line b{ font-weight:800; color:var(--sd-text); }
+  .pay-line b.g{ color:var(--c-green); }
+  .pay-line b.r{ color:var(--c-red); }
+  .sd-btn-green{ background:rgba(34,197,94,.14); border:1px solid rgba(34,197,94,.45); color:var(--c-green); }
+  .sd-btn-green:hover:not(:disabled){ background:rgba(34,197,94,.24); }
   @media (max-width: 640px){
     .stu-bar{ flex-direction:column; align-items:stretch; }
     .stu-add{ justify-content:center; }
@@ -1110,11 +1125,14 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   .ed-check input{ width:15px; height:15px; accent-color:#3b82f6; }
   .ed-warn{ grid-column:span 2; font-size:.78rem; color:var(--c-red); font-weight:600; }
   html.theme-dark .stu-dark .switch.bg-line{ background:#1d3a30 !important; }
-  html.theme-dark .stu-dark input[type=date]{ color-scheme:dark; }
+  html.theme-dark .stu-dark input[type=date], html.theme-dark .sd-backdrop input[type=date]{ color-scheme:dark; }
   /* light rejimda global dark-input qoidasi ta'sir qilmasligi uchun */
   html.theme-dark .stu-dark .sd-input,
   html.theme-dark .stu-dark .sd-select,
   html.theme-dark .stu-dark .sd-textarea,
+  html.theme-dark .sd-backdrop .sd-input,
+  html.theme-dark .sd-backdrop .sd-select,
+  html.theme-dark .sd-backdrop .sd-textarea,
   html.theme-dark .stu-dark .stu-search input{
     background-color:var(--sd-field) !important; color:var(--sd-text) !important; border-color:var(--sd-line) !important;
   }
@@ -1392,6 +1410,7 @@ const Icon = {
   eyeOff: (p) => (<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M3 3l18 18"/><path d="M10.6 5.2A10.9 10.9 0 0 1 12 5c6.4 0 10 7 10 7a16.6 16.6 0 0 1-3.2 4.1M6.6 6.6C4 8.3 2 12 2 12s3.6 7 10 7a9.9 9.9 0 0 0 4.4-1"/><path d="M9.5 9.7a3 3 0 0 0 4.2 4.2"/></svg>),
   lock: (p) => (<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><rect x="4.5" y="10.5" width="15" height="10" rx="2"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></svg>),
   card: (p) => (<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><rect x="2.5" y="5.5" width="19" height="13" rx="2"/><path d="M2.5 9.5h19"/><path d="M6 14.5h4"/></svg>),
+  cash: (p) => (<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><rect x="2.5" y="6" width="19" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 9.5h.01M18 14.5h.01"/></svg>),
   send: (p) => (<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="m3 11 18-8-8 18-2.5-7.5L3 11Z"/></svg>),
   copy: (p) => (<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>),
   edit: (p) => (<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>),
@@ -2548,6 +2567,12 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
   const [alertFor, setAlertFor] = useState(null);
   const [alertText, setAlertText] = useState('');
 
+  /* --- To'lov qabul qilish modali --- */
+  const [payStu, setPayStu] = useState(null);
+  const [payAmount, setPayAmount] = useState('');
+  const [payMonth, setPayMonth] = useState(MONTH_NAMES[new Date().getMonth()]);
+  const [payYear, setPayYear] = useState(String(new Date().getFullYear()));
+
   const filtered = students.filter((s) => (s.name + ' ' + s.username).toLowerCase().includes(q.toLowerCase()));
   const stuPageCount = Math.max(1, Math.ceil(filtered.length / STU_PAGE_SIZE));
   const stuCurPage = Math.min(pg, stuPageCount);
@@ -2615,6 +2640,61 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
     setAlertFor(null);
     setAlertText('');
     // API: POST /api/admin/students/{id}/alerts/  (text)
+  };
+
+  /* ---------- To'lov qabul qilish ---------- */
+  const feeFor = (s, cid) => {
+    if (s.customPrice && s.monthlyFee) return s.monthlyFee;
+    const c = categories.find((x) => x.id === cid);
+    return (c && c.monthlyPrice) || s.monthlyFee || 0;
+  };
+  const payableCourses = (s) => Object.entries(s.access || {}).filter(([, a]) => a && a.active && !a.isFullyPaid);
+  const payTotalOf = (s) => {
+    const list = payableCourses(s);
+    if (list.length) return list.reduce((t, [cid]) => t + feeFor(s, cid), 0);
+    const hasActive = Object.values(s.access || {}).some((a) => a && a.active);
+    return hasActive ? 0 : (s.monthlyFee || 0);   // kurs biriktirilmagan bo'lsa — o'quvchining oylik to'lovi
+  };
+  const payPaidOf = (s, m, y) => (s.payments || [])
+    .filter((p) => p.month === m && String(p.year) === String(y))
+    .reduce((t, p) => t + (Number(p.amount) || 0), 0);
+  const payLeftOf = (s, m, y) => Math.max(0, payTotalOf(s) - payPaidOf(s, m, y));
+
+  const openPayModal = (s) => {
+    const m = MONTH_NAMES[new Date().getMonth()];
+    const y = String(new Date().getFullYear());
+    setPayStu(s); setPayMonth(m); setPayYear(y);
+    setPayAmount(groupDigits(payLeftOf(s, m, y)));
+  };
+  const closePayModal = () => { setPayStu(null); setPayAmount(''); };
+  const changePayPeriod = (m, y) => {
+    setPayMonth(m); setPayYear(y);
+    if (payStu) setPayAmount(groupDigits(payLeftOf(payStu, m, y)));
+  };
+
+  const confirmPay = () => {
+    if (!payStu) return;
+    const amount = Number(onlyDigits(payAmount)) || 0;
+    if (!amount) return;
+    const s = payStu;
+    const total = payTotalOf(s);
+    const covered = total > 0 && payPaidOf(s, payMonth, payYear) + amount >= total;
+    const courseNames = payableCourses(s)
+      .map(([cid]) => { const c = categories.find((x) => x.id === cid); return c ? c.name : null; })
+      .filter(Boolean).join(', ');
+    const record = { id: uid('pay'), catId: '', courseName: courseNames || "Oylik to'lov", amount, month: payMonth, year: payYear, date: todayISO() };
+    setStudents(students.map((x) => {
+      if (x.id !== s.id) return x;
+      let access = x.access || {};
+      if (covered) {   // to'liq to'langan bo'lsa, faol kurslarning keyingi to'lov sanasi 30 kunga suriladi
+        access = Object.fromEntries(Object.entries(access).map(([cid, a]) =>
+          [cid, (a && a.active && !a.isFullyPaid) ? { ...a, nextPaymentDate: addDays(todayISO(), 30) } : a]));
+      }
+      return { ...x, access, payments: [...(x.payments || []), record] };
+    }));
+    notify(`${s.name}: ${fmtMoney(amount)} to'lov qabul qilindi`);
+    closePayModal();
+    // API: POST /api/admin/students/{id}/payments/  (amount, month, year)
   };
 
   /* Bitta o'quvchining to'lov holati */
@@ -2699,6 +2779,12 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
                   <button className="stu-ib stu-ib-del" title="O'chirish"
                     onClick={(e) => { e.stopPropagation(); removeStudent(s); }}>
                     <Icon.trash width="14" height="14" />
+                  </button>
+                )}
+                {canEdit && (
+                  <button className="stu-ib stu-ib-cash" title="To'lov qabul qilish"
+                    onClick={(e) => { e.stopPropagation(); openPayModal(s); }}>
+                    <Icon.cash width="14" height="14" /> To'lov
                   </button>
                 )}
               </div>
@@ -2789,6 +2875,46 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
             <button className="sd-btn sd-btn-primary"
               onClick={() => copyText(`Login: ${credsFor.username}\nParol: ${credsFor.password}`, setCredsCopied)}>
               <Icon.copy width="13" height="13" /> {credsCopied ? 'Nusxalandi ✓' : 'Nusxalash'}
+            </button>
+          </div>
+        </SdModal>
+      )}
+
+      {/* ---------- To'lov qabul qilish ---------- */}
+      {payStu && (
+        <SdModal title="To'lov qabul qilish" icon={<span style={{ color: '#3b82f6', display: 'inline-flex' }}><Icon.card width="18" height="18" /></span>} onClose={closePayModal}>
+          <div className="pay-sec">O'quvchi</div>
+          <div className="pay-name">{payStu.name}</div>
+
+          <div className="pay-info">
+            <div className="pay-sec">To'lov ma'lumoti</div>
+            <div className="pay-line">Umumiy to'lov: <b>{groupDigits(payTotalOf(payStu)) || 0} so'm</b></div>
+            <div className="pay-line">To'langan: <b className="g">{groupDigits(payPaidOf(payStu, payMonth, payYear)) || 0} so'm</b></div>
+            <div className="pay-line">Qolgan qarz: <b className="r">{groupDigits(payLeftOf(payStu, payMonth, payYear)) || 0} so'm</b></div>
+          </div>
+
+          <div className="sd-field">
+            <label className="sd-label">Summa (so'm) *</label>
+            <input className="sd-input" autoFocus inputMode="numeric" value={payAmount}
+              onChange={(e) => setPayAmount(groupDigits(e.target.value))}
+              onKeyDown={(e) => { if (e.key === 'Enter') confirmPay(); }} />
+          </div>
+          <div className="sd-field">
+            <label className="sd-label">Oy</label>
+            <select className="sd-select" value={payMonth} onChange={(e) => changePayPeriod(e.target.value, payYear)}>
+              {MONTH_NAMES.map((m) => <option key={m} value={m}>{m}</option>)}
+            </select>
+          </div>
+          <div className="sd-field">
+            <label className="sd-label">Yil</label>
+            <input className="sd-input" inputMode="numeric" value={payYear}
+              onChange={(e) => changePayPeriod(payMonth, onlyDigits(e.target.value).slice(0, 4))} />
+          </div>
+
+          <div className="sd-foot" style={{ marginTop: '1rem' }}>
+            <button className="sd-btn sd-btn-ghost" onClick={closePayModal}>Bekor</button>
+            <button className="sd-btn sd-btn-green" onClick={confirmPay} disabled={!Number(onlyDigits(payAmount))}>
+              <Icon.check width="14" height="14" /> To'lov qilish
             </button>
           </div>
         </SdModal>
