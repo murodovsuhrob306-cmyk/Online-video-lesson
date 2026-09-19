@@ -1086,12 +1086,68 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   .pay-line b.r{ color:var(--c-red); }
   .sd-btn-green{ background:rgba(34,197,94,.14); border:1px solid rgba(34,197,94,.45); color:var(--c-green); }
   .sd-btn-green:hover:not(:disabled){ background:rgba(34,197,94,.24); }
+  .stu-row{ cursor:pointer; }
+  .sd-btn-danger{ background:linear-gradient(180deg,#ef4444,#dc2626); color:#fff; border:0; box-shadow:0 6px 18px rgba(220,38,38,.30); }
+  .sd-confirm-text{ font-size:.92rem; line-height:1.55; color:var(--sd-text); margin:0 0 .4rem; }
+  .pay-warn{ font-size:.8rem; line-height:1.45; color:var(--c-red); background:rgba(239,68,68,.10); border:1px solid rgba(239,68,68,.28); border-radius:.6rem; padding:.5rem .7rem; margin:-.3rem 0 .9rem; }
+  .pay-extra-tag{ display:inline-block; margin-left:.4rem; padding:.05rem .45rem; border-radius:.45rem; font-size:.74rem; font-weight:700; color:var(--c-blue); background:rgba(59,130,246,.14); border:1px solid rgba(59,130,246,.30); white-space:nowrap; }
+  .pay-line{ flex-wrap:wrap; }
+  .ph-item{ display:flex; align-items:center; justify-content:space-between; gap:.7rem; padding:.7rem .85rem; margin-bottom:.5rem; background:var(--sd-field); border:1px solid var(--sd-line); border-radius:.85rem; }
+  .ph-main{ min-width:0; flex:1; }
+  .ph-title{ font-weight:800; font-size:.92rem; color:var(--sd-text); }
+  .ph-sub{ font-size:.76rem; color:var(--sd-muted); margin-top:.1rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .ph-extra{ font-size:.74rem; color:var(--sd-muted); margin-top:.25rem; word-break:break-word; }
+  .ph-extra b{ color:var(--c-blue); }
+  .ph-right{ display:flex; flex-direction:column; align-items:flex-end; gap:.4rem; flex-shrink:0; }
+  .ph-amt{ font-family:ui-monospace, SFMono-Regular, Menlo, monospace; font-weight:800; font-size:.92rem; color:var(--c-green); white-space:nowrap; }
+  .ph-acts{ display:flex; gap:.35rem; }
+  .ph-acts .ed-pay-edit, .ph-acts .ed-pay-del{ margin-left:0; }
+  .pay-row{ display:flex; gap:.5rem; align-items:stretch; }
+  .pay-row .sd-input{ flex:1; min-width:0; }
+  .pay-plus{ flex-shrink:0; width:44px; border-radius:.6rem; display:inline-flex; align-items:center; justify-content:center; font-size:1.4rem; font-weight:700; line-height:1; background:rgba(59,130,246,.15); color:var(--c-blue); border:1px solid rgba(59,130,246,.35); transition:filter .15s ease; }
+  .pay-plus:hover{ filter:brightness(1.12); }
+  .pay-plus.on{ background:rgba(239,68,68,.14); color:var(--c-red); border-color:rgba(239,68,68,.32); }
+  .ed-pay-del{ display:inline-flex; align-items:center; justify-content:center; width:28px; height:26px; margin-left:.35rem; border-radius:.5rem; background:rgba(239,68,68,.14); color:var(--c-red); border:1px solid rgba(239,68,68,.30); }
+  .ed-pay-del:hover{ filter:brightness(1.12); }
+  .ed-pw{ position:relative; }
+  .ed-pw .sd-input{ padding-right:2.6rem; }
+  .ed-pw-btn{ position:absolute; right:.4rem; top:50%; transform:translateY(-50%); width:28px; height:28px; border-radius:.5rem; display:inline-flex; align-items:center; justify-content:center; background:rgba(59,130,246,.15); color:var(--c-blue); border:1px solid rgba(59,130,246,.32); }
+  .ed-pw-btn:hover{ filter:brightness(1.12); }
+  .ed-pay-edit{ display:inline-flex; align-items:center; justify-content:center; width:28px; height:26px; margin-left:.5rem; border-radius:.5rem; background:rgba(107,122,112,.14); color:var(--c-slate); border:1px solid rgba(107,122,112,.26); }
+  .ed-pay-edit:hover{ filter:brightness(1.12); }
+  .ed-top-acts{ display:flex; align-items:center; gap:.5rem; }
+  .stu-add.ed-pay{ background:linear-gradient(180deg,#22c55e,#16a34a); box-shadow:0 6px 18px rgba(22,163,74,.30); }
   @media (max-width: 640px){
-    .stu-bar{ flex-direction:column; align-items:stretch; }
-    .stu-add{ justify-content:center; }
-    .stu-acts{ gap:.28rem; }
-    .stu-ib{ width:30px; }
+    .stu-head{ margin-bottom:.6rem; }
+    .stu-head h1{ font-size:1.25rem; }
+    /* qidiruv + "O'quvchi qo'shish" yonma-yon; tugmada faqat ikonka */
+    .stu-bar{ flex-direction:row; align-items:center; gap:.5rem; padding:.55rem; margin-bottom:.7rem; }
+    .stu-search{ min-width:0; padding:.5rem .7rem; }
+    .stu-search input{ min-width:0; width:100%; font-size:.85rem; }
+    .stu-add{ flex-shrink:0; justify-content:center; padding:.6rem .8rem; }
+    .stu-add-t{ display:none; }
+    /* ixcham qator */
+    .stu-list{ gap:.5rem; }
+    .stu-row{ flex-wrap:wrap; align-items:center; gap:.4rem .6rem; padding:.6rem .7rem; border-radius:.85rem; }
+    .stu-ava{ width:32px; height:32px; font-size:.72rem; border-radius:.6rem; }
+    .stu-name{ font-size:.92rem; }
+    .stu-meta{ font-size:.72rem; gap:.3rem; }
+    .stu-pill{ font-size:.68rem; padding:.1rem .45rem; }
+    .stu-acts{ width:100%; gap:.3rem; padding-left:calc(32px + .6rem); }
+    .stu-ib{ width:30px; height:26px; }
+    .stu-acts .stu-ib.stu-ib-cash{ height:26px; margin-left:auto; }
     .stu-dark{ padding:.7rem; }
+    .ed-top-acts .stu-add{ padding:.55rem .8rem; }
+    .ed-card, .ed-main{ padding:.8rem; border-radius:.85rem; }
+    .ed-tabs{ overflow-x:auto; gap:.1rem; margin-bottom:.8rem; scrollbar-width:none; }
+    .ed-tabs::-webkit-scrollbar{ display:none; }
+    .ed-tab{ padding:.5rem .65rem; font-size:.8rem; white-space:nowrap; }
+    .ph-item{ padding:.55rem .65rem; margin-bottom:.4rem; gap:.5rem; }
+    .ph-title{ font-size:.86rem; }
+    .ph-sub{ font-size:.7rem; }
+    .ph-amt{ font-size:.84rem; }
+    .ph-acts .ed-pay-edit, .ph-acts .ed-pay-del{ width:26px; height:24px; }
+    .ed-top-acts .stu-add-t{ display:inline; }
   }
 
   /* ---- O'quvchi kartasi (ichki sahifa) ---- */
@@ -1161,7 +1217,7 @@ const { useState, useMemo, useRef, useEffect } = React;
 
 /* ---------------------------- UTIL ---------------------------- */
 const pad = (n) => String(n).padStart(2, '0');
-const todayISO = () => new Date().toISOString().slice(0, 10);
+const todayISO = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };   // mahalliy sana (oy 1-sanasida aniq almashishi uchun)
 const addDays = (iso, days) => {
   const d = new Date(iso);
   d.setDate(d.getDate() + days);
@@ -1178,10 +1234,42 @@ const fmtMoneyShort = (n) => {
   if (n >= 1000) return Math.round(n / 1000) + 'k';
   return String(Math.round(n));
 };
-const isOverdue = (access) => {
+/* Kurs uchun to'lov sanasi kelganmi (nextPaymentDate <= bugun). To'lov har oyning 1-sanasida yangilanadi. */
+const isCourseDue = (access) => {
   if (!access || !access.active) return false;
   if (access.isFullyPaid) return false;
-  return new Date(access.nextPaymentDate) < new Date(new Date().toDateString());
+  return !access.nextPaymentDate || access.nextPaymentDate <= todayISO();
+};
+const curPeriod = () => { const d = new Date(); return { m: MONTH_NAMES[d.getMonth()], y: String(d.getFullYear()) }; };
+const firstOfMonthISO = (m, y) => `${y}-${String(MONTH_NAMES.indexOf(m) + 1).padStart(2, '0')}-01`;
+const periodIndex = (m, y) => Number(y) * 12 + MONTH_NAMES.indexOf(m);
+const firstOfNextMonthISO = (m, y) => new Date(Date.UTC(Number(y), MONTH_NAMES.indexOf(m) + 1, 1)).toISOString().slice(0, 10);
+/* Kurs narxi — "Kurslar" bo'limidagi oylik narxdan olinadi */
+const courseFeeOf = (student, categories, catId) => {
+  const c = categories.find((x) => x.id === catId);
+  return (c && c.monthlyPrice) || (student && student.monthlyFee) || 0;
+};
+const paidInPeriod = (student, m, y) => ((student && student.payments) || [])
+  .filter((p) => p.month === m && String(p.year) === String(y))
+  .reduce((t, p) => t + (Number(p.amount) || 0), 0);   // faqat asosiy summa ("qo'shimcha" hisobga kirmaydi)
+const extraInPeriod = (student, m, y) => ((student && student.payments) || [])
+  .filter((p) => p.month === m && String(p.year) === String(y))
+  .reduce((t, p) => t + (Number(p.extra) || 0), 0);
+/* O'quvchining oylik hisob-kitobi: qancha to'lashi kerak, qancha to'lagan, qarz va blok holati.
+   Oy o'zgarganda (1-sana) to'langan summa 0 dan boshlanadi — to'lov qilinmasa o'quvchi bloklanadi. */
+const studentBilling = (student, categories, m, y) => {
+  const cur = curPeriod();
+  m = m || cur.m; y = y || cur.y;
+  const access = (student && student.access) || {};
+  const actives = Object.entries(access).filter(([, a]) => a && a.active);
+  const payable = actives.filter(([, a]) => !a.isFullyPaid);
+  let total = payable.reduce((t, [cid]) => t + courseFeeOf(student, categories, cid), 0);
+  if (!actives.length) total = (student && student.monthlyFee) || 0;
+  const paid = paidInPeriod(student, m, y);
+  const debt = Math.max(0, total - paid);
+  const started = payable.some(([, a]) => isCourseDue(a));
+  const nextDate = payable.map(([, a]) => a.nextPaymentDate).filter(Boolean).sort()[0];
+  return { total, paid, debt, blocked: started && debt > 0, nextDate, month: m, year: y };
 };
 const scheduleLabel = (s) => ({
   odd: 'Toq kunlar (Du / Chor / Ju)',
@@ -1413,6 +1501,7 @@ const Icon = {
   cash: (p) => (<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><rect x="2.5" y="6" width="19" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 9.5h.01M18 14.5h.01"/></svg>),
   send: (p) => (<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="m3 11 18-8-8 18-2.5-7.5L3 11Z"/></svg>),
   copy: (p) => (<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>),
+  refresh: (p) => (<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M21 12a9 9 0 0 1-15.5 6.2L3 16"/><path d="M3 12A9 9 0 0 1 18.5 5.8L21 8"/><path d="M3 21v-5h5"/><path d="M21 3v5h-5"/></svg>),
   edit: (p) => (<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>),
   trash: (p) => (<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M4 7h16"/><path d="M9 7V4.5A1.5 1.5 0 0 1 10.5 3h3A1.5 1.5 0 0 1 15 4.5V7"/><path d="M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13"/><path d="M10 11v6M14 11v6"/></svg>),
   search: (p) => (<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>),
@@ -1846,14 +1935,14 @@ function StaffApp({ me, staff, setStaff, categories, setCategories, students, se
 
   const stats = useMemo(() => {
     const lessonsCount = categories.reduce((a, c) => a + c.subtopics.reduce((b, s) => b + s.lessons.length, 0), 0);
-    const overdue = students.filter((s) => Object.values(s.access).some((a) => isOverdue(a))).length;
+    const overdue = students.filter((s) => studentBilling(s, categories).blocked).length;
     return { students: students.length, categories: categories.length, lessonsCount, overdue };
   }, [categories, students]);
 
   const revenue = useMemo(() => {
     const byCategory = categories.map((c) => {
-      const payers = students.filter((s) => { const a = s.access[c.id]; return a && a.active && !isOverdue(a); }).length;
-      const overdueCount = students.filter((s) => { const a = s.access[c.id]; return a && a.active && isOverdue(a); }).length;
+      const payers = students.filter((s) => { const a = s.access[c.id]; return a && a.active && !studentBilling(s, categories).blocked; }).length;
+      const overdueCount = students.filter((s) => { const a = s.access[c.id]; return a && a.active && studentBilling(s, categories).blocked; }).length;
       const price = c.monthlyPrice || 0;
       return { id: c.id, name: c.name, price, payers, overdueCount, amount: payers * price, atRisk: overdueCount * price };
     }).sort((a, b) => b.amount - a.amount);
@@ -1864,8 +1953,8 @@ function StaffApp({ me, staff, setStaff, categories, setCategories, students, se
   }, [categories, students]);
 
   const overdueStudents = useMemo(
-    () => students.filter((s) => Object.values(s.access).some(isOverdue)),
-    [students]
+    () => students.filter((s) => studentBilling(s, categories).blocked),
+    [students, categories]
   );
   const OVERDUE_PAGE_SIZE = 5;
   const [overduePage, setOverduePage] = useState(1);
@@ -2149,7 +2238,7 @@ function PaymentsPage({ students, categories }) {
 
   const rows = students.flatMap((s) => Object.entries(s.access)
     .filter(([, a]) => a && a.active)
-    .map(([catId, a]) => ({ student: s, catId, access: a, overdue: isOverdue(a) })));
+    .map(([catId, a]) => ({ student: s, catId, access: a, overdue: !a.isFullyPaid && studentBilling(s, categories).blocked })));
 
   const filtered = rows.filter((r) => r.student.name.toLowerCase().includes(query.toLowerCase()));
   const sorted = [...filtered].sort((a, b) => (b.overdue - a.overdue));
@@ -2527,6 +2616,15 @@ const groupDigits = (v) => {
   const d = onlyDigits(v);
   return d ? Number(d).toLocaleString('en-US') : '';
 };
+/* Telefon: yozish boshlanganda +998 avtomatik qo'shiladi -> "+998 90 123 45 67" */
+const formatPhone = (v) => {
+  let d = onlyDigits(v);
+  if (d.startsWith('998')) d = d.slice(3);
+  d = d.slice(0, 9);
+  if (!d) return '';
+  const parts = [d.slice(0, 2), d.slice(2, 5), d.slice(5, 7), d.slice(7, 9)].filter(Boolean);
+  return '+998 ' + parts.join(' ');
+};
 
 function SdModal({ title, icon, onClose, children, size }) {
   useEffect(() => {
@@ -2572,6 +2670,9 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
   const [payAmount, setPayAmount] = useState('');
   const [payMonth, setPayMonth] = useState(MONTH_NAMES[new Date().getMonth()]);
   const [payYear, setPayYear] = useState(String(new Date().getFullYear()));
+  const [payExtra, setPayExtra] = useState('');
+  const [payNote, setPayNote] = useState('');
+  const [payExtraOpen, setPayExtraOpen] = useState(false);
 
   const filtered = students.filter((s) => (s.name + ' ' + s.username).toLowerCase().includes(q.toLowerCase()));
   const stuPageCount = Math.max(1, Math.ceil(filtered.length / STU_PAGE_SIZE));
@@ -2611,10 +2712,13 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
     // API: POST /api/admin/students/  (name, phone) — kurs, narx va boshqalar keyin Tahrirlash sahifasida beriladi
   };
 
-  const removeStudent = (s) => {
-    if (!window.confirm(`${s.name} ro'yxatdan o'chirilsinmi?`)) return;
-    setStudents(students.filter((x) => x.id !== s.id));
+  const [delStu, setDelStu] = useState(null);
+  const removeStudent = (s) => setDelStu(s);
+  const confirmRemove = () => {
+    if (!delStu) return;
+    setStudents(students.filter((x) => x.id !== delStu.id));
     notify("O'quvchi o'chirildi");
+    setDelStu(null);
   };
 
   const copyText = (text, cb) => {
@@ -2624,9 +2728,9 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
   };
 
   const openAlertModal = (s) => {
-    const overdueAccess = Object.values(s.access).find(isOverdue);
-    setAlertText(overdueAccess
-      ? `Hurmatli ${s.name}, to'lov muddati o'tgan. Iltimos, kursni davom ettirish uchun to'lovni amalga oshiring.`
+    const b = studentBilling(s, categories);
+    setAlertText(b.blocked
+      ? `Hurmatli ${s.name}, ${b.month} oyi uchun ${fmtMoney(b.debt)} to'lov qolgan. Iltimos, kursni davom ettirish uchun to'lovni amalga oshiring.`
       : `Hurmatli ${s.name}, keyingi oylik to'lovni o'z vaqtida amalga oshirishingizni so'raymiz.`);
     setAlertFor(s);
   };
@@ -2643,30 +2747,18 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
   };
 
   /* ---------- To'lov qabul qilish ---------- */
-  const feeFor = (s, cid) => {
-    if (s.customPrice && s.monthlyFee) return s.monthlyFee;
-    const c = categories.find((x) => x.id === cid);
-    return (c && c.monthlyPrice) || s.monthlyFee || 0;
-  };
   const payableCourses = (s) => Object.entries(s.access || {}).filter(([, a]) => a && a.active && !a.isFullyPaid);
-  const payTotalOf = (s) => {
-    const list = payableCourses(s);
-    if (list.length) return list.reduce((t, [cid]) => t + feeFor(s, cid), 0);
-    const hasActive = Object.values(s.access || {}).some((a) => a && a.active);
-    return hasActive ? 0 : (s.monthlyFee || 0);   // kurs biriktirilmagan bo'lsa — o'quvchining oylik to'lovi
-  };
-  const payPaidOf = (s, m, y) => (s.payments || [])
-    .filter((p) => p.month === m && String(p.year) === String(y))
-    .reduce((t, p) => t + (Number(p.amount) || 0), 0);
+  const payTotalOf = (s) => studentBilling(s, categories).total;
+  const payPaidOf = (s, m, y) => paidInPeriod(s, m, y);
   const payLeftOf = (s, m, y) => Math.max(0, payTotalOf(s) - payPaidOf(s, m, y));
 
   const openPayModal = (s) => {
-    const m = MONTH_NAMES[new Date().getMonth()];
-    const y = String(new Date().getFullYear());
-    setPayStu(s); setPayMonth(m); setPayYear(y);
-    setPayAmount(groupDigits(payLeftOf(s, m, y)));
+    const c = curPeriod();
+    setPayStu(s); setPayMonth(c.m); setPayYear(c.y);
+    setPayAmount(groupDigits(payLeftOf(s, c.m, c.y)));
+    setPayExtra(''); setPayNote(''); setPayExtraOpen(false);
   };
-  const closePayModal = () => { setPayStu(null); setPayAmount(''); };
+  const closePayModal = () => { setPayStu(null); setPayAmount(''); setPayExtra(''); setPayNote(''); setPayExtraOpen(false); };
   const changePayPeriod = (m, y) => {
     setPayMonth(m); setPayYear(y);
     if (payStu) setPayAmount(groupDigits(payLeftOf(payStu, m, y)));
@@ -2675,47 +2767,43 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
   const confirmPay = () => {
     if (!payStu) return;
     const amount = Number(onlyDigits(payAmount)) || 0;
-    if (!amount) return;
+    const extra = Number(onlyDigits(payExtra)) || 0;
     const s = payStu;
+    if ((!amount && !extra) || amount > payLeftOf(s, payMonth, payYear)) return;
     const total = payTotalOf(s);
-    const covered = total > 0 && payPaidOf(s, payMonth, payYear) + amount >= total;
+    const cur = curPeriod();
+    const notPast = periodIndex(payMonth, payYear) >= periodIndex(cur.m, cur.y);
+    const covered = notPast && total > 0 && payPaidOf(s, payMonth, payYear) + amount >= total;
     const courseNames = payableCourses(s)
       .map(([cid]) => { const c = categories.find((x) => x.id === cid); return c ? c.name : null; })
       .filter(Boolean).join(', ');
-    const record = { id: uid('pay'), catId: '', courseName: courseNames || "Oylik to'lov", amount, month: payMonth, year: payYear, date: todayISO() };
+    const record = { id: uid('pay'), catId: '', courseName: courseNames || "Oylik to'lov", amount, extra, note: payNote.trim(), month: payMonth, year: payYear, date: todayISO() };
     setStudents(students.map((x) => {
       if (x.id !== s.id) return x;
       let access = x.access || {};
-      if (covered) {   // to'liq to'langan bo'lsa, faol kurslarning keyingi to'lov sanasi 30 kunga suriladi
+      if (covered) {   // to'liq to'langan bo'lsa — keyingi to'lov keyingi oyning 1-sanasiga suriladi
+        const nextIso = firstOfNextMonthISO(payMonth, payYear);
         access = Object.fromEntries(Object.entries(access).map(([cid, a]) =>
-          [cid, (a && a.active && !a.isFullyPaid) ? { ...a, nextPaymentDate: addDays(todayISO(), 30) } : a]));
+          [cid, (a && a.active && !a.isFullyPaid) ? { ...a, nextPaymentDate: nextIso } : a]));
       }
       return { ...x, access, payments: [...(x.payments || []), record] };
     }));
-    notify(`${s.name}: ${fmtMoney(amount)} to'lov qabul qilindi`);
+    notify(`${s.name}: ${fmtMoney(amount + extra)} to'lov qabul qilindi`);
     closePayModal();
-    // API: POST /api/admin/students/{id}/payments/  (amount, month, year)
+    // API: POST /api/admin/students/{id}/payments/  (amount, extra, note, month, year)
   };
 
   /* Bitta o'quvchining to'lov holati */
   const statusOf = (s) => {
     const entries = Object.entries(s.access || {}).filter(([, a]) => a && a.active);
     if (!entries.length) return { cls: 'stu-pill-mut', text: 'Kurs biriktirilmagan' };
-    const feeOf = (cid) => {
-      if (s.customPrice && s.monthlyFee) return s.monthlyFee;
-      const c = categories.find((x) => x.id === cid);
-      return (c && c.monthlyPrice) || s.monthlyFee || 0;
-    };
-    const debt = entries.filter(([, a]) => isOverdue(a));
-    const paid = entries.filter(([, a]) => a.isFullyPaid);
-    if (debt.length) {
-      const sum = debt.reduce((t, [cid]) => t + feeOf(cid), 0);
-      if (paid.length) return { cls: 'stu-pill-part', text: `⚠️ Qisman: ${fmtMoney(sum)} qarz` };
-      return { cls: 'stu-pill-debt', text: `Qarzdor: ${fmtMoney(sum)}` };
+    const b = studentBilling(s, categories);
+    if (b.blocked) {
+      if (b.paid > 0) return { cls: 'stu-pill-part', text: `⚠️ Qisman: ${fmtMoney(b.debt)} qarz` };
+      return { cls: 'stu-pill-debt', text: `Qarzdor: ${fmtMoney(b.debt)}` };
     }
-    if (paid.length === entries.length) return { cls: 'stu-pill-paid', text: "To'langan ✅" };
-    const next = entries.map(([, a]) => a.nextPaymentDate).filter(Boolean).sort()[0];
-    return { cls: 'stu-pill-part', text: `Keyingi to'lov: ${fmtDate(next)}` };
+    if (entries.every(([, a]) => a.isFullyPaid) || (b.total > 0 && b.debt === 0)) return { cls: 'stu-pill-paid', text: "To'langan ✅" };
+    return { cls: 'stu-pill-part', text: `Keyingi to'lov: ${fmtDate(b.nextDate)}` };
   };
 
   const metaOf = (s) => {
@@ -2739,8 +2827,8 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
           <input value={q} onChange={(e) => { setQ(e.target.value); setPg(1); }} placeholder="Ism bo'yicha izlash..." />
         </div>
         {canEdit && (
-          <button className="stu-add" onClick={() => setShowAdd(true)}>
-            <Icon.users width="16" height="16" /> O'quvchi qo'shish
+          <button className="stu-add" title="O'quvchi qo'shish" aria-label="O'quvchi qo'shish" onClick={() => setShowAdd(true)}>
+            <Icon.users width="16" height="16" /> <span className="stu-add-t">O'quvchi qo'shish</span>
           </button>
         )}
       </div>
@@ -2750,9 +2838,9 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
           const st = statusOf(s);
           const [bg, fg] = avaColor(s.id || s.name);
           return (
-            <div key={s.id} className="stu-row">
+            <div key={s.id} className="stu-row" onClick={() => onOpen(s.id)}>
               <span className="stu-ava" style={{ background: bg, color: fg }}>{initials(s.name)}</span>
-              <div className="stu-main" onClick={() => onOpen(s.id)}>
+              <div className="stu-main">
                 <div className="stu-name">{s.name}</div>
                 <div className="stu-meta">
                   <span>{metaOf(s)}</span>
@@ -2810,8 +2898,10 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
 
               <div className="sd-field">
                 <label className="sd-label">Telefon</label>
-                <input className="sd-input" placeholder="+998 9X XXX XX XX" value={draft.phone}
-                  onChange={(e) => setDraft({ ...draft, phone: e.target.value })}
+                <input className="sd-input" type="tel" inputMode="tel" placeholder="+998 9X XXX XX XX" value={draft.phone}
+                  onFocus={() => { if (!draft.phone) setDraft({ ...draft, phone: '+998 ' }); }}
+                  onBlur={() => { if (!formatPhone(draft.phone)) setDraft({ ...draft, phone: '' }); }}
+                  onChange={(e) => setDraft({ ...draft, phone: formatPhone(e.target.value) })}
                   onKeyDown={(e) => { if (e.key === 'Enter') addStudent(); }} />
               </div>
 
@@ -2854,6 +2944,17 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
         </SdModal>
       )}
 
+      {/* ---------- O'chirishni tasdiqlash ---------- */}
+      {delStu && (
+        <SdModal title="O'quvchini o'chirish" icon="⚠️" onClose={() => setDelStu(null)}>
+          <p className="sd-confirm-text"><b>{delStu.name}</b> ro'yxatdan o'chirilsinmi? Bu amalni ortga qaytarib bo'lmaydi.</p>
+          <div className="sd-foot">
+            <button className="sd-btn sd-btn-ghost" onClick={() => setDelStu(null)}>Bekor qilish</button>
+            <button className="sd-btn sd-btn-danger" onClick={confirmRemove}><Icon.trash width="14" height="14" /> O'chirish</button>
+          </div>
+        </SdModal>
+      )}
+
       {/* ---------- Login va parol ---------- */}
       {credsFor && (
         <SdModal title="Login va parol" icon="🔐" onClose={() => setCredsFor(null)}>
@@ -2881,24 +2982,53 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
       )}
 
       {/* ---------- To'lov qabul qilish ---------- */}
-      {payStu && (
+      {payStu && (() => {
+        const left = payLeftOf(payStu, payMonth, payYear);
+        const over = (Number(onlyDigits(payAmount)) || 0) > left;
+        return (
         <SdModal title="To'lov qabul qilish" icon={<span style={{ color: '#3b82f6', display: 'inline-flex' }}><Icon.card width="18" height="18" /></span>} onClose={closePayModal}>
           <div className="pay-sec">O'quvchi</div>
           <div className="pay-name">{payStu.name}</div>
 
           <div className="pay-info">
             <div className="pay-sec">To'lov ma'lumoti</div>
-            <div className="pay-line">Umumiy to'lov: <b>{groupDigits(payTotalOf(payStu)) || 0} so'm</b></div>
-            <div className="pay-line">To'langan: <b className="g">{groupDigits(payPaidOf(payStu, payMonth, payYear)) || 0} so'm</b></div>
-            <div className="pay-line">Qolgan qarz: <b className="r">{groupDigits(payLeftOf(payStu, payMonth, payYear)) || 0} so'm</b></div>
+            <div className="pay-line">To'langan: <b className="g">{groupDigits(payPaidOf(payStu, payMonth, payYear)) || 0} so'm</b>
+              {extraInPeriod(payStu, payMonth, payYear) > 0 && <span className="pay-extra-tag">+ {groupDigits(extraInPeriod(payStu, payMonth, payYear))} qo'shimcha to'lov</span>}
+            </div>
+            <div className="pay-line">Qolgan to'lov: <b className="r">{groupDigits(left) || 0} so'm</b></div>
           </div>
 
           <div className="sd-field">
             <label className="sd-label">Summa (so'm) *</label>
-            <input className="sd-input" autoFocus inputMode="numeric" value={payAmount}
-              onChange={(e) => setPayAmount(groupDigits(e.target.value))}
-              onKeyDown={(e) => { if (e.key === 'Enter') confirmPay(); }} />
+            <div className="pay-row">
+              <input className="sd-input" autoFocus inputMode="numeric" value={payAmount}
+                onChange={(e) => setPayAmount(groupDigits(e.target.value))}
+                onKeyDown={(e) => { if (e.key === 'Enter') confirmPay(); }} />
+              <button type="button" className={`pay-plus ${payExtraOpen ? 'on' : ''}`}
+                title={payExtraOpen ? "Qo'shimcha summani olib tashlash" : "Qo'shimcha summa qo'shish"}
+                aria-label="Qo'shimcha summa"
+                onClick={() => { if (payExtraOpen) { setPayExtra(''); setPayNote(''); } setPayExtraOpen(!payExtraOpen); }}>
+                {payExtraOpen ? '×' : '+'}
+              </button>
+            </div>
           </div>
+          {over && (
+            <div className="pay-warn">⚠️ O'quvchining qarzi faqat {groupDigits(left) || 0} so'm. Ko'proq kiritmoqchi bo'lsangiz, ortiqcha qismini "+" tugmasi orqali qo'shimcha summa sifatida yozing.</div>
+          )}
+          {payExtraOpen && (
+            <React.Fragment>
+              <div className="sd-field">
+                <label className="sd-label">Qo'shimcha summa (so'm)</label>
+                <input className="sd-input" autoFocus inputMode="numeric" value={payExtra}
+                  onChange={(e) => setPayExtra(groupDigits(e.target.value))} />
+              </div>
+              <div className="sd-field">
+                <label className="sd-label">Izoh</label>
+                <input className="sd-input" placeholder="Qo'shimcha summa nima uchun" value={payNote}
+                  onChange={(e) => setPayNote(e.target.value)} />
+              </div>
+            </React.Fragment>
+          )}
           <div className="sd-field">
             <label className="sd-label">Oy</label>
             <select className="sd-select" value={payMonth} onChange={(e) => changePayPeriod(e.target.value, payYear)}>
@@ -2913,12 +3043,13 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
 
           <div className="sd-foot" style={{ marginTop: '1rem' }}>
             <button className="sd-btn sd-btn-ghost" onClick={closePayModal}>Bekor</button>
-            <button className="sd-btn sd-btn-green" onClick={confirmPay} disabled={!Number(onlyDigits(payAmount))}>
+            <button className="sd-btn sd-btn-green" onClick={confirmPay} disabled={over || (!Number(onlyDigits(payAmount)) && !Number(onlyDigits(payExtra)))}>
               <Icon.check width="14" height="14" /> To'lov qilish
             </button>
           </div>
         </SdModal>
-      )}
+        );
+      })()}
 
       {/* ---------- To'lov so'rash / xabar ---------- */}
       {alertFor && (
@@ -2952,6 +3083,17 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
   const [payAmount, setPayAmount] = useState('');
   const [payMonth, setPayMonth] = useState(MONTH_NAMES[new Date().getMonth()]);
   const [payYear, setPayYear] = useState(String(new Date().getFullYear()));
+  /* Umumiy "To'lov" tugmasi uchun modal */
+  const [pwConfirm, setPwConfirm] = useState(false);
+  const [editPay, setEditPay] = useState(null);   // { id, amount, extra, note, month, year }
+  const [gExtra, setGExtra] = useState('');
+  const [gNote, setGNote] = useState('');
+  const [gExtraOpen, setGExtraOpen] = useState(false);
+  const [delPay, setDelPay] = useState(null);
+  const [gPayOpen, setGPayOpen] = useState(false);
+  const [gAmount, setGAmount] = useState('');
+  const [gMonth, setGMonth] = useState(MONTH_NAMES[new Date().getMonth()]);
+  const [gYear, setGYear] = useState(String(new Date().getFullYear()));
 
   useEffect(() => { setForm({ ...student }); }, [student.id]);
 
@@ -2969,20 +3111,18 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
     setPayYear(String(new Date().getFullYear()));
   };
 
-  const feeOfCat = (cid) => {
-    if (form.customPrice && form.monthlyFee) return form.monthlyFee;
-    const c = categories.find((x) => x.id === cid);
-    return (c && c.monthlyPrice) || form.monthlyFee || 0;
-  };
+  const feeOfCat = (cid) => courseFeeOf(form, categories, cid);
 
   const confirmPayment = () => {
     if (!payFor) return;
     const cat = categories.find((c) => c.id === payFor);
     const cur = form.access[payFor] || { active: true, nextPaymentDate: todayISO(), isFullyPaid: false, schedule: 'daily', includeSunday: false };
     const amount = Number(onlyDigits(payAmount)) || 0;
+    const nowP = curPeriod();
+    const advance = periodIndex(payMonth, payYear) >= periodIndex(nowP.m, nowP.y);
     setForm({
       ...form,
-      access: { ...form.access, [payFor]: { ...cur, nextPaymentDate: addDays(todayISO(), 30) } },
+      access: { ...form.access, [payFor]: advance ? { ...cur, nextPaymentDate: firstOfNextMonthISO(payMonth, payYear) } : cur },
       payments: [...(form.payments || []), {
         id: uid('pay'), catId: payFor, courseName: cat ? cat.name : '',
         amount, month: payMonth, year: payYear, date: todayISO(),
@@ -2993,22 +3133,99 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
   };
 
   const actives = Object.entries(form.access || {}).filter(([, a]) => a && a.active);
-  const feeOf = (cid) => {
-    if (form.customPrice && form.monthlyFee) return form.monthlyFee;
-    const c = categories.find((x) => x.id === cid);
-    return (c && c.monthlyPrice) || form.monthlyFee || 0;
+  const feeOf = (cid) => courseFeeOf(form, categories, cid);
+  const bill = studentBilling(form, categories);
+  const totalFee = bill.total;
+  /* To'lovlar avtomatik hisoblanadi: joriy oy uchun kiritilgan to'lovlar yig'indisi */
+  const paidIn = (m, y) => paidInPeriod(form, m, y);
+  const curMonth = curPeriod().m;
+  const curYear = curPeriod().y;
+  const paidSum = bill.paid;
+  const debtSum = bill.debt;
+  const overdueSum = bill.blocked ? bill.debt : 0;
+  const leftIn = (m, y) => Math.max(0, totalFee - paidIn(m, y));
+
+  const confirmNewPassword = () => {
+    const upd = { ...form, password: genPassword6() };
+    setForm(upd);
+    onSave(upd);
+    setPwConfirm(false);
+    // API: PATCH /api/admin/students/{id}/  (password)
   };
-  const totalFee = actives.reduce((t, [cid]) => t + feeOf(cid), 0);
-  const paidSum = actives.filter(([, a]) => a.isFullyPaid).reduce((t, [cid]) => t + feeOf(cid), 0);
-  const debtSum = actives.filter(([, a]) => isOverdue(a)).reduce((t, [cid]) => t + feeOf(cid), 0);
+  /* To'lov o'chirilsa/o'zgartirilsa — joriy oy uchun blok holatini qayta hisoblaymiz */
+  const syncCycle = (u, touchedPeriods) => {
+    const cp = curPeriod();
+    if (!touchedPeriods.some(([m, y]) => m === cp.m && String(y) === cp.y)) return u;
+    const b = studentBilling(u, categories);
+    if (b.total <= 0) return u;
+    const iso = b.debt > 0 ? firstOfMonthISO(cp.m, cp.y) : firstOfNextMonthISO(cp.m, cp.y);
+    const access = Object.fromEntries(Object.entries(u.access || {}).map(([cid, a]) =>
+      [cid, (a && a.active && !a.isFullyPaid) ? { ...a, nextPaymentDate: iso } : a]));
+    return { ...u, access };
+  };
+  const confirmDeletePay = () => {
+    if (!delPay) return;
+    let upd = { ...form, payments: (form.payments || []).filter((x) => x.id !== delPay.id) };
+    upd = syncCycle(upd, [[delPay.month, delPay.year]]);
+    setForm(upd);
+    onSave(upd);
+    setDelPay(null);
+    // API: DELETE /api/admin/students/{id}/payments/{paymentId}/
+  };
+  const saveEditPay = () => {
+    if (!editPay) return;
+    const amount = Number(onlyDigits(editPay.amount)) || 0;
+    const extra = Number(onlyDigits(editPay.extra)) || 0;
+    if (!amount && !extra) return;
+    const old = (form.payments || []).find((x) => x.id === editPay.id) || {};
+    let upd = { ...form, payments: (form.payments || []).map((x) =>
+      x.id === editPay.id ? { ...x, amount, extra, note: (editPay.note || '').trim(), month: editPay.month, year: editPay.year } : x) };
+    upd = syncCycle(upd, [[old.month, old.year], [editPay.month, editPay.year]]);
+    setForm(upd);
+    onSave(upd);
+    setEditPay(null);
+    // API: PATCH /api/admin/students/{id}/payments/{paymentId}/  (amount, month, year)
+  };
+
+  const openGPay = () => {
+    setGMonth(curMonth); setGYear(curYear);
+    setGAmount(groupDigits(leftIn(curMonth, curYear)));
+    setGExtra(''); setGNote(''); setGExtraOpen(false);
+    setGPayOpen(true);
+  };
+  const changeGPeriod = (m, y) => { setGMonth(m); setGYear(y); setGAmount(groupDigits(leftIn(m, y))); };
+  const confirmGPay = () => {
+    const amount = Number(onlyDigits(gAmount)) || 0;
+    const extra = Number(onlyDigits(gExtra)) || 0;
+    if ((!amount && !extra) || amount > leftIn(gMonth, gYear)) return;
+    const nowP = curPeriod();
+    const notPast = periodIndex(gMonth, gYear) >= periodIndex(nowP.m, nowP.y);
+    const covered = notPast && totalFee > 0 && paidIn(gMonth, gYear) + amount >= totalFee;
+    const courseNames = actives
+      .map(([cid]) => { const c = categories.find((x) => x.id === cid); return c ? c.name : null; })
+      .filter(Boolean).join(', ');
+    const record = { id: uid('pay'), catId: '', courseName: courseNames || "Oylik to'lov", amount, extra, note: gNote.trim(), month: gMonth, year: gYear, date: todayISO() };
+    let access = form.access || {};
+    if (covered) {   // keyingi to'lov — keyingi oyning 1-sanasi
+      const nextIso = firstOfNextMonthISO(gMonth, gYear);
+      access = Object.fromEntries(Object.entries(access).map(([cid, a]) =>
+        [cid, (a && a.active && !a.isFullyPaid) ? { ...a, nextPaymentDate: nextIso } : a]));
+    }
+    const upd = { ...form, access, payments: [...(form.payments || []), record] };
+    setForm(upd);
+    onSave(upd);
+    setGPayOpen(false);
+    setGAmount(''); setGExtra(''); setGNote(''); setGExtraOpen(false);
+    // API: POST /api/admin/students/{id}/payments/  (amount, extra, note, month, year)
+  };
   const nextDate = actives.map(([, a]) => a.nextPaymentDate).filter(Boolean).sort()[0];
   const owner = (staff || []).find((u) => u.id === form.ownerId);
   const [avaBg, avaFg] = avaColor(student.id || student.name);
 
-  const status = debtSum
-    ? { cls: 'stu-pill-debt', text: `Qarzdor: ${fmtMoney(debtSum)}` }
-    : (actives.length && paidSum === totalFee)
-      ? { cls: 'stu-pill-paid', text: "To'langan ✅" }
+  const status = (actives.length && totalFee > 0 && paidSum >= totalFee)
+    ? { cls: 'stu-pill-paid', text: "To'langan ✅" }
+    : overdueSum
+      ? { cls: 'stu-pill-debt', text: `Qarzdor: ${fmtMoney(overdueSum)}` }
       : actives.length
         ? { cls: 'stu-pill-part', text: `Keyingi to'lov: ${fmtDate(nextDate)}` }
         : { cls: 'stu-pill-mut', text: 'Kurs biriktirilmagan' };
@@ -3018,7 +3235,10 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
       <div className="ed-top">
         <button className="ed-back" onClick={onBack}>← Orqaga</button>
         {canEdit && (
-          <button className="stu-add" onClick={() => onSave(form)}><Icon.check width="14" height="14" /> Saqlash</button>
+          <div className="ed-top-acts">
+            <button className="stu-add ed-pay" onClick={openGPay}><Icon.cash width="14" height="14" /> <span className="stu-add-t">To'lov</span></button>
+            <button className="stu-add" onClick={() => onSave(form)}><Icon.check width="14" height="14" /> <span className="stu-add-t">Saqlash</span></button>
+          </div>
         )}
       </div>
 
@@ -3045,6 +3265,12 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
             <span className="ed-row-k">To'langan</span>
             <span className="ed-row-v ed-v-green">{fmtMoney(paidSum)}</span>
           </div>
+          {extraInPeriod(form, curMonth, curYear) > 0 && (
+            <div className="ed-row">
+              <span className="ed-row-k">Qo'shimcha to'lov</span>
+              <span className="ed-row-v ed-v-green">{fmtMoney(extraInPeriod(form, curMonth, curYear))}</span>
+            </div>
+          )}
           <div className="ed-row">
             <span className="ed-row-k">Qolgan qarz</span>
             <span className={`ed-row-v ${debtSum ? 'ed-v-red' : ''}`}>{fmtMoney(debtSum)}</span>
@@ -3080,23 +3306,30 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
                 {[['Ism familiya', 'name'], ['Telefon', 'phone'], ['Login', 'username'], ['Parol', 'password']].map(([label, key]) => (
                   <div key={key}>
                     <label className="sd-label">{label}</label>
-                    <input className="sd-input" disabled={!canEdit} value={form[key] || ''}
-                      onChange={(e) => setForm({ ...form, [key]: e.target.value })} />
+                    {key === 'phone' ? (
+                      <input className="sd-input" type="tel" inputMode="tel" disabled={!canEdit} placeholder="+998 9X XXX XX XX" value={form.phone || ''}
+                        onFocus={() => { if (!form.phone) setForm({ ...form, phone: '+998 ' }); }}
+                        onBlur={() => { if (!formatPhone(form.phone)) setForm({ ...form, phone: '' }); }}
+                        onChange={(e) => setForm({ ...form, phone: formatPhone(e.target.value) })} />
+                    ) : key === 'password' ? (
+                      <div className="ed-pw">
+                        <input className="sd-input" disabled={!canEdit} value={form.password || ''}
+                          onChange={(e) => setForm({ ...form, password: e.target.value })} />
+                        {canEdit && (
+                          <button type="button" className="ed-pw-btn" title="Yangi parol yaratish" aria-label="Yangi parol yaratish"
+                            onClick={() => setPwConfirm(true)}>
+                            <Icon.refresh width="14" height="14" />
+                          </button>
+                        )}
+                      </div>
+                    ) : (
+                      <input className="sd-input" disabled={!canEdit} value={form[key] || ''}
+                        onChange={(e) => setForm({ ...form, [key]: e.target.value })} />
+                    )}
                   </div>
                 ))}
-                <div>
-                  <label className="sd-label">Oylik to'lov (so'm)</label>
-                  <input className="sd-input" disabled={!canEdit} inputMode="numeric"
-                    value={groupDigits(form.monthlyFee || 0)}
-                    onChange={(e) => setForm({ ...form, monthlyFee: Number(onlyDigits(e.target.value)) || 0 })} />
-                </div>
               </div>
-              <label className="ed-check" style={{ marginTop: '.9rem' }}>
-                <input type="checkbox" disabled={!canEdit} checked={!!form.customPrice}
-                  onChange={(e) => setForm({ ...form, customPrice: e.target.checked })} />
-                Chegirma (individual narx)
-              </label>
-              {canEdit && (
+                            {canEdit && (
                 <div className="sd-foot" style={{ maxWidth: '260px' }}>
                   <button className="sd-btn sd-btn-primary" onClick={() => onSave(form)}><Icon.check width="14" height="14" /> Saqlash</button>
                 </div>
@@ -3110,9 +3343,32 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
                 <p className="text-sm text-slate">Hali to'lovlar tarixi yo'q.</p>
               )}
               {(form.payments || []).slice().reverse().map((p) => (
-                <div key={p.id} className="ed-row" style={{ padding: '.7rem 0', borderBottom: '1px solid var(--sd-line)' }}>
-                  <span className="ed-row-k"><Icon.card width="13" height="13" /> {p.courseName || 'Kurs'} · {p.month} {p.year}</span>
-                  <span className="ed-row-v ed-v-green">{fmtMoney(p.amount)}</span>
+                <div key={p.id} className="ph-item">
+                  <div className="ph-main">
+                    <div className="ph-title">{p.month} {p.year}</div>
+                    <div className="ph-sub">{p.courseName || 'Kurs'}{p.date ? ` · ${fmtDate(p.date)}` : ''}</div>
+                    {(p.extra || p.note) ? (
+                      <div className="ph-extra">
+                        {p.extra ? <b>+{fmtMoney(p.extra)} qo'shimcha</b> : null}
+                        {p.note ? <span>{p.extra ? ' · ' : ''}{p.note}</span> : null}
+                      </div>
+                    ) : null}
+                  </div>
+                  <div className="ph-right">
+                    <div className="ph-amt">{fmtMoney(p.amount)}</div>
+                    {canEdit && (
+                      <div className="ph-acts">
+                        <button type="button" className="ed-pay-edit" title="To'lovni tahrirlash" aria-label="To'lovni tahrirlash"
+                          onClick={() => setEditPay({ id: p.id, amount: groupDigits(p.amount), extra: groupDigits(p.extra || ''), note: p.note || '', month: p.month, year: String(p.year) })}>
+                          <Icon.edit width="13" height="13" />
+                        </button>
+                        <button type="button" className="ed-pay-del" title="To'lovni o'chirish" aria-label="To'lovni o'chirish"
+                          onClick={() => setDelPay(p)}>
+                          <Icon.trash width="13" height="13" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               ))}
             </React.Fragment>
@@ -3178,7 +3434,7 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
                             Yakshanbani ham jadvalga qo'shish
                           </label>
                         )}
-                        {isOverdue(a) && !a.isFullyPaid && <div className="ed-warn">Bu kurs to'lov muddati o'tgani uchun avtomatik bloklangan.</div>}
+                        {isCourseDue(a) && !a.isFullyPaid && bill.blocked && <div className="ed-warn">Bu kurs to'lov muddati o'tgani uchun avtomatik bloklangan.</div>}
                       </div>
                     )}
                   </div>
@@ -3194,6 +3450,131 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
         </section>
       </div>
 
+      {pwConfirm && (
+        <SdModal title="Parolni o'zgartirish" icon="🔑" onClose={() => setPwConfirm(false)}>
+          <p className="sd-confirm-text"><b>{student.name}</b> uchun yangi tasodifiy parol yaratilsinmi? Eski parol ishlamay qoladi, login o'zgarmaydi.</p>
+          <div className="sd-foot">
+            <button className="sd-btn sd-btn-ghost" onClick={() => setPwConfirm(false)}>Bekor qilish</button>
+            <button className="sd-btn sd-btn-primary" onClick={confirmNewPassword}><Icon.refresh width="14" height="14" /> O'zgartirish</button>
+          </div>
+        </SdModal>
+      )}
+
+      {delPay && (
+        <SdModal title="To'lovni o'chirish" icon="⚠️" onClose={() => setDelPay(null)}>
+          <p className="sd-confirm-text"><b>{delPay.month} {delPay.year}</b> uchun <b>{fmtMoney(delPay.amount)}</b>{delPay.extra ? ` (+${fmtMoney(delPay.extra)} qo'shimcha)` : ''} to'lovi o'chirilsinmi? Bu amalni ortga qaytarib bo'lmaydi.</p>
+          <p className="sd-hint" style={{ marginTop: 0 }}>Eslatma: to'lov o'chirilgach, agar joriy oy qarzi qayta paydo bo'lsa, o'quvchi yana bloklanadi.</p>
+          <div className="sd-foot">
+            <button className="sd-btn sd-btn-ghost" onClick={() => setDelPay(null)}>Bekor qilish</button>
+            <button className="sd-btn sd-btn-danger" onClick={confirmDeletePay}><Icon.trash width="14" height="14" /> O'chirish</button>
+          </div>
+        </SdModal>
+      )}
+
+      {editPay && (
+        <SdModal title="To'lovni tahrirlash" icon={<Icon.edit width="16" height="16" />} onClose={() => setEditPay(null)}>
+          <div className="sd-field">
+            <label className="sd-label">Summa (so'm) *</label>
+            <input className="sd-input" autoFocus inputMode="numeric" value={editPay.amount}
+              onChange={(e) => setEditPay({ ...editPay, amount: groupDigits(e.target.value) })}
+              onKeyDown={(e) => { if (e.key === 'Enter') saveEditPay(); }} />
+          </div>
+          <div className="sd-field">
+            <label className="sd-label">Qo'shimcha summa (so'm)</label>
+            <input className="sd-input" inputMode="numeric" placeholder="Ixtiyoriy" value={editPay.extra}
+              onChange={(e) => setEditPay({ ...editPay, extra: groupDigits(e.target.value) })} />
+          </div>
+          <div className="sd-field">
+            <label className="sd-label">Izoh</label>
+            <input className="sd-input" value={editPay.note}
+              onChange={(e) => setEditPay({ ...editPay, note: e.target.value })} />
+          </div>
+          <div className="sd-field">
+            <label className="sd-label">Oy</label>
+            <select className="sd-select" value={editPay.month} onChange={(e) => setEditPay({ ...editPay, month: e.target.value })}>
+              {MONTH_NAMES.map((m) => <option key={m} value={m}>{m}</option>)}
+            </select>
+          </div>
+          <div className="sd-field">
+            <label className="sd-label">Yil</label>
+            <input className="sd-input" inputMode="numeric" value={editPay.year}
+              onChange={(e) => setEditPay({ ...editPay, year: onlyDigits(e.target.value).slice(0, 4) })} />
+          </div>
+          <div className="sd-foot" style={{ marginTop: '1rem' }}>
+            <button className="sd-btn sd-btn-ghost" onClick={() => setEditPay(null)}>Bekor</button>
+            <button className="sd-btn sd-btn-primary" onClick={saveEditPay} disabled={!Number(onlyDigits(editPay.amount)) && !Number(onlyDigits(editPay.extra))}>
+              <Icon.check width="14" height="14" /> Saqlash
+            </button>
+          </div>
+        </SdModal>
+      )}
+
+      {gPayOpen && (() => {
+        const gLeft = leftIn(gMonth, gYear);
+        const gOver = (Number(onlyDigits(gAmount)) || 0) > gLeft;
+        return (
+        <SdModal title="To'lov qabul qilish" icon={<span style={{ color: '#3b82f6', display: 'inline-flex' }}><Icon.card width="18" height="18" /></span>} onClose={() => setGPayOpen(false)}>
+          <div className="pay-sec">O'quvchi</div>
+          <div className="pay-name">{student.name}</div>
+          <div className="pay-info">
+            <div className="pay-sec">To'lov ma'lumoti</div>
+            <div className="pay-line">To'langan: <b className="g">{groupDigits(paidIn(gMonth, gYear)) || 0} so'm</b>
+              {extraInPeriod(form, gMonth, gYear) > 0 && <span className="pay-extra-tag">+ {groupDigits(extraInPeriod(form, gMonth, gYear))} qo'shimcha to'lov</span>}
+            </div>
+            <div className="pay-line">Qolgan to'lov: <b className="r">{groupDigits(gLeft) || 0} so'm</b></div>
+          </div>
+          <div className="sd-field">
+            <label className="sd-label">Summa (so'm) *</label>
+            <div className="pay-row">
+              <input className="sd-input" autoFocus inputMode="numeric" value={gAmount}
+                onChange={(e) => setGAmount(groupDigits(e.target.value))}
+                onKeyDown={(e) => { if (e.key === 'Enter') confirmGPay(); }} />
+              <button type="button" className={`pay-plus ${gExtraOpen ? 'on' : ''}`}
+                title={gExtraOpen ? "Qo'shimcha summani olib tashlash" : "Qo'shimcha summa qo'shish"}
+                aria-label="Qo'shimcha summa"
+                onClick={() => { if (gExtraOpen) { setGExtra(''); setGNote(''); } setGExtraOpen(!gExtraOpen); }}>
+                {gExtraOpen ? '×' : '+'}
+              </button>
+            </div>
+          </div>
+          {gOver && (
+            <div className="pay-warn">⚠️ O'quvchining qarzi faqat {groupDigits(gLeft) || 0} so'm. Ko'proq kiritmoqchi bo'lsangiz, ortiqcha qismini "+" tugmasi orqali qo'shimcha summa sifatida yozing.</div>
+          )}
+          {gExtraOpen && (
+            <React.Fragment>
+              <div className="sd-field">
+                <label className="sd-label">Qo'shimcha summa (so'm)</label>
+                <input className="sd-input" autoFocus inputMode="numeric" value={gExtra}
+                  onChange={(e) => setGExtra(groupDigits(e.target.value))} />
+              </div>
+              <div className="sd-field">
+                <label className="sd-label">Izoh</label>
+                <input className="sd-input" placeholder="Qo'shimcha summa nima uchun" value={gNote}
+                  onChange={(e) => setGNote(e.target.value)} />
+              </div>
+            </React.Fragment>
+          )}
+          <div className="sd-field">
+            <label className="sd-label">Oy</label>
+            <select className="sd-select" value={gMonth} onChange={(e) => changeGPeriod(e.target.value, gYear)}>
+              {MONTH_NAMES.map((m) => <option key={m} value={m}>{m}</option>)}
+            </select>
+          </div>
+          <div className="sd-field">
+            <label className="sd-label">Yil</label>
+            <input className="sd-input" inputMode="numeric" value={gYear}
+              onChange={(e) => changeGPeriod(gMonth, onlyDigits(e.target.value).slice(0, 4))} />
+          </div>
+          <div className="sd-foot" style={{ marginTop: '1rem' }}>
+            <button className="sd-btn sd-btn-ghost" onClick={() => setGPayOpen(false)}>Bekor</button>
+            <button className="sd-btn sd-btn-green" onClick={confirmGPay} disabled={gOver || (!Number(onlyDigits(gAmount)) && !Number(onlyDigits(gExtra)))}>
+              <Icon.check width="14" height="14" /> To'lov qilish
+            </button>
+          </div>
+        </SdModal>
+        );
+      })()}
+
       {payFor && (
         <SdModal title="To'lov qilish" icon={<Icon.card width="16" height="16" />} onClose={() => setPayFor(null)}>
           <p className="sd-hint" style={{ marginTop: 0, marginBottom: '.8rem' }}>
@@ -3206,7 +3587,7 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
             </div>
             <div>
               <div className="sd-creds-k">Qolgan qarz</div>
-              <div className="sd-creds-v">{fmtMoney(isOverdue(form.access[payFor]) ? feeOfCat(payFor) : 0)}</div>
+              <div className="sd-creds-v">{fmtMoney(isCourseDue(form.access[payFor]) ? feeOfCat(payFor) : 0)}</div>
             </div>
           </div>
           <div className="sd-field">
@@ -3409,6 +3790,7 @@ function StudentApp({ me, categories, students, setStudents, onLogout, notify })
   const setStudent = (upd) => setStudents(students.map((s) => (s.id === me.id ? upd : s)));
 
   const enrolledCategories = categories.filter((c) => student.access[c.id]?.active);
+  const bill = studentBilling(student, categories);
 
   const lessonProgress = (lessonId) => student.progress[lessonId] || { watched: 0, completed: false };
 
@@ -3458,10 +3840,11 @@ function StudentApp({ me, categories, students, setStudents, onLogout, notify })
       </header>
 
       <main className="max-w-6xl mx-auto px-6 py-8">
-        {page === 'profile' && <StudentProfile student={student} onSave={(u) => { setStudent(u); notify('Profil yangilandi'); }} />}
+        {page === 'profile' && <StudentProfile student={student} bill={bill} onSave={(u) => { setStudent(u); notify('Profil yangilandi'); }} />}
 
         {page === 'home' && !catId && (
           <div>
+            <PaymentNotice bill={bill} />
             <div className="bg-ink text-white rounded-2xl p-6 mb-6 relative overflow-hidden">
               <div className="absolute inset-0 grid-dots opacity-20" />
               <div className="relative">
@@ -3500,7 +3883,7 @@ function StudentApp({ me, categories, students, setStudents, onLogout, notify })
               {enrolledCategories.map((cat) => {
                 const stat = courseStats(cat);
                 const access = student.access[cat.id];
-                const overdue = isOverdue(access);
+                const overdue = bill.blocked && !(access && access.isFullyPaid);
                 const ci = categories.findIndex((c) => c.id === cat.id);
                 const cs = catStyle(ci);
                 return (
@@ -3558,6 +3941,8 @@ function StudentApp({ me, categories, students, setStudents, onLogout, notify })
             category={categories.find((c) => c.id === catId)}
             subtopic={categories.find((c) => c.id === catId).subtopics.find((s) => s.id === subId)}
             access={student.access[catId]}
+            payBlocked={bill.blocked && !(student.access[catId] && student.access[catId].isFullyPaid)}
+            payDebt={bill.debt}
             forceSunday={forceSunday}
             lessonId={lessonId}
             setLessonId={setLessonId}
@@ -3571,9 +3956,9 @@ function StudentApp({ me, categories, students, setStudents, onLogout, notify })
   );
 }
 
-function LessonView({ category, subtopic, access, forceSunday, lessonId, setLessonId, progressOf, onProgress, onBack }) {
+function LessonView({ category, subtopic, access, payBlocked, payDebt, forceSunday, lessonId, setLessonId, progressOf, onProgress, onBack }) {
   const lessons = subtopic.lessons;
-  const overdue = isOverdue(access);
+  const overdue = !!payBlocked;
   const dayOk = isScheduleDayOk(access, forceSunday);
   const blocked = overdue || !dayOk;
 
@@ -3594,7 +3979,7 @@ function LessonView({ category, subtopic, access, forceSunday, lessonId, setLess
       {blocked && (
         <div className="bg-clay/10 border border-clay/30 text-clay rounded-xl px-5 py-4 mb-6 text-sm font-medium flex items-center gap-3">
           <Icon.warn width="18" height="18" className="shrink-0" />
-          {overdue ? "Bu kurs uchun to'lov muddati tugagan. Davom etish uchun o'qituvchingiz bilan bog'laning." : "Bugun dam kuni — sizning dars jadvalingiz bo'yicha video dars ochilmaydi."}
+          {overdue ? `Oylik to'lov qilinmagan: ${fmtMoney(payDebt)}. To'lov qilingach dars ochiladi — o'qituvchingiz bilan bog'laning.` : "Bugun dam kuni — sizning dars jadvalingiz bo'yicha video dars ochilmaydi."}
         </div>
       )}
 
@@ -3712,7 +4097,29 @@ function VideoPlayer({ lesson, locked, progress, onProgress, onNext, hasNext }) 
   );
 }
 
-function StudentProfile({ student, onSave }) {
+function PaymentNotice({ bill }) {
+  if (!bill || !bill.total) return null;
+  if (bill.blocked) {
+    return (
+      <div className="bg-clay/10 border border-clay/30 text-clay rounded-xl px-5 py-4 mb-6 text-sm flex items-start gap-3">
+        <Icon.warn width="18" height="18" className="shrink-0" />
+        <div>
+          <div className="font-semibold mb-1">Darslar bloklangan — oylik to'lov qilinmagan</div>
+          <div>{bill.month} {bill.year} uchun to'lashingiz kerak: <b>{fmtMoney(bill.debt)}</b>.
+            {bill.paid > 0 ? ` Siz ${fmtMoney(bill.paid)} to'lagansiz, qolgan qismini to'lang.` : ''} To'lovni o'qituvchingizga topshiring — u tasdiqlagach darslar avtomatik ochiladi.</div>
+        </div>
+      </div>
+    );
+  }
+  return (
+    <div className="rounded-xl px-5 py-3 mb-6 text-sm flex items-center gap-3" style={{ background: 'rgba(46,111,78,.10)', border: '1px solid rgba(46,111,78,.25)', color: '#2E6F4E' }}>
+      <Icon.check width="16" height="16" className="shrink-0" />
+      <span>{bill.month} oyi uchun to'lov qilingan.{bill.nextDate ? ` Keyingi to'lov: ${fmtDate(bill.nextDate)} (${fmtMoney(bill.total)}).` : ''}</span>
+    </div>
+  );
+}
+
+function StudentProfile({ student, bill, onSave }) {
   const [form, setForm] = useState({ ...student });
   const [pw, setPw] = useState({ cur: '', next: '', confirm: '' });
   const [pwMsg, setPwMsg] = useState('');
@@ -3729,6 +4136,7 @@ function StudentProfile({ student, onSave }) {
   return (
     <div className="max-w-lg">
       <h1 className="font-display text-3xl text-ink mb-6">Profil</h1>
+      <PaymentNotice bill={bill} />
       <div className="bg-card border border-line rounded-xl p-5 space-y-4">
         {[['Ism familiya', 'name'], ['Telefon', 'phone'], ['Manzil', 'address']].map(([label, key]) => (
           <div key={key}>
