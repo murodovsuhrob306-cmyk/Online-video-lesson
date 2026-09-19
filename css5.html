@@ -1263,13 +1263,50 @@ const studentBilling = (student, categories, m, y) => {
   const access = (student && student.access) || {};
   const actives = Object.entries(access).filter(([, a]) => a && a.active);
   const payable = actives.filter(([, a]) => !a.isFullyPaid);
-  let total = payable.reduce((t, [cid]) => t + courseFeeOf(student, categories, cid), 0);
-  if (!actives.length) total = (student && student.monthlyFee) || 0;
-  const paid = paidInPeriod(student, m, y);
+  const payIds = payable.map(([cid]) => cid);
+  const inPeriod = ((student && student.payments) || []).filter((p) => p.month === m && String(p.year) === String(y));
+  /* Kursga bevosita qilingan to'lov shu kursga yoziladi; umumiy to'lov (kurs tanlanmagan) qolgan qarzlarni ketma-ket yopadi */
+  let pool = inPeriod.filter((p) => !payIds.includes(p.catId)).reduce((t, p) => t + (Number(p.amount) || 0), 0);
+  const courses = payable.map(([cid, a]) => {
+    const c = categories.find((x) => x.id === cid);
+    const fee = courseFeeOf(student, categories, cid);
+    const own = inPeriod.filter((p) => p.catId === cid).reduce((t, p) => t + (Number(p.amount) || 0), 0);
+    const used = Math.min(own, fee);
+    pool += own - used;
+    return { catId: cid, name: c ? c.name : cid, fee, paid: used, nextDate: a.nextPaymentDate, due: isCourseDue(a) };
+  });
+  courses.forEach((c) => {
+    const use = Math.min(pool, c.fee - c.paid);
+    c.paid += use; pool -= use;
+    c.debt = c.fee - c.paid;
+    c.blocked = c.due && c.debt > 0;
+  });
+  let total = courses.reduce((t, c) => t + c.fee, 0);
+  let paid = courses.reduce((t, c) => t + c.paid, 0);
+  if (!actives.length) { total = (student && student.monthlyFee) || 0; paid = paidInPeriod(student, m, y); }
   const debt = Math.max(0, total - paid);
-  const started = payable.some(([, a]) => isCourseDue(a));
+  const blockedDebt = courses.filter((c) => c.blocked).reduce((t, c) => t + c.debt, 0);
   const nextDate = payable.map(([, a]) => a.nextPaymentDate).filter(Boolean).sort()[0];
-  return { total, paid, debt, blocked: started && debt > 0, nextDate, month: m, year: y };
+  return { total, paid, debt, blockedDebt, blocked: courses.some((c) => c.blocked), courses, nextDate, month: m, year: y };
+};
+const isCourseBlocked = (student, categories, catId) => {
+  const c = studentBilling(student, categories).courses.find((x) => x.catId === catId);
+  return !!(c && c.blocked);
+};
+/* To'lovdan keyin kurslarning keyingi to'lov sanasini yangilaydi: to'liq to'langan kurs -> keyingi oyning 1-sanasi.
+   reopen=true bo'lsa (to'lov o'chirilgan/o'zgargan) — qarzi qaytgan kurs yana joriy oyning 1-sanasiga qaytadi. */
+const syncCycleDates = (student, categories, reopen) => {
+  const cp = curPeriod();
+  const b = studentBilling(student, categories);
+  const nextIso = firstOfNextMonthISO(cp.m, cp.y);
+  const access = Object.fromEntries(Object.entries(student.access || {}).map(([cid, a]) => {
+    const c = b.courses.find((x) => x.catId === cid);
+    if (!c || c.fee <= 0) return [cid, a];
+    if (c.debt === 0) return [cid, { ...a, nextPaymentDate: nextIso }];
+    if (reopen && a.nextPaymentDate === nextIso) return [cid, { ...a, nextPaymentDate: firstOfMonthISO(cp.m, cp.y) }];
+    return [cid, a];
+  }));
+  return { ...student, access };
 };
 const scheduleLabel = (s) => ({
   odd: 'Toq kunlar (Du / Chor / Ju)',
@@ -1941,8 +1978,8 @@ function StaffApp({ me, staff, setStaff, categories, setCategories, students, se
 
   const revenue = useMemo(() => {
     const byCategory = categories.map((c) => {
-      const payers = students.filter((s) => { const a = s.access[c.id]; return a && a.active && !studentBilling(s, categories).blocked; }).length;
-      const overdueCount = students.filter((s) => { const a = s.access[c.id]; return a && a.active && studentBilling(s, categories).blocked; }).length;
+      const payers = students.filter((s) => { const a = s.access[c.id]; return a && a.active && !isCourseBlocked(s, categories, c.id); }).length;
+      const overdueCount = students.filter((s) => { const a = s.access[c.id]; return a && a.active && isCourseBlocked(s, categories, c.id); }).length;
       const price = c.monthlyPrice || 0;
       return { id: c.id, name: c.name, price, payers, overdueCount, amount: payers * price, atRisk: overdueCount * price };
     }).sort((a, b) => b.amount - a.amount);
@@ -2238,7 +2275,7 @@ function PaymentsPage({ students, categories }) {
 
   const rows = students.flatMap((s) => Object.entries(s.access)
     .filter(([, a]) => a && a.active)
-    .map(([catId, a]) => ({ student: s, catId, access: a, overdue: !a.isFullyPaid && studentBilling(s, categories).blocked })));
+    .map(([catId, a]) => ({ student: s, catId, access: a, overdue: isCourseBlocked(s, categories, catId) })));
 
   const filtered = rows.filter((r) => r.student.name.toLowerCase().includes(query.toLowerCase()));
   const sorted = [...filtered].sort((a, b) => (b.overdue - a.overdue));
@@ -2730,7 +2767,7 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
   const openAlertModal = (s) => {
     const b = studentBilling(s, categories);
     setAlertText(b.blocked
-      ? `Hurmatli ${s.name}, ${b.month} oyi uchun ${fmtMoney(b.debt)} to'lov qolgan. Iltimos, kursni davom ettirish uchun to'lovni amalga oshiring.`
+      ? `Hurmatli ${s.name}, ${b.month} oyi uchun ${fmtMoney(b.blockedDebt)} to'lov qolgan. Iltimos, kursni davom ettirish uchun to'lovni amalga oshiring.`
       : `Hurmatli ${s.name}, keyingi oylik to'lovni o'z vaqtida amalga oshirishingizni so'raymiz.`);
     setAlertFor(s);
   };
@@ -2770,23 +2807,17 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
     const extra = Number(onlyDigits(payExtra)) || 0;
     const s = payStu;
     if ((!amount && !extra) || amount > payLeftOf(s, payMonth, payYear)) return;
-    const total = payTotalOf(s);
-    const cur = curPeriod();
-    const notPast = periodIndex(payMonth, payYear) >= periodIndex(cur.m, cur.y);
-    const covered = notPast && total > 0 && payPaidOf(s, payMonth, payYear) + amount >= total;
     const courseNames = payableCourses(s)
       .map(([cid]) => { const c = categories.find((x) => x.id === cid); return c ? c.name : null; })
       .filter(Boolean).join(', ');
     const record = { id: uid('pay'), catId: '', courseName: courseNames || "Oylik to'lov", amount, extra, note: payNote.trim(), month: payMonth, year: payYear, date: todayISO() };
+    const cur = curPeriod();
+    const isCurrent = payMonth === cur.m && String(payYear) === cur.y;
     setStudents(students.map((x) => {
       if (x.id !== s.id) return x;
-      let access = x.access || {};
-      if (covered) {   // to'liq to'langan bo'lsa — keyingi to'lov keyingi oyning 1-sanasiga suriladi
-        const nextIso = firstOfNextMonthISO(payMonth, payYear);
-        access = Object.fromEntries(Object.entries(access).map(([cid, a]) =>
-          [cid, (a && a.active && !a.isFullyPaid) ? { ...a, nextPaymentDate: nextIso } : a]));
-      }
-      return { ...x, access, payments: [...(x.payments || []), record] };
+      const nx = { ...x, payments: [...(x.payments || []), record] };
+      // to'liq to'langan kurs(lar)ning keyingi to'lovi keyingi oyning 1-sanasiga suriladi
+      return isCurrent ? syncCycleDates(nx, categories) : nx;
     }));
     notify(`${s.name}: ${fmtMoney(amount + extra)} to'lov qabul qilindi`);
     closePayModal();
@@ -2799,8 +2830,8 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
     if (!entries.length) return { cls: 'stu-pill-mut', text: 'Kurs biriktirilmagan' };
     const b = studentBilling(s, categories);
     if (b.blocked) {
-      if (b.paid > 0) return { cls: 'stu-pill-part', text: `⚠️ Qisman: ${fmtMoney(b.debt)} qarz` };
-      return { cls: 'stu-pill-debt', text: `Qarzdor: ${fmtMoney(b.debt)}` };
+      if (b.paid > 0) return { cls: 'stu-pill-part', text: `⚠️ Qisman: ${fmtMoney(b.blockedDebt)} qarz` };
+      return { cls: 'stu-pill-debt', text: `Qarzdor: ${fmtMoney(b.blockedDebt)}` };
     }
     if (entries.every(([, a]) => a.isFullyPaid) || (b.total > 0 && b.debt === 0)) return { cls: 'stu-pill-paid', text: "To'langan ✅" };
     return { cls: 'stu-pill-part', text: `Keyingi to'lov: ${fmtDate(b.nextDate)}` };
@@ -3119,15 +3150,15 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
     const cur = form.access[payFor] || { active: true, nextPaymentDate: todayISO(), isFullyPaid: false, schedule: 'daily', includeSunday: false };
     const amount = Number(onlyDigits(payAmount)) || 0;
     const nowP = curPeriod();
-    const advance = periodIndex(payMonth, payYear) >= periodIndex(nowP.m, nowP.y);
-    setForm({
+    const isCurrent = payMonth === nowP.m && String(payYear) === nowP.y;
+    const nf = {
       ...form,
-      access: { ...form.access, [payFor]: advance ? { ...cur, nextPaymentDate: firstOfNextMonthISO(payMonth, payYear) } : cur },
       payments: [...(form.payments || []), {
         id: uid('pay'), catId: payFor, courseName: cat ? cat.name : '',
         amount, month: payMonth, year: payYear, date: todayISO(),
       }],
-    });
+    };
+    setForm(isCurrent ? syncCycleDates(nf, categories) : nf);
     setPayFor(null);
     // API: POST /api/admin/students/{id}/payments/  (catId, amount, month, year)
   };
@@ -3142,7 +3173,7 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
   const curYear = curPeriod().y;
   const paidSum = bill.paid;
   const debtSum = bill.debt;
-  const overdueSum = bill.blocked ? bill.debt : 0;
+  const overdueSum = bill.blockedDebt;
   const leftIn = (m, y) => Math.max(0, totalFee - paidIn(m, y));
 
   const confirmNewPassword = () => {
@@ -3156,12 +3187,7 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
   const syncCycle = (u, touchedPeriods) => {
     const cp = curPeriod();
     if (!touchedPeriods.some(([m, y]) => m === cp.m && String(y) === cp.y)) return u;
-    const b = studentBilling(u, categories);
-    if (b.total <= 0) return u;
-    const iso = b.debt > 0 ? firstOfMonthISO(cp.m, cp.y) : firstOfNextMonthISO(cp.m, cp.y);
-    const access = Object.fromEntries(Object.entries(u.access || {}).map(([cid, a]) =>
-      [cid, (a && a.active && !a.isFullyPaid) ? { ...a, nextPaymentDate: iso } : a]));
-    return { ...u, access };
+    return syncCycleDates(u, categories, true);
   };
   const confirmDeletePay = () => {
     if (!delPay) return;
@@ -3198,20 +3224,14 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
     const amount = Number(onlyDigits(gAmount)) || 0;
     const extra = Number(onlyDigits(gExtra)) || 0;
     if ((!amount && !extra) || amount > leftIn(gMonth, gYear)) return;
-    const nowP = curPeriod();
-    const notPast = periodIndex(gMonth, gYear) >= periodIndex(nowP.m, nowP.y);
-    const covered = notPast && totalFee > 0 && paidIn(gMonth, gYear) + amount >= totalFee;
     const courseNames = actives
       .map(([cid]) => { const c = categories.find((x) => x.id === cid); return c ? c.name : null; })
       .filter(Boolean).join(', ');
     const record = { id: uid('pay'), catId: '', courseName: courseNames || "Oylik to'lov", amount, extra, note: gNote.trim(), month: gMonth, year: gYear, date: todayISO() };
-    let access = form.access || {};
-    if (covered) {   // keyingi to'lov — keyingi oyning 1-sanasi
-      const nextIso = firstOfNextMonthISO(gMonth, gYear);
-      access = Object.fromEntries(Object.entries(access).map(([cid, a]) =>
-        [cid, (a && a.active && !a.isFullyPaid) ? { ...a, nextPaymentDate: nextIso } : a]));
-    }
-    const upd = { ...form, access, payments: [...(form.payments || []), record] };
+    const nowP = curPeriod();
+    const isCurrent = gMonth === nowP.m && String(gYear) === nowP.y;
+    let upd = { ...form, payments: [...(form.payments || []), record] };
+    if (isCurrent) upd = syncCycleDates(upd, categories);
     setForm(upd);
     onSave(upd);
     setGPayOpen(false);
@@ -3434,7 +3454,7 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
                             Yakshanbani ham jadvalga qo'shish
                           </label>
                         )}
-                        {isCourseDue(a) && !a.isFullyPaid && bill.blocked && <div className="ed-warn">Bu kurs to'lov muddati o'tgani uchun avtomatik bloklangan.</div>}
+                        {isCourseBlocked(form, categories, cat.id) && <div className="ed-warn">Bu kurs to'lov muddati o'tgani uchun avtomatik bloklangan.</div>}
                       </div>
                     )}
                   </div>
@@ -3587,7 +3607,7 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
             </div>
             <div>
               <div className="sd-creds-k">Qolgan qarz</div>
-              <div className="sd-creds-v">{fmtMoney(isCourseDue(form.access[payFor]) ? feeOfCat(payFor) : 0)}</div>
+              <div className="sd-creds-v">{fmtMoney((bill.courses.find((x) => x.catId === payFor) || { debt: 0 }).debt)}</div>
             </div>
           </div>
           <div className="sd-field">
@@ -3791,6 +3811,8 @@ function StudentApp({ me, categories, students, setStudents, onLogout, notify })
 
   const enrolledCategories = categories.filter((c) => student.access[c.id]?.active);
   const bill = studentBilling(student, categories);
+  const [blockedCat, setBlockedCat] = useState(null);   // to'lov qilinmagan kursga kirishga urinish
+  const courseBill = (cid) => bill.courses.find((c) => c.catId === cid);
 
   const lessonProgress = (lessonId) => student.progress[lessonId] || { watched: 0, completed: false };
 
@@ -3827,6 +3849,26 @@ function StudentApp({ me, categories, students, setStudents, onLogout, notify })
           </div>
         </Modal>
       )}
+      {blockedCat && (() => {
+        const cb = courseBill(blockedCat.id) || { debt: 0, paid: 0 };
+        return (
+          <Modal title="To'lov qilinmagan" onClose={() => setBlockedCat(null)}>
+            <div className="flex items-center gap-2 text-clay mb-3">
+              <Icon.lock width="18" height="18" />
+              <span className="font-semibold text-sm uppercase tracking-wide">Kurs bloklangan</span>
+            </div>
+            <p className="text-ink text-base leading-relaxed">
+              <b>«{blockedCat.name}»</b> kursi uchun {bill.month} oyi to'lovi qilinmagan.
+              To'lashingiz kerak: <b>{fmtMoney(cb.debt)}</b>.
+              {cb.paid > 0 ? ` (${fmtMoney(cb.paid)} to'langan.)` : ''}
+            </p>
+            <p className="text-slate text-sm mt-2">To'lovni o'qituvchingizga topshiring — u tasdiqlagach kurs avtomatik ochiladi.</p>
+            <div className="mt-6">
+              <button onClick={() => setBlockedCat(null)} className="bg-forest text-white text-sm px-5 py-2.5 rounded-lg">Tushunarli</button>
+            </div>
+          </Modal>
+        );
+      })()}
       <header className="bg-white border-b border-line sticky top-0 z-10">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <button onClick={() => { setPage('home'); setCatId(null); setSubId(null); }}><Logo /></button>
@@ -3840,11 +3882,11 @@ function StudentApp({ me, categories, students, setStudents, onLogout, notify })
       </header>
 
       <main className="max-w-6xl mx-auto px-6 py-8">
-        {page === 'profile' && <StudentProfile student={student} bill={bill} onSave={(u) => { setStudent(u); notify('Profil yangilandi'); }} />}
+        <PaymentNotice bill={bill} />
+        {page === 'profile' && <StudentProfile student={student} onSave={(u) => { setStudent(u); notify('Profil yangilandi'); }} />}
 
         {page === 'home' && !catId && (
           <div>
-            <PaymentNotice bill={bill} />
             <div className="bg-ink text-white rounded-2xl p-6 mb-6 relative overflow-hidden">
               <div className="absolute inset-0 grid-dots opacity-20" />
               <div className="relative">
@@ -3883,11 +3925,12 @@ function StudentApp({ me, categories, students, setStudents, onLogout, notify })
               {enrolledCategories.map((cat) => {
                 const stat = courseStats(cat);
                 const access = student.access[cat.id];
-                const overdue = bill.blocked && !(access && access.isFullyPaid);
+                const cb = courseBill(cat.id);
+                const overdue = !!(cb && cb.blocked);
                 const ci = categories.findIndex((c) => c.id === cat.id);
                 const cs = catStyle(ci);
                 return (
-                  <button key={cat.id} onClick={() => setCatId(cat.id)} className="text-left bg-card border border-line rounded-xl p-5 hover:border-gold transition group">
+                  <button key={cat.id} onClick={() => { if (overdue) setBlockedCat(cat); else setCatId(cat.id); }} className="text-left bg-card border border-line rounded-xl p-5 hover:border-gold transition group" style={overdue ? { opacity: .85 } : undefined}>
                     <div className="flex items-start justify-between mb-3">
                       <div className="course-chip" style={{ background: cs.bg, color: cs.fg }}>
                         <cs.icon width="20" height="20" />
@@ -3941,8 +3984,8 @@ function StudentApp({ me, categories, students, setStudents, onLogout, notify })
             category={categories.find((c) => c.id === catId)}
             subtopic={categories.find((c) => c.id === catId).subtopics.find((s) => s.id === subId)}
             access={student.access[catId]}
-            payBlocked={bill.blocked && !(student.access[catId] && student.access[catId].isFullyPaid)}
-            payDebt={bill.debt}
+            payBlocked={!!(courseBill(catId) && courseBill(catId).blocked)}
+            payDebt={courseBill(catId) ? courseBill(catId).debt : 0}
             forceSunday={forceSunday}
             lessonId={lessonId}
             setLessonId={setLessonId}
@@ -4098,28 +4141,33 @@ function VideoPlayer({ lesson, locked, progress, onProgress, onNext, hasNext }) 
 }
 
 function PaymentNotice({ bill }) {
-  if (!bill || !bill.total) return null;
-  if (bill.blocked) {
-    return (
-      <div className="bg-clay/10 border border-clay/30 text-clay rounded-xl px-5 py-4 mb-6 text-sm flex items-start gap-3">
-        <Icon.warn width="18" height="18" className="shrink-0" />
-        <div>
-          <div className="font-semibold mb-1">Darslar bloklangan — oylik to'lov qilinmagan</div>
-          <div>{bill.month} {bill.year} uchun to'lashingiz kerak: <b>{fmtMoney(bill.debt)}</b>.
-            {bill.paid > 0 ? ` Siz ${fmtMoney(bill.paid)} to'lagansiz, qolgan qismini to'lang.` : ''} To'lovni o'qituvchingizga topshiring — u tasdiqlagach darslar avtomatik ochiladi.</div>
-        </div>
-      </div>
-    );
-  }
+  const rows = ((bill && bill.courses) || []).filter((c) => c.fee > 0);
+  if (!rows.length) return null;
   return (
-    <div className="rounded-xl px-5 py-3 mb-6 text-sm flex items-center gap-3" style={{ background: 'rgba(46,111,78,.10)', border: '1px solid rgba(46,111,78,.25)', color: '#2E6F4E' }}>
-      <Icon.check width="16" height="16" className="shrink-0" />
-      <span>{bill.month} oyi uchun to'lov qilingan.{bill.nextDate ? ` Keyingi to'lov: ${fmtDate(bill.nextDate)} (${fmtMoney(bill.total)}).` : ''}</span>
+    <div className="mb-6">
+      {rows.map((c) => c.blocked ? (
+        <div key={c.catId} className="bg-clay/10 border border-clay/30 text-clay rounded-xl px-4 py-3 mb-2 text-sm flex items-start gap-3">
+          <Icon.lock width="16" height="16" className="shrink-0" />
+          <div>
+            <b>«{c.name}»</b> kursi bloklangan — {bill.month} oyi uchun <b>{fmtMoney(c.debt)}</b> to'lov qilinmagan.
+            {c.paid > 0 ? ` (${fmtMoney(c.paid)} to'langan.)` : ''} To'lovni o'qituvchingizga topshiring.
+          </div>
+        </div>
+      ) : (
+        <div key={c.catId} className="rounded-xl px-4 py-3 mb-2 text-sm flex items-start gap-3"
+          style={{ background: 'rgba(204,139,101,.12)', border: '1px solid rgba(204,139,101,.35)', color: '#8a5a2b' }}>
+          <Icon.clock width="16" height="16" className="shrink-0" />
+          <div>
+            <b>«{c.name}»</b> kursi uchun oylik to'lovni ({fmtMoney(c.fee)}) qilish esdan chiqmasin.
+            {c.nextDate ? ` Keyingi to'lov sanasi: ${fmtDate(c.nextDate)}.` : ''}
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
 
-function StudentProfile({ student, bill, onSave }) {
+function StudentProfile({ student, onSave }) {
   const [form, setForm] = useState({ ...student });
   const [pw, setPw] = useState({ cur: '', next: '', confirm: '' });
   const [pwMsg, setPwMsg] = useState('');
@@ -4136,7 +4184,6 @@ function StudentProfile({ student, bill, onSave }) {
   return (
     <div className="max-w-lg">
       <h1 className="font-display text-3xl text-ink mb-6">Profil</h1>
-      <PaymentNotice bill={bill} />
       <div className="bg-card border border-line rounded-xl p-5 space-y-4">
         {[['Ism familiya', 'name'], ['Telefon', 'phone'], ['Manzil', 'address']].map(([label, key]) => (
           <div key={key}>
