@@ -736,7 +736,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
     .mobile-menu-btn:hover { background: rgba(255,255,255,.12); }
     /* EduStream wordmark is a desktop-only label; mobile keeps just the mark */
     .topbar-brand .brand-text { display: none; }
-    .app-main > main { padding-bottom: 6rem !important; }
+    .app-main > main { padding: .65rem .65rem 6rem !important; }
 
     /* Floating pill dock, detached from the screen edge — not an edge-to-edge bar */
     .mobile-bottom-nav {
@@ -908,9 +908,16 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   }
   .notif-dropdown-head {
     display: flex; align-items: center; justify-content: space-between;
-    padding: .7rem .9rem; border-bottom: 1px solid rgba(1,51,40,.08); flex-shrink: 0;
+    padding: .7rem .9rem; border-bottom: 1px solid rgba(1,51,40,.08); flex-shrink: 0; gap: .5rem;
   }
-  .notif-dropdown-head h3 { font-size: .86rem; font-weight: 700; color: #013328; }
+  .notif-dropdown-head h3 { font-size: .86rem; font-weight: 700; color: #013328; white-space: nowrap; }
+  .notif-dropdown-head-acts { display: flex; align-items: center; gap: .5rem; flex-shrink: 0; }
+  .notif-mark-all {
+    background: none; border: none; cursor: pointer; padding: 0;
+    font-size: .68rem; font-weight: 700; color: #CC8B65; white-space: nowrap;
+    letter-spacing: .01em; transition: color .15s ease;
+  }
+  .notif-mark-all:hover { color: #B97850; text-decoration: underline; }
   .notif-dropdown-close {
     width: 24px; height: 24px; border-radius: .5rem; border: none; background: rgba(1,51,40,.06);
     display: flex; align-items: center; justify-content: center; color: #013328; cursor: pointer; flex-shrink: 0;
@@ -922,7 +929,19 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   .notif-item-body { flex: 1; min-width: 0; }
   .notif-item-title { font-size: .82rem; font-weight: 600; color: #013328; }
   .notif-item-sub { font-size: .72rem; color: #5B6472; }
-  @media (max-width: 480px) { .notif-dropdown { width: 82vw; right: -60px; } }
+  @media (max-width: 480px) {
+    .notif-dropdown { width: 88vw; right: -60px; max-height: 60vh; }
+    .notif-dropdown-head { padding: .55rem .65rem; }
+    .notif-dropdown-head h3 { font-size: .78rem; }
+    .notif-mark-all { font-size: .62rem; }
+    .notif-dropdown-close { width: 20px; height: 20px; border-radius: .4rem; }
+    .notif-dropdown-body { padding: .2rem .45rem .4rem; }
+    .notif-item { gap: .5rem; padding: .45rem .25rem; }
+    .notif-item .avatar { width: 1.7rem; height: 1.7rem; font-size: .66rem; }
+    .notif-item-title { font-size: .76rem; }
+    .notif-item-sub { font-size: .66rem; }
+    .notif-item .pill { font-size: .6rem; padding: .12rem .4rem; }
+  }
 
   /* ================= Dashboard: chart + at-risk students, ketma-ket (ustma-ust) ================= */
   .dash-combo-grid { display: flex; flex-direction: column; gap: 1.25rem; margin-top: 1.5rem; }
@@ -1204,7 +1223,10 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
     .stu-acts{ width:100%; gap:.3rem; padding-left:calc(32px + .6rem); }
     .stu-ib{ width:30px; height:26px; }
     .stu-acts .stu-ib.stu-ib-cash{ height:26px; margin-left:auto; }
-    .stu-dark{ padding:.7rem; }
+    .stu-dark{
+      padding:.35rem; background:none; background-image:none; border:none;
+      border-radius:0; box-shadow:none; min-height:auto;
+    }
     .ed-top-acts .stu-add{ padding:.55rem .8rem; }
     .ed-card, .ed-main{ padding:.8rem; border-radius:.85rem; }
     .ed-tabs{ overflow-x:auto; gap:.1rem; margin-bottom:.8rem; scrollbar-width:none; }
@@ -1944,7 +1966,7 @@ function MobileBottomNav({ navItems, activePage, onNavigate }) {
 /* =========================================================================
    TOPBAR (dark/light, bildirishnomalar modal, profil paneli)
    ========================================================================= */
-function Topbar({ me, roleLabel, initials, theme, onToggleTheme, notifications, onGoProfile, onLogout, onOpenMenu }) {
+function Topbar({ me, roleLabel, initials, theme, onToggleTheme, notifications, onMarkAllRead, onGoProfile, onLogout, onOpenMenu }) {
   const [notifOpen, setNotifOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const unread = notifications.length;
@@ -1975,9 +1997,14 @@ function Topbar({ me, roleLabel, initials, theme, onToggleTheme, notifications, 
               <div className="notif-dropdown">
                 <div className="notif-dropdown-head">
                   <h3 className="font-display">Bildirishnomalar</h3>
-                  <button className="notif-dropdown-close" onClick={() => setNotifOpen(false)} aria-label="Yopish">
-                    <Icon.close width="12" height="12" />
-                  </button>
+                  <div className="notif-dropdown-head-acts">
+                    {notifications.length > 0 && (
+                      <button className="notif-mark-all" onClick={onMarkAllRead}>Hammasini o'qilgan deb belgilash</button>
+                    )}
+                    <button className="notif-dropdown-close" onClick={() => setNotifOpen(false)} aria-label="Yopish">
+                      <Icon.close width="12" height="12" />
+                    </button>
+                  </div>
                 </div>
                 <div className="notif-dropdown-body">
                   {notifications.length === 0 && <p className="text-sm text-slate p-3">Hozircha bildirishnoma yo'q.</p>}
@@ -2072,10 +2099,14 @@ function StaffApp({ me, staff, setStaff, categories, setCategories, students, se
     (overdueCurPage - 1) * OVERDUE_PAGE_SIZE,
     overdueCurPage * OVERDUE_PAGE_SIZE
   );
+  const [readNotifIds, setReadNotifIds] = useState([]);
   const notifications = useMemo(
-    () => overdueStudents.map((s) => ({ id: s.id, name: s.name, initials: s.name.split(' ').map((w) => w[0]).slice(0, 2).join('') })),
-    [overdueStudents]
+    () => overdueStudents
+      .filter((s) => !readNotifIds.includes(s.id))
+      .map((s) => ({ id: s.id, name: s.name, initials: s.name.split(' ').map((w) => w[0]).slice(0, 2).join('') })),
+    [overdueStudents, readNotifIds]
   );
+  const markAllNotifsRead = () => setReadNotifIds(overdueStudents.map((s) => s.id));
 
   const nav = [
     { id: 'overview', label: 'Dashboard', icon: Icon.home },
@@ -2107,7 +2138,7 @@ function StaffApp({ me, staff, setStaff, categories, setCategories, students, se
       <div className="app-main flex-1 flex flex-col">
         <Topbar me={me} roleLabel={roleLabel} initials={initials}
           theme={theme} onToggleTheme={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-          notifications={notifications} onGoProfile={() => goTo('profile')} onLogout={onLogout}
+          notifications={notifications} onMarkAllRead={markAllNotifsRead} onGoProfile={() => goTo('profile')} onLogout={onLogout}
           onOpenMenu={() => setMobileMenuOpen(true)} />
 
         <main className="flex-1 p-8 overflow-y-auto max-h-screen">
