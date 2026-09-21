@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>EduStream — Video ta'lim platformasi</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script>/* React 18 (UMD, inlined — ishlash uchun internet shart emas) */
 /**
@@ -506,7 +505,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   .auth-tab.active { background: #CC8B65; color: #100C0D; box-shadow: 0 6px 16px -6px rgba(204,139,101,.6); }
   .auth-field-label { font-size: .68rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: rgba(234,251,239,.4); }
   .auth-input-wrap { position: relative; margin-top: .4rem; }
-  .auth-input-wrap > svg, .auth-input-wrap > i { position: absolute; left: .85rem; top: 50%; transform: translateY(-50%); color: rgba(234,251,239,.32); pointer-events: none; }
+  .auth-input-wrap > svg { position: absolute; left: .85rem; top: 50%; transform: translateY(-50%); color: rgba(234,251,239,.32); pointer-events: none; }
   .auth-input {
     width: 100%; background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.10); color: #EAFBEF;
     border-radius: .75rem; padding: .7rem .9rem .7rem 2.4rem; font-size: .88rem; outline: none;
@@ -600,16 +599,53 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
     .chart-tooltip-swatch { width: .45rem; height: .45rem; border-radius: .12rem; }
   }
 
-  /* ================= Sidebar modern ================= */
-  aside.side-modern.bg-ink { background-image: none !important; background-color: #171D2C !important; }
-  .side-modern nav.flex-1 { padding: 0 .55rem; gap: .2rem !important; }
-  .side-modern .nav-pill { border-radius: .7rem; padding-top: .6rem; padding-bottom: .6rem; transition: background .15s ease, color .15s ease; }
-  .side-modern .nav-pill:hover:not(.active) { background: rgba(255,255,255,.06); }
-  .side-modern .nav-pill.active { background: rgba(204,139,101,.14); box-shadow: none; font-weight: 600; }
-  .side-modern .nav-pill.active::before { background: #CC8B65; }
-  .side-modern .nav-pill-divider { border-top: 1px solid rgba(255,255,255,.09); margin: .5rem .6rem .35rem; }
+  /* ================= Sidebar: floating "dock" redesign (was a flat full-height list) ================= */
+  aside.side-modern.bg-ink {
+    background-image: none !important;
+    background-color: #171D2C !important;
+  }
+  .side-modern {
+    margin: .85rem 0 .85rem .85rem;
+    border-radius: 1.6rem;
+    border: 1px solid rgba(255,255,255,.08);
+    box-shadow: 0 24px 50px -20px rgba(1,25,18,.55), inset 0 1px 0 rgba(255,255,255,.06);
+    position: relative;
+  }
+  .side-modern::before {
+    content: ''; position: absolute; top: -38%; right: -30%; width: 230px; height: 230px;
+    background: radial-gradient(circle, rgba(204,139,101,.30), transparent 70%); pointer-events: none;
+  }
+  .side-modern nav.flex-1 { padding: .3rem .65rem !important; gap: .35rem !important; position: relative; z-index: 1; }
+  .side-modern .nav-pill {
+    border-radius: 1rem !important; margin: 0 !important;
+    padding-top: .5rem; padding-bottom: .5rem;
+    transition: background .18s ease, transform .18s ease, box-shadow .18s ease;
+  }
+  .side-modern .nav-pill:hover:not(.active) { background: rgba(255,255,255,.07); transform: translateX(2px); }
+  .side-modern .nav-pill.active {
+    background-image: linear-gradient(135deg, #E9C4A4, #CC8B65) !important;
+    background-color: transparent; box-shadow: 0 10px 22px -8px rgba(204,139,101,.55) !important;
+    transform: translateX(2px); font-weight: 700;
+  }
+  .side-modern .nav-pill.active, .side-modern .nav-pill.active span { color: #100C0D !important; }
+  .side-modern .nav-pill.active::before { content: none !important; background: none !important; }
+  .nav-pill-icon {
+    width: 2rem; height: 2rem; border-radius: .65rem; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(255,255,255,.08); color: rgba(255,255,255,.78);
+    transition: background .18s ease, color .18s ease;
+  }
+  /* All nav icons share one neutral tone (no more per-item rainbow tints) */
+  .side-modern .nav-pill.active .nav-pill-icon { background: rgba(16,12,13,.18) !important; color: #100C0D !important; }
+  .side-modern .nav-pill-divider {
+    border-top: none !important; height: 1.15rem; margin: .15rem .9rem .05rem !important; position: relative;
+  }
+  .side-modern .nav-pill-divider::after {
+    content: '• • •'; position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);
+    letter-spacing: .3em; font-size: .55rem; color: rgba(255,255,255,.18);
+  }
   .side-modern .avatar.bg-gold { background: #CC8B65 !important; color: #100C0D !important; background-image: none !important; }
-  .side-brand-badge { background: rgba(204,139,101,.14) !important; color: #E5B896 !important; }
+  .side-brand-badge { background: rgba(204,139,101,.16) !important; color: #F0CFB2 !important; }
 
   /* ================= App shell: sidebar to'liq balandlikda (100%), navbar sidebar yonida ================= */
   .app-shell { align-items: stretch; }
@@ -623,19 +659,32 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   }
 
   /* ================= Sidebar collapse (desktop) + mobile drawer ================= */
-  .side-modern { transition: width .28s cubic-bezier(.4,0,.2,1); overflow: hidden; }
-  .side-top { padding: 1.1rem 1.1rem .6rem; }
+  .side-modern { transition: width .28s cubic-bezier(.4,0,.2,1), margin .28s ease; overflow: hidden; }
+  .side-top { padding: 1.15rem 1.05rem .5rem; position: relative; z-index: 1; }
   .side-logo-row { display: flex; align-items: center; justify-content: space-between; gap: .5rem; }
+  .side-top .rounded-md { border-radius: 999px !important; box-shadow: 0 6px 14px -4px rgba(204,139,101,.55); }
+  .side-top .font-display { font-style: italic; }
   .side-collapse-btn {
-    width: 1.9rem; height: 1.9rem; border-radius: .55rem; background: rgba(255,255,255,.08); color: rgba(255,255,255,.7);
-    display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; flex-shrink: 0; transition: background .15s ease, color .15s ease;
+    width: 1.9rem; height: 1.9rem; border-radius: 999px; background: rgba(255,255,255,.09); color: rgba(255,255,255,.7);
+    display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; flex-shrink: 0;
+    transition: background .15s ease, color .15s ease, transform .15s ease;
   }
-  .side-collapse-btn:hover { background: rgba(255,255,255,.16); color: #fff; }
-  .side-collapse-btn svg, .side-collapse-btn i { transition: transform .28s cubic-bezier(.4,0,.2,1); }
-  .side-badge-row { padding: .55rem 1.1rem 0; overflow: hidden; }
+  .side-collapse-btn:hover { background: #CC8B65; color: #100C0D; transform: scale(1.06); }
+  .side-collapse-btn svg { transition: transform .28s cubic-bezier(.4,0,.2,1); }
+  .side-badge-row { padding: .5rem 1.05rem 0; overflow: hidden; position: relative; z-index: 1; }
   .side-label { display: inline-block; opacity: 1; max-width: 160px; overflow: hidden; white-space: nowrap; transition: opacity .16s ease, max-width .26s ease; vertical-align: middle; }
-  .side-footer { padding: 1.1rem; border-top: 1px solid rgba(255,255,255,.1); display: flex; align-items: center; gap: .75rem; cursor: pointer; }
+  .side-footer {
+    margin: .6rem .65rem .65rem; padding: .65rem .75rem; border-top: none;
+    border-radius: 1.1rem; background: rgba(255,255,255,.06); position: relative; z-index: 1;
+    display: flex; align-items: center; gap: .7rem; cursor: pointer; transition: background .15s ease;
+  }
+  .side-footer:hover { background: rgba(255,255,255,.11); }
   .side-footer-info { min-width: 0; flex: 1; overflow: hidden; transition: opacity .16s ease, max-width .26s ease; opacity: 1; max-width: 140px; }
+  .side-footer-avatar-wrap { position: relative; flex-shrink: 0; display: inline-flex; }
+  .side-footer-status {
+    position: absolute; right: -1px; bottom: -1px; width: .6rem; height: .6rem; border-radius: 999px;
+    background: #6FCF97; border: 2px solid #171D2C;
+  }
 
   .side-modern.is-collapsed { width: 5.25rem !important; }
   .side-modern.is-collapsed .side-label,
@@ -646,7 +695,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   .side-modern.is-collapsed .side-collapse-btn { display: none; }
   .side-modern.is-collapsed .side-expand-btn { display: flex; }
   .side-modern.is-collapsed nav.flex-1 button { justify-content: center; padding-left: 0; padding-right: 0; }
-  .side-modern.is-collapsed .side-footer { justify-content: center; }
+  .side-modern.is-collapsed .side-footer { justify-content: center; margin-left: .4rem; margin-right: .4rem; }
   .side-expand-btn { display: none; margin: 0 auto; }
 
   .mobile-bottom-nav { display: none; }
@@ -662,47 +711,52 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
     .side-modern { display: none !important; }
     .side-modern.mobile-open {
       display: flex !important;
-      position: fixed; top: 0; left: 0; bottom: 0; z-index: 70;
-      width: 78vw; max-width: 300px; box-shadow: 10px 0 30px -10px rgba(0,0,0,.5);
-      animation: sideSlideIn .2s ease both;
+      position: fixed; top: .6rem; left: .6rem; bottom: .6rem; z-index: 70;
+      width: 76vw; max-width: 290px; margin: 0 !important;
+      border-radius: 1.5rem;
+      box-shadow: 14px 0 44px -12px rgba(0,0,0,.55);
+      animation: sideSlideIn .22s cubic-bezier(.4,0,.2,1) both;
     }
-    @keyframes sideSlideIn { from { transform: translateX(-100%); } to { transform: translateX(0); } }
+    @keyframes sideSlideIn { from { transform: translateX(-115%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
     .side-mobile-backdrop {
-      display: block; position: fixed; inset: 0; z-index: 65; background: rgba(0,0,0,.45);
+      display: block; position: fixed; inset: 0; z-index: 65; background: rgba(6,20,15,.55); backdrop-filter: blur(2px);
     }
     .side-mobile-close {
-      display: flex; width: 1.9rem; height: 1.9rem; border-radius: .55rem;
-      background: rgba(255,255,255,.08); color: rgba(255,255,255,.7);
+      display: flex; width: 1.9rem; height: 1.9rem; border-radius: 999px;
+      background: rgba(255,255,255,.09); color: rgba(255,255,255,.7);
       align-items: center; justify-content: center; border: none; cursor: pointer; flex-shrink: 0;
     }
     .side-modern.mobile-open .side-collapse-btn,
     .side-modern.mobile-open .side-expand-btn { display: none; }
     .mobile-menu-btn {
-      display: flex; width: 2.25rem; height: 2.25rem; border-radius: .6rem;
+      display: flex; width: 2.25rem; height: 2.25rem; border-radius: .8rem;
       align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,.14);
       background: rgba(255,255,255,.06); color: #fff; cursor: pointer; flex-shrink: 0;
     }
     .mobile-menu-btn:hover { background: rgba(255,255,255,.12); }
     /* EduStream wordmark is a desktop-only label; mobile keeps just the mark */
     .topbar-brand .brand-text { display: none; }
-    .app-main > main { padding-bottom: 5.75rem !important; }
+    .app-main > main { padding-bottom: 6rem !important; }
 
+    /* Floating pill dock, detached from the screen edge — not an edge-to-edge bar */
     .mobile-bottom-nav {
-      display: flex; align-items: stretch; justify-content: space-evenly; gap: .15rem;
-      position: fixed; left: 0; right: 0; bottom: 0; z-index: 60;
-      background-image: linear-gradient(200deg, #171D2C 0%, #100C0D 100%);
-      border-top: 1px solid rgba(255,255,255,.08);
-      padding: .45rem .3rem calc(.45rem + env(safe-area-inset-bottom, 0px));
-      box-shadow: 0 -10px 24px -18px rgba(0,0,0,.6);
+      display: flex; align-items: stretch; justify-content: space-evenly; gap: .2rem;
+      position: fixed; left: .6rem; right: .6rem; bottom: calc(.6rem + env(safe-area-inset-bottom, 0px));
+      z-index: 60; background-image: none; background-color: #171D2C;
+      border-radius: 1.4rem; border: 1px solid rgba(255,255,255,.08);
+      padding: .4rem; box-shadow: 0 -14px 34px -16px rgba(0,0,0,.55), 0 10px 30px -14px rgba(0,0,0,.4);
     }
     .mobile-bottom-nav-item {
       flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
-      gap: .25rem; padding: .35rem .3rem; border-radius: .7rem; border: none; background: none; cursor: pointer;
-      color: rgba(255,255,255,.55); font-size: .62rem; font-weight: 600; line-height: 1.1; white-space: nowrap;
-      transition: color .15s ease, background .15s ease;
+      gap: .2rem; padding: .4rem .3rem; border-radius: 1rem; border: none; background: none; cursor: pointer;
+      color: rgba(255,255,255,.55); font-size: .6rem; font-weight: 600; line-height: 1.1; white-space: nowrap;
+      transition: color .15s ease, background .15s ease, transform .15s ease;
     }
-    .mobile-bottom-nav-item:active { background: rgba(255,255,255,.06); }
-    .mobile-bottom-nav-item.active { color: #CC8B65; }
+    .mobile-bottom-nav-item:active { transform: scale(.94); }
+    .mobile-bottom-nav-item.active {
+      color: #100C0D; background-image: linear-gradient(135deg, #E9C4A4, #CC8B65);
+      box-shadow: 0 8px 16px -6px rgba(204,139,101,.6);
+    }
   }
 
   /* ================= Course thumbnail cards (Kurslar top level) ================= */
@@ -764,8 +818,21 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   .topbar {
     height: 64px; display: flex; align-items: center; justify-content: space-between;
     padding: 0 1.25rem; background-image: none; background-color: #171D2C;
-    border-bottom: 1px solid rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.08);
     position: sticky; top: 0; z-index: 30; flex-shrink: 0;
+  }
+  /* Desktop: same floating "dock" card as the sidebar — margin, rounded corners, soft shadow */
+  @media (min-width: 861px) {
+    .topbar {
+      margin: .85rem .85rem 0 0;
+      border-radius: 1.5rem;
+      box-shadow: 0 20px 40px -18px rgba(1,25,18,.5);
+    }
+    .side-modern { margin: .85rem .6rem .85rem .85rem; }
+  }
+  /* Mobile keeps the original flush edge-to-edge bar */
+  @media (max-width: 860px) {
+    .topbar { border: none; border-bottom: 1px solid rgba(255,255,255,.08); }
   }
   .topbar-left { display: flex; align-items: center; gap: .9rem; }
   .topbar-right { display: flex; align-items: center; gap: .45rem; }
@@ -775,7 +842,11 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
     color: rgba(255,255,255,.85); cursor: pointer; position: relative; flex-shrink: 0;
   }
   .topbar-icon-btn:hover { background: rgba(255,255,255,.12); }
-  /* (notif-badge — pastdagi "Notifications" bo'limida) */
+  .notif-badge {
+    position: absolute; top: -4px; right: -4px; min-width: 16px; height: 16px; padding: 0 3px;
+    border-radius: 999px; background: #AC4B3B; color: #fff; font-size: .62rem; font-weight: 700;
+    display: flex; align-items: center; justify-content: center; border: 2px solid #100C0D;
+  }
   .topbar-profile-wrap { position: relative; margin-left: .25rem; }
   .topbar-profile-btn {
     display: flex; align-items: center; gap: .55rem; border: 1px solid rgba(255,255,255,.14);
@@ -830,104 +901,28 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   /* Compact notification dropdown, anchored under the bell (same pattern as the profile menu) */
   .topbar-notif-wrap { position: relative; }
   .notif-dropdown {
-    position: absolute; top: calc(100% + 12px); right: -6px; width: 340px; max-height: 440px;
-    background: #fff; border: 1px solid rgba(1,51,40,.10); border-radius: 1rem;
-    box-shadow: 0 22px 48px -16px rgba(1,51,40,.38), 0 2px 8px rgba(1,51,40,.06); z-index: 40;
+    position: absolute; top: calc(100% + 10px); right: -6px; width: 300px; max-height: 320px;
+    background: #fff; border: 1px solid rgba(1,51,40,.10); border-radius: .9rem;
+    box-shadow: 0 14px 34px -14px rgba(1,51,40,.32); z-index: 40;
     display: flex; flex-direction: column; overflow: hidden;
-    transform-origin: top right; animation: notifDrop .18s cubic-bezier(.2,.8,.3,1) both;
   }
-  @keyframes notifDrop { from { opacity: 0; transform: translateY(-6px) scale(.97); } to { opacity: 1; transform: none; } }
   .notif-dropdown-head {
-    display: flex; align-items: center; justify-content: space-between; gap: .5rem;
-    padding: .8rem .95rem .7rem; flex-shrink: 0; position: relative; background: inherit;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: .7rem .9rem; border-bottom: 1px solid rgba(1,51,40,.08); flex-shrink: 0;
   }
-  .notif-head-title { display: flex; align-items: center; gap: .55rem; min-width: 0; flex-wrap: wrap; }
-  .notif-dropdown-head h3 { font-size: .92rem; font-weight: 700; color: #013328; }
-  .notif-count-chip {
-    font-size: .66rem; font-weight: 700; letter-spacing: .01em; padding: .14rem .5rem; border-radius: 999px;
-    color: #B4321F; background: rgba(214,56,43,.12); border: 1px solid rgba(214,56,43,.22);
-  }
-  .notif-count-chip.is-zero { color: #2E6F4E; background: rgba(46,111,78,.12); border-color: rgba(46,111,78,.25); }
+  .notif-dropdown-head h3 { font-size: .86rem; font-weight: 700; color: #013328; }
   .notif-dropdown-close {
-    width: 26px; height: 26px; border-radius: .55rem; border: none; background: rgba(1,51,40,.06);
+    width: 24px; height: 24px; border-radius: .5rem; border: none; background: rgba(1,51,40,.06);
     display: flex; align-items: center; justify-content: center; color: #013328; cursor: pointer; flex-shrink: 0;
-    transition: background .15s ease;
   }
   .notif-dropdown-close:hover { background: rgba(1,51,40,.12); }
-  .notif-actions { padding: 0 .95rem .65rem; border-bottom: 1px solid rgba(1,51,40,.08); flex-shrink: 0; }
-  .notif-markall {
-    width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: .45rem;
-    padding: .5rem .75rem; border-radius: .65rem; border: 1px solid rgba(1,51,40,.14);
-    background: rgba(1,51,40,.04); color: #013328; font-size: .76rem; font-weight: 700; cursor: pointer;
-    transition: background .15s ease, border-color .15s ease, color .15s ease, transform .1s ease;
-  }
-  .notif-markall:hover:not(:disabled) { background: #013328; border-color: #013328; color: #fff; }
-  .notif-markall:active:not(:disabled) { transform: scale(.98); }
-  .notif-markall:disabled { opacity: .45; cursor: default; }
-  .notif-dropdown-body { padding: .35rem .5rem .55rem; overflow-y: auto; }
-  .notif-item {
-    width: 100%; display: flex; align-items: center; gap: .7rem; padding: .6rem .55rem; text-align: left;
-    border: none; background: transparent; border-radius: .75rem; cursor: pointer; margin-top: .15rem;
-    transition: background .15s ease;
-  }
-  .notif-item:hover { background: rgba(1,51,40,.05); }
-  .notif-item.is-unread { background: rgba(214,56,43,.06); }
-  .notif-item.is-unread:hover { background: rgba(214,56,43,.11); }
-  .notif-item.is-read { opacity: .62; }
-  .notif-item.is-read:hover { opacity: 1; }
-  .notif-item-avatar { position: relative; flex-shrink: 0; display: inline-flex; }
-  .notif-item-dot {
-    position: absolute; top: -1px; right: -1px; width: 10px; height: 10px; border-radius: 999px;
-    background: #E24B3B; border: 2px solid #fff; box-shadow: 0 0 0 0 rgba(226,75,59,.5);
-    animation: notifDot 2s ease-out infinite;
-  }
-  @keyframes notifDot { 0% { box-shadow: 0 0 0 0 rgba(226,75,59,.45); } 70%,100% { box-shadow: 0 0 0 6px rgba(226,75,59,0); } }
+  .notif-dropdown-body { padding: .3rem .6rem .5rem; overflow-y: auto; }
+  .notif-item { display: flex; align-items: center; gap: .65rem; padding: .55rem .35rem; border-top: 1px solid rgba(1,51,40,.06); }
+  .notif-item:first-child { border-top: none; }
   .notif-item-body { flex: 1; min-width: 0; }
-  .notif-item-title { font-size: .84rem; font-weight: 700; color: #013328; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .notif-item-sub { font-size: .72rem; color: #5B6472; display: flex; align-items: center; gap: .3rem; margin-top: .1rem; }
-  .notif-read-tag { flex-shrink: 0; display: inline-flex; align-items: center; gap: .25rem; font-size: .68rem; font-weight: 600; color: #2E6F4E; }
-  .notif-empty { display: flex; flex-direction: column; align-items: center; gap: .55rem; padding: 1.6rem 1rem 1.4rem; color: #5B6472; font-size: .82rem; }
-  .notif-empty-ico { width: 46px; height: 46px; border-radius: 999px; display: flex; align-items: center; justify-content: center; background: rgba(1,51,40,.06); color: #6B7A70; }
-  @media (max-width: 480px) { .notif-dropdown { width: 88vw; right: -60px; } }
-
-  /* ---- Notification bell + badge ---- */
-  .fa-ico { display: inline-flex; align-items: center; justify-content: center; line-height: 1; flex-shrink: 0; }
-  .notif-bell.has-unread .notif-bell-ico { animation: bellRing 3.2s ease-in-out 1s infinite; transform-origin: 50% 0; }
-  .notif-bell.is-open .notif-bell-ico { animation: none; }
-  @keyframes bellRing {
-    0%, 60%, 100% { transform: rotate(0); }
-    64% { transform: rotate(16deg); } 68% { transform: rotate(-14deg); } 72% { transform: rotate(10deg); }
-    76% { transform: rotate(-8deg); } 80% { transform: rotate(4deg); } 84% { transform: rotate(0); }
-  }
-  .notif-badge {
-    position: absolute; top: -6px; right: -6px; min-width: 19px; height: 19px; padding: 0 5px;
-    border-radius: 999px; display: flex; align-items: center; justify-content: center;
-    background: linear-gradient(145deg, #FF7A6A 0%, #E2382B 55%, #C22A1F 100%);
-    color: #fff; font-size: .64rem; font-weight: 800; letter-spacing: .01em; line-height: 1;
-    border: 2px solid #171D2C; box-shadow: 0 3px 8px -1px rgba(226,56,43,.55), inset 0 1px 0 rgba(255,255,255,.28);
-    animation: badgePop .38s cubic-bezier(.3,1.6,.5,1) both; pointer-events: none;
-  }
-  .notif-badge-num { position: relative; z-index: 1; font-variant-numeric: tabular-nums; text-shadow: 0 1px 1px rgba(120,10,0,.35); }
-  .notif-badge-ping { position: absolute; inset: -2px; border-radius: inherit; background: rgba(255,90,72,.55); animation: badgePing 2s ease-out infinite; }
-  @keyframes badgePop { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-  @keyframes badgePing { 0% { transform: scale(1); opacity: .7; } 80%, 100% { transform: scale(1.9); opacity: 0; } }
-  @media (prefers-reduced-motion: reduce) {
-    .notif-bell.has-unread .notif-bell-ico, .notif-badge-ping, .notif-item-dot { animation: none; }
-  }
-
-  /* ---- Font Awesome sozlamalari ---- */
-  .sd-title-ico {
-    width: 30px; height: 30px; border-radius: .6rem; display: inline-flex; align-items: center; justify-content: center;
-    font-size: .9rem; background: rgba(59,130,246,.15); color: #3B82F6; flex-shrink: 0;
-  }
-  .sd-title-ico[data-ico="fa-triangle-exclamation"] { background: rgba(239,68,68,.14); color: #EF4444; }
-  .sd-title-ico[data-ico="fa-graduation-cap"] { background: rgba(16,185,129,.15); color: #10B981; }
-  .sd-title-ico[data-ico="fa-key"], .sd-title-ico[data-ico="fa-user-lock"] { background: rgba(245,158,11,.16); color: #F59E0B; }
-  .stu-pill > i { font-size: .72rem; }
-  .pay-warn > i { margin-right: .35rem; }
-  .page-btn { display: inline-flex; align-items: center; justify-content: center; }
-  .bs-alert-close { display: inline-flex; align-items: center; justify-content: center; }
-  .pay-plus > i { font-size: .95rem; }
+  .notif-item-title { font-size: .82rem; font-weight: 600; color: #013328; }
+  .notif-item-sub { font-size: .72rem; color: #5B6472; }
+  @media (max-width: 480px) { .notif-dropdown { width: 82vw; right: -60px; } }
 
   /* ================= Dashboard: chart + at-risk students, ketma-ket (ustma-ust) ================= */
   .dash-combo-grid { display: flex; flex-direction: column; gap: 1.25rem; margin-top: 1.5rem; }
@@ -1000,7 +995,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   html.theme-dark .topbar-profile-btn {
     background: #171D2C !important;
   }
-  /* Sidebar follows the same dark-mode panel color as the topbar, so both always match */
+  /* Sidebar always matches the topbar's navy panel color, in both themes */
   html.theme-dark aside.side-modern.bg-ink {
     background-image: none !important; background-color: #171D2C !important;
   }
@@ -1033,17 +1028,6 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
     border-color: rgba(255,255,255,.08) !important;
   }
   html.theme-dark .notif-dropdown-close { background: rgba(255,255,255,.08) !important; color: #EDEFF6 !important; }
-  html.theme-dark .notif-actions { border-bottom-color: rgba(255,255,255,.08); }
-  html.theme-dark .notif-markall { background: rgba(255,255,255,.05); border-color: rgba(255,255,255,.14); color: #EDEFF6; }
-  html.theme-dark .notif-markall:hover:not(:disabled) { background: #2E6F4E; border-color: #2E6F4E; color: #fff; }
-  html.theme-dark .notif-item:hover { background: rgba(255,255,255,.06); }
-  html.theme-dark .notif-item.is-unread { background: rgba(226,75,59,.12); }
-  html.theme-dark .notif-item.is-unread:hover { background: rgba(226,75,59,.2); }
-  html.theme-dark .notif-item-dot { border-color: #171D2C; }
-  html.theme-dark .notif-count-chip { color: #FFB4AE; background: rgba(226,75,59,.18); border-color: rgba(226,75,59,.35); }
-  html.theme-dark .notif-count-chip.is-zero { color: #8FE3B4; background: rgba(46,111,78,.25); border-color: rgba(46,111,78,.5); }
-  html.theme-dark .notif-read-tag { color: #8FE3B4; }
-  html.theme-dark .notif-empty-ico { background: rgba(255,255,255,.07); color: #9AA3B8; }
   html.theme-dark .bg-line, html.theme-dark .bg-line\/70 { background-color: rgba(255,255,255,.08) !important; }
   html.theme-dark input, html.theme-dark select, html.theme-dark textarea {
     background-color: #10151F !important; color: #EDEFF6 !important; border-color: rgba(255,255,255,.12) !important;
@@ -1524,9 +1508,9 @@ function BsAlert({ toast, onDismiss }) {
   useEffect(() => { const t = setTimeout(onDismiss, 4000); return () => clearTimeout(t); }, []);
   return (
     <div className={`bs-alert bs-alert-${toast.variant || 'success'}`} role="alert">
-      {toast.variant === 'danger' || toast.variant === 'warning' ? <Icon.circleWarn width="16" height="16" className="bs-alert-icon" /> : <Icon.circleCheck width="16" height="16" className="bs-alert-icon" />}
+      <Icon.check width="15" height="15" className="bs-alert-icon" />
       <span className="bs-alert-text">{toast.text}</span>
-      <button type="button" className="bs-alert-close" aria-label="Yopish" onClick={onDismiss}><Icon.close width="12" height="12" /></button>
+      <button type="button" className="bs-alert-close" aria-label="Yopish" onClick={onDismiss}>✕</button>
     </div>
   );
 }
@@ -1567,12 +1551,12 @@ function Pagination({ page, pageCount, onChange }) {
   return (
     <div className="flex items-center justify-center gap-1 mt-4 flex-wrap">
       <button disabled={page === 1} onClick={() => onChange(page - 1)}
-        className={`page-btn ${page === 1 ? 'opacity-30 cursor-not-allowed' : ''}`}><Icon.angleLeft width="12" height="12" /></button>
+        className={`page-btn ${page === 1 ? 'opacity-30 cursor-not-allowed' : ''}`}>‹</button>
       {nums.map((n) => (
         <button key={n} onClick={() => onChange(n)} className={`page-btn ${n === page ? 'page-btn-active' : ''}`}>{n}</button>
       ))}
       <button disabled={page === pageCount} onClick={() => onChange(page + 1)}
-        className={`page-btn ${page === pageCount ? 'opacity-30 cursor-not-allowed' : ''}`}><Icon.angleRight width="12" height="12" /></button>
+        className={`page-btn ${page === pageCount ? 'opacity-30 cursor-not-allowed' : ''}`}>›</button>
     </div>
   );
 }
@@ -1585,65 +1569,47 @@ function Progress({ pct, tint = 'bg-forest' }) {
   );
 }
 
-/* icons — Font Awesome (fa-solid). Har bir ikonka avvalgi SVG bilan bir xil nom va width/height props'ga ega. */
-const faIcon = (name, size = 16) => ({ width, height, className = '', style, ...rest }) => {
-  const w = parseInt(width || size, 10);
-  const h = parseInt(height || width || size, 10);
-  return (
-    <i
-      className={`fa-solid ${name} fa-ico ${className}`}
-      style={{ width: w, height: h, fontSize: Math.round(Math.min(w, h) * 0.92), ...style }}
-      aria-hidden="true"
-      {...rest}
-    />
-  );
-};
+/* icons (inline svg, no external deps) */
 const Icon = {
-  lock: faIcon('fa-lock'),
-  check: faIcon('fa-check'),
-  checkDouble: faIcon('fa-check-double'),
-  play: faIcon('fa-play', 18),
-  pause: faIcon('fa-pause', 18),
-  vol: faIcon('fa-volume-high'),
-  home: faIcon('fa-house'),
-  book: faIcon('fa-book-open'),
-  users: faIcon('fa-users'),
-  user: faIcon('fa-user'),
-  phone: faIcon('fa-phone', 14),
-  pin: faIcon('fa-location-dot', 14),
-  logout: faIcon('fa-right-from-bracket', 15),
-  chevron: faIcon('fa-chevron-down', 14),
-  warn: faIcon('fa-triangle-exclamation', 14),
-  clock: faIcon('fa-clock', 14),
-  layers: faIcon('fa-layer-group', 20),
-  server: faIcon('fa-server', 20),
-  chart: faIcon('fa-chart-column', 20),
-  medal: faIcon('fa-medal', 20),
-  arrowRight: faIcon('fa-arrow-right', 20),
-  arrowLeft: faIcon('fa-arrow-left', 14),
-  angleLeft: faIcon('fa-chevron-left', 12),
-  angleRight: faIcon('fa-chevron-right', 12),
-  plus: faIcon('fa-plus'),
-  video: faIcon('fa-video'),
-  menu: faIcon('fa-bars', 18),
-  close: faIcon('fa-xmark'),
-  bell: faIcon('fa-bell'),
-  bellSlash: faIcon('fa-bell-slash'),
-  moon: faIcon('fa-moon'),
-  sun: faIcon('fa-sun'),
-  gear: faIcon('fa-gear'),
-  eye: faIcon('fa-eye'),
-  eyeOff: faIcon('fa-eye-slash'),
-  card: faIcon('fa-credit-card'),
-  cash: faIcon('fa-money-bill-wave'),
-  send: faIcon('fa-paper-plane'),
-  copy: faIcon('fa-copy', 14),
-  refresh: faIcon('fa-rotate', 14),
-  edit: faIcon('fa-pen-to-square', 14),
-  trash: faIcon('fa-trash-can', 14),
-  search: faIcon('fa-magnifying-glass', 14),
-  circleCheck: faIcon('fa-circle-check'),
-  circleWarn: faIcon('fa-circle-exclamation'),
+  lock: (p) => (<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" {...p}><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>),
+  check: (p) => (<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" {...p}><path d="M20 6 9 17l-5-5"/></svg>),
+  play: (p) => (<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" {...p}><path d="M8 5v14l11-7z"/></svg>),
+  pause: (p) => (<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" {...p}><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>),
+  vol: (p) => (<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" {...p}><path d="M4 9v6h4l5 4V5L8 9H4z"/></svg>),
+  home: (p) => (<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" {...p}><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"/></svg>),
+  book: (p) => (<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" {...p}><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v17H6.5A2.5 2.5 0 0 0 4 21.5v-17Z"/><path d="M4 19a2.5 2.5 0 0 1 2.5-2.5H20"/></svg>),
+  users: (p) => (<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" {...p}><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c.6-3.4 3-5.4 6.5-5.4s5.9 2 6.5 5.4"/><path d="M16 8.2a3 3 0 1 1 3.6 2.94"/><path d="M15.5 14.8c2.6.5 4.2 2.2 4.7 4.9"/></svg>),
+  user: (p) => (<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" {...p}><circle cx="12" cy="8" r="3.6"/><path d="M4.5 20c.9-4 3.6-6.2 7.5-6.2s6.6 2.2 7.5 6.2"/></svg>),
+  phone: (p) => (<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" {...p}><path d="M6.5 3h3l1.5 4.5-2 1.6a11.5 11.5 0 0 0 5.9 5.9l1.6-2 4.5 1.5v3a2 2 0 0 1-2.2 2A17.5 17.5 0 0 1 4.5 5.2 2 2 0 0 1 6.5 3Z"/></svg>),
+  pin: (p) => (<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" {...p}><path d="M12 21s7-6.6 7-11.6A7 7 0 0 0 5 9.4C5 14.4 12 21 12 21Z"/><circle cx="12" cy="9.4" r="2.4"/></svg>),
+  logout: (p) => (<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" {...p}><path d="M14 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-2"/><path d="M9 12h11m0 0-3-3m3 3-3 3"/></svg>),
+  chevron: (p) => (<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.4" {...p}><path d="m6 9 6 6 6-6"/></svg>),
+  warn: (p) => (<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" {...p}><path d="M12 3.5 22 20H2L12 3.5Z"/><path d="M12 10v4"/><circle cx="12" cy="17" r=".6" fill="currentColor" stroke="none"/></svg>),
+  clock: (p) => (<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" {...p}><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 2"/></svg>),
+  layers: (p) => (<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" {...p}><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 13 9 5 9-5"/></svg>),
+  server: (p) => (<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" {...p}><rect x="3.5" y="4" width="17" height="6.5" rx="1.5"/><rect x="3.5" y="13.5" width="17" height="6.5" rx="1.5"/><path d="M7 7.2h.01M7 16.7h.01"/></svg>),
+  chart: (p) => (<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" {...p}><path d="M4 20V10M11 20V4M18 20v-7"/><path d="M2.5 20h19"/></svg>),
+  medal: (p) => (<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" {...p}><circle cx="12" cy="14.5" r="5.5"/><path d="M9.5 10 7 3.5h3l2 4.6 2-4.6h3L14.5 10"/></svg>),
+  arrowRight: (p) => (<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" {...p}><path d="M4 12h13"/><path d="M13 6l7 6-7 6"/></svg>),
+  plus: (p) => (<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.4" {...p}><path d="M12 5v14M5 12h14"/></svg>),
+  video: (p) => (<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" {...p}><rect x="2.5" y="6" width="14" height="12" rx="2"/><path d="m16.5 10.5 5-3v9l-5-3"/></svg>),
+  menu: (p) => (<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" {...p}><path d="M4 7h16M4 12h16M4 17h16"/></svg>),
+  close: (p) => (<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" {...p}><path d="M6 6l12 12M18 6L6 18"/></svg>),
+  bell: (p) => (<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M6 9a6 6 0 0 1 12 0c0 4.2 1.4 5.6 1.4 5.6H4.6S6 13.2 6 9Z"/><path d="M9.5 17.3a2.5 2.5 0 0 0 5 0"/></svg>),
+  moon: (p) => (<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M20.2 14.7A8.5 8.5 0 1 1 9.3 3.8a7 7 0 0 0 10.9 10.9Z"/></svg>),
+  sun: (p) => (<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" {...p}><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M4.6 4.6l1.7 1.7M17.7 17.7l1.7 1.7M2.5 12h2.4M19.1 12h2.4M4.6 19.4l1.7-1.7M17.7 6.3l1.7-1.7"/></svg>),
+  gear: (p) => (<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><circle cx="12" cy="12" r="3"/><path d="M12 3v2.2M12 18.8V21M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M3 12h2.2M18.8 12H21M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6"/></svg>),
+  eye: (p) => (<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>),
+  eyeOff: (p) => (<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M3 3l18 18"/><path d="M10.6 5.2A10.9 10.9 0 0 1 12 5c6.4 0 10 7 10 7a16.6 16.6 0 0 1-3.2 4.1M6.6 6.6C4 8.3 2 12 2 12s3.6 7 10 7a9.9 9.9 0 0 0 4.4-1"/><path d="M9.5 9.7a3 3 0 0 0 4.2 4.2"/></svg>),
+  lock: (p) => (<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><rect x="4.5" y="10.5" width="15" height="10" rx="2"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></svg>),
+  card: (p) => (<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><rect x="2.5" y="5.5" width="19" height="13" rx="2"/><path d="M2.5 9.5h19"/><path d="M6 14.5h4"/></svg>),
+  cash: (p) => (<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><rect x="2.5" y="6" width="19" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 9.5h.01M18 14.5h.01"/></svg>),
+  send: (p) => (<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="m3 11 18-8-8 18-2.5-7.5L3 11Z"/></svg>),
+  copy: (p) => (<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>),
+  refresh: (p) => (<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M21 12a9 9 0 0 1-15.5 6.2L3 16"/><path d="M3 12A9 9 0 0 1 18.5 5.8L21 8"/><path d="M3 21v-5h5"/><path d="M21 3v5h-5"/></svg>),
+  edit: (p) => (<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>),
+  trash: (p) => (<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M4 7h16"/><path d="M9 7V4.5A1.5 1.5 0 0 1 10.5 3h3A1.5 1.5 0 0 1 15 4.5V7"/><path d="M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13"/><path d="M10 11v6M14 11v6"/></svg>),
+  search: (p) => (<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>),
 };
 const CATEGORY_STYLES = [
   { bg: 'rgba(204,139,101,.14)', fg: '#9C7A22', icon: Icon.layers },
@@ -1927,8 +1893,8 @@ function Sidebar({ roleLabel, navItems, activePage, onNavigate, footerName, foot
             <React.Fragment key={n.id}>
               {n.dividerBefore && <div className="nav-pill-divider" />}
               <button title={n.label} onClick={() => handleNavigate(n.id)}
-                className={`nav-pill w-full flex items-center gap-3 text-left px-4 py-2.5 text-sm transition ${activePage === n.id ? 'active text-white' : 'text-white/60 hover:text-white'}`}>
-                <n.icon width="16" height="16" className="shrink-0" />
+                className={`nav-pill w-full flex items-center gap-3 text-left px-3 py-2.5 text-sm transition ${activePage === n.id ? 'active text-white' : 'text-white/60 hover:text-white'}`}>
+                <span className="nav-pill-icon"><n.icon width="15" height="15" /></span>
                 <span className="side-label">{n.label}</span>
               </button>
             </React.Fragment>
@@ -1936,7 +1902,10 @@ function Sidebar({ roleLabel, navItems, activePage, onNavigate, footerName, foot
         </nav>
 
         <div className="side-footer" onClick={() => { onFooterClick(); if (onCloseMobile) onCloseMobile(); }} title={footerName}>
-          <span className="avatar w-9 h-9 bg-gold text-ink text-sm shrink-0">{footerInitials}</span>
+          <span className="side-footer-avatar-wrap">
+            <span className="avatar w-9 h-9 bg-gold text-ink text-sm shrink-0">{footerInitials}</span>
+            <span className="side-footer-status" />
+          </span>
           <div className="side-footer-info">
             <div className="text-sm font-medium truncate">{footerName}</div>
             <div className="text-xs text-white/50 truncate">{footerSub}</div>
@@ -1975,11 +1944,10 @@ function MobileBottomNav({ navItems, activePage, onNavigate }) {
 /* =========================================================================
    TOPBAR (dark/light, bildirishnomalar modal, profil paneli)
    ========================================================================= */
-function Topbar({ me, roleLabel, initials, theme, onToggleTheme, notifications, readKeys, onMarkAllRead, onMarkRead, onOpenNotification, onGoProfile, onLogout, onOpenMenu }) {
+function Topbar({ me, roleLabel, initials, theme, onToggleTheme, notifications, onGoProfile, onLogout, onOpenMenu }) {
   const [notifOpen, setNotifOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
-  const isRead = (n) => readKeys.includes(n.key);
-  const unread = notifications.filter((n) => !isRead(n)).length;
+  const unread = notifications.length;
 
   return (
     <header className="topbar">
@@ -1997,67 +1965,32 @@ function Topbar({ me, roleLabel, initials, theme, onToggleTheme, notifications, 
         </button>
 
         <div className="topbar-notif-wrap">
-          <button className={`topbar-icon-btn notif-bell ${unread > 0 ? 'has-unread' : ''} ${notifOpen ? 'is-open' : ''}`}
-            onClick={() => setNotifOpen((v) => !v)} aria-label="Bildirishnomalar">
-            <Icon.bell width="17" height="17" className="notif-bell-ico" />
-            {unread > 0 && (
-              <span className="notif-badge" key={unread}>
-                <span className="notif-badge-ping" />
-                <span className="notif-badge-num">{unread > 9 ? '9+' : unread}</span>
-              </span>
-            )}
+          <button className="topbar-icon-btn" onClick={() => setNotifOpen((v) => !v)} aria-label="Bildirishnomalar">
+            <Icon.bell width="17" height="17" />
+            {unread > 0 && <span className="notif-badge">{unread > 9 ? '9+' : unread}</span>}
           </button>
           {notifOpen && (
             <React.Fragment>
               <div className="dropdown-backdrop" onClick={() => setNotifOpen(false)} />
               <div className="notif-dropdown">
                 <div className="notif-dropdown-head">
-                  <div className="notif-head-title">
-                    <h3 className="font-display">Bildirishnomalar</h3>
-                    {unread > 0
-                      ? <span className="notif-count-chip">{unread} ta yangi</span>
-                      : notifications.length > 0 && <span className="notif-count-chip is-zero">Hammasi o'qilgan</span>}
-                  </div>
+                  <h3 className="font-display">Bildirishnomalar</h3>
                   <button className="notif-dropdown-close" onClick={() => setNotifOpen(false)} aria-label="Yopish">
                     <Icon.close width="12" height="12" />
                   </button>
                 </div>
-
-                {notifications.length > 0 && (
-                  <div className="notif-actions">
-                    <button type="button" className="notif-markall" disabled={unread === 0} onClick={onMarkAllRead}>
-                      <Icon.checkDouble width="13" height="13" />
-                      Hammasini o'qilgan deb belgilash
-                    </button>
-                  </div>
-                )}
-
                 <div className="notif-dropdown-body">
-                  {notifications.length === 0 && (
-                    <div className="notif-empty">
-                      <span className="notif-empty-ico"><Icon.bellSlash width="20" height="20" /></span>
-                      <p>Hozircha bildirishnoma yo'q.</p>
+                  {notifications.length === 0 && <p className="text-sm text-slate p-3">Hozircha bildirishnoma yo'q.</p>}
+                  {notifications.map((n) => (
+                    <div key={n.id} className="notif-item">
+                      <span className="avatar w-8 h-8 bg-paper text-ink text-xs border border-line">{n.initials}</span>
+                      <div className="notif-item-body">
+                        <div className="notif-item-title">{n.name}</div>
+                        <div className="notif-item-sub">To'lov muddati o'tgan</div>
+                      </div>
+                      <span className="pill pill-warn shrink-0">Diqqat</span>
                     </div>
-                  )}
-                  {notifications.map((n) => {
-                    const read = isRead(n);
-                    return (
-                      <button type="button" key={n.key} className={`notif-item ${read ? 'is-read' : 'is-unread'}`}
-                        onClick={() => { onMarkRead(n.key); setNotifOpen(false); onOpenNotification(); }}>
-                        <span className="notif-item-avatar">
-                          <span className="avatar w-9 h-9 bg-paper text-ink text-xs border border-line">{n.initials}</span>
-                          {!read && <span className="notif-item-dot" />}
-                        </span>
-                        <div className="notif-item-body">
-                          <div className="notif-item-title">{n.name}</div>
-                          <div className="notif-item-sub"><Icon.clock width="11" height="11" /> To'lov muddati o'tgan</div>
-                        </div>
-                        {read
-                          ? <span className="notif-read-tag"><Icon.check width="11" height="11" /> O'qilgan</span>
-                          : <span className="pill pill-warn shrink-0">Diqqat</span>}
-                      </button>
-                    );
-                  })}
+                  ))}
                 </div>
               </div>
             </React.Fragment>
@@ -2139,22 +2072,10 @@ function StaffApp({ me, staff, setStaff, categories, setCategories, students, se
     (overdueCurPage - 1) * OVERDUE_PAGE_SIZE,
     overdueCurPage * OVERDUE_PAGE_SIZE
   );
-  /* Bildirishnomalar: har bir muddati o'tgan to'lov = 1 ta bildirishnoma. Kalit (key) oy bilan birga
-     yoziladi, shuning uchun keyingi oyda yana qarzdor bo'lsa, u yana "yangi" bo'lib chiqadi. */
-  const notifPeriod = curPeriod();
   const notifications = useMemo(
-    () => overdueStudents.map((s) => ({
-      id: s.id,
-      key: `${s.id}:${notifPeriod.m}-${notifPeriod.y}`,
-      name: s.name,
-      initials: s.name.split(' ').map((w) => w[0]).slice(0, 2).join(''),
-    })),
-    [overdueStudents, notifPeriod.m, notifPeriod.y]
+    () => overdueStudents.map((s) => ({ id: s.id, name: s.name, initials: s.name.split(' ').map((w) => w[0]).slice(0, 2).join('') })),
+    [overdueStudents]
   );
-  const [readKeys, setReadKeys] = useState(() => loadLS('notif_read_' + me.id, []));
-  useEffect(() => { saveLS('notif_read_' + me.id, readKeys); }, [readKeys]);
-  const markAllRead = () => setReadKeys((prev) => Array.from(new Set([...prev, ...notifications.map((n) => n.key)])));
-  const markRead = (key) => setReadKeys((prev) => (prev.includes(key) ? prev : [...prev, key]));
 
   const nav = [
     { id: 'overview', label: 'Dashboard', icon: Icon.home },
@@ -2186,9 +2107,7 @@ function StaffApp({ me, staff, setStaff, categories, setCategories, students, se
       <div className="app-main flex-1 flex flex-col">
         <Topbar me={me} roleLabel={roleLabel} initials={initials}
           theme={theme} onToggleTheme={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-          notifications={notifications} readKeys={readKeys}
-          onMarkAllRead={markAllRead} onMarkRead={markRead} onOpenNotification={() => goTo('payments')}
-          onGoProfile={() => goTo('profile')} onLogout={onLogout}
+          notifications={notifications} onGoProfile={() => goTo('profile')} onLogout={onLogout}
           onOpenMenu={() => setMobileMenuOpen(true)} />
 
         <main className="flex-1 p-8 overflow-y-auto max-h-screen">
@@ -2596,7 +2515,7 @@ function CoursesManager({ categories, setCategories, canEdit, notify, quickAdd, 
   if (activeCat && activeSub) {
     return (
       <div>
-        <button onClick={() => setOpenSub(null)} className="text-sm text-slate hover:text-ink mb-4 flex items-center gap-1"><Icon.arrowLeft width="12" height="12" /> {activeCat.name} bo'limlariga qaytish</button>
+        <button onClick={() => setOpenSub(null)} className="text-sm text-slate hover:text-ink mb-4 flex items-center gap-1">← {activeCat.name} bo'limlariga qaytish</button>
         <h1 className="font-display text-2xl text-ink mb-1">{activeSub.name}</h1>
         <p className="text-slate text-sm mb-6">{activeSub.lessons.length} ta video dars</p>
         <div className="space-y-3">
@@ -2643,7 +2562,7 @@ function CoursesManager({ categories, setCategories, canEdit, notify, quickAdd, 
   if (activeCat) {
     return (
       <div>
-        <button onClick={() => setOpenCat(null)} className="text-sm text-slate hover:text-ink mb-4 flex items-center gap-1"><Icon.arrowLeft width="12" height="12" /> Kurslarga qaytish</button>
+        <button onClick={() => setOpenCat(null)} className="text-sm text-slate hover:text-ink mb-4 flex items-center gap-1">← Kurslarga qaytish</button>
         <h1 className="font-display text-3xl text-ink mb-1">{activeCat.name}</h1>
         <p className="text-slate text-sm mb-6">{activeCat.subtitle || `${activeCat.subtopics.length} bo'lim`}</p>
 
@@ -2827,7 +2746,7 @@ function SdModal({ title, icon, onClose, children, size }) {
   return ReactDOM.createPortal(
     <div className="sd-backdrop" onClick={onClose}>
       <div className={`sd-modal ${size === 'lg' ? 'sd-modal-lg' : ''}`} onClick={(e) => e.stopPropagation()}>
-        <div className="sd-title">{icon ? <span className="sd-title-ico" data-ico={icon}><i className={`fa-solid ${icon}`} aria-hidden="true" /></span> : null}<span>{title}</span></div>
+        <div className="sd-title">{icon ? <span>{icon}</span> : null}<span>{title}</span></div>
         {children}
       </div>
     </div>,
@@ -2982,10 +2901,10 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
     if (!entries.length) return { cls: 'stu-pill-mut', text: 'Kurs biriktirilmagan' };
     const b = studentBilling(s, categories);
     if (b.blocked) {
-      if (b.paid > 0) return { cls: 'stu-pill-part', icon: 'fa-triangle-exclamation', text: `Qisman: ${fmtMoney(b.blockedDebt)} qarz` };
+      if (b.paid > 0) return { cls: 'stu-pill-part', text: `⚠️ Qisman: ${fmtMoney(b.blockedDebt)} qarz` };
       return { cls: 'stu-pill-debt', text: `Qarzdor: ${fmtMoney(b.blockedDebt)}` };
     }
-    if (entries.every(([, a]) => a.isFullyPaid) || (b.total > 0 && b.debt === 0)) return { cls: 'stu-pill-paid', icon: 'fa-circle-check', text: "To'langan" };
+    if (entries.every(([, a]) => a.isFullyPaid) || (b.total > 0 && b.debt === 0)) return { cls: 'stu-pill-paid', text: "To'langan ✅" };
     return { cls: 'stu-pill-part', text: `Keyingi to'lov: ${fmtDate(b.nextDate)}` };
   };
 
@@ -3028,7 +2947,7 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
                 <div className="stu-meta">
                   <span>{metaOf(s)}</span>
                   <span>·</span>
-                  <span className={`stu-pill ${st.cls}`}>{st.icon && <i className={`fa-solid ${st.icon}`} aria-hidden="true" />}{st.text}</span>
+                  <span className={`stu-pill ${st.cls}`}>{st.text}</span>
                 </div>
               </div>
               <div className="stu-acts">
@@ -3068,7 +2987,7 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
 
       {/* ---------- Yangi o'quvchi ---------- */}
       {showAdd && (
-        <SdModal title={created ? "O'quvchi qo'shildi" : "Yangi o'quvchi"} icon="fa-graduation-cap" onClose={resetAdd}>
+        <SdModal title={created ? "O'quvchi qo'shildi" : "Yangi o'quvchi"} icon="🎓" onClose={resetAdd}>
           {!created && (
             <React.Fragment>
               <div className="sd-field">
@@ -3119,7 +3038,7 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
                 <button className="sd-btn sd-btn-ghost" onClick={resetAdd}>Yopish</button>
                 <button className="sd-btn sd-btn-primary"
                   onClick={() => copyText(`Login: ${created.username}\nParol: ${created.password}`, setCopied)}>
-                  {copied ? <React.Fragment><Icon.check width="13" height="13" /> Nusxalandi</React.Fragment> : 'Nusxalash'}
+                  {copied ? 'Nusxalandi ✓' : 'Nusxalash'}
                 </button>
               </div>
             </React.Fragment>
@@ -3129,7 +3048,7 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
 
       {/* ---------- O'chirishni tasdiqlash ---------- */}
       {delStu && (
-        <SdModal title="O'quvchini o'chirish" icon="fa-triangle-exclamation" onClose={() => setDelStu(null)}>
+        <SdModal title="O'quvchini o'chirish" icon="⚠️" onClose={() => setDelStu(null)}>
           <p className="sd-confirm-text"><b>{delStu.name}</b> ro'yxatdan o'chirilsinmi? Bu amalni ortga qaytarib bo'lmaydi.</p>
           <div className="sd-foot">
             <button className="sd-btn sd-btn-ghost" onClick={() => setDelStu(null)}>Bekor qilish</button>
@@ -3140,7 +3059,7 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
 
       {/* ---------- Login va parol ---------- */}
       {credsFor && (
-        <SdModal title="Login va parol" icon="fa-user-lock" onClose={() => setCredsFor(null)}>
+        <SdModal title="Login va parol" icon="🔐" onClose={() => setCredsFor(null)}>
           <p className="sd-hint" style={{ marginTop: 0, marginBottom: '.8rem' }}>
             {credsFor.name} tizimga shu login va parol orqali kiradi.
           </p>
@@ -3158,7 +3077,7 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
             <button className="sd-btn sd-btn-ghost" onClick={() => setCredsFor(null)}>Yopish</button>
             <button className="sd-btn sd-btn-primary"
               onClick={() => copyText(`Login: ${credsFor.username}\nParol: ${credsFor.password}`, setCredsCopied)}>
-              <Icon.copy width="13" height="13" /> {credsCopied ? <React.Fragment><Icon.check width="13" height="13" /> Nusxalandi</React.Fragment> : 'Nusxalash'}
+              <Icon.copy width="13" height="13" /> {credsCopied ? 'Nusxalandi ✓' : 'Nusxalash'}
             </button>
           </div>
         </SdModal>
@@ -3191,12 +3110,12 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
                 title={payExtraOpen ? "Qo'shimcha summani olib tashlash" : "Qo'shimcha summa qo'shish"}
                 aria-label="Qo'shimcha summa"
                 onClick={() => { if (payExtraOpen) { setPayExtra(''); setPayNote(''); } setPayExtraOpen(!payExtraOpen); }}>
-                <i className={`fa-solid ${payExtraOpen ? 'fa-xmark' : 'fa-plus'}`} aria-hidden="true" />
+                {payExtraOpen ? '×' : '+'}
               </button>
             </div>
           </div>
           {over && (
-            <div className="pay-warn"><i className="fa-solid fa-triangle-exclamation" aria-hidden="true" /> O'quvchining qarzi faqat {groupDigits(left) || 0} so'm. Ko'proq kiritmoqchi bo'lsangiz, ortiqcha qismini "+" tugmasi orqali qo'shimcha summa sifatida yozing.</div>
+            <div className="pay-warn">⚠️ O'quvchining qarzi faqat {groupDigits(left) || 0} so'm. Ko'proq kiritmoqchi bo'lsangiz, ortiqcha qismini "+" tugmasi orqali qo'shimcha summa sifatida yozing.</div>
           )}
           {payExtraOpen && (
             <React.Fragment>
@@ -3236,7 +3155,7 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
 
       {/* ---------- To'lov so'rash / xabar ---------- */}
       {alertFor && (
-        <SdModal title={`${alertFor.name} ga xabar`} icon="fa-comment-dots" size="lg" onClose={() => setAlertFor(null)}>
+        <SdModal title={`${alertFor.name} ga xabar`} icon="💬" size="lg" onClose={() => setAlertFor(null)}>
           <div className="sd-field">
             <label className="sd-label">Xabar matni</label>
             <textarea className="sd-textarea" rows={5} value={alertText}
@@ -3395,7 +3314,7 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
   const [avaBg, avaFg] = avaColor(student.id || student.name);
 
   const status = (actives.length && totalFee > 0 && paidSum >= totalFee)
-    ? { cls: 'stu-pill-paid', icon: 'fa-circle-check', text: "To'langan" }
+    ? { cls: 'stu-pill-paid', text: "To'langan ✅" }
     : overdueSum
       ? { cls: 'stu-pill-debt', text: `Qarzdor: ${fmtMoney(overdueSum)}` }
       : actives.length
@@ -3405,7 +3324,7 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
   return (
     <div className="stu-dark stu-ed">
       <div className="ed-top">
-        <button className="ed-back" onClick={onBack}><Icon.arrowLeft width="12" height="12" /> Orqaga</button>
+        <button className="ed-back" onClick={onBack}>← Orqaga</button>
         {canEdit && (
           <div className="ed-top-acts">
             <button className="stu-add ed-pay" onClick={openGPay}><Icon.cash width="14" height="14" /> <span className="stu-add-t">To'lov</span></button>
@@ -3425,7 +3344,7 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
             </div>
           </div>
 
-          <span className={`stu-pill ${status.cls}`}>{status.icon && <i className={`fa-solid ${status.icon}`} aria-hidden="true" />}{status.text}</span>
+          <span className={`stu-pill ${status.cls}`}>{status.text}</span>
 
           <div className="ed-divider" />
 
@@ -3623,7 +3542,7 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
       </div>
 
       {pwConfirm && (
-        <SdModal title="Parolni o'zgartirish" icon="fa-key" onClose={() => setPwConfirm(false)}>
+        <SdModal title="Parolni o'zgartirish" icon="🔑" onClose={() => setPwConfirm(false)}>
           <p className="sd-confirm-text"><b>{student.name}</b> uchun yangi tasodifiy parol yaratilsinmi? Eski parol ishlamay qoladi, login o'zgarmaydi.</p>
           <div className="sd-foot">
             <button className="sd-btn sd-btn-ghost" onClick={() => setPwConfirm(false)}>Bekor qilish</button>
@@ -3633,7 +3552,7 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
       )}
 
       {delPay && (
-        <SdModal title="To'lovni o'chirish" icon="fa-triangle-exclamation" onClose={() => setDelPay(null)}>
+        <SdModal title="To'lovni o'chirish" icon="⚠️" onClose={() => setDelPay(null)}>
           <p className="sd-confirm-text"><b>{delPay.month} {delPay.year}</b> uchun <b>{fmtMoney(delPay.amount)}</b>{delPay.extra ? ` (+${fmtMoney(delPay.extra)} qo'shimcha)` : ''} to'lovi o'chirilsinmi? Bu amalni ortga qaytarib bo'lmaydi.</p>
           <p className="sd-hint" style={{ marginTop: 0 }}>Eslatma: to'lov o'chirilgach, agar joriy oy qarzi qayta paydo bo'lsa, o'quvchi yana bloklanadi.</p>
           <div className="sd-foot">
@@ -3705,12 +3624,12 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
                 title={gExtraOpen ? "Qo'shimcha summani olib tashlash" : "Qo'shimcha summa qo'shish"}
                 aria-label="Qo'shimcha summa"
                 onClick={() => { if (gExtraOpen) { setGExtra(''); setGNote(''); } setGExtraOpen(!gExtraOpen); }}>
-                <i className={`fa-solid ${gExtraOpen ? 'fa-xmark' : 'fa-plus'}`} aria-hidden="true" />
+                {gExtraOpen ? '×' : '+'}
               </button>
             </div>
           </div>
           {gOver && (
-            <div className="pay-warn"><i className="fa-solid fa-triangle-exclamation" aria-hidden="true" /> O'quvchining qarzi faqat {groupDigits(gLeft) || 0} so'm. Ko'proq kiritmoqchi bo'lsangiz, ortiqcha qismini "+" tugmasi orqali qo'shimcha summa sifatida yozing.</div>
+            <div className="pay-warn">⚠️ O'quvchining qarzi faqat {groupDigits(gLeft) || 0} so'm. Ko'proq kiritmoqchi bo'lsangiz, ortiqcha qismini "+" tugmasi orqali qo'shimcha summa sifatida yozing.</div>
           )}
           {gExtraOpen && (
             <React.Fragment>
@@ -4108,7 +4027,7 @@ function StudentApp({ me, categories, students, setStudents, onLogout, notify })
           const cat = categories.find((c) => c.id === catId);
           return (
             <div>
-              <button onClick={() => setCatId(null)} className="text-sm text-slate hover:text-ink mb-4 inline-flex items-center gap-1"><Icon.arrowLeft width="12" height="12" /> Kurslarga qaytish</button>
+              <button onClick={() => setCatId(null)} className="text-sm text-slate hover:text-ink mb-4">← Kurslarga qaytish</button>
               <h1 className="font-display text-3xl text-ink mb-6">{cat.name}</h1>
               <div className="grid sm:grid-cols-3 gap-5">
                 {cat.subtopics.map((sub) => {
@@ -4168,7 +4087,7 @@ function LessonView({ category, subtopic, access, payBlocked, payDebt, forceSund
 
   return (
     <div>
-      <button onClick={onBack} className="text-sm text-slate hover:text-ink mb-4 inline-flex items-center gap-1"><Icon.arrowLeft width="12" height="12" /> {category.name} bo'limlariga qaytish</button>
+      <button onClick={onBack} className="text-sm text-slate hover:text-ink mb-4">← {category.name} bo'limlariga qaytish</button>
       <h1 className="font-display text-3xl text-ink mb-6">{subtopic.name}</h1>
 
       {blocked && (
@@ -4284,7 +4203,7 @@ function VideoPlayer({ lesson, locked, progress, onProgress, onNext, hasNext }) 
           </div>
           <div className="flex items-center gap-3">
             <span className="text-xs text-white/50">{pct}% ko'rildi</span>
-            {pct >= 95 && hasNext && <button onClick={onNext} className="text-xs bg-gold text-ink px-3 py-1.5 rounded-lg font-medium inline-flex items-center gap-1.5">Keyingi dars <Icon.arrowRight width="12" height="12" /></button>}
+            {pct >= 95 && hasNext && <button onClick={onNext} className="text-xs bg-gold text-ink px-3 py-1.5 rounded-lg font-medium">Keyingi dars →</button>}
           </div>
         </div>
       </div>
