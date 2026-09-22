@@ -370,6 +370,10 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   /* Inputs feel more crafted */
   input, select, textarea { transition: border-color .15s ease, box-shadow .15s ease; }
   input:focus, select:focus, textarea:focus { box-shadow: 0 0 0 3px rgba(204,139,101,.15); }
+  /* .sd-input/.stu-search o'zlarining alohida focus uslubiga ega, shuning uchun
+     yuqoridagi umumiy (amber) halqa ular ustida qo'shilib, ikki xil rang aralashib chiqmasligi uchun o'chiriladi */
+  .sd-input:focus, .sd-select:focus, .sd-textarea:focus,
+  .stu-search input:focus { box-shadow: none; }
 
   /* Sidebar nav pill highlight */
   .nav-pill { position: relative; border-radius: .6rem; margin: 0 .6rem; }
@@ -564,8 +568,9 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   .monthly-chart-accent { display: inline-block; width: 3px; height: 1rem; border-radius: 2px; background: #2D5BE3; }
   .monthly-chart-year {
     border: 1px solid rgba(1,51,40,.15); background: #fff; color: #013328; font-size: .8rem; font-weight: 600;
-    border-radius: .5rem; padding: .3rem .6rem; outline: none; cursor: pointer;
+    border-radius: .5rem; padding: .3rem .6rem; outline: none; cursor: pointer; transition: border-color .15s ease;
   }
+  .monthly-chart-year:focus { border-color: #CC8B65; box-shadow: none; }
   .monthly-chart-svg { width: 100%; height: auto; display: block; }
   .monthly-chart-scroll { width: 100%; overflow: hidden; }
   /* Chartdagi matn/chiziqlar — ikkala rejimda ham (light/dark) bir xil o'qilishi uchun CSS orqali beriladi */
@@ -656,6 +661,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   @media (min-width: 861px) {
     html, body { height: 100%; overflow: hidden; }
     .app-shell { height: 100vh; overflow: hidden; }
+    .student-shell { height: 100vh; overflow-y: auto; }
   }
 
   /* ================= Sidebar collapse (desktop) + mobile drawer ================= */
@@ -786,8 +792,9 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   .thumb-price-edit { position: relative; z-index: 2; margin-top: .8rem; display: inline-flex; align-items: center; gap: .35rem; align-self: flex-start; }
   .thumb-price-input {
     width: 6.5rem; background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.4); color: #fff;
-    border-radius: .5rem; padding: .35rem .55rem; font-size: .82rem; outline: none;
+    border-radius: .5rem; padding: .35rem .55rem; font-size: .82rem; outline: none; transition: border-color .15s ease;
   }
+  .thumb-price-input:focus { border-color: #fff; box-shadow: none; }
   .thumb-price-input::placeholder { color: rgba(255,255,255,.5); }
   .thumb-price-save {
     width: 1.9rem; height: 1.9rem; border-radius: .5rem; background: #CC8B65; color: #100C0D;
@@ -802,18 +809,23 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
     transition: transform .28s cubic-bezier(.2,.8,.2,1), box-shadow .28s ease;
   }
   html.theme-dark .course-card { background: #0b0e14; }
-  .course-card:hover { transform: translateY(-6px); box-shadow: 0 30px 62px -18px rgba(0,0,0,.65), 0 2px 10px -4px rgba(0,0,0,.25); }
-  .course-card:hover .course-card-media { transform: scale(1.06); }
+  .course-card:hover { box-shadow: 0 30px 62px -18px rgba(0,0,0,.65), 0 2px 10px -4px rgba(0,0,0,.25); }
+  .course-card:hover .course-card-media-img { transform: scale(1.06); }
   .course-card::after {
     content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none;
     background: linear-gradient(to bottom, rgba(0,0,0,.4), transparent 32%);
   }
   .course-card-media {
-    position: absolute; inset: 0; z-index: 0;
+    position: absolute; inset: 0; z-index: 0; overflow: hidden;
+  }
+  /* Faqat shu qatlam (rasm/fon) zoom bo'ladi — narx belgisi, "..." menyu va play tugmasi
+     endi .course-card-media ning tashqarisida, alohida qatlamda joylashgani uchun zoom bo'lmaydi */
+  .course-card-media-img {
+    position: absolute; inset: 0;
     background-image: linear-gradient(160deg, var(--tc1, #241236), var(--tc2, #4a1942));
     transition: transform .5s cubic-bezier(.2,.8,.2,1);
   }
-  .course-card-media::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 25% 15%, rgba(255,255,255,.16), transparent 55%); pointer-events: none; }
+  .course-card-media-img::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 25% 15%, rgba(255,255,255,.16), transparent 55%); pointer-events: none; }
   .course-card-media-hit {
     position: absolute; inset: 0; z-index: 1; background: transparent; border: none; padding: 0; margin: 0; cursor: pointer;
   }
@@ -835,8 +847,9 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   .course-card-price-edit { gap: .35rem; background: rgba(0,0,0,.72); border-radius: .7rem; }
   .course-card-price-input {
     width: 5.5rem; background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.4); color: #fff;
-    border-radius: .45rem; padding: .3rem .5rem; font-size: .78rem; outline: none;
+    border-radius: .45rem; padding: .3rem .5rem; font-size: .78rem; outline: none; transition: border-color .15s ease;
   }
+  .course-card-price-input:focus { border-color: #fff; box-shadow: none; }
   .course-card-price-input::placeholder { color: rgba(255,255,255,.55); }
   .course-card-price-save {
     width: 1.7rem; height: 1.7rem; border-radius: .45rem; background: #CC8B65; color: #100C0D;
@@ -940,30 +953,47 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
     font-size: .68rem; font-weight: 700; padding: .3rem .6rem; border-radius: 999px; display: flex; align-items: center; gap: .3rem;
   }
 
-  .course-form-grid { display: flex; flex-direction: column; border-radius: 1rem; border: 1px solid rgba(1,51,40,.08); overflow: hidden; }
-  html.theme-dark .course-form-grid { border-color: rgba(255,255,255,.08); }
-  .course-form-field { display: flex; gap: .8rem; padding: .85rem .95rem; border-bottom: 1px solid rgba(1,51,40,.08); }
-  html.theme-dark .course-form-field { border-color: rgba(255,255,255,.08); }
-  .course-form-field:last-child { border-bottom: none; }
+  /* ---- Har bir maydon endi alohida, o'z rangiga ega "karta" ko'rinishida ---- */
+  .course-form-grid { display: flex; flex-direction: column; gap: 1.05rem; }
+  .course-form-field-top { display: flex; align-items: center; gap: .5rem; margin-bottom: .5rem; }
   .course-form-field-icon {
-    width: 2.1rem; height: 2.1rem; border-radius: .65rem; background: rgba(204,139,101,.14); color: #CC8B65;
-    display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: .1rem;
+    width: 1.75rem; height: 1.75rem; border-radius: .55rem;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
   }
-  .course-form-field-body { flex: 1; min-width: 0; }
   .course-form-field-label {
-    display: block; font-size: .66rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em;
-    color: var(--slate, #667066); margin-bottom: .2rem;
+    font-size: .68rem; font-weight: 800; text-transform: uppercase; letter-spacing: .06em;
+    color: var(--slate, #5B6472);
   }
   .course-form-field-input {
-    width: 100%; border: none; background: transparent; padding: .1rem 0; font-size: .92rem;
-    color: var(--ink, #101312); outline: none; font-family: inherit;
+    width: 100%; border: 1.5px solid var(--field-line, rgba(1,51,40,.14)); background: var(--field-bg, rgba(1,51,40,.03));
+    border-radius: .8rem; padding: .72rem .9rem; font-size: .92rem; color: var(--ink, #101312);
+    outline: none; font-family: inherit; box-shadow: none;
+    transition: border-color .15s ease, background .15s ease, box-shadow .15s ease;
   }
-  html.theme-dark .course-form-field-input { color: #fff; }
-  .course-form-field-input::placeholder { color: rgba(1,51,40,.32); }
-  html.theme-dark .course-form-field-input::placeholder { color: rgba(255,255,255,.3); }
-  .course-form-field-input.is-textarea { resize: none; line-height: 1.45; }
-  .course-form-field-prefix { display: flex; align-items: baseline; gap: .4rem; }
-  .course-form-field-suffix { font-size: .78rem; color: var(--slate, #667066); font-weight: 600; }
+  .course-form-field-input:focus {
+    border-color: var(--field-accent, #CC8B65); background: #fff; box-shadow: 0 0 0 3px var(--field-ring, rgba(204,139,101,.14));
+  }
+  html.theme-dark .course-form-field-input { color: #fff; background: rgba(255,255,255,.04); }
+  html.theme-dark .course-form-field-input:focus { background: rgba(255,255,255,.07); }
+  .course-form-field-input::placeholder { color: rgba(1,51,40,.35); }
+  html.theme-dark .course-form-field-input::placeholder { color: rgba(255,255,255,.32); }
+  .course-form-field-input.is-textarea { resize: none; line-height: 1.5; }
+
+  /* Har bir maydon o'zining rangiga ega: nomi — to'q yashil, sharhi — binafsha, narxi — oltin */
+  .course-form-field--name { --field-accent: #013328; --field-ring: rgba(1,51,40,.14); --field-bg: rgba(1,51,40,.035); --field-line: rgba(1,51,40,.16); }
+  .course-form-field--name .course-form-field-icon { background: rgba(1,51,40,.10); color: #013328; }
+  .course-form-field--desc { --field-accent: #6D3FA0; --field-ring: rgba(109,63,160,.16); --field-bg: rgba(109,63,160,.035); --field-line: rgba(109,63,160,.18); }
+  .course-form-field--desc .course-form-field-icon { background: rgba(109,63,160,.12); color: #6D3FA0; }
+  .course-form-field--price { --field-accent: #CC8B65; --field-ring: rgba(204,139,101,.16); --field-bg: rgba(204,139,101,.035); --field-line: rgba(204,139,101,.18); }
+  .course-form-field--price .course-form-field-icon { background: rgba(204,139,101,.14); color: #CC8B65; }
+
+  .course-form-field-prefix { position: relative; }
+  .course-form-field-prefix .course-form-field-input { padding-right: 3.2rem; }
+  .course-form-field-suffix {
+    position: absolute; right: .95rem; top: 50%; transform: translateY(-50%);
+    font-size: .78rem; color: var(--slate, #667066); font-weight: 600; pointer-events: none;
+  }
+
 
   .course-form-submit {
     width: 100%; display: flex; align-items: center; justify-content: center; gap: .5rem;
@@ -973,6 +1003,15 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   }
   .course-form-submit:hover { transform: translateY(-2px); box-shadow: 0 20px 38px -14px rgba(1,51,40,.6); }
   .course-form-submit:disabled { opacity: .4; cursor: not-allowed; transform: none; box-shadow: none; }
+
+  /* "Yangi kurs" tugmasi — saytdagi boshqa "yangi qo'shish" tugmalari (masalan "O'quvchi qo'shish")
+     bilan bir xil ko'k rangda, uslubda mos bo'lishi uchun */
+  .course-add-btn {
+    display: inline-flex; align-items: center; gap: .45rem; background: linear-gradient(180deg,#4b8dfb,#2f6fe4);
+    color: #fff; border: 0; border-radius: .7rem; padding: .6rem 1.05rem; font-size: .88rem; font-weight: 700;
+    box-shadow: 0 6px 18px rgba(47,111,228,.35); cursor: pointer; transition: filter .15s ease;
+  }
+  .course-add-btn:hover { filter: brightness(1.08); }
 
   /* ================= Subtopic pill cards (inside a course) ================= */
   .topic-pill-card { border: 1px solid rgba(1,51,40,.08); border-radius: .95rem; background: #fff; padding: 1rem 1.15rem; display: flex; align-items: center; gap: .9rem; transition: box-shadow .18s ease, transform .18s ease; cursor: pointer; width: 100%; text-align: left; }
@@ -1392,7 +1431,8 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   .stu-head h1{ font-family:'Fraunces', serif; font-size:1.5rem; color:var(--sd-text); }
   .stu-count{ font-size:.78rem; color:var(--sd-muted); }
   .stu-bar{ display:flex; gap:.8rem; align-items:center; background:var(--sd-card); border:1px solid var(--sd-line); border-radius:1rem; padding:.85rem; margin-bottom:1rem; }
-  .stu-search{ flex:1; display:flex; align-items:center; gap:.5rem; background:var(--sd-field); border:1px solid var(--sd-line); border-radius:.7rem; padding:.6rem .85rem; }
+  .stu-search{ flex:1; display:flex; align-items:center; gap:.5rem; background:var(--sd-field); border:1px solid var(--sd-line); border-radius:.7rem; padding:.6rem .85rem; transition: border-color .15s ease; }
+  .stu-search:focus-within{ border-color:#4b8dfb; }
   .stu-search input{ flex:1; background:transparent; border:0; outline:none; color:var(--sd-text); font-size:.9rem; }
   .stu-search input::placeholder{ color:var(--sd-muted); }
   .stu-add{ display:inline-flex; align-items:center; gap:.45rem; background:linear-gradient(180deg,#4b8dfb,#2f6fe4); color:#fff; border:0; border-radius:.7rem; padding:.65rem 1.05rem; font-size:.88rem; font-weight:700; box-shadow:0 6px 18px rgba(47,111,228,.35); transition:filter .15s ease; }
@@ -1428,7 +1468,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   .sd-field{ margin-bottom:.95rem; }
   .sd-label{ display:block; font-size:.68rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:var(--sd-muted); margin-bottom:.4rem; }
   .sd-input, .sd-select, .sd-textarea{ width:100%; background:var(--sd-field); border:1px solid var(--sd-line); border-radius:.55rem; padding:.62rem .75rem; font-size:.9rem; color:var(--sd-text); outline:none; transition:border-color .15s ease; }
-  .sd-input:focus, .sd-select:focus, .sd-textarea:focus{ border-color:#3b82f6; }
+  .sd-input:focus, .sd-select:focus, .sd-textarea:focus{ border-color:#4b8dfb; }
   .sd-input::placeholder, .sd-textarea::placeholder{ color:var(--sd-muted); }
   .sd-select option{ background:var(--sd-modal); color:var(--sd-text); }
   .sd-textarea{ resize:none; line-height:1.55; }
@@ -3022,7 +3062,7 @@ function CoursesManager({ categories, setCategories, canEdit, notify, quickAdd, 
       <div className="flex items-center justify-between mb-6">
         <h1 className="font-display text-3xl text-ink">Kurslar</h1>
         {canEdit && (
-          <button onClick={() => setShowAddModal(true)} className="bg-ink text-white text-sm px-4 py-2 rounded-lg hover:bg-ink2 flex items-center gap-1.5 shrink-0">
+          <button onClick={() => setShowAddModal(true)} className="course-add-btn shrink-0">
             <Icon.plus width="14" height="14" /> Yangi kurs
           </button>
         )}
@@ -3052,33 +3092,33 @@ function CoursesManager({ categories, setCategories, canEdit, notify, quickAdd, 
             </label>
 
             <div className="course-form-grid">
-              <div className="course-form-field">
-                <span className="course-form-field-icon"><Icon.book width="16" height="16" /></span>
-                <div className="course-form-field-body">
+              <div className="course-form-field course-form-field--name">
+                <div className="course-form-field-top">
+                  <span className="course-form-field-icon"><Icon.book width="14" height="14" /></span>
                   <label className="course-form-field-label">Kurs nomi</label>
-                  <input autoFocus value={newCatName} onChange={(e) => setNewCatName(e.target.value)} placeholder="Masalan: Mobile Dasturlash"
-                    className="course-form-field-input" />
                 </div>
+                <input autoFocus value={newCatName} onChange={(e) => setNewCatName(e.target.value)} placeholder="Masalan: Mobile Dasturlash"
+                  className="course-form-field-input" />
               </div>
 
-              <div className="course-form-field">
-                <span className="course-form-field-icon"><Icon.edit width="15" height="15" /></span>
-                <div className="course-form-field-body">
+              <div className="course-form-field course-form-field--desc">
+                <div className="course-form-field-top">
+                  <span className="course-form-field-icon"><Icon.edit width="13" height="13" /></span>
                   <label className="course-form-field-label">Kurs sharhi</label>
-                  <textarea value={newCatSubtitle} onChange={(e) => setNewCatSubtitle(e.target.value)} rows={2} placeholder="Kurs haqida qisqacha ma'lumot"
-                    className="course-form-field-input is-textarea" />
                 </div>
+                <textarea value={newCatSubtitle} onChange={(e) => setNewCatSubtitle(e.target.value)} rows={2} placeholder="Kurs haqida qisqacha ma'lumot"
+                  className="course-form-field-input is-textarea" />
               </div>
 
-              <div className="course-form-field">
-                <span className="course-form-field-icon"><Icon.cash width="16" height="16" /></span>
-                <div className="course-form-field-body">
+              <div className="course-form-field course-form-field--price">
+                <div className="course-form-field-top">
+                  <span className="course-form-field-icon"><Icon.cash width="14" height="14" /></span>
                   <label className="course-form-field-label">Kurs narxi</label>
-                  <div className="course-form-field-prefix">
-                    <input value={groupDigits(newCatPrice)} onChange={(e) => setNewCatPrice(onlyDigits(e.target.value))} placeholder="300,000" inputMode="numeric"
-                      className="course-form-field-input" />
-                    <span className="course-form-field-suffix">so'm</span>
-                  </div>
+                </div>
+                <div className="course-form-field-prefix">
+                  <input value={groupDigits(newCatPrice)} onChange={(e) => setNewCatPrice(onlyDigits(e.target.value))} placeholder="300,000" inputMode="numeric"
+                    className="course-form-field-input" />
+                  <span className="course-form-field-suffix">so'm</span>
                 </div>
               </div>
             </div>
@@ -3133,7 +3173,8 @@ function CoursesManager({ categories, setCategories, canEdit, notify, quickAdd, 
           const lessonCount = cat.subtopics.reduce((a, s) => a + s.lessons.length, 0);
           return (
             <div key={cat.id} className={`course-card ${cat.frozen ? 'course-card-frozen' : ''}`}>
-              <div className="course-card-media" style={cat.image ? { backgroundImage: `url(${cat.image})`, backgroundSize: 'cover', backgroundPosition: 'center' } : { '--tc1': c1, '--tc2': c2 }}>
+              <div className="course-card-media">
+                <div className="course-card-media-img" style={cat.image ? { backgroundImage: `url(${cat.image})`, backgroundSize: 'cover', backgroundPosition: 'center' } : { '--tc1': c1, '--tc2': c2 }} />
                 <button onClick={() => setOpenCat(cat.id)} className="course-card-media-hit" aria-label={cat.name}>
                   <span className="course-card-play"><Icon.play width="18" height="18" /></span>
                 </button>
@@ -4459,7 +4500,7 @@ function StudentApp({ me, categories, students, setStudents, onLogout, notify })
   };
 
   return (
-    <div className="min-h-screen bg-paper">
+    <div className="min-h-screen bg-paper student-shell">
       {unreadAlert && (
         <Modal title="Xabar" onClose={dismissAlert} size="lg">
           <div className="flex items-center gap-2 text-forest mb-3">
@@ -4573,7 +4614,8 @@ function StudentApp({ me, categories, students, setStudents, onLogout, notify })
                 };
                 return (
                   <div key={cat.id} className={`course-card ${cat.frozen ? 'course-card-frozen' : ''}`}>
-                    <div className="course-card-media" style={cat.image ? { backgroundImage: `url(${cat.image})`, backgroundSize: 'cover', backgroundPosition: 'center' } : { '--tc1': gc1, '--tc2': gc2 }}>
+                    <div className="course-card-media">
+                      <div className="course-card-media-img" style={cat.image ? { backgroundImage: `url(${cat.image})`, backgroundSize: 'cover', backgroundPosition: 'center' } : { '--tc1': gc1, '--tc2': gc2 }} />
                       <button onClick={openCourse} className="course-card-media-hit" aria-label={cat.name}>
                         <span className="course-card-play"><Icon.play width="18" height="18" /></span>
                       </button>
