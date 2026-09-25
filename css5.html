@@ -802,14 +802,21 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   }
 
   /* ================= Course cards — "poster" uslubi (mutlaqo yangi ko'rinish) ================= */
+  /* Kartalar grid'i: mavjud Tailwind build'ida lg:/xl: breakpointlar yig'ilmagan bo'lgani uchun
+     (shu sabab kartalar ekran kattaligidan qat'iy nazar doim 2 tadan chiqib qolgan edi),
+     bu yerda alohida, ekran kengligiga qarab ustunlar sonini oshiradigan grid klassi yozilgan. */
+  .courses-grid {
+    display: grid; grid-template-columns: repeat(1, minmax(0, 1fr)); gap: 1.1rem;
+  }
+  @media (min-width: 640px) { .courses-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
   .course-card {
-    position: relative; border-radius: 1.5rem; overflow: hidden; aspect-ratio: 4 / 5; min-height: 300px;
+    position: relative; border-radius: 1.2rem; overflow: hidden; aspect-ratio: 3 / 4; min-height: 230px;
     display: block; background: #0b0e14;
-    box-shadow: 0 20px 46px -20px rgba(0,0,0,.55), 0 2px 10px -4px rgba(0,0,0,.2);
+    box-shadow: 0 14px 30px -16px rgba(0,0,0,.5), 0 2px 8px -4px rgba(0,0,0,.18);
     transition: transform .28s cubic-bezier(.2,.8,.2,1), box-shadow .28s ease;
   }
   html.theme-dark .course-card { background: #0b0e14; }
-  .course-card:hover { box-shadow: 0 30px 62px -18px rgba(0,0,0,.65), 0 2px 10px -4px rgba(0,0,0,.25); }
+  .course-card:hover { box-shadow: 0 22px 44px -18px rgba(0,0,0,.6), 0 2px 8px -4px rgba(0,0,0,.22); }
   .course-card:hover .course-card-media-img { transform: scale(1.06); }
   .course-card::after {
     content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none;
@@ -830,55 +837,56 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
     position: absolute; inset: 0; z-index: 1; background: transparent; border: none; padding: 0; margin: 0; cursor: pointer;
   }
   .course-card-play {
-    position: absolute; top: 38%; left: 50%; transform: translate(-50%, -50%);
-    width: 54px; height: 54px; border-radius: 999px; background: rgba(255,255,255,.16);
+    position: absolute; top: 37%; left: 50%; transform: translate(-50%, -50%);
+    width: 44px; height: 44px; border-radius: 999px; background: rgba(255,255,255,.16);
     border: 1px solid rgba(255,255,255,.4); backdrop-filter: blur(8px);
-    display: flex; align-items: center; justify-content: center; color: #fff; box-shadow: 0 12px 26px rgba(0,0,0,.4);
+    display: flex; align-items: center; justify-content: center; color: #fff; box-shadow: 0 10px 22px rgba(0,0,0,.4);
     transition: transform .2s ease, background .2s ease;
   }
   .course-card-media-hit:hover .course-card-play { transform: translate(-50%, -50%) scale(1.1); background: rgba(255,255,255,.26); }
   .course-card-price {
-    position: absolute; z-index: 3; top: .8rem; right: .8rem; display: inline-flex; align-items: center; gap: .3rem;
+    position: absolute; z-index: 3; top: .65rem; right: .65rem; display: inline-flex; align-items: center; gap: .28rem;
     background: rgba(10,12,16,.6); border: 1px solid rgba(255,255,255,.14); backdrop-filter: blur(6px);
-    color: #FFDCB4; font-weight: 700; font-size: .8rem; padding: .38rem .7rem; border-radius: 999px; cursor: default;
+    color: #FFDCB4; font-weight: 700; font-size: .72rem; padding: .32rem .6rem; border-radius: 999px; cursor: default;
   }
-  .course-card-price-suffix { font-weight: 500; opacity: .7; font-size: .7rem; color: #fff; }
+  .course-card-price-suffix { font-weight: 500; opacity: .7; font-size: .63rem; color: #fff; }
   .course-card-price-pencil { opacity: .65; margin-left: .1rem; }
-  .course-card-price-edit { gap: .35rem; background: rgba(0,0,0,.72); border-radius: .7rem; }
+  .course-card-price-edit { gap: .32rem; background: rgba(0,0,0,.72); border-radius: .65rem; }
   .course-card-price-input {
-    width: 5.5rem; background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.4); color: #fff;
-    border-radius: .45rem; padding: .3rem .5rem; font-size: .78rem; outline: none; transition: border-color .15s ease;
+    width: 4.8rem; background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.4); color: #fff;
+    border-radius: .42rem; padding: .27rem .45rem; font-size: .72rem; outline: none; transition: border-color .15s ease;
   }
   .course-card-price-input:focus { border-color: #fff; box-shadow: none; }
   .course-card-price-input::placeholder { color: rgba(255,255,255,.55); }
   .course-card-price-save {
-    width: 1.7rem; height: 1.7rem; border-radius: .45rem; background: #CC8B65; color: #100C0D;
+    width: 1.55rem; height: 1.55rem; border-radius: .42rem; background: #CC8B65; color: #100C0D;
     display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; flex-shrink: 0;
   }
   .course-card-body {
-    position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; padding: 3.2rem 1.15rem 1.15rem;
+    position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; padding: 2.6rem .9rem .9rem;
     display: flex; flex-direction: column;
     background: linear-gradient(to top, rgba(4,6,10,.97) 18%, rgba(4,6,10,.86) 52%, rgba(4,6,10,0) 100%);
   }
   .course-card-title {
-    font-family: 'Fraunces', serif; font-size: 1.1rem; line-height: 1.26; color: #fff; margin-bottom: .3rem;
+    font-family: 'Fraunces', serif; font-size: .96rem; line-height: 1.22; color: #fff; margin-bottom: .22rem;
     text-shadow: 0 2px 10px rgba(0,0,0,.3);
+    display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden;
   }
   html.theme-dark .course-card-title { color: #fff; }
   .course-card-desc {
-    font-size: .8rem; line-height: 1.45; color: rgba(255,255,255,.68); margin-bottom: .75rem;
+    font-size: .74rem; line-height: 1.4; color: rgba(255,255,255,.68); margin-bottom: .55rem;
     display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
   }
   html.theme-dark .course-card-desc { color: rgba(255,255,255,.68); }
-  .course-card-tags { display: flex; gap: .4rem; margin-bottom: .9rem; flex-wrap: wrap; }
+  .course-card-tags { display: flex; gap: .35rem; margin-bottom: .65rem; flex-wrap: wrap; }
   .course-card-tag {
-    font-size: .66rem; font-weight: 600; padding: .28rem .6rem; border-radius: 999px;
+    font-size: .62rem; font-weight: 600; padding: .24rem .52rem; border-radius: 999px;
     background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.1); color: rgba(255,255,255,.88);
   }
   html.theme-dark .course-card-tag { background: rgba(255,255,255,.12); color: rgba(255,255,255,.88); }
   .course-card-cta {
-    width: 100%; padding: .78rem 1rem; border-radius: 999px; border: 1px solid rgba(255,255,255,.16);
-    background: rgba(255,255,255,.1); backdrop-filter: blur(6px); color: #fff; font-weight: 600; font-size: .88rem; cursor: pointer;
+    width: 100%; padding: .62rem .8rem; border-radius: 999px; border: 1px solid rgba(255,255,255,.16);
+    background: rgba(255,255,255,.1); backdrop-filter: blur(6px); color: #fff; font-weight: 600; font-size: .8rem; cursor: pointer;
     transition: background .15s ease, transform .15s ease, border-color .15s ease;
   }
   .course-card-cta:hover { background: rgba(255,255,255,.18); border-color: rgba(255,255,255,.3); transform: translateY(-1px); }
@@ -891,15 +899,15 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   .course-card-media .pill-warn { background: rgba(172,75,59,.85) !important; color: #fff !important; backdrop-filter: blur(4px); }
 
   /* ================= Kurs kartasi: "..." menyu (Tahrirlash / Vaqtincha muzlatish) ================= */
-  .course-card-menu-wrap { position: absolute; z-index: 3; top: .8rem; left: .8rem; }
+  .course-card-menu-wrap { position: absolute; z-index: 3; top: .65rem; left: .65rem; }
   .course-card-menu-btn {
-    width: 1.85rem; height: 1.85rem; border-radius: .55rem; border: none; cursor: pointer;
+    width: 1.7rem; height: 1.7rem; border-radius: .5rem; border: none; cursor: pointer;
     background: rgba(0,0,0,.5); backdrop-filter: blur(4px); color: #fff;
     display: flex; align-items: center; justify-content: center; transition: background .15s ease;
   }
   .course-card-menu-btn:hover { background: rgba(0,0,0,.7); }
   .course-card-menu {
-    position: absolute; z-index: 40; top: 2.25rem; left: 0; min-width: 172px;
+    position: absolute; z-index: 40; top: 2.1rem; left: 0; min-width: 168px;
     background: #fff; border: 1px solid rgba(1,51,40,.08); border-radius: .8rem;
     box-shadow: 0 18px 36px -12px rgba(0,0,0,.28); padding: .35rem; display: flex; flex-direction: column;
   }
@@ -918,7 +926,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   .confirm-btn-danger { background: #AC4B3B; } .confirm-btn-danger:hover { background: #953f32; }
   .course-card-frozen-pill {
     display: inline-flex; align-items: center; gap: .25rem; font-size: .62rem; font-weight: 700;
-    padding: .18rem .45rem; border-radius: 999px; background: rgba(255,220,180,.18); color: #FFDCB4; white-space: nowrap;
+    padding: .18rem .44rem; border-radius: 999px; background: rgba(255,220,180,.18); color: #FFDCB4; white-space: nowrap;
   }
   .course-card-frozen .course-card-media { opacity: .55; }
   .course-card-frozen .course-card-title { opacity: .7; }
@@ -1773,8 +1781,33 @@ const loadLS = (key, fallback) => {
   } catch (e) { return fallback; }
 };
 const saveLS = (key, value) => {
-  try { localStorage.setItem(LS_PREFIX + key, JSON.stringify(value)); } catch (e) {}
+  try { localStorage.setItem(LS_PREFIX + key, JSON.stringify(value)); return true; }
+  catch (e) { return false; }
 };
+/* Rasmni localStorage'ga saqlashdan oldin kichraytiradi (katta rasmlar localStorage
+   hajm limitidan (~5MB) oshib, SAQLASH JIMGINA ISHLAMAY QOLISHIGA sabab bo'lardi). */
+const compressImageFile = (file, maxSize = 640, quality = 0.72) => new Promise((resolve, reject) => {
+  const reader = new FileReader();
+  reader.onerror = () => reject(new Error('read-failed'));
+  reader.onload = () => {
+    const img = new Image();
+    img.onerror = () => reject(new Error('decode-failed'));
+    img.onload = () => {
+      let { width, height } = img;
+      if (width > maxSize || height > maxSize) {
+        if (width >= height) { height = Math.round(height * (maxSize / width)); width = maxSize; }
+        else { width = Math.round(width * (maxSize / height)); height = maxSize; }
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = width; canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, width, height);
+      resolve(canvas.toDataURL('image/jpeg', quality));
+    };
+    img.src = reader.result;
+  };
+  reader.readAsDataURL(file);
+});
 function useTheme() {
   const [theme, setTheme] = useState(() => loadLS('theme', 'light'));
   useEffect(() => {
@@ -2469,7 +2502,8 @@ function StaffApp({ me, staff, setStaff, categories, setCategories, students, se
     (overdueCurPage - 1) * OVERDUE_PAGE_SIZE,
     overdueCurPage * OVERDUE_PAGE_SIZE
   );
-  const [readNotifIds, setReadNotifIds] = useState([]);
+  const [readNotifIds, setReadNotifIds] = useState(() => loadLS('readNotifIds', []));
+  useEffect(() => { saveLS('readNotifIds', readNotifIds); }, [readNotifIds]);
   const notifications = useMemo(
     () => overdueStudents
       .filter((s) => !readNotifIds.includes(s.id))
@@ -2878,10 +2912,10 @@ function CoursesManager({ categories, setCategories, canEdit, notify, quickAdd, 
 
   const onPickCatImage = (file) => {
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => setNewCatImage(reader.result);
-    reader.readAsDataURL(file);
-    // API: rasm serverga alohida upload qilinadi, bu yerda demo uchun base64 saqlanmoqda
+    compressImageFile(file)
+      .then((dataUrl) => setNewCatImage(dataUrl))
+      .catch(() => notify("Rasmni yuklab bo'lmadi", 'danger'));
+    // API: rasm serverga alohida upload qilinadi, bu yerda demo uchun siqilgan base64 saqlanmoqda
   };
 
   const closeAddModal = () => {
@@ -3167,7 +3201,7 @@ function CoursesManager({ categories, setCategories, canEdit, notify, quickAdd, 
         );
       })()}
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div className="courses-grid">
         {categories.map((cat, ci) => {
           const [c1, c2] = THUMB_GRADIENTS[ci % THUMB_GRADIENTS.length];
           const lessonCount = cat.subtopics.reduce((a, s) => a + s.lessons.length, 0);
@@ -4600,7 +4634,7 @@ function StudentApp({ me, categories, students, setStudents, onLogout, notify })
               Demo: bugungi kunni "yakshanba" deb simulyatsiya qilish (dam kuni holatini ko'rish uchun)
             </label>
 
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div className="courses-grid">
               {categories.map((cat, ci) => {
                 const stat = courseStats(cat);
                 const access = student.access[cat.id];
@@ -4918,9 +4952,12 @@ function App() {
   const [session, setSession] = useState(() => loadLS('session', null)); // { type: 'staff'|'student', id }
   const [toasts, setToasts] = useState([]);
 
-  useEffect(() => { saveLS('categories', categories); }, [categories]);
-  useEffect(() => { saveLS('staff', staff); }, [staff]);
-  useEffect(() => { saveLS('students', students); }, [students]);
+  const guardedSaveLS = (key, value, label) => {
+    if (!saveLS(key, value)) notify(`${label} saqlanmadi — brauzer xotirasi (localStorage) to'lgan bo'lishi mumkin`, 'danger');
+  };
+  useEffect(() => { guardedSaveLS('categories', categories, 'Kurslar'); }, [categories]);
+  useEffect(() => { guardedSaveLS('staff', staff, 'Xodimlar'); }, [staff]);
+  useEffect(() => { guardedSaveLS('students', students, "O'quvchilar"); }, [students]);
   useEffect(() => { saveLS('session', session); }, [session]);
 
   const notify = (text, variant) => setToasts((list) => [...list, { id: uid('toast'), text, variant }]);
