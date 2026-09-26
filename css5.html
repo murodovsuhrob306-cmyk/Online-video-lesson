@@ -1486,6 +1486,10 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   .stu-ib-key{ background:rgba(59,130,246,.15); color:var(--c-blue); border-color:rgba(59,130,246,.32); }
   .stu-ib-edit{ background:rgba(107,122,112,.14); color:var(--c-slate); border-color:rgba(107,122,112,.26); }
   .stu-ib-del{ background:rgba(239,68,68,.14); color:var(--c-red); border-color:rgba(239,68,68,.30); }
+  .stu-ib-freeze{ background:rgba(234,179,8,.15); color:#a16207; border-color:rgba(234,179,8,.32); }
+  .stu-ib-freeze.stu-ib-on{ background:#eab308; color:#fff; border-color:#eab308; }
+  .stu-ib-block{ background:rgba(239,68,68,.14); color:var(--c-red); border-color:rgba(239,68,68,.30); }
+  .stu-ib-block.stu-ib-on{ background:#ef4444; color:#fff; border-color:#ef4444; }
   .stu-empty{ text-align:center; color:var(--sd-muted); font-size:.88rem; padding:2.2rem 0; }
 
   /* ---- Yangi o'quvchi modali ---- */
@@ -2721,7 +2725,7 @@ function StaffApp({ me, staff, setStaff, categories, setCategories, students, se
         {page === 'students' && editingStudentId && (
           <StudentEditor student={students.find((s) => s.id === editingStudentId)} categories={categories}
             canEdit={canEdit} staff={staff} onBack={() => setEditingStudentId(null)}
-            onSave={(upd) => { setStudents(students.map((s) => (s.id === upd.id ? upd : s))); notify('O\'quvchi ma\'lumotlari saqlandi'); }} />
+            onSave={(upd, opts) => { setStudents(students.map((s) => (s.id === upd.id ? upd : s))); notify((opts && opts.message) || 'O\'quvchi ma\'lumotlari saqlandi', opts && opts.variant); }} />
         )}
 
         {page === 'profile' && <StaffProfile me={me} staff={staff} setStaff={setStaff} notify={notify} onLogout={onLogout} />}
@@ -3961,6 +3965,8 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
   const [gExtraOpen, setGExtraOpen] = useState(false);
   const [delPay, setDelPay] = useState(null);
   const [attnUnblockConfirm, setAttnUnblockConfirm] = useState(null); // darslik nazorati blokini ochishni tasdiqlash uchun kurs
+  const [freezeConfirm, setFreezeConfirm] = useState(null); // muzlatishni tasdiqlash uchun kurs
+  const [blockConfirm, setBlockConfirm] = useState(null); // qo'lda bloklashni tasdiqlash uchun kurs
   const [gPayOpen, setGPayOpen] = useState(false);
   const [gAmount, setGAmount] = useState('');
   const [gMonth, setGMonth] = useState(MONTH_NAMES[new Date().getMonth()]);
@@ -4031,10 +4037,15 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
     if (!cat || !access) return null;
     return attendanceState(form, cat, access, false);
   };
-  /* Kurs nega bloklangan — bir nechta sabab bir vaqtda bo'lishi mumkin (to'lov + nazorat) */
+  /* Kurs nega bloklangan — bir nechta sabab bir vaqtda bo'lishi mumkin
+     (qo'lda muzlatish/bloklash + to'lov muddati + nazorat) */
   const blockReasons = (catId) => {
     const reasons = [];
-    if (isCourseBlocked(form, categories, catId)) reasons.push('payment');
+    const access = form.access[catId];
+    if (access && access.frozen) reasons.push('frozen');
+    if (access && access.manualBlocked) reasons.push('manual');
+    const course = studentBilling(form, categories).courses.find((x) => x.catId === catId);
+    if (course && course.blocked) reasons.push('payment');
     const attn = attendanceFor(catId);
     if (attn && attn.isBlocked) reasons.push('attendance');
     return { reasons, attn };
@@ -4064,6 +4075,58 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
     setForm(nf);
     onSave(nf);
     // API: POST /api/admin/students/{id}/courses/{catId}/unblock/  (reason: "attendance")
+  };
+
+  /* Kursni shu o'quvchi uchun qo'lda muzlatish / muzlatishni bekor qilish —
+     to'lov muddati to'xtab turadi, kurs vaqtincha yopiladi.
+     notifyStudent=true bo'lsa, o'quvchining shaxsiy kabinetiga ham xabar qo'shiladi. */
+  const setFreezeState = (cat, frozen, notifyStudent) => {
+    const cur = form.access[cat.id];
+    if (!cur) return;
+    const alerts = notifyStudent
+      ? [...(form.alerts || []), {
+          id: uid('al'),
+          text: frozen
+            ? `Hurmatli ${form.name}, «${cat.name}» kursi vaqtincha muzlatildi. Batafsil ma'lumot uchun administratsiya bilan bog'laning.`
+            : `Hurmatli ${form.name}, «${cat.name}» kursi qayta faollashtirildi — davom ettirishingiz mumkin.`,
+          read: false, createdAt: Date.now(),
+        }]
+      : (form.alerts || []);
+    const nf = { ...form, access: { ...form.access, [cat.id]: { ...cur, frozen } }, alerts };
+    setForm(nf);
+    onSave(nf, {
+      message: frozen
+        ? `${form.name} — «${cat.name}» darsligi vaqtincha muzlatildi`
+        : `${form.name} — «${cat.name}» darsligi qayta faollashtirildi`,
+      variant: frozen ? 'warning' : 'success',
+    });
+    // API: POST /api/admin/students/{id}/courses/{catId}/freeze/  (frozen: true|false, notifyStudent)
+  };
+
+  /* Kursni shu o'quvchi uchun qo'lda bloklash / blokni ochish (admin qarori bilan,
+     to'lov yoki darslik nazoratidan mustaqil).
+     notifyStudent=true bo'lsa, o'quvchining shaxsiy kabinetiga ham xabar qo'shiladi. */
+  const setBlockState = (cat, blocked, notifyStudent) => {
+    const cur = form.access[cat.id];
+    if (!cur) return;
+    const alerts = notifyStudent
+      ? [...(form.alerts || []), {
+          id: uid('al'),
+          text: blocked
+            ? `Hurmatli ${form.name}, «${cat.name}» kursi bloklandi. Iltimos, administratsiya bilan bog'laning.`
+            : `Hurmatli ${form.name}, «${cat.name}» kursi blokdan chiqarildi — davom ettirishingiz mumkin.`,
+          read: false, createdAt: Date.now(),
+        }]
+      : (form.alerts || []);
+    const nf = { ...form, access: { ...form.access, [cat.id]: { ...cur, manualBlocked: blocked } }, alerts };
+    setForm(nf);
+    onSave(nf, {
+      message: blocked
+        ? `${form.name} — «${cat.name}» darsligi bloklandi`
+        : `${form.name} — «${cat.name}» darsligi blokdan chiqarildi`,
+      variant: blocked ? 'danger' : 'success',
+    });
+    // API: POST /api/admin/students/{id}/courses/{catId}/block/  (blocked: true|false, notifyStudent)
   };
 
   const confirmNewPassword = () => {
@@ -4320,7 +4383,10 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
                         <div className="min-w-0">
                           <div className="flex items-center gap-1.5 flex-wrap">
                             <div className="ed-course-name">{cat.name}</div>
-                            {rowBlocked && (
+                            {a.active && a.frozen && (
+                              <span className="pill pill-warn shrink-0"><Icon.pause width="9" height="9" /> Muzlatilgan</span>
+                            )}
+                            {rowBlocked && !a.frozen && (
                               <span className="pill pill-warn shrink-0"><Icon.lock width="9" height="9" /> Bloklangan</span>
                             )}
                           </div>
@@ -4331,6 +4397,20 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
                         {a.active && canEdit && (
                           <button className="stu-ib stu-ib-pay" title="To'lov qilish" onClick={() => openPayModal(cat)}>
                             <Icon.card width="14" height="14" />
+                          </button>
+                        )}
+                        {a.active && canEdit && (
+                          <button className={`stu-ib stu-ib-freeze ${a.frozen ? 'stu-ib-on' : ''}`}
+                            title={a.frozen ? "Muzlatishni bekor qilish" : "Muzlatish"}
+                            onClick={() => (a.frozen ? setFreezeState(cat, false, true) : setFreezeConfirm(cat))}>
+                            {a.frozen ? <Icon.play width="14" height="14" /> : <Icon.pause width="14" height="14" />}
+                          </button>
+                        )}
+                        {a.active && canEdit && (
+                          <button className={`stu-ib stu-ib-block ${a.manualBlocked ? 'stu-ib-on' : ''}`}
+                            title={a.manualBlocked ? "Blokni ochish" : "Bloklash"}
+                            onClick={() => (a.manualBlocked ? setBlockState(cat, false, true) : setBlockConfirm(cat))}>
+                            <Icon.lock width="14" height="14" />
                           </button>
                         )}
                         <Switch on={!!a.active} disabled={!canEdit} onToggle={(v) => { updateAccess(cat.id, { active: v }); if (v) setExpandedCourses((e) => ({ ...e, [cat.id]: true })); }} />
@@ -4370,6 +4450,26 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
                           if (!reasons.length) return null;
                           return (
                             <div className="ed-warn" style={{ display: 'flex', flexDirection: 'column', gap: '.6rem' }}>
+                              {reasons.includes('frozen') && (
+                                <div className="flex items-center justify-between gap-3 flex-wrap">
+                                  <span>⏸ Bu kurs administratsiya tomonidan <b>vaqtincha muzlatilgan</b>.</span>
+                                  {canEdit && (
+                                    <button onClick={() => setFreezeState(cat, false, true)} className="text-xs font-semibold px-3 py-1.5 rounded-lg shrink-0" style={{ background: '#2E6F4E', color: '#fff' }}>
+                                      Muzlatishni bekor qilish
+                                    </button>
+                                  )}
+                                </div>
+                              )}
+                              {reasons.includes('manual') && (
+                                <div className="flex items-center justify-between gap-3 flex-wrap">
+                                  <span>⚠ Bu kurs administratsiya tomonidan <b>qo'lda bloklangan</b>.</span>
+                                  {canEdit && (
+                                    <button onClick={() => setBlockState(cat, false, true)} className="text-xs font-semibold px-3 py-1.5 rounded-lg shrink-0" style={{ background: '#2E6F4E', color: '#fff' }}>
+                                      Blokni ochish
+                                    </button>
+                                  )}
+                                </div>
+                              )}
                               {reasons.includes('payment') && (
                                 <div className="flex items-center justify-between gap-3 flex-wrap">
                                   <span>⚠ Bu kurs <b>to'lov muddati o'tgani</b> uchun bloklangan. Blok faqat to'lov qilingandan keyin avtomatik ochiladi.</span>
@@ -4491,6 +4591,46 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
             <button className="sd-btn sd-btn-ghost" onClick={() => setAttnUnblockConfirm(null)}>Bekor qilish</button>
             <button className="sd-btn sd-btn-primary" onClick={() => { unblockAttendance(attnUnblockConfirm); setAttnUnblockConfirm(null); }}>
               <Icon.check width="14" height="14" /> Ha, blokni ochish
+            </button>
+          </div>
+        </SdModal>
+      )}
+
+      {freezeConfirm && (
+        <SdModal title="Kursni muzlatish" icon="⏸️" onClose={() => setFreezeConfirm(null)}>
+          <p className="sd-confirm-text">
+            <b>{form.name}</b> uchun <b>«{freezeConfirm.name}»</b> kursi vaqtincha muzlatilsinmi?
+            O'quvchi bu kursga muzlatish bekor qilinguncha kira olmaydi.
+          </p>
+          <p className="sd-hint" style={{ marginTop: 0 }}>Xabar berish tanlansa, bu haqda o'quvchining shaxsiy kabinetiga ham yozib qo'yiladi.</p>
+          <div className="sd-foot" style={{ flexWrap: 'wrap' }}>
+            <button className="sd-btn sd-btn-ghost" onClick={() => setFreezeConfirm(null)}>Bekor qilish</button>
+            <button className="sd-btn sd-btn-primary" onClick={() => { setFreezeState(freezeConfirm, true, false); setFreezeConfirm(null); }}>
+              <Icon.pause width="14" height="14" /> Muzlatish
+            </button>
+            <button className="sd-btn sd-btn-primary" style={{ background: '#a16207' }}
+              onClick={() => { setFreezeState(freezeConfirm, true, true); setFreezeConfirm(null); }}>
+              <Icon.bell width="14" height="14" /> Muzlatish va xabar berish
+            </button>
+          </div>
+        </SdModal>
+      )}
+
+      {blockConfirm && (
+        <SdModal title="Kursni bloklash" icon="🔒" onClose={() => setBlockConfirm(null)}>
+          <p className="sd-confirm-text">
+            <b>{form.name}</b> uchun <b>«{blockConfirm.name}»</b> kursi bloklansinmi?
+            O'quvchi bu kursga blok ochilguncha kira olmaydi.
+          </p>
+          <p className="sd-hint" style={{ marginTop: 0 }}>Xabar berish tanlansa, bu haqda o'quvchining shaxsiy kabinetiga ham yozib qo'yiladi.</p>
+          <div className="sd-foot" style={{ flexWrap: 'wrap' }}>
+            <button className="sd-btn sd-btn-ghost" onClick={() => setBlockConfirm(null)}>Bekor qilish</button>
+            <button className="sd-btn sd-btn-danger" onClick={() => { setBlockState(blockConfirm, true, false); setBlockConfirm(null); }}>
+              <Icon.lock width="14" height="14" /> Bloklash
+            </button>
+            <button className="sd-btn sd-btn-danger" style={{ opacity: .92 }}
+              onClick={() => { setBlockState(blockConfirm, true, true); setBlockConfirm(null); }}>
+              <Icon.bell width="14" height="14" /> Bloklash va xabar berish
             </button>
           </div>
         </SdModal>
