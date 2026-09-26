@@ -1755,6 +1755,62 @@ const isScheduleDayOk = (access, forceSunday) => {
   if (access.schedule === 'even') return access.includeSunday ? [2, 4, 6, 0].includes(day) : [2, 4, 6].includes(day);
   return true;
 };
+
+/* ---------------------------- DARSLIK NAZORATI (ATTENDANCE) ----------------------------
+   Talaba tanlagan kurs jadvali (odd/even/daily) bo'yicha qaysi kunlari video dars
+   ko'rishi kerakligini va shu kunlarda haqiqatan darslikni tugatganini (progress
+   ichidagi completedAt sanasi orqali) solishtirib, "o'tkazib yuborilgan kunlar"ni
+   va jarima ballarini hisoblaydi. Bu — frontend-demo hisob-kitobi: productionda
+   bu hisoblash backendda (masalan har kuni ishlaydigan cron job) amalga oshirilishi,
+   va isBlocked=true bo'lganda backend video stream/URL bermasligi kerak
+   (front-end tekshiruvi yolg'iz yetarli emas). */
+const ATTEND_WINDOW_DAYS = 30;  // jarima ballari shu necha kunlik oynada hisoblanadi
+const ATTEND_MAX_POINTS = 3;    // shuncha marta o'tkazib yuborilsa, kurs bloklanadi
+const ATTEND_STRIP_DAYS = 6;    // vidjetda ko'rsatiladigan oxirgi necha dars kuni
+const DAY_SHORT = ['Yak', 'Dush', 'Sesh', 'Chor', 'Pay', 'Juma', 'Shan'];
+
+/* isScheduleDayOk berilgan ixtiyoriy sanaga (o'tgan kunlar uchun ham) qo'llanadigan
+   umumiy shakli; forceSunday faqat "bugun"gi kunni demo tarzda yakshanba deb
+   ko'rsatish uchun ishlatiladi. */
+const isScheduleDateFor = (access, date, forceSunday) => {
+  const day = forceSunday ? 0 : date.getDay();
+  if (access.schedule === 'daily') return day !== 0;
+  if (access.schedule === 'odd') return [1, 3, 5].includes(day);
+  if (access.schedule === 'even') return access.includeSunday ? [2, 4, 6, 0].includes(day) : [2, 4, 6].includes(day);
+  return true;
+};
+
+const attendanceState = (student, category, access, forceSunday) => {
+  const lessons = category.subtopics.flatMap((s) => s.lessons);
+  const completedDates = new Set(
+    lessons.map((l) => student.progress[l.id]?.completedAt).filter(Boolean)
+  );
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const enrolledAt = access.enrolledAt ? new Date(access.enrolledAt) : null;
+  const resetAt = access.attendanceResetAt ? new Date(access.attendanceResetAt) : null;
+  // Ikkalasidan (yozilgan sana / oxirgi qo'lda ochilgan sana) qaysi biri kechroq bo'lsa, o'sha kesim nuqtasi bo'ladi
+  const cutoff = resetAt && (!enrolledAt || resetAt > enrolledAt) ? resetAt : enrolledAt;
+  const strip = [];
+  let penaltyPoints = 0;
+  for (let i = ATTEND_WINDOW_DAYS - 1; i >= 0; i--) {
+    const d = new Date(today); d.setDate(d.getDate() - i);
+    const isToday = i === 0;
+    if (cutoff && d < cutoff) continue; // kesim nuqtasidan oldingi kunlar hisobga kirmaydi
+    if (!isScheduleDateFor(access, d, forceSunday && isToday)) continue;
+    const iso = d.toISOString().slice(0, 10);
+    const status = isToday
+      ? (completedDates.has(iso) ? 'done' : 'today')
+      : (completedDates.has(iso) ? 'done' : 'missed');
+    if (status === 'missed') penaltyPoints++;
+    strip.push({ date: iso, weekday: DAY_SHORT[forceSunday && isToday ? 0 : d.getDay()], status });
+  }
+  return {
+    strip: strip.slice(-ATTEND_STRIP_DAYS),
+    penaltyPoints,
+    maxPenaltyPoints: ATTEND_MAX_POINTS,
+    isBlocked: penaltyPoints >= ATTEND_MAX_POINTS,
+  };
+};
 const uid = (p) => p + Math.random().toString(36).slice(2, 9);
 const DEMO_VIDEO = 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4';
 
@@ -3279,13 +3335,13 @@ function CoursesManager({ categories, setCategories, canEdit, notify, quickAdd, 
    tabidagi bilan bir xil maydonlar (yoqish/o'chirish, to'lov sanasi, dars kunlari jadvali). */
 function StudentAccessFields({ categories, access, canEdit = true, onChange }) {
   const updateAccess = (catId, patch) => {
-    const cur = access[catId] || { active: false, nextPaymentDate: todayISO(), isFullyPaid: false, schedule: 'daily', includeSunday: false };
+    const cur = access[catId] || { active: false, nextPaymentDate: todayISO(), isFullyPaid: false, schedule: 'daily', includeSunday: false, enrolledAt: todayISO() };
     onChange({ ...access, [catId]: { ...cur, ...patch } });
   };
   return (
     <div className="space-y-3">
       {categories.map((cat) => {
-        const a = access[cat.id] || { active: false, nextPaymentDate: todayISO(), isFullyPaid: false, schedule: 'daily', includeSunday: false };
+        const a = access[cat.id] || { active: false, nextPaymentDate: todayISO(), isFullyPaid: false, schedule: 'daily', includeSunday: false, enrolledAt: todayISO() };
         return (
           <div key={cat.id} className="bg-card border border-line rounded-xl p-4">
             <div className="flex items-center justify-between">
@@ -3830,7 +3886,7 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
   useEffect(() => { setForm({ ...student }); }, [student.id]);
 
   const updateAccess = (catId, patch) => {
-    const cur = form.access[catId] || { active: false, nextPaymentDate: todayISO(), isFullyPaid: false, schedule: 'daily', includeSunday: false };
+    const cur = form.access[catId] || { active: false, nextPaymentDate: todayISO(), isFullyPaid: false, schedule: 'daily', includeSunday: false, enrolledAt: todayISO() };
     setForm({ ...form, access: { ...form.access, [catId]: { ...cur, ...patch } } });
   };
 
@@ -3848,7 +3904,7 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
   const confirmPayment = () => {
     if (!payFor) return;
     const cat = categories.find((c) => c.id === payFor);
-    const cur = form.access[payFor] || { active: true, nextPaymentDate: todayISO(), isFullyPaid: false, schedule: 'daily', includeSunday: false };
+    const cur = form.access[payFor] || { active: true, nextPaymentDate: todayISO(), isFullyPaid: false, schedule: 'daily', includeSunday: false, enrolledAt: todayISO() };
     const amount = Number(onlyDigits(payAmount)) || 0;
     const nowP = curPeriod();
     const isCurrent = payMonth === nowP.m && String(payYear) === nowP.y;
@@ -3876,6 +3932,58 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
   const debtSum = bill.debt;
   const overdueSum = bill.blockedDebt;
   const leftIn = (m, y) => Math.max(0, totalFee - paidIn(m, y));
+
+  /* Darslik nazorati holati (shu kurs bo'yicha) — StudentApp'dagi bilan bir xil hisoblash */
+  const attendanceFor = (catId) => {
+    const cat = categories.find((c) => c.id === catId);
+    const access = form.access[catId];
+    if (!cat || !access) return null;
+    return attendanceState(form, cat, access, false);
+  };
+  /* Kurs nega bloklangan — bir nechta sabab bir vaqtda bo'lishi mumkin (to'lov + nazorat) */
+  const blockReasons = (catId) => {
+    const reasons = [];
+    if (isCourseBlocked(form, categories, catId)) reasons.push('payment');
+    const attn = attendanceFor(catId);
+    if (attn && attn.isBlocked) reasons.push('attendance');
+    return { reasons, attn };
+  };
+  /* To'lov tufayli blokni ochish: joriy oy qarzini kechiktirib, keyingi oygacha kursni ochamiz —
+     shu bilan qarz "kechirilmaydi", faqat blok darhol olib tashlanadi. Admin xohlasa keyinroq
+     to'lovni alohida kiritishi mumkin. */
+  const unblockPayment = (cat) => {
+    const cur = form.access[cat.id];
+    if (!cur) return;
+    const cp = curPeriod();
+    const nf = {
+      ...form,
+      access: { ...form.access, [cat.id]: { ...cur, nextPaymentDate: firstOfNextMonthISO(cp.m, cp.y) } },
+      alerts: [...(form.alerts || []), {
+        id: uid('al'),
+        text: `Hurmatli ${form.name}, «${cat.name}» kursi to'lov muddati o'tgani sababli bloklangan edi — administratsiya blokni olib tashladi. Kursni davom ettirishingiz mumkin.`,
+        read: false, createdAt: Date.now(),
+      }],
+    };
+    onSave(nf);
+    // API: POST /api/admin/students/{id}/courses/{catId}/unblock/  (reason: "payment")
+  };
+  /* Darslik nazorati tufayli blokni ochish: shu paytgacha to'plangan jarima ballarini
+     bekor qilamiz (attendanceResetAt sanasidan oldingi kunlar endi hisobga kirmaydi). */
+  const unblockAttendance = (cat) => {
+    const cur = form.access[cat.id];
+    if (!cur) return;
+    const nf = {
+      ...form,
+      access: { ...form.access, [cat.id]: { ...cur, attendanceResetAt: todayISO() } },
+      alerts: [...(form.alerts || []), {
+        id: uid('al'),
+        text: `Hurmatli ${form.name}, «${cat.name}» kursi darslik nazorati (o'tkazib yuborilgan dars kunlari) sababli bloklangan edi — administratsiya blokni olib tashladi. Kursni davom ettirishingiz mumkin.`,
+        read: false, createdAt: Date.now(),
+      }],
+    };
+    onSave(nf);
+    // API: POST /api/admin/students/{id}/courses/{catId}/unblock/  (reason: "attendance")
+  };
 
   const confirmNewPassword = () => {
     const upd = { ...form, password: genPassword6() };
@@ -4104,7 +4212,7 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
               {categories
                 .filter((cat) => cat.name.toLowerCase().includes(courseQuery.toLowerCase()))
                 .map((cat) => {
-                const a = form.access[cat.id] || { active: false, nextPaymentDate: todayISO(), isFullyPaid: false, schedule: 'daily', includeSunday: false };
+                const a = form.access[cat.id] || { active: false, nextPaymentDate: todayISO(), isFullyPaid: false, schedule: 'daily', includeSunday: false, enrolledAt: todayISO() };
                 const isOpen = !!expandedCourses[cat.id];
                 return (
                   <div key={cat.id} className="ed-course">
@@ -4155,7 +4263,43 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
                             Yakshanbani ham jadvalga qo'shish
                           </label>
                         )}
-                        {isCourseBlocked(form, categories, cat.id) && <div className="ed-warn">Bu kurs to'lov muddati o'tgani uchun avtomatik bloklangan.</div>}
+                        {(() => {
+                          const { reasons, attn } = blockReasons(cat.id);
+                          if (!reasons.length) return null;
+                          return (
+                            <div className="ed-warn" style={{ display: 'flex', flexDirection: 'column', gap: '.6rem' }}>
+                              {reasons.includes('payment') && (
+                                <div className="flex items-center justify-between gap-3 flex-wrap">
+                                  <span>⚠ Bu kurs <b>to'lov muddati o'tgani</b> uchun bloklangan.</span>
+                                  {canEdit && (
+                                    <button onClick={() => unblockPayment(cat)} className="text-xs font-semibold px-3 py-1.5 rounded-lg shrink-0" style={{ background: '#2E6F4E', color: '#fff' }}>
+                                      Blokni ochish (to'lov)
+                                    </button>
+                                  )}
+                                </div>
+                              )}
+                              {reasons.includes('attendance') && (
+                                <div className="flex items-center justify-between gap-3 flex-wrap">
+                                  <span>⚠ Bu kurs <b>darslik nazorati</b> tufayli bloklangan — oxirgi {ATTEND_WINDOW_DAYS} kunda {attn.penaltyPoints}/{attn.maxPenaltyPoints} dars kuni o'tkazib yuborilgan.</span>
+                                  {canEdit && (
+                                    <button onClick={() => unblockAttendance(cat)} className="text-xs font-semibold px-3 py-1.5 rounded-lg shrink-0" style={{ background: '#2E6F4E', color: '#fff' }}>
+                                      Blokni ochish (nazorat)
+                                    </button>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })()}
+                        {(() => {
+                          const attn = attendanceFor(cat.id);
+                          if (!attn || attn.isBlocked) return null;
+                          return (
+                            <div className="text-xs text-slate" style={{ gridColumn: 'span 2' }}>
+                              Darslik nazorati: <b className="text-ink">{attn.penaltyPoints}/{attn.maxPenaltyPoints}</b> jarima balli (oxirgi {ATTEND_WINDOW_DAYS} kun)
+                            </div>
+                          );
+                        })()}
                       </div>
                     )}
                   </div>
@@ -4513,10 +4657,21 @@ function StudentApp({ me, categories, students, setStudents, onLogout, notify })
   const enrolledCategories = categories.filter((c) => student.access[c.id]?.active);
   const bill = studentBilling(student, categories);
   const [blockedCat, setBlockedCat] = useState(null);   // to'lov qilinmagan kursga kirishga urinish
+  const [attnBlockedCat, setAttnBlockedCat] = useState(null); // darslik nazorati bo'yicha bloklangan kursga urinish
   const [buyCat, setBuyCat] = useState(null);           // hali sotib olinmagan kursga bosilganda
   const courseBill = (cid) => bill.courses.find((c) => c.catId === cid);
 
   const lessonProgress = (lessonId) => student.progress[lessonId] || { watched: 0, completed: false };
+
+  /* Darslik nazorati: shu kurs bo'yicha talabaning dars kunlarini o'tkazib
+     yuborish holati va jarima ballari. Vidjet + darsliklar ro'yxati shu bitta
+     holatdan foydalanadi, shuning uchun ikkalasi doim sinxron ko'rinadi. */
+  const attendanceFor = (cid) => {
+    const cat = categories.find((c) => c.id === cid);
+    const access = student.access[cid];
+    if (!cat || !access) return null;
+    return attendanceState(student, cat, access, forceSunday);
+  };
 
   const courseStats = (cat) => {
     const lessons = cat.subtopics.flatMap((s) => s.lessons);
@@ -4525,8 +4680,12 @@ function StudentApp({ me, categories, students, setStudents, onLogout, notify })
   };
 
   const markProgress = (lessonId, watched, completed) => {
-    setStudent({ ...student, progress: { ...student.progress, [lessonId]: { watched, completed } } });
-    // API: POST /api/student/lessons/{id}/progress/
+    const prev = student.progress[lessonId];
+    // completedAt birinchi marta tugallangan sanada qotib qoladi — keyinroq qayta
+    // ko'rish (masalan takrorlash uchun) darslik nazoratini buzmasligi kerak.
+    const completedAt = completed ? (prev?.completedAt || todayISO()) : prev?.completedAt;
+    setStudent({ ...student, progress: { ...student.progress, [lessonId]: { watched, completed, completedAt } } });
+    // API: POST /api/student/lessons/{id}/progress/  (backend completedAt'ni serverda, o'z sanasi bilan yozadi)
   };
 
   /* O'qituvchi yuborgan o'qilmagan xabarlar (masalan to'lov haqida eslatma) —
@@ -4567,6 +4726,26 @@ function StudentApp({ me, categories, students, setStudents, onLogout, notify })
             <p className="text-slate text-sm mt-2">To'lovni o'qituvchingizga topshiring — u tasdiqlagach kurs avtomatik ochiladi.</p>
             <div className="mt-6">
               <button onClick={() => setBlockedCat(null)} className="bg-forest text-white text-sm px-5 py-2.5 rounded-lg">Tushunarli</button>
+            </div>
+          </Modal>
+        );
+      })()}
+      {attnBlockedCat && (() => {
+        const attn = attendanceFor(attnBlockedCat.id) || { penaltyPoints: 0, maxPenaltyPoints: ATTEND_MAX_POINTS };
+        return (
+          <Modal title="Darslik nazorati" onClose={() => setAttnBlockedCat(null)}>
+            <div className="flex items-center gap-2 text-clay mb-3">
+              <Icon.lock width="18" height="18" />
+              <span className="font-semibold text-sm uppercase tracking-wide">Kurs vaqtincha bloklandi</span>
+            </div>
+            <p className="text-ink text-base leading-relaxed">
+              <b>«{attnBlockedCat.name}»</b> kursida oxirgi {ATTEND_WINDOW_DAYS} kun ichida
+              jadval bo'yicha dars kunlari <b>{attn.penaltyPoints} marta</b> o'tkazib yuborildi
+              (limit: {attn.maxPenaltyPoints}).
+            </p>
+            <p className="text-slate text-sm mt-2">Blokni ochish uchun o'qituvchingiz yoki administratsiya bilan bog'laning.</p>
+            <div className="mt-6">
+              <button onClick={() => setAttnBlockedCat(null)} className="bg-forest text-white text-sm px-5 py-2.5 rounded-lg">Tushunarli</button>
             </div>
           </Modal>
         );
@@ -4645,10 +4824,15 @@ function StudentApp({ me, categories, students, setStudents, onLogout, notify })
                 const enrolled = !!access?.active;
                 const cb = courseBill(cat.id);
                 const overdue = !!(cb && cb.blocked);
+                const attn = enrolled ? attendanceFor(cat.id) : null;
+                const attnBlocked = !!(attn && attn.isBlocked);
                 const [gc1, gc2] = THUMB_GRADIENTS[ci % THUMB_GRADIENTS.length];
                 const openCourse = () => {
                   if (cat.frozen) return;
-                  if (!enrolled) setBuyCat(cat); else if (overdue) setBlockedCat(cat); else setCatId(cat.id);
+                  if (!enrolled) setBuyCat(cat);
+                  else if (overdue) setBlockedCat(cat);
+                  else if (attnBlocked) setAttnBlockedCat(cat);
+                  else setCatId(cat.id);
                 };
                 return (
                   <div key={cat.id} className={`course-card ${cat.frozen ? 'course-card-frozen' : ''}`}>
@@ -4659,6 +4843,8 @@ function StudentApp({ me, categories, students, setStudents, onLogout, notify })
                       </button>
                       <span className="course-card-price">{fmtMoney(cat.monthlyPrice)}</span>
                       {overdue && !cat.frozen && <span className="pill pill-warn" style={{ position: 'absolute', top: '.8rem', left: '.8rem', zIndex: 2 }}><Icon.lock width="11" height="11"/> Bloklangan</span>}
+                      {!overdue && attnBlocked && !cat.frozen && <span className="pill pill-warn" style={{ position: 'absolute', top: '.8rem', left: '.8rem', zIndex: 2 }}><Icon.lock width="11" height="11"/> Nazorat bloki</span>}
+                      {!overdue && !attnBlocked && enrolled && attn && attn.penaltyPoints > 0 && !cat.frozen && <span className="pill pill-warn" style={{ position: 'absolute', top: '.8rem', left: '.8rem', zIndex: 2 }}>{attn.penaltyPoints}/{attn.maxPenaltyPoints} jarima</span>}
                     </div>
                     <div className="course-card-body">
                       <div className="flex items-center gap-1.5 flex-wrap">
@@ -4725,6 +4911,7 @@ function StudentApp({ me, categories, students, setStudents, onLogout, notify })
             access={student.access[catId]}
             payBlocked={!!(courseBill(catId) && courseBill(catId).blocked)}
             payDebt={courseBill(catId) ? courseBill(catId).debt : 0}
+            attendance={attendanceFor(catId)}
             forceSunday={forceSunday}
             lessonId={lessonId}
             setLessonId={setLessonId}
@@ -4738,11 +4925,76 @@ function StudentApp({ me, categories, students, setStudents, onLogout, notify })
   );
 }
 
-function LessonView({ category, subtopic, access, payBlocked, payDebt, forceSunday, lessonId, setLessonId, progressOf, onProgress, onBack }) {
+/* Darslik nazorati vidjeti: talaba kursga kirgan zahoti (LessonView ichida)
+   darsliklar ro'yxati bilan BIRGA, xuddi shu ma'lumotdan chiziladi. */
+function AttendancePanel({ state }) {
+  const { strip, penaltyPoints, maxPenaltyPoints, isBlocked } = state;
+  const warn = !isBlocked && penaltyPoints >= maxPenaltyPoints - 1;
+  return (
+    <div className="bg-card border border-line rounded-xl p-4 mb-6">
+      <div className="flex items-center gap-3">
+        <div className="course-chip" style={{ background: isBlocked ? 'rgba(172,75,59,.14)' : 'rgba(46,111,78,.12)', color: isBlocked ? '#AC4B3B' : '#2E6F4E' }}>
+          <Icon.book width="18" height="18" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="text-xs text-slate uppercase tracking-wide">Darslik nazorati</div>
+          <div className="font-display text-lg text-ink">Dars kunlari va jarima ballari</div>
+        </div>
+        <span className={`pill shrink-0 ${isBlocked ? 'pill-warn' : warn ? 'pill-warn' : 'pill-ok'}`}>
+          {isBlocked ? 'Bloklangan' : warn ? 'Ogohlantirish' : 'Faol'}
+        </span>
+      </div>
+
+      <div className="flex items-center justify-between mt-5">
+        {strip.map((d) => (
+          <div key={d.date} className="flex flex-col items-center gap-1.5">
+            <div
+              className={`w-8 h-8 rounded-full flex items-center justify-center border text-xs font-semibold ${
+                d.status === 'done' ? 'bg-forest text-white border-forest'
+                : d.status === 'missed' ? 'bg-clay/10 text-clay border-clay/30'
+                : d.status === 'today' ? 'text-gold'
+                : 'text-slate border-line'
+              }`}
+              style={d.status === 'today' ? { borderStyle: 'dashed', borderColor: '#C1972A', borderWidth: 2 } : undefined}
+            >
+              {d.status === 'done' ? <Icon.check width="13" height="13" /> : d.status === 'missed' ? <Icon.close width="12" height="12" /> : ''}
+            </div>
+            <div className="text-xs text-slate">{d.weekday}</div>
+          </div>
+        ))}
+      </div>
+
+      <div className="flex items-center justify-between mt-5 pt-4 border-t border-line">
+        <div>
+          <div className="text-xs text-slate uppercase tracking-wide mb-1.5">Jarima ballari</div>
+          <div className="flex gap-1.5">
+            {Array.from({ length: maxPenaltyPoints }, (_, i) => (
+              <span key={i} className="w-2.5 h-2.5 rounded-full" style={{ background: i < penaltyPoints ? '#AC4B3B' : '#DEDACC' }} />
+            ))}
+          </div>
+        </div>
+        <div className="text-right">
+          <div className="text-xs text-slate uppercase tracking-wide mb-1">Oxirgi {ATTEND_WINDOW_DAYS} kun</div>
+          <div className="text-sm font-semibold text-ink">{penaltyPoints} / {maxPenaltyPoints}</div>
+        </div>
+      </div>
+
+      {isBlocked && (
+        <div className="bg-clay/10 border border-clay/30 text-clay rounded-lg px-4 py-3 mt-4 text-xs leading-relaxed flex items-start gap-2">
+          <Icon.warn width="14" height="14" className="shrink-0 mt-0.5" />
+          <span>Oxirgi {ATTEND_WINDOW_DAYS} kun ichida {maxPenaltyPoints} marta dars kuni o'tkazib yuborildi — kurs vaqtincha bloklandi. Blokni ochish uchun o'qituvchingiz bilan bog'laning.</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function LessonView({ category, subtopic, access, payBlocked, payDebt, attendance, forceSunday, lessonId, setLessonId, progressOf, onProgress, onBack }) {
   const lessons = subtopic.lessons;
   const overdue = !!payBlocked;
   const dayOk = isScheduleDayOk(access, forceSunday);
-  const blocked = overdue || !dayOk;
+  const attnBlocked = !!(attendance && attendance.isBlocked);
+  const blocked = overdue || !dayOk || attnBlocked;
 
   const active = lessons.find((l) => l.id === lessonId) || lessons[0];
   useEffect(() => { if (!lessonId && lessons[0]) setLessonId(lessons[0].id); }, []);
@@ -4761,9 +5013,15 @@ function LessonView({ category, subtopic, access, payBlocked, payDebt, forceSund
       {blocked && (
         <div className="bg-clay/10 border border-clay/30 text-clay rounded-xl px-5 py-4 mb-6 text-sm font-medium flex items-center gap-3">
           <Icon.warn width="18" height="18" className="shrink-0" />
-          {overdue ? `Oylik to'lov qilinmagan: ${fmtMoney(payDebt)}. To'lov qilingach dars ochiladi — o'qituvchingiz bilan bog'laning.` : "Bugun dam kuni — sizning dars jadvalingiz bo'yicha video dars ochilmaydi."}
+          {overdue
+            ? `Oylik to'lov qilinmagan: ${fmtMoney(payDebt)}. To'lov qilingach dars ochiladi — o'qituvchingiz bilan bog'laning.`
+            : attnBlocked
+            ? `Oxirgi ${ATTEND_WINDOW_DAYS} kun ichida ${attendance.maxPenaltyPoints} marta dars kuni o'tkazib yuborildi — kurs vaqtincha bloklandi. O'qituvchingiz bilan bog'laning.`
+            : "Bugun dam kuni — sizning dars jadvalingiz bo'yicha video dars ochilmaydi."}
         </div>
       )}
+
+      {attendance && <AttendancePanel state={attendance} />}
 
       <div className="grid md:grid-cols-[280px_1fr] gap-6">
         <div className="bg-card border border-line rounded-xl p-3 relative">
