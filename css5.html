@@ -1025,18 +1025,47 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   }
   .course-add-btn:hover { filter: brightness(1.08); }
 
-  /* ================= Subtopic pill cards (inside a course) ================= */
-  .topic-pill-card { border: 1px solid rgba(1,51,40,.08); border-radius: .95rem; background: #fff; padding: 1rem 1.15rem; display: flex; align-items: center; gap: .9rem; transition: box-shadow .18s ease, transform .18s ease, border-color .18s ease; cursor: pointer; width: 100%; text-align: left; opacity: 1; }
-  .topic-pill-card:hover { box-shadow: 0 12px 26px -14px rgba(1,51,40,.28); transform: translateY(-2px); border-color: rgba(204,139,101,.35); }
-  .topic-pill-icon { width: 42px; height: 42px; border-radius: .75rem; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: .85rem; flex-shrink: 0; opacity: 1 !important; }
-  .topic-pill-name { font-size: .92rem; font-weight: 700; color: #013328; opacity: 1 !important; line-height: 1.35; }
-  .topic-pill-meta { display: flex; align-items: center; gap: .3rem; font-size: .76rem; color: rgba(1,51,40,.55); margin-top: .3rem; opacity: 1 !important; }
-  .topic-pill-chevron { color: rgba(1,51,40,.35); flex-shrink: 0; transition: transform .18s ease, color .18s ease; }
-  .topic-pill-card:hover .topic-pill-chevron { color: #cc8b65; }
-  .topic-pill-add { border: 1.5px dashed rgba(204,139,101,.45); border-radius: .95rem; background: rgba(204,139,101,.05); padding: 1rem 1.15rem; display: flex; align-items: center; justify-content: center; gap: .55rem; font-size: .88rem; font-weight: 600; color: #ac6a45; cursor: pointer; width: 100%; transition: background .18s ease, border-color .18s ease; }
-  .topic-pill-add:hover { background: rgba(204,139,101,.12); border-color: rgba(204,139,101,.7); }
-  .topic-pill-add-icon { width: 26px; height: 26px; border-radius: .6rem; background: rgba(204,139,101,.18); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  /* ================= Bo'limlar ro'yxati — guruhlangan qator uslubi (light + dark) ================= */
+  .topic-list { border: 1px solid rgba(1,51,40,.08); border-radius: 1.15rem; background: #fff; overflow: hidden; box-shadow: 0 14px 34px -22px rgba(1,51,40,.25); }
+  .topic-row { display: flex; align-items: center; gap: .95rem; width: 100%; text-align: left; padding: .95rem 1.15rem; background: transparent; border: 0; border-top: 1px solid rgba(1,51,40,.08); cursor: pointer; transition: background .15s ease; }
+  .topic-row:first-child { border-top: 0; }
+  .topic-row:hover { background: rgba(1,51,40,.035); }
+  .topic-row-icon { width: 44px; height: 44px; border-radius: .95rem; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: .82rem; color: #fff; flex-shrink: 0; overflow: hidden; box-shadow: 0 5px 12px -5px rgba(0,0,0,.35); }
+  .topic-row-icon img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .topic-row-body { flex: 1; min-width: 0; }
+  .topic-row-name { font-size: .94rem; font-weight: 700; color: #013328; line-height: 1.3; }
+  .topic-row-meta { display: flex; align-items: center; gap: .3rem; font-size: .78rem; color: rgba(1,51,40,.55); margin-top: .2rem; }
+  .topic-row-chevron { color: rgba(1,51,40,.3); flex-shrink: 0; transition: transform .15s ease, color .15s ease; }
+  .topic-row:hover .topic-row-chevron { color: #cc8b65; transform: translateX(2px); }
+  .topic-row-add .topic-row-name { color: #ac6a45; }
+  .topic-row-add .topic-row-icon { background: rgba(204,139,101,.12) !important; color: #ac6a45; box-shadow: none; border: 1.5px dashed rgba(204,139,101,.5); }
+  .topic-row-add:hover { background: rgba(204,139,101,.06); }
+  /* Ranglar palitrasi — gradient ikonkalar (Apple-uslub) */
+  .topic-grad-0 { background: linear-gradient(135deg,#FF6A6A,#FFAE5C); }
+  .topic-grad-1 { background: linear-gradient(135deg,#6D8CFF,#53C9F5); }
+  .topic-grad-2 { background: linear-gradient(135deg,#22C58B,#7BE0B0); }
+  .topic-grad-3 { background: linear-gradient(135deg,#B36BFF,#FF7AC6); }
+  .topic-grad-4 { background: linear-gradient(135deg,#FFB648,#FF7A59); }
+  .topic-grad-5 { background: linear-gradient(135deg,#38BDF8,#818CF8); }
+  html.theme-dark .topic-list { background: #171D2C; border-color: rgba(255,255,255,.06); box-shadow: 0 20px 45px -20px rgba(0,0,0,.55); }
+  html.theme-dark .topic-row { border-top-color: rgba(255,255,255,.06); }
+  html.theme-dark .topic-row:hover { background: rgba(255,255,255,.035); }
+  html.theme-dark .topic-row-name { color: #EDEFF6; }
+  html.theme-dark .topic-row-meta { color: rgba(237,239,246,.5); }
+  html.theme-dark .topic-row-chevron { color: rgba(237,239,246,.28); }
+  html.theme-dark .topic-row-add .topic-row-icon { background: rgba(204,139,101,.16) !important; border-color: rgba(204,139,101,.55); }
+  html.theme-dark .topic-row-add .topic-row-name { color: #e3a985; }
+  /* ================= Bo'lim/dars qo'shish logotip yuklash ================= */
+  .topic-logo-pick { position: relative; width: 76px; height: 76px; border-radius: 1.1rem; flex-shrink: 0; cursor: pointer; }
+  .topic-logo-pick input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .topic-logo-preview { width: 100%; height: 100%; border-radius: 1.1rem; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 1.5px dashed var(--sd-line); background: var(--sd-ghost); color: var(--sd-muted); transition: border-color .15s ease, background .15s ease; }
+  .topic-logo-pick:hover .topic-logo-preview { border-color: #cc8b65; }
+  .topic-logo-preview img { width: 100%; height: 100%; object-fit: cover; }
+  .topic-logo-cam { position: absolute; bottom: -4px; right: -4px; width: 24px; height: 24px; border-radius: 999px; background: #013328; color: #fff; display: flex; align-items: center; justify-content: center; border: 2px solid var(--sd-modal); }
+  .topic-logo-remove { position: absolute; top: -6px; left: -6px; width: 22px; height: 22px; border-radius: 999px; background: #B3271A; color: #fff; display: flex; align-items: center; justify-content: center; border: 2px solid var(--sd-modal); cursor: pointer; }
+  .topic-logo-hint { font-size: .74rem; color: var(--sd-muted); line-height: 1.4; }
   .quick-add-card { border: 1.5px dashed rgba(33,150,90,.4); border-radius: 1.1rem; background: rgba(204,139,101,.05); padding: 1.5rem; }
+  html.theme-dark .quick-add-card { background: rgba(204,139,101,.07); border-color: rgba(204,139,101,.3); }
   .text-white\/80 { color: rgba(255,255,255,.8); }
   .rounded-2xl { border-radius: 1rem; }
 
@@ -2119,6 +2148,8 @@ const Icon = {
   dots: (p) => (<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" {...p}><circle cx="12" cy="5" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="12" cy="19" r="1.9"/></svg>),
   trash: (p) => (<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M4 7h16"/><path d="M9 7V4.5A1.5 1.5 0 0 1 10.5 3h3A1.5 1.5 0 0 1 15 4.5V7"/><path d="M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13"/><path d="M10 11v6M14 11v6"/></svg>),
   search: (p) => (<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>),
+  image: (p) => (<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.7"/><path d="m21 16-5.5-5.5L4 21"/></svg>),
+  camera: (p) => (<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M4 8a2 2 0 0 1 2-2h1.2l1-1.6A2 2 0 0 1 9.9 3.5h4.2a2 2 0 0 1 1.7.9L17 6h1a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8Z"/><circle cx="12" cy="13" r="3.5"/></svg>),
 };
 const CATEGORY_STYLES = [
   { bg: 'rgba(204,139,101,.14)', fg: '#9C7A22', icon: Icon.layers },
@@ -3016,6 +3047,7 @@ function CoursesManager({ categories, setCategories, canEdit, notify, students, 
   const [newCatPrice, setNewCatPrice] = useState('');
   const [newCatImage, setNewCatImage] = useState('');
   const [newSubName, setNewSubName] = useState({});
+  const [newSubImage, setNewSubImage] = useState({});   // bo'lim uchun yuklangan logotip (dataURL), catId bo'yicha
   const [newLesson, setNewLesson] = useState({});
   const [editingPriceId, setEditingPriceId] = useState(null);
   const [priceDraft, setPriceDraft] = useState('');
@@ -3044,6 +3076,14 @@ function CoursesManager({ categories, setCategories, canEdit, notify, students, 
       .then((dataUrl) => setNewCatImage(dataUrl))
       .catch(() => notify("Rasmni yuklab bo'lmadi", 'danger'));
     // API: rasm serverga alohida upload qilinadi, bu yerda demo uchun siqilgan base64 saqlanmoqda
+  };
+
+  const onPickSubImage = (catId, file) => {
+    if (!file) return;
+    compressImageFile(file, 200, 0.8)
+      .then((dataUrl) => setNewSubImage({ ...newSubImage, [catId]: dataUrl }))
+      .catch(() => notify("Logotipni yuklab bo'lmadi", 'danger'));
+    // API: bo'lim logotipi ham alohida upload qilinadi; bu yerda demo uchun siqilgan base64 saqlanadi
   };
 
   const closeAddModal = () => {
@@ -3112,11 +3152,13 @@ function CoursesManager({ categories, setCategories, canEdit, notify, students, 
   const addSubtopic = (catId) => {
     const name = (newSubName[catId] || '').trim();
     if (!name) return;
-    setCategories(categories.map((c) => c.id === catId ? { ...c, subtopics: [...c.subtopics, { id: uid('s'), name, lessons: [] }] } : c));
+    const image = newSubImage[catId] || '';   // logotip yuklanmagan bo'lsa — bo'sh qoladi, oldingi (harfli) holat ko'rsatiladi
+    setCategories(categories.map((c) => c.id === catId ? { ...c, subtopics: [...c.subtopics, { id: uid('s'), name, image, lessons: [] }] } : c));
     setNewSubName({ ...newSubName, [catId]: '' });
+    setNewSubImage({ ...newSubImage, [catId]: '' });
     setAddSubModalFor(null);
     notify('Bo\'lim qo\'shildi');
-    // API: POST /api/admin/topics/
+    // API: POST /api/admin/topics/  (name, image)
   };
   const addLesson = (catId, subId) => {
     const draft = newLesson[subId] || {};
@@ -3146,18 +3188,18 @@ function CoursesManager({ categories, setCategories, canEdit, notify, students, 
         <button onClick={() => setOpenSub(null)} className="text-sm text-slate hover:text-ink mb-4 flex items-center gap-1">← {activeCat.name} bo'limlariga qaytish</button>
         <h1 className="font-display text-2xl text-ink mb-1">{activeSub.name}</h1>
         <p className="text-slate text-sm mb-6">{activeSub.lessons.length} ta video dars</p>
-        <div className="space-y-3">
+        <div className="topic-list">
           {activeSub.lessons.map((l, i) => (
-            <div key={l.id} className="topic-pill-card" style={{ cursor: 'default' }}>
-              <div className="topic-pill-icon" style={{ background: 'rgba(204,139,101,.12)', color: '#B97850' }}><Icon.play width="16" height="16" /></div>
-              <div className="flex-1 min-w-0">
-                <div className="text-sm font-medium text-ink truncate">{i + 1}. {l.title}</div>
-                <div className="text-xs text-slate mt-0.5">{l.duration}{l.videoUrl ? ' · video biriktirilgan' : ''}</div>
+            <div key={l.id} className="topic-row" style={{ cursor: 'default' }}>
+              <div className="topic-row-icon" style={{ background: 'rgba(204,139,101,.16)', color: '#B97850', boxShadow: 'none' }}><Icon.play width="16" height="16" /></div>
+              <div className="topic-row-body">
+                <div className="topic-row-name truncate">{i + 1}. {l.title}</div>
+                <div className="topic-row-meta">{l.duration}{l.videoUrl ? ' · video biriktirilgan' : ''}</div>
               </div>
               {canEdit && <button onClick={() => removeLesson(activeCat.id, activeSub.id, l.id)} className="text-clay text-xs hover:underline shrink-0">o'chirish</button>}
             </div>
           ))}
-          {activeSub.lessons.length === 0 && <p className="text-sm text-slate">Hali dars qo'shilmagan.</p>}
+          {activeSub.lessons.length === 0 && <p className="text-sm text-slate p-4">Hali dars qo'shilmagan.</p>}
         </div>
 
         {canEdit && (
@@ -3194,40 +3236,68 @@ function CoursesManager({ categories, setCategories, canEdit, notify, students, 
         <h1 className="font-display text-3xl text-ink mb-1">{activeCat.name}</h1>
         <p className="text-slate text-sm mb-6">{activeCat.subtitle || `${activeCat.subtopics.length} bo'lim`}</p>
 
-        <div className="grid sm:grid-cols-2 gap-3">
+        <div className="topic-list">
           {activeCat.subtopics.map((sub, si) => (
-            <button key={sub.id} onClick={() => setOpenSub(sub.id)} className="topic-pill-card">
-              <div className="topic-pill-icon" style={{ background: catStyle(si).bg, color: catStyle(si).fg }}>{sub.name.slice(0, 2).toUpperCase()}</div>
-              <div className="flex-1 min-w-0 text-left">
-                <div className="topic-pill-name">{sub.name}</div>
-                <div className="topic-pill-meta">
+            <button key={sub.id} onClick={() => setOpenSub(sub.id)} className="topic-row">
+              <div className={`topic-row-icon ${!sub.image ? `topic-grad-${si % 6}` : ''}`}>
+                {sub.image ? <img src={sub.image} alt="" /> : sub.name.slice(0, 2).toUpperCase()}
+              </div>
+              <div className="topic-row-body text-left">
+                <div className="topic-row-name truncate">{sub.name}</div>
+                <div className="topic-row-meta">
                   <Icon.video width="12" height="12" />
                   {sub.lessons.length} ta video dars
                 </div>
               </div>
-              <Icon.chevron width="16" height="16" className="topic-pill-chevron" style={{ transform: 'rotate(-90deg)' }} />
+              <Icon.chevron width="16" height="16" className="topic-row-chevron" style={{ transform: 'rotate(-90deg)' }} />
             </button>
           ))}
 
           {canEdit && (
-            <button onClick={() => setAddSubModalFor(activeCat.id)} className="topic-pill-add">
-              <span className="topic-pill-add-icon"><Icon.plus width="16" height="16" /></span>
-              Yangi bo'lim qo'shish
+            <button onClick={() => setAddSubModalFor(activeCat.id)} className="topic-row topic-row-add">
+              <span className="topic-row-icon"><Icon.plus width="18" height="18" /></span>
+              <div className="topic-row-body text-left">
+                <div className="topic-row-name">Yangi bo'lim qo'shish</div>
+                <div className="topic-row-meta">Masalan: TypeScript</div>
+              </div>
             </button>
+          )}
+
+          {activeCat.subtopics.length === 0 && !canEdit && (
+            <p className="text-sm text-slate p-4">Hali bo'lim qo'shilmagan.</p>
           )}
         </div>
 
         {addSubModalFor && (
-          <SdModal title="Yangi bo'lim qo'shish" icon="📚" onClose={() => setAddSubModalFor(null)}>
+          <SdModal title="Yangi bo'lim qo'shish" icon="📚" onClose={() => { setAddSubModalFor(null); setNewSubImage({ ...newSubImage, [addSubModalFor]: '' }); }}>
             <p className="sd-confirm-text">
               <b>{activeCat.name}</b> kursiga yangi bo'lim qo'shing (masalan: TypeScript).
             </p>
+            <div className="flex items-center gap-3 mb-4">
+              <label className="topic-logo-pick">
+                <div className="topic-logo-preview">
+                  {newSubImage[addSubModalFor] ? (
+                    <img src={newSubImage[addSubModalFor]} alt="" />
+                  ) : (
+                    <Icon.image width="20" height="20" />
+                  )}
+                </div>
+                <span className="topic-logo-cam"><Icon.camera width="12" height="12" /></span>
+                <input type="file" accept="image/*" onChange={(e) => onPickSubImage(addSubModalFor, e.target.files[0])} />
+                {newSubImage[addSubModalFor] && (
+                  <span className="topic-logo-remove" onClick={(e) => { e.preventDefault(); setNewSubImage({ ...newSubImage, [addSubModalFor]: '' }); }}>
+                    <Icon.close width="11" height="11" />
+                  </span>
+                )}
+              </label>
+              <p className="topic-logo-hint">Ixtiyoriy: bo'lim uchun logotip yuklang.<br/>Yuklanmasa, nomning bosh harflaridan avtomatik belgi yaratiladi.</p>
+            </div>
             <input autoFocus placeholder="Bo'lim nomi" value={newSubName[addSubModalFor] || ''}
               onChange={(e) => setNewSubName({ ...newSubName, [addSubModalFor]: e.target.value })}
               onKeyDown={(e) => { if (e.key === 'Enter') addSubtopic(addSubModalFor); }}
               className="w-full border border-line rounded-lg px-3 py-2.5 text-sm bg-white outline-none focus:border-gold" />
             <div className="sd-foot">
-              <button className="sd-btn sd-btn-ghost" onClick={() => setAddSubModalFor(null)}>Bekor qilish</button>
+              <button className="sd-btn sd-btn-ghost" onClick={() => { setAddSubModalFor(null); setNewSubImage({ ...newSubImage, [addSubModalFor]: '' }); }}>Bekor qilish</button>
               <button className="sd-btn sd-btn-primary" onClick={() => addSubtopic(addSubModalFor)}>
                 <Icon.plus width="14" height="14" /> Qo'shish
               </button>
