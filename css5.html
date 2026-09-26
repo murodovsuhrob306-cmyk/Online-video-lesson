@@ -1290,30 +1290,46 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   /* ================= Bootstrap-style dismissible alerts (bottom-right toast stack) ================= */
   .bs-toast-stack {
     position: fixed; bottom: 1.1rem; right: 1.1rem; z-index: 80;
-    display: flex; flex-direction: column-reverse; gap: .55rem; max-width: 340px;
+    display: flex; flex-direction: column-reverse; gap: .6rem; max-width: 360px;
   }
   .bs-alert {
-    display: flex; align-items: flex-start; gap: .55rem; padding: .75rem .9rem;
-    border-radius: .65rem; font-size: .83rem; font-weight: 600; line-height: 1.35;
-    border: 1px solid transparent; box-shadow: 0 10px 30px -10px rgba(0,0,0,.35);
-    animation: bsAlertIn .22s ease both;
+    position: relative; overflow: hidden;
+    display: flex; align-items: center; gap: .65rem; padding: .8rem 1rem .8rem .8rem;
+    border-radius: .9rem; font-size: .84rem; font-weight: 600; line-height: 1.35;
+    border: 1px solid transparent; box-shadow: 0 16px 40px -12px rgba(0,0,0,.4), 0 2px 8px rgba(0,0,0,.08);
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    animation: bsAlertIn .28s cubic-bezier(.2,.8,.3,1.2) both;
   }
-  .bs-alert-icon { flex-shrink: 0; margin-top: 1px; }
-  .bs-alert-text { flex: 1; }
+  .bs-alert-out { animation: bsAlertOut .2s ease both; }
+  .bs-alert-icon-chip {
+    flex-shrink: 0; width: 1.8rem; height: 1.8rem; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--bs-icon-bg, rgba(0,0,0,.08)); color: var(--bs-icon-fg, inherit);
+  }
+  .bs-alert-text { flex: 1; min-width: 0; word-break: break-word; }
   .bs-alert-close {
-    background: transparent; border: none; cursor: pointer; font-size: .8rem; line-height: 1;
-    opacity: .55; flex-shrink: 0; color: inherit; padding: 0 0 0 .3rem;
+    background: transparent; border: none; cursor: pointer; line-height: 1;
+    display: flex; align-items: center; justify-content: center;
+    width: 1.4rem; height: 1.4rem; border-radius: 50%;
+    opacity: .5; flex-shrink: 0; color: inherit; transition: opacity .15s ease, background .15s ease;
   }
-  .bs-alert-close:hover { opacity: 1; }
-  .bs-alert-success { background: #D1F5E0; border-color: #B7E9CC; color: #0F5132; }
-  .bs-alert-danger { background: #FDE2E1; border-color: #F8C9C7; color: #842029; }
-  .bs-alert-warning { background: #FFF3CD; border-color: #FFE69C; color: #664D03; }
-  .bs-alert-info { background: #DCEEFB; border-color: #B9E1FA; color: #055160; }
-  html.theme-dark .bs-alert-success { background: rgba(46,111,78,.28); border-color: rgba(46,111,78,.55); color: #8FE3B4; }
-  html.theme-dark .bs-alert-danger { background: rgba(172,75,59,.28); border-color: rgba(172,75,59,.55); color: #FFB4AE; }
-  html.theme-dark .bs-alert-warning { background: rgba(204,139,101,.26); border-color: rgba(204,139,101,.55); color: #F5D3A6; }
-  html.theme-dark .bs-alert-info { background: rgba(45,91,227,.26); border-color: rgba(45,91,227,.55); color: #B7D0FB; }
-  @keyframes bsAlertIn { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: translateX(0); } }
+  .bs-alert-close:hover { opacity: 1; background: rgba(0,0,0,.08); }
+  .bs-alert-progress {
+    position: absolute; left: 0; bottom: 0; height: 2.5px; width: 100%;
+    background: currentColor; opacity: .35; transform-origin: left;
+    animation: bsProgress 4s linear forwards;
+  }
+  .bs-alert-success { background: rgba(209,245,224,.92); border-color: #B7E9CC; color: #0F5132; --bs-icon-bg: rgba(15,81,50,.14); }
+  .bs-alert-danger { background: rgba(253,226,225,.92); border-color: #F8C9C7; color: #842029; --bs-icon-bg: rgba(132,32,41,.14); }
+  .bs-alert-warning { background: rgba(255,243,205,.92); border-color: #FFE69C; color: #664D03; --bs-icon-bg: rgba(102,77,3,.14); }
+  .bs-alert-info { background: rgba(220,238,251,.92); border-color: #B9E1FA; color: #055160; --bs-icon-bg: rgba(5,81,96,.14); }
+  html.theme-dark .bs-alert-success { background: rgba(46,111,78,.32); border-color: rgba(46,111,78,.6); color: #8FE3B4; --bs-icon-bg: rgba(143,227,180,.16); }
+  html.theme-dark .bs-alert-danger { background: rgba(172,75,59,.32); border-color: rgba(172,75,59,.6); color: #FFB4AE; --bs-icon-bg: rgba(255,180,174,.16); }
+  html.theme-dark .bs-alert-warning { background: rgba(204,139,101,.3); border-color: rgba(204,139,101,.6); color: #F5D3A6; --bs-icon-bg: rgba(245,211,166,.16); }
+  html.theme-dark .bs-alert-info { background: rgba(45,91,227,.3); border-color: rgba(45,91,227,.6); color: #B7D0FB; --bs-icon-bg: rgba(183,208,251,.16); }
+  @keyframes bsAlertIn { from { opacity: 0; transform: translateX(28px) scale(.96); } to { opacity: 1; transform: translateX(0) scale(1); } }
+  @keyframes bsAlertOut { from { opacity: 1; transform: translateX(0) scale(1); max-height: 80px; margin-top: 0; } to { opacity: 0; transform: translateX(12px) scale(.96); } }
+  @keyframes bsProgress { from { transform: scaleX(1); } to { transform: scaleX(0); } }
   @media (max-width: 640px) { .bs-toast-stack { left: 1rem; right: 1rem; max-width: none; bottom: .85rem; } }
 
   /* ================= Course revenue chart extras ================= */
@@ -1607,8 +1623,10 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   .ed-tabs{ display:flex; gap:.4rem; border-bottom:1px solid var(--sd-line); margin-bottom:1.1rem; }
   .ed-tab{ background:transparent; border:0; border-bottom:2px solid transparent; margin-bottom:-1px; padding:.55rem .9rem; font-size:.88rem; font-weight:600; color:var(--sd-muted); }
   .ed-tab-on{ color:var(--sd-text); border-bottom-color:#3b82f6; }
+  .ed-tab-badge{ display:inline-flex; align-items:center; justify-content:center; min-width:1.15rem; height:1.15rem; padding:0 .3rem; margin-left:.35rem; border-radius:999px; background:#AC4B3B; color:#fff; font-size:.68rem; font-weight:700; vertical-align:middle; }
   .ed-fields{ display:grid; grid-template-columns:1fr 1fr; gap:.9rem; }
   .ed-course{ background:var(--sd-field); border:1px solid var(--sd-line); border-radius:.9rem; padding:.95rem 1rem; margin-bottom:.7rem; }
+  .ed-course-blocked{ border-color:rgba(172,75,59,.45); background:rgba(172,75,59,.06); }
   .ed-course-head{ display:flex; align-items:center; justify-content:space-between; gap:.6rem; }
   .ed-course-name{ font-weight:700; color:var(--sd-text); font-size:.95rem; }
   .ed-course-sub{ font-size:.76rem; color:var(--sd-muted); margin-top:.1rem; }
@@ -1726,6 +1744,8 @@ const studentBilling = (student, categories, m, y) => {
   return { total, paid, debt, blockedDebt, blocked: courses.some((c) => c.blocked), courses, nextDate, month: m, year: y };
 };
 const isCourseBlocked = (student, categories, catId) => {
+  const access = student && student.access && student.access[catId];
+  if (access && (access.manualBlocked || access.frozen)) return true;
   const c = studentBilling(student, categories).courses.find((x) => x.catId === catId);
   return !!(c && c.blocked);
 };
@@ -1952,14 +1972,30 @@ function Switch({ on, onToggle, disabled }) {
   );
 }
 
-/* Bootstrap-alert-styled toast: stacks bottom-right, auto-dismisses, closeable by hand */
+/* Bootstrap-alert-styled toast: stacks bottom-right, auto-dismisses, closeable by hand.
+   Yopilishda (qo'lda yoki avtomatik) avval chiqish animatsiyasi ishlaydi, keyingina
+   ro'yxatdan olib tashlanadi — shu bilan alert "sakrab" yo'qolib qolmaydi. */
 function BsAlert({ toast, onDismiss }) {
-  useEffect(() => { const t = setTimeout(onDismiss, 4000); return () => clearTimeout(t); }, []);
+  const [closing, setClosing] = useState(false);
+  const close = () => setClosing(true);
+  useEffect(() => {
+    if (closing) { const t = setTimeout(onDismiss, 190); return () => clearTimeout(t); }
+    const t = setTimeout(close, 4000);
+    return () => clearTimeout(t);
+  }, [closing]);
+  const variant = toast.variant || 'success';
+  /* Icon obyekti pastroqda e'lon qilingani uchun mosligini shu yerda, chaqirilganda hisoblaymiz
+     (modul yuklanayotganda emas) — aks holda "Icon aniqlanmagan" xatoligi butun ilovani to'xtatib qo'yadi. */
+  const iconMap = { success: Icon.check, danger: Icon.close, warning: Icon.warn, info: Icon.bell };
+  const VariantIcon = iconMap[variant] || Icon.check;
   return (
-    <div className={`bs-alert bs-alert-${toast.variant || 'success'}`} role="alert">
-      <Icon.check width="15" height="15" className="bs-alert-icon" />
+    <div className={`bs-alert bs-alert-${variant} ${closing ? 'bs-alert-out' : ''}`} role="alert">
+      <span className="bs-alert-icon-chip"><VariantIcon width="13" height="13" /></span>
       <span className="bs-alert-text">{toast.text}</span>
-      <button type="button" className="bs-alert-close" aria-label="Yopish" onClick={onDismiss}>✕</button>
+      <button type="button" className="bs-alert-close" aria-label="Yopish" onClick={close}>
+        <Icon.close width="11" height="11" />
+      </button>
+      {!closing && <span className="bs-alert-progress" />}
     </div>
   );
 }
@@ -2658,6 +2694,7 @@ function StaffApp({ me, staff, setStaff, categories, setCategories, students, se
 
           {page === 'courses' && (
           <CoursesManager categories={categories} setCategories={setCategories} canEdit={canEdit} notify={notify}
+            students={students}
             quickAdd={quickAddCourse} onQuickAddDone={() => setQuickAddCourse(false)} />
         )}
 
@@ -2953,7 +2990,7 @@ const THUMB_GRADIENTS = [
   ['#12233a', '#1c4a63'],
 ];
 
-function CoursesManager({ categories, setCategories, canEdit, notify, quickAdd, onQuickAddDone }) {
+function CoursesManager({ categories, setCategories, canEdit, notify, students, quickAdd, onQuickAddDone }) {
   const [openCat, setOpenCat] = useState(null);
   const [openSub, setOpenSub] = useState(null);
   const [newCatName, setNewCatName] = useState('');
@@ -2970,6 +3007,17 @@ function CoursesManager({ categories, setCategories, canEdit, notify, quickAdd, 
   const [confirmAction, setConfirmAction] = useState(null);   // { type: 'freeze'|'unfreeze'|'delete', cat }
 
   useEffect(() => { if (quickAdd) setShowAddModal(true); }, [quickAdd]);
+
+  /* Har bir kurs bo'yicha nechta o'quvchi to'lov qilmagani sababli bloklangan —
+     shu bo'yicha "Bloklangan kurslar" ro'yxati tuziladi (Kurslar bo'limining tepasida ko'rinadi). */
+  const blockedCourseInfo = (students || []).length
+    ? categories
+        .map((cat) => ({
+          cat,
+          blockedCount: students.filter((s) => s.access[cat.id]?.active && isCourseBlocked(s, categories, cat.id)).length,
+        }))
+        .filter((x) => x.blockedCount > 0)
+    : [];
 
   const onPickCatImage = (file) => {
     if (!file) return;
@@ -3154,6 +3202,28 @@ function CoursesManager({ categories, setCategories, canEdit, notify, quickAdd, 
   /* ---- Level 1: barcha kurslar (light-uslub kartalar) ---- */
   return (
     <div>
+      {blockedCourseInfo.length > 0 && (
+        <div className="mb-8">
+          <h2 className="font-display text-xl text-clay flex items-center gap-2 mb-3">
+            <Icon.lock width="16" height="16" /> Bloklangan kurslar
+          </h2>
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-3">
+            {blockedCourseInfo.map(({ cat, blockedCount }) => (
+              <button key={cat.id} onClick={() => setOpenCat(cat.id)}
+                className="text-left bg-card border border-clay/30 rounded-xl p-4 hover:border-clay transition">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="font-semibold text-ink text-sm truncate">{cat.name}</span>
+                  <span className="pill pill-warn shrink-0"><Icon.lock width="10" height="10" /> Bloklangan</span>
+                </div>
+                <p className="text-xs text-slate">
+                  {blockedCount} ta o'quvchi to'lov qilmagani uchun bloklangan
+                </p>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="flex items-center justify-between mb-6">
         <h1 className="font-display text-3xl text-ink">Kurslar</h1>
         {canEdit && (
@@ -3890,6 +3960,7 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
   const [gNote, setGNote] = useState('');
   const [gExtraOpen, setGExtraOpen] = useState(false);
   const [delPay, setDelPay] = useState(null);
+  const [attnUnblockConfirm, setAttnUnblockConfirm] = useState(null); // darslik nazorati blokini ochishni tasdiqlash uchun kurs
   const [gPayOpen, setGPayOpen] = useState(false);
   const [gAmount, setGAmount] = useState('');
   const [gMonth, setGMonth] = useState(MONTH_NAMES[new Date().getMonth()]);
@@ -3913,8 +3984,14 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
 
   const feeOfCat = (cid) => courseFeeOf(form, categories, cid);
 
+  /* Shu kurs bo'yicha tanlangan oy/yil uchun oylik to'lov allaqachon kiritilganmi —
+     bir oyda bitta kurs uchun faqat bitta oylik to'lov qilinishi mumkin. */
+  const payAlreadyForCourse = (cid, m, y) => (form.payments || [])
+    .some((p) => p.catId === cid && p.month === m && String(p.year) === String(y));
+
   const confirmPayment = () => {
     if (!payFor) return;
+    if (payAlreadyForCourse(payFor, payMonth, payYear)) return; // shu oy uchun allaqachon to'lov qilingan
     const cat = categories.find((c) => c.id === payFor);
     const cur = form.access[payFor] || { active: true, nextPaymentDate: todayISO(), isFullyPaid: false, schedule: 'daily', includeSunday: false, enrolledAt: todayISO() };
     const amount = Number(onlyDigits(payAmount)) || 0;
@@ -3927,7 +4004,9 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
         amount, month: payMonth, year: payYear, date: todayISO(),
       }],
     };
-    setForm(isCurrent ? syncCycleDates(nf, categories) : nf);
+    const finalForm = isCurrent ? syncCycleDates(nf, categories) : nf;
+    setForm(finalForm);
+    onSave(finalForm);
     setPayFor(null);
     // API: POST /api/admin/students/{id}/payments/  (catId, amount, month, year)
   };
@@ -3960,25 +4039,14 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
     if (attn && attn.isBlocked) reasons.push('attendance');
     return { reasons, attn };
   };
-  /* To'lov tufayli blokni ochish: joriy oy qarzini kechiktirib, keyingi oygacha kursni ochamiz —
-     shu bilan qarz "kechirilmaydi", faqat blok darhol olib tashlanadi. Admin xohlasa keyinroq
-     to'lovni alohida kiritishi mumkin. */
-  const unblockPayment = (cat) => {
-    const cur = form.access[cat.id];
-    if (!cur) return;
-    const cp = curPeriod();
-    const nf = {
-      ...form,
-      access: { ...form.access, [cat.id]: { ...cur, nextPaymentDate: firstOfNextMonthISO(cp.m, cp.y) } },
-      alerts: [...(form.alerts || []), {
-        id: uid('al'),
-        text: `Hurmatli ${form.name}, «${cat.name}» kursi to'lov muddati o'tgani sababli bloklangan edi — administratsiya blokni olib tashladi. Kursni davom ettirishingiz mumkin.`,
-        read: false, createdAt: Date.now(),
-      }],
-    };
-    onSave(nf);
-    // API: POST /api/admin/students/{id}/courses/{catId}/unblock/  (reason: "payment")
-  };
+  /* "Bloklar" tabi uchun: shu o'quvchining hozir faol va bloklangan barcha kurslari */
+  const blockedCoursesList = Object.entries(form.access || {})
+    .filter(([, a]) => a && a.active)
+    .map(([catId]) => ({ cat: categories.find((c) => c.id === catId), catId, ...blockReasons(catId) }))
+    .filter((x) => x.cat && x.reasons.length > 0);
+  /* Eslatma: to'lov tufayli bloklangan kursni to'lovsiz "Blokni ochish" tugmasi bilan
+     ochib bo'lmaydi — bu blok faqat haqiqiy to'lov (openPayModal → confirmPayment)
+     amalga oshirilgach, qarz yopilib, avtomatik ravishda o'chadi. */
   /* Darslik nazorati tufayli blokni ochish: shu paytgacha to'plangan jarima ballarini
      bekor qilamiz (attendanceResetAt sanasidan oldingi kunlar endi hisobga kirmaydi). */
   const unblockAttendance = (cat) => {
@@ -3993,6 +4061,7 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
         read: false, createdAt: Date.now(),
       }],
     };
+    setForm(nf);
     onSave(nf);
     // API: POST /api/admin/students/{id}/courses/{catId}/unblock/  (reason: "attendance")
   };
@@ -4145,8 +4214,13 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
         {/* ---- O'ng ustun: tablar ---- */}
         <section className="ed-main">
           <div className="ed-tabs">
-            {[['info', "Ma'lumotlar"], ['payments', "To'lovlar tarixi"], ['courses', 'Kurslar']].map(([id, label]) => (
-              <button key={id} onClick={() => setTab(id)} className={`ed-tab ${tab === id ? 'ed-tab-on' : ''}`}>{label}</button>
+            {[['info', "Ma'lumotlar"], ['payments', "To'lovlar tarixi"], ['courses', 'Kurslar'], ['blocks', 'Bloklar']].map(([id, label]) => (
+              <button key={id} onClick={() => setTab(id)} className={`ed-tab ${tab === id ? 'ed-tab-on' : ''}`}>
+                {label}
+                {id === 'blocks' && blockedCoursesList.length > 0 && (
+                  <span className="ed-tab-badge">{blockedCoursesList.length}</span>
+                )}
+              </button>
             ))}
           </div>
 
@@ -4235,14 +4309,21 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
                 .map((cat) => {
                 const a = form.access[cat.id] || { active: false, nextPaymentDate: todayISO(), isFullyPaid: false, schedule: 'daily', includeSunday: false, enrolledAt: todayISO() };
                 const isOpen = !!expandedCourses[cat.id];
+                const rowBlock = a.active ? blockReasons(cat.id) : { reasons: [] };
+                const rowBlocked = rowBlock.reasons.length > 0;
                 return (
-                  <div key={cat.id} className="ed-course">
+                  <div key={cat.id} className={`ed-course ${rowBlocked ? 'ed-course-blocked' : ''}`}>
                     <div className="ed-course-head">
                       <div className="flex items-center gap-2 flex-1 min-w-0" style={{ cursor: a.active ? 'pointer' : 'default' }}
                         onClick={() => a.active && toggleExpanded(cat.id)}>
                         {a.active && <Icon.chevron width="13" height="13" className="text-slate shrink-0" style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(-90deg)', transition: 'transform .15s ease' }} />}
                         <div className="min-w-0">
-                          <div className="ed-course-name">{cat.name}</div>
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <div className="ed-course-name">{cat.name}</div>
+                            {rowBlocked && (
+                              <span className="pill pill-warn shrink-0"><Icon.lock width="9" height="9" /> Bloklangan</span>
+                            )}
+                          </div>
                           <div className="ed-course-sub">{cat.subtitle}</div>
                         </div>
                       </div>
@@ -4291,10 +4372,10 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
                             <div className="ed-warn" style={{ display: 'flex', flexDirection: 'column', gap: '.6rem' }}>
                               {reasons.includes('payment') && (
                                 <div className="flex items-center justify-between gap-3 flex-wrap">
-                                  <span>⚠ Bu kurs <b>to'lov muddati o'tgani</b> uchun bloklangan.</span>
+                                  <span>⚠ Bu kurs <b>to'lov muddati o'tgani</b> uchun bloklangan. Blok faqat to'lov qilingandan keyin avtomatik ochiladi.</span>
                                   {canEdit && (
-                                    <button onClick={() => unblockPayment(cat)} className="text-xs font-semibold px-3 py-1.5 rounded-lg shrink-0" style={{ background: '#2E6F4E', color: '#fff' }}>
-                                      Blokni ochish (to'lov)
+                                    <button onClick={() => openPayModal(cat)} className="text-xs font-semibold px-3 py-1.5 rounded-lg shrink-0" style={{ background: '#2E6F4E', color: '#fff' }}>
+                                      To'lov qilish
                                     </button>
                                   )}
                                 </div>
@@ -4303,7 +4384,7 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
                                 <div className="flex items-center justify-between gap-3 flex-wrap">
                                   <span>⚠ Bu kurs <b>darslik nazorati</b> tufayli bloklangan — oxirgi {ATTEND_WINDOW_DAYS} kunda {attn.penaltyPoints}/{attn.maxPenaltyPoints} dars kuni o'tkazib yuborilgan.</span>
                                   {canEdit && (
-                                    <button onClick={() => unblockAttendance(cat)} className="text-xs font-semibold px-3 py-1.5 rounded-lg shrink-0" style={{ background: '#2E6F4E', color: '#fff' }}>
+                                    <button onClick={() => setAttnUnblockConfirm(cat)} className="text-xs font-semibold px-3 py-1.5 rounded-lg shrink-0" style={{ background: '#2E6F4E', color: '#fff' }}>
                                       Blokni ochish (nazorat)
                                     </button>
                                   )}
@@ -4333,6 +4414,59 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
               )}
             </React.Fragment>
           )}
+
+          {tab === 'blocks' && (
+            <React.Fragment>
+              {blockedCoursesList.length === 0 && (
+                <p className="text-sm text-slate">Hozircha bloklangan kurslar yo'q.</p>
+              )}
+              {blockedCoursesList.map(({ cat, catId, reasons, attn }) => {
+                const debt = (bill.courses.find((x) => x.catId === catId) || { debt: 0 }).debt;
+                return (
+                  <div key={catId} className="ed-course ed-course-blocked">
+                    <div className="ed-course-head">
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <div className="ed-course-name">{cat.name}</div>
+                          <span className="pill pill-warn shrink-0"><Icon.lock width="9" height="9" /> Bloklangan</span>
+                        </div>
+                        <div className="ed-course-sub">Kurs narxi: {fmtMoney(feeOfCat(catId))}{reasons.includes('payment') ? ` · Qarz: ${fmtMoney(debt)}` : ''}</div>
+                      </div>
+                      {canEdit && reasons.includes('payment') && (
+                        <button className="stu-ib stu-ib-pay" title="To'lov qilish" onClick={() => openPayModal(cat)}>
+                          <Icon.card width="14" height="14" />
+                        </button>
+                      )}
+                    </div>
+                    <div className="ed-course-body" style={{ gridTemplateColumns: '1fr' }}>
+                      <div className="ed-warn" style={{ display: 'flex', flexDirection: 'column', gap: '.6rem' }}>
+                        {reasons.includes('payment') && (
+                          <div className="flex items-center justify-between gap-3 flex-wrap">
+                            <span>⚠ Bu kurs <b>to'lov muddati o'tgani</b> uchun bloklangan. Blok faqat to'lov qilingandan keyin avtomatik ochiladi — to'lovsiz blokni ochib bo'lmaydi.</span>
+                            {canEdit && (
+                              <button onClick={() => openPayModal(cat)} className="text-xs font-semibold px-3 py-1.5 rounded-lg shrink-0" style={{ background: '#2E6F4E', color: '#fff' }}>
+                                To'lov qilish
+                              </button>
+                            )}
+                          </div>
+                        )}
+                        {reasons.includes('attendance') && (
+                          <div className="flex items-center justify-between gap-3 flex-wrap">
+                            <span>⚠ Bu kurs <b>darslik nazorati</b> tufayli bloklangan — oxirgi {ATTEND_WINDOW_DAYS} kunda {attn.penaltyPoints}/{attn.maxPenaltyPoints} dars kuni o'tkazib yuborilgan.</span>
+                            {canEdit && (
+                              <button onClick={() => setAttnUnblockConfirm(cat)} className="text-xs font-semibold px-3 py-1.5 rounded-lg shrink-0" style={{ background: '#2E6F4E', color: '#fff' }}>
+                                Blokni ochish (nazorat)
+                              </button>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </React.Fragment>
+          )}
         </section>
       </div>
 
@@ -4342,6 +4476,22 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
           <div className="sd-foot">
             <button className="sd-btn sd-btn-ghost" onClick={() => setPwConfirm(false)}>Bekor qilish</button>
             <button className="sd-btn sd-btn-primary" onClick={confirmNewPassword}><Icon.refresh width="14" height="14" /> O'zgartirish</button>
+          </div>
+        </SdModal>
+      )}
+
+      {attnUnblockConfirm && (
+        <SdModal title="Blokni ochish" icon="⚠️" onClose={() => setAttnUnblockConfirm(null)}>
+          <p className="sd-confirm-text">
+            <b>«{attnUnblockConfirm.name}»</b> kursidagi <b>darslik nazorati bloki</b> olib tashlansinmi?
+            To'plangan jarima ballari nolga tushiriladi va o'quvchi kursga darhol qayta kira oladi.
+          </p>
+          <p className="sd-hint" style={{ marginTop: 0 }}>Bu amalni ortga qaytarib bo'lmaydi.</p>
+          <div className="sd-foot">
+            <button className="sd-btn sd-btn-ghost" onClick={() => setAttnUnblockConfirm(null)}>Bekor qilish</button>
+            <button className="sd-btn sd-btn-primary" onClick={() => { unblockAttendance(attnUnblockConfirm); setAttnUnblockConfirm(null); }}>
+              <Icon.check width="14" height="14" /> Ha, blokni ochish
+            </button>
           </div>
         </SdModal>
       )}
@@ -4466,7 +4616,9 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
         );
       })()}
 
-      {payFor && (
+      {payFor && (() => {
+        const alreadyPaid = payAlreadyForCourse(payFor, payMonth, payYear);
+        return (
         <SdModal title="To'lov qilish" icon={<Icon.card width="16" height="16" />} onClose={() => setPayFor(null)}>
           <p className="sd-hint" style={{ marginTop: 0, marginBottom: '.8rem' }}>
             {student.name} — {(categories.find((c) => c.id === payFor) || {}).name}
@@ -4481,9 +4633,14 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
               <div className="sd-creds-v">{fmtMoney((bill.courses.find((x) => x.catId === payFor) || { debt: 0 }).debt)}</div>
             </div>
           </div>
+          {alreadyPaid && (
+            <p className="sd-hint" style={{ color: '#AC4B3B', marginBottom: '.8rem' }}>
+              {payMonth} {payYear} uchun bu kursga oylik to'lov allaqachon qilingan. Bir oyda bitta kurs uchun faqat bitta oylik to'lov qilish mumkin.
+            </p>
+          )}
           <div className="sd-field">
             <label className="sd-label">Summa (so'm) *</label>
-            <input className="sd-input" inputMode="numeric" value={payAmount}
+            <input className="sd-input" inputMode="numeric" value={payAmount} disabled={alreadyPaid}
               onChange={(e) => setPayAmount(groupDigits(e.target.value))} />
           </div>
           <div className="sd-field">
@@ -4499,12 +4656,13 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
           </div>
           <div className="sd-foot">
             <button className="sd-btn sd-btn-ghost" onClick={() => setPayFor(null)}>Bekor</button>
-            <button className="sd-btn sd-btn-primary" onClick={confirmPayment} disabled={!Number(onlyDigits(payAmount))}>
+            <button className="sd-btn sd-btn-primary" onClick={confirmPayment} disabled={alreadyPaid || !Number(onlyDigits(payAmount))}>
               <Icon.check width="14" height="14" /> To'lov qilish
             </button>
           </div>
         </SdModal>
-      )}
+        );
+      })()}
     </div>
   );
 }
