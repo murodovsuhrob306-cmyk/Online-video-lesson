@@ -1481,6 +1481,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   .sd-label{ display:block; font-size:.68rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:var(--sd-muted); margin-bottom:.4rem; }
   .sd-input, .sd-select, .sd-textarea{ width:100%; background:var(--sd-field); border:1px solid var(--sd-line); border-radius:.55rem; padding:.62rem .75rem; font-size:.9rem; color:var(--sd-text); outline:none; transition:border-color .15s ease; }
   .sd-input:focus, .sd-select:focus, .sd-textarea:focus{ border-color:#4b8dfb; }
+  .sd-input:disabled{ opacity:.6; cursor:not-allowed; background:var(--sd-line); }
   .sd-input::placeholder, .sd-textarea::placeholder{ color:var(--sd-muted); }
   .sd-select option{ background:var(--sd-modal); color:var(--sd-text); }
   .sd-textarea{ resize:none; line-height:1.55; }
@@ -3546,24 +3547,30 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
   const payPaidOf = (s, m, y) => paidInPeriod(s, m, y);
   const payLeftOf = (s, m, y) => Math.max(0, payTotalOf(s) - payPaidOf(s, m, y));
 
+  /* Tanlangan oy/yil uchun asosiy (oylik) to'lov allaqachon kiritilganmi */
+  const payAlreadyDone = (s, m, y) => paidInPeriod(s, m, y) > 0;
+
   const openPayModal = (s) => {
     const c = curPeriod();
     setPayStu(s); setPayMonth(c.m); setPayYear(c.y);
-    setPayAmount(groupDigits(payLeftOf(s, c.m, c.y)));
+    setPayAmount(payAlreadyDone(s, c.m, c.y) ? groupDigits(paidInPeriod(s, c.m, c.y)) : groupDigits(payLeftOf(s, c.m, c.y)));
     setPayExtra(''); setPayNote(''); setPayExtraOpen(false);
   };
   const closePayModal = () => { setPayStu(null); setPayAmount(''); setPayExtra(''); setPayNote(''); setPayExtraOpen(false); };
   const changePayPeriod = (m, y) => {
     setPayMonth(m); setPayYear(y);
-    if (payStu) setPayAmount(groupDigits(payLeftOf(payStu, m, y)));
+    if (payStu) setPayAmount(payAlreadyDone(payStu, m, y) ? groupDigits(paidInPeriod(payStu, m, y)) : groupDigits(payLeftOf(payStu, m, y)));
   };
 
   const confirmPay = () => {
     if (!payStu) return;
-    const amount = Number(onlyDigits(payAmount)) || 0;
-    const extra = Number(onlyDigits(payExtra)) || 0;
     const s = payStu;
-    if ((!amount && !extra) || amount > payLeftOf(s, payMonth, payYear)) return;
+    const already = payAlreadyDone(s, payMonth, payYear);
+    /* Shu oy uchun asosiy to'lov allaqachon bo'lsa — faqat qo'shimcha summa qabul qilinadi, asosiy summa e'tiborga olinmaydi */
+    const amount = already ? 0 : (Number(onlyDigits(payAmount)) || 0);
+    const extra = Number(onlyDigits(payExtra)) || 0;
+    if (!amount && !extra) return;
+    if (!already && amount > payLeftOf(s, payMonth, payYear)) return;
     const courseNames = payableCourses(s)
       .map(([cid]) => { const c = categories.find((x) => x.id === cid); return c ? c.name : null; })
       .filter(Boolean).join(', ');
@@ -3771,8 +3778,9 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
 
       {/* ---------- To'lov qabul qilish ---------- */}
       {payStu && (() => {
+        const already = payAlreadyDone(payStu, payMonth, payYear);
         const left = payLeftOf(payStu, payMonth, payYear);
-        const over = (Number(onlyDigits(payAmount)) || 0) > left;
+        const over = !already && (Number(onlyDigits(payAmount)) || 0) > left;
         return (
         <SdModal title="To'lov qabul qilish" icon={<span style={{ color: '#3b82f6', display: 'inline-flex' }}><Icon.card width="18" height="18" /></span>} onClose={closePayModal}>
           <div className="pay-sec">O'quvchi</div>
@@ -3789,7 +3797,7 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
           <div className="sd-field">
             <label className="sd-label">Summa (so'm) *</label>
             <div className="pay-row">
-              <input className="sd-input" autoFocus inputMode="numeric" value={payAmount}
+              <input className="sd-input" autoFocus={!already} inputMode="numeric" value={payAmount} disabled={already}
                 onChange={(e) => setPayAmount(groupDigits(e.target.value))}
                 onKeyDown={(e) => { if (e.key === 'Enter') confirmPay(); }} />
               <button type="button" className={`pay-plus ${payExtraOpen ? 'on' : ''}`}
@@ -3800,6 +3808,9 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
               </button>
             </div>
           </div>
+          {already && (
+            <div className="pay-warn">⚠️ {payMonth} {payYear} oyi uchun to'lov allaqachon amalga oshirilgan. Faqat "+" tugmasi orqali qo'shimcha summa kiritishingiz mumkin.</div>
+          )}
           {over && (
             <div className="pay-warn">⚠️ O'quvchining qarzi faqat {groupDigits(left) || 0} so'm. Ko'proq kiritmoqchi bo'lsangiz, ortiqcha qismini "+" tugmasi orqali qo'shimcha summa sifatida yozing.</div>
           )}
@@ -3831,7 +3842,8 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
 
           <div className="sd-foot" style={{ marginTop: '1rem' }}>
             <button className="sd-btn sd-btn-ghost" onClick={closePayModal}>Bekor</button>
-            <button className="sd-btn sd-btn-green" onClick={confirmPay} disabled={over || (!Number(onlyDigits(payAmount)) && !Number(onlyDigits(payExtra)))}>
+            <button className="sd-btn sd-btn-green" onClick={confirmPay}
+              disabled={already ? !Number(onlyDigits(payExtra)) : (over || (!Number(onlyDigits(payAmount)) && !Number(onlyDigits(payExtra))))}>
               <Icon.check width="14" height="14" /> To'lov qilish
             </button>
           </div>
@@ -4022,17 +4034,26 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
     // API: PATCH /api/admin/students/{id}/payments/{paymentId}/  (amount, month, year)
   };
 
+  /* Tanlangan oy/yil uchun asosiy (oylik) to'lov allaqachon kiritilganmi */
+  const gPayAlreadyDone = (m, y) => paidIn(m, y) > 0;
+
   const openGPay = () => {
     setGMonth(curMonth); setGYear(curYear);
-    setGAmount(groupDigits(leftIn(curMonth, curYear)));
+    setGAmount(gPayAlreadyDone(curMonth, curYear) ? groupDigits(paidIn(curMonth, curYear)) : groupDigits(leftIn(curMonth, curYear)));
     setGExtra(''); setGNote(''); setGExtraOpen(false);
     setGPayOpen(true);
   };
-  const changeGPeriod = (m, y) => { setGMonth(m); setGYear(y); setGAmount(groupDigits(leftIn(m, y))); };
+  const changeGPeriod = (m, y) => {
+    setGMonth(m); setGYear(y);
+    setGAmount(gPayAlreadyDone(m, y) ? groupDigits(paidIn(m, y)) : groupDigits(leftIn(m, y)));
+  };
   const confirmGPay = () => {
-    const amount = Number(onlyDigits(gAmount)) || 0;
+    const already = gPayAlreadyDone(gMonth, gYear);
+    /* Shu oy uchun asosiy to'lov allaqachon bo'lsa — faqat qo'shimcha summa qabul qilinadi */
+    const amount = already ? 0 : (Number(onlyDigits(gAmount)) || 0);
     const extra = Number(onlyDigits(gExtra)) || 0;
-    if ((!amount && !extra) || amount > leftIn(gMonth, gYear)) return;
+    if (!amount && !extra) return;
+    if (!already && amount > leftIn(gMonth, gYear)) return;
     const courseNames = actives
       .map(([cid]) => { const c = categories.find((x) => x.id === cid); return c ? c.name : null; })
       .filter(Boolean).join(', ');
@@ -4375,8 +4396,9 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
       )}
 
       {gPayOpen && (() => {
+        const gAlready = gPayAlreadyDone(gMonth, gYear);
         const gLeft = leftIn(gMonth, gYear);
-        const gOver = (Number(onlyDigits(gAmount)) || 0) > gLeft;
+        const gOver = !gAlready && (Number(onlyDigits(gAmount)) || 0) > gLeft;
         return (
         <SdModal title="To'lov qabul qilish" icon={<span style={{ color: '#3b82f6', display: 'inline-flex' }}><Icon.card width="18" height="18" /></span>} onClose={() => setGPayOpen(false)}>
           <div className="pay-sec">O'quvchi</div>
@@ -4391,7 +4413,7 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
           <div className="sd-field">
             <label className="sd-label">Summa (so'm) *</label>
             <div className="pay-row">
-              <input className="sd-input" autoFocus inputMode="numeric" value={gAmount}
+              <input className="sd-input" autoFocus={!gAlready} inputMode="numeric" value={gAmount} disabled={gAlready}
                 onChange={(e) => setGAmount(groupDigits(e.target.value))}
                 onKeyDown={(e) => { if (e.key === 'Enter') confirmGPay(); }} />
               <button type="button" className={`pay-plus ${gExtraOpen ? 'on' : ''}`}
@@ -4402,6 +4424,9 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
               </button>
             </div>
           </div>
+          {gAlready && (
+            <div className="pay-warn">⚠️ {gMonth} {gYear} oyi uchun to'lov allaqachon amalga oshirilgan. Faqat "+" tugmasi orqali qo'shimcha summa kiritishingiz mumkin.</div>
+          )}
           {gOver && (
             <div className="pay-warn">⚠️ O'quvchining qarzi faqat {groupDigits(gLeft) || 0} so'm. Ko'proq kiritmoqchi bo'lsangiz, ortiqcha qismini "+" tugmasi orqali qo'shimcha summa sifatida yozing.</div>
           )}
@@ -4432,7 +4457,8 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
           </div>
           <div className="sd-foot" style={{ marginTop: '1rem' }}>
             <button className="sd-btn sd-btn-ghost" onClick={() => setGPayOpen(false)}>Bekor</button>
-            <button className="sd-btn sd-btn-green" onClick={confirmGPay} disabled={gOver || (!Number(onlyDigits(gAmount)) && !Number(onlyDigits(gExtra)))}>
+            <button className="sd-btn sd-btn-green" onClick={confirmGPay}
+              disabled={gAlready ? !Number(onlyDigits(gExtra)) : (gOver || (!Number(onlyDigits(gAmount)) && !Number(onlyDigits(gExtra))))}>
               <Icon.check width="14" height="14" /> To'lov qilish
             </button>
           </div>
