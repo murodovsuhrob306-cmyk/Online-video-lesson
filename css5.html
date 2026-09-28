@@ -1704,6 +1704,94 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
     .ed-fields, .ed-course-body{ grid-template-columns:1fr; }
     .ed-check, .ed-warn{ grid-column:span 1; }
   }
+
+/* ===== Kurs ichi: accordion sidebar + video ko'rish ===== */
+.cs-layout{display:grid;grid-template-columns:360px minmax(0,1fr);gap:1.5rem;align-items:start}
+.cs-layout.cs-wide{grid-template-columns:minmax(0,1fr)}
+.cs-wide .cs-side{display:none}
+.cs-side{position:sticky;top:5rem;max-height:calc(100vh - 6.5rem);overflow-y:auto;border-radius:1.15rem}
+.cs-side .topic-list{overflow:visible}
+.cs-sec{border-top:1px solid rgba(1,51,40,.08)}
+.cs-sec:first-child{border-top:0}
+.cs-sec>.topic-row{border-top:0}
+.cs-sec-open>.topic-row{background:rgba(204,139,101,.07)}
+.cs-lessons{margin:0 .7rem .7rem 2.1rem;padding-left:.7rem;border-left:1px solid rgba(1,51,40,.12)}
+.cs-lrow{display:flex;align-items:center;gap:.3rem}
+.cs-lesson{flex:1;min-width:0;display:flex;align-items:center;gap:.65rem;padding:.55rem .6rem;border-radius:.7rem;text-align:left;background:transparent;border:0;cursor:pointer}
+.cs-lesson:hover{background:rgba(1,51,40,.045)}
+.cs-lesson-on{background:rgba(204,139,101,.15)!important;box-shadow:inset 0 0 0 1px rgba(204,139,101,.5)}
+.cs-lesson:disabled{opacity:.45;cursor:not-allowed}
+.cs-dot{width:22px;height:22px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;border:1px solid rgba(1,51,40,.25);color:rgba(1,51,40,.65)}
+.cs-dot-done{background:#2E6F4E;border-color:#2E6F4E;color:#fff}
+.cs-dot-on{background:#cc8b65;border-color:#cc8b65;color:#fff}
+.cs-l-title{font-size:.86rem;font-weight:600;color:#013328;line-height:1.3}
+.cs-l-meta{font-size:.72rem;color:rgba(1,51,40,.55);margin-top:.1rem}
+.cs-x{border:0;background:transparent;color:#AC4B3B;font-size:1rem;cursor:pointer;padding:.2rem .45rem;border-radius:.4rem}
+.cs-x:hover{background:rgba(172,75,59,.1)}
+.cs-toolbar{display:flex;align-items:center;justify-content:space-between;gap:.75rem;margin-bottom:1rem;flex-wrap:wrap}
+.cs-ghost{border:1px solid rgba(1,51,40,.15);background:transparent;color:#013328;font-size:.8rem;font-weight:600;padding:.45rem .85rem;border-radius:.7rem;cursor:pointer}
+.cs-ghost:hover{border-color:#cc8b65}
+.cs-ghost:disabled{opacity:.4;cursor:not-allowed}
+.cs-info{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin:1.1rem 0 .3rem;flex-wrap:wrap}
+.cs-info-sub{font-size:.8rem;color:rgba(1,51,40,.6);margin-bottom:.25rem}
+.cs-done{font-size:.75rem;font-weight:700;color:#2E6F4E;background:rgba(46,111,78,.12);padding:.3rem .7rem;border-radius:99px}
+.cs-navrow{display:flex;gap:.6rem;margin-top:1rem;flex-wrap:wrap}
+.cs-intro{border:1px solid rgba(1,51,40,.1);border-radius:1.15rem;padding:2rem;background:#fff}
+.cs-intro p{color:rgba(1,51,40,.65);font-size:.92rem;margin:.4rem 0 1.1rem}
+.cs-cta{background:#cc8b65;color:#fff;font-weight:700;font-size:.88rem;border:0;border-radius:.8rem;padding:.7rem 1.2rem;cursor:pointer}
+.cs-cta:hover{opacity:.92}
+html.theme-dark .cs-sec{border-top-color:rgba(255,255,255,.06)}
+html.theme-dark .cs-lessons{border-left-color:rgba(255,255,255,.1)}
+html.theme-dark .cs-lesson:hover{background:rgba(255,255,255,.05)}
+html.theme-dark .cs-dot{border-color:rgba(255,255,255,.25);color:rgba(237,239,246,.65)}
+html.theme-dark .cs-l-title{color:#EDEFF6}
+html.theme-dark .cs-l-meta,html.theme-dark .cs-info-sub{color:rgba(237,239,246,.5)}
+html.theme-dark .cs-ghost{color:#EDEFF6;border-color:rgba(255,255,255,.16)}
+html.theme-dark .cs-intro{background:#171D2C;border-color:rgba(255,255,255,.06)}
+html.theme-dark .cs-intro p{color:rgba(237,239,246,.6)}
+@media(max-width:1023px){
+  .cs-layout{grid-template-columns:minmax(0,1fr)}
+  .cs-side{position:static;max-height:none;order:2}
+  .cs-main{order:1}
+}
+/* Video pleyer */
+.vp{background:#0b0f14;border-radius:1rem;overflow:hidden;outline:none;position:relative}
+.vp:fullscreen{border-radius:0;display:flex;flex-direction:column;justify-content:center}
+.vp video{width:100%;aspect-ratio:16/9;background:#000;display:block;cursor:pointer}
+.vp:fullscreen video{aspect-ratio:auto;max-height:calc(100vh - 100px)}
+.vp-bar{padding:.7rem 1rem .85rem;color:#fff}
+.vp-track{position:relative;height:6px;border-radius:99px;background:rgba(255,255,255,.14);cursor:pointer;margin-bottom:.75rem}
+.vp-track:hover{height:8px;margin-top:-1px;margin-bottom:calc(.75rem - 1px)}
+.vp-allowed{position:absolute;left:0;top:0;bottom:0;background:rgba(255,255,255,.24);border-radius:99px}
+.vp-played{position:absolute;left:0;top:0;bottom:0;background:#cc8b65;border-radius:99px}
+.vp-row{display:flex;align-items:center;gap:.45rem;flex-wrap:wrap}
+.vp-btn{min-width:34px;height:34px;padding:0 .6rem;border-radius:99px;background:rgba(255,255,255,.1);color:#fff;border:0;font-size:.78rem;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
+.vp-btn:hover{background:rgba(255,255,255,.2)}
+.vp-btn:disabled{opacity:.35;cursor:not-allowed}
+.vp-main{background:#cc8b65;color:#101312}
+.vp-main:hover{background:#d99a76}
+.vp-time{font-size:.75rem;color:rgba(255,255,255,.7);font-variant-numeric:tabular-nums;margin-left:.3rem}
+.vp-spacer{flex:1}
+.vp-menuwrap{position:relative}
+.vp-menu{position:absolute;bottom:2.6rem;right:0;background:#151b26;border:1px solid rgba(255,255,255,.12);border-radius:.7rem;padding:.3rem;z-index:5;min-width:90px}
+.vp-menu button{display:block;width:100%;text-align:left;padding:.4rem .8rem;color:#fff;font-size:.78rem;background:transparent;border:0;border-radius:.4rem;cursor:pointer}
+.vp-menu button:hover{background:rgba(255,255,255,.08)}
+.vp-menu button.on{color:#e3a985;font-weight:700}
+.vp-end{position:absolute;left:0;right:0;top:0;aspect-ratio:16/9;background:rgba(0,0,0,.66);display:flex;align-items:center;justify-content:center;gap:.7rem;flex-wrap:wrap}
+.vp-vol{width:74px;accent-color:#cc8b65}
+.vp-hint{font-size:.68rem;color:rgba(255,255,255,.4);padding:0 1rem .7rem}
+
+.sp-progress{display:flex;align-items:center;gap:.6rem;margin-top:.55rem}
+.sp-bar{flex:1;max-width:240px;height:6px;border-radius:99px;background:rgba(1,51,40,.1);overflow:hidden}
+.sp-bar>div{height:100%;background:#cc8b65;border-radius:99px;transition:width .3s}
+.sp-progress span{font-size:.74rem;font-weight:700;color:#ac6a45}
+.sp-btn{flex-shrink:0;background:#cc8b65;color:#fff;border:0;border-radius:.8rem;padding:.6rem 1rem;font-size:.8rem;font-weight:700;cursor:pointer}
+.sp-btn:hover{opacity:.92}
+.sp-btn:disabled{opacity:.4;cursor:not-allowed}
+.sp-btn-ghost{background:transparent;color:#ac6a45;box-shadow:inset 0 0 0 1.5px rgba(204,139,101,.55)}
+html.theme-dark .sp-bar{background:rgba(255,255,255,.1)}
+html.theme-dark .sp-progress span{color:#e3a985}
+@media(max-width:640px){.sp-btn{padding:.5rem .7rem;font-size:.72rem}}
 </style>
 </head>
 <body>
@@ -3123,6 +3211,10 @@ const THUMB_GRADIENTS = [
 function CoursesManager({ categories, setCategories, canEdit, notify, students, quickAdd, onQuickAddDone }) {
   const [openCat, setOpenCat] = useState(null);
   const [openSub, setOpenSub] = useState(null);
+  const [previewLesson, setPreviewLesson] = useState(null);
+  const [wideMode, setWideMode] = useState(false);
+  const [uplOpen, setUplOpen] = useState(false);
+  const [upl, setUpl] = useState({ subId: '', num: '', title: '', duration: '', mode: 'link', videoUrl: '', fileName: '' });
   const [newCatName, setNewCatName] = useState('');
   const [newCatSubtitle, setNewCatSubtitle] = useState('');
   const [newCatPrice, setNewCatPrice] = useState('');
@@ -3259,95 +3351,149 @@ function CoursesManager({ categories, setCategories, canEdit, notify, students, 
     }));
   };
 
+
+  const onPickVideoFile = (file) => {
+    if (!file) return;
+    const url = URL.createObjectURL(file);   // demo: brauzer xotirasida; haqiqiy loyihada serverga upload qilinadi
+    const v = document.createElement('video');
+    v.preload = 'metadata';
+    v.onloadedmetadata = () => { const t = Math.round(v.duration || 0); setUpl((u) => ({ ...u, duration: u.duration || `${Math.floor(t / 60)}:${String(t % 60).padStart(2, '0')}` })); };
+    v.src = url;
+    setUpl((u) => ({ ...u, videoUrl: url, fileName: file.name, title: u.title || file.name.replace(/\.[^.]+$/, '') }));
+  };
+  const submitLesson = () => {
+    const sub = activeCat && activeCat.subtopics.find((s) => s.id === upl.subId);
+    if (!sub) { notify("Avval bo'limni tanlang", 'danger'); return; }
+    if (!upl.title.trim()) { notify('Dars nomini kiriting', 'danger'); return; }
+    if (!upl.videoUrl.trim()) { notify(upl.mode === 'file' ? 'Video faylni tanlang' : 'Video havolasini kiriting', 'danger'); return; }
+    const n = Math.min(Math.max(parseInt(upl.num, 10) || sub.lessons.length + 1, 1), sub.lessons.length + 1);
+    const lesson = { id: uid('l'), title: upl.title.trim(), duration: upl.duration.trim() || '00:00', videoUrl: upl.videoUrl.trim() };
+    setCategories(categories.map((c) => c.id !== activeCat.id ? c : {
+      ...c, subtopics: c.subtopics.map((s) => { if (s.id !== sub.id) return s; const arr = [...s.lessons]; arr.splice(n - 1, 0, lesson); return { ...s, lessons: arr }; }),
+    }));
+    setUpl({ ...upl, num: '', title: '', duration: '', videoUrl: '', fileName: '' });
+    notify(`Dars ${n}-o'ringa joylandi`);
+    // API: POST /api/admin/lessons/  (topic, order, title, duration, videoUrl | file)
+  };
+
   const activeCat = categories.find((c) => c.id === openCat) || null;
   const activeSub = activeCat ? activeCat.subtopics.find((s) => s.id === openSub) : null;
-
-  /* ---- Level 3: ichidagi darslar (bitta bo'lim ochilganda) ---- */
-  if (activeCat && activeSub) {
-    return (
-      <div>
-        <button onClick={() => setOpenSub(null)} className="text-sm text-slate hover:text-ink mb-4 flex items-center gap-1">← {activeCat.name} bo'limlariga qaytish</button>
-        <h1 className="font-display text-2xl text-ink mb-1">{activeSub.name}</h1>
-        <p className="text-slate text-sm mb-6">{activeSub.lessons.length} ta video dars</p>
-        <div className="topic-list">
-          {activeSub.lessons.map((l, i) => (
-            <div key={l.id} className="topic-row" style={{ cursor: 'default' }}>
-              <div className="topic-row-icon" style={{ background: 'rgba(204,139,101,.16)', color: '#B97850', boxShadow: 'none' }}><Icon.play width="16" height="16" /></div>
-              <div className="topic-row-body">
-                <div className="topic-row-name truncate">{i + 1}. {l.title}</div>
-                <div className="topic-row-meta">{l.duration}{l.videoUrl ? ' · video biriktirilgan' : ''}</div>
-              </div>
-              {canEdit && <button onClick={() => removeLesson(activeCat.id, activeSub.id, l.id)} className="text-clay text-xs hover:underline shrink-0">o'chirish</button>}
-            </div>
-          ))}
-          {activeSub.lessons.length === 0 && <p className="text-sm text-slate p-4">Hali dars qo'shilmagan.</p>}
-        </div>
-
-        {canEdit && (
-          <div className="quick-add-card mt-5">
-            <div className="text-sm font-semibold text-ink mb-3 flex items-center gap-2"><Icon.plus width="14" height="14" className="text-forest"/> Yangi video dars qo'shish</div>
-            <div className="grid sm:grid-cols-2 gap-2 mb-2">
-              <input placeholder="Dars nomi" value={(newLesson[activeSub.id]?.title) || ''}
-                onChange={(e) => setNewLesson({ ...newLesson, [activeSub.id]: { ...newLesson[activeSub.id], title: e.target.value } })}
-                className="border border-line rounded-lg px-3 py-2 text-sm bg-white outline-none focus:border-gold" />
-              <input placeholder="Davomiyligi, masalan 12:34" value={(newLesson[activeSub.id]?.duration) || ''}
-                onChange={(e) => setNewLesson({ ...newLesson, [activeSub.id]: { ...newLesson[activeSub.id], duration: e.target.value } })}
-                className="border border-line rounded-lg px-3 py-2 text-sm bg-white outline-none focus:border-gold" />
-            </div>
-            <div className="flex gap-2">
-              <div className="relative flex-1">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate/60"><Icon.video width="14" height="14" /></span>
-                <input placeholder="https://youtu.be/... (video havolasi)" value={(newLesson[activeSub.id]?.videoUrl) || ''}
-                  onChange={(e) => setNewLesson({ ...newLesson, [activeSub.id]: { ...newLesson[activeSub.id], videoUrl: e.target.value } })}
-                  className="w-full border border-line rounded-lg pl-9 pr-3 py-2 text-sm bg-white outline-none focus:border-gold" />
-              </div>
-              <button onClick={() => addLesson(activeCat.id, activeSub.id)} className="text-sm px-4 py-2 bg-forest text-white rounded-lg hover:opacity-90 shrink-0">+ Dars qo'shish</button>
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  }
+  const previewLessonObj = activeCat ? (activeCat.subtopics.flatMap((s) => s.lessons).find((l) => l.id === previewLesson) || null) : null;
 
   /* ---- Level 2: bitta kategoriya ichidagi bo'limlar ---- */
   if (activeCat) {
+    const workspace = !!(activeSub && activeSub.lessons.length > 0);
+    const uplSub = activeCat.subtopics.find((s) => s.id === upl.subId);
     return (
       <div>
-        <button onClick={() => setOpenCat(null)} className="text-sm text-slate hover:text-ink mb-4 flex items-center gap-1">← Kurslarga qaytish</button>
+        <button onClick={() => { if (workspace) { setOpenSub(null); setPreviewLesson(null); } else { setOpenCat(null); setOpenSub(null); setPreviewLesson(null); } }} className="text-sm text-slate hover:text-ink mb-4 flex items-center gap-1">← {workspace ? `${activeCat.name} bo'limlariga qaytish` : 'Kurslarga qaytish'}</button>
         <h1 className="font-display text-3xl text-ink mb-1">{activeCat.name}</h1>
         <p className="text-slate text-sm mb-6">{activeCat.subtitle || `${activeCat.subtopics.length} bo'lim`}</p>
 
-        <div className="topic-list">
-          {canEdit && (
-            <button onClick={() => setAddSubModalFor(activeCat.id)} className="topic-row topic-row-add">
-              <span className="topic-row-icon"><Icon.plus width="18" height="18" /></span>
-              <div className="topic-row-body text-left">
-                <div className="topic-row-name">Yangi bo'lim qo'shish</div>
-                <div className="topic-row-meta">Masalan: TypeScript</div>
+        {workspace ? (
+          <div className={`cs-layout ${wideMode ? 'cs-wide' : ''}`}>
+            <aside className="cs-side">
+              <CourseAccordion
+                category={activeCat}
+                openSubId={openSub}
+                onToggleSub={(id) => setOpenSub(openSub === id ? null : id)}
+                activeLessonId={previewLesson}
+                onPickLesson={(s, l) => { setOpenSub(s.id); setPreviewLesson(l.id); }}
+                stateOf={() => ({})}
+                lessonExtra={(l, s) => canEdit && <button className="cs-x" title="Darsni o'chirish" onClick={() => { removeLesson(activeCat.id, s.id, l.id); if (previewLesson === l.id) setPreviewLesson(null); }}>×</button>}
+              />
+            </aside>
+            <section className="cs-main">
+              <div className="cs-toolbar">
+                <span className="text-sm text-slate">{activeSub.name} · {activeSub.lessons.length} ta video dars</span>
+                <button className="cs-ghost" onClick={() => setWideMode(!wideMode)}>{wideMode ? "Ro'yxatni ko'rsatish" : 'Kino rejimi'}</button>
               </div>
-            </button>
-          )}
-
-          {activeCat.subtopics.map((sub, si) => (
-            <button key={sub.id} onClick={() => setOpenSub(sub.id)} className="topic-row">
-              <div className={`topic-row-icon ${!sub.image ? `topic-grad-${si % 6}` : ''}`}>
-                {sub.image ? <img src={sub.image} alt="" /> : sub.name.slice(0, 2).toUpperCase()}
-              </div>
-              <div className="topic-row-body text-left">
-                <div className="topic-row-name truncate">{sub.name}</div>
-                <div className="topic-row-meta">
-                  <Icon.video width="12" height="12" />
-                  {sub.lessons.length} ta video dars
+              {previewLessonObj ? (
+                <div>
+                  <VideoPlayer key={previewLessonObj.id} lesson={previewLessonObj} locked={false} free progress={{ watched: 0 }} onProgress={() => {}} hasNext={false} hasPrev={false} />
+                  <div className="cs-info"><div><div className="cs-info-sub">{activeSub.name}</div><h2 className="font-display text-2xl text-ink">{previewLessonObj.title}</h2></div></div>
                 </div>
+              ) : (
+                <div className="cs-intro"><h2 className="font-display text-2xl text-ink">Darsni tanlang</h2><p>Chapdagi ro'yxatdan videoni tanlang.</p></div>
+              )}
+            </section>
+          </div>
+        ) : (
+          <div>
+            {canEdit && (
+              <div className="topic-list mb-4">
+                <button onClick={() => setUplOpen(!uplOpen)} className="topic-row topic-row-add">
+                  <span className="topic-row-icon"><Icon.video width="18" height="18" /></span>
+                  <div className="topic-row-body text-left">
+                    <div className="topic-row-name">Yangi video darslik joylash</div>
+                    <div className="topic-row-meta">Bo'lim, dars raqami va video (havola yoki fayl)</div>
+                  </div>
+                  <Icon.chevron width="16" height="16" className="topic-row-chevron" style={{ transform: uplOpen ? 'rotate(0deg)' : 'rotate(-90deg)' }} />
+                </button>
+                {uplOpen && (
+                  <div className="quick-add-card" style={{ borderRadius: 0, border: 0 }}>
+                    <div className="grid sm:grid-cols-2 gap-2 mb-2">
+                      <select value={upl.subId} onChange={(e) => setUpl({ ...upl, subId: e.target.value })} className="border border-line rounded-lg px-3 py-2 text-sm bg-white outline-none focus:border-gold">
+                        <option value="">Bo'limni tanlang…</option>
+                        {activeCat.subtopics.map((s) => <option key={s.id} value={s.id}>{s.name} ({s.lessons.length} ta dars)</option>)}
+                      </select>
+                      <input type="number" min="1" placeholder={uplSub ? `Nechanchi dars (1–${uplSub.lessons.length + 1})` : 'Nechanchi dars'} value={upl.num} onChange={(e) => setUpl({ ...upl, num: e.target.value })} className="border border-line rounded-lg px-3 py-2 text-sm bg-white outline-none focus:border-gold" />
+                    </div>
+                    {uplSub && <p className="text-xs text-slate mb-2">«{uplSub.name}» bo'limida hozir {uplSub.lessons.length} ta dars bor. Raqam kiritilmasa oxiriga ({uplSub.lessons.length + 1}-dars) qo'shiladi; mavjud raqam kiritsangiz, keyingi darslar bittaga suriladi.</p>}
+                    <div className="grid sm:grid-cols-2 gap-2 mb-3">
+                      <input placeholder="Dars nomi" value={upl.title} onChange={(e) => setUpl({ ...upl, title: e.target.value })} className="border border-line rounded-lg px-3 py-2 text-sm bg-white outline-none focus:border-gold" />
+                      <input placeholder="Davomiyligi, masalan 12:34" value={upl.duration} onChange={(e) => setUpl({ ...upl, duration: e.target.value })} className="border border-line rounded-lg px-3 py-2 text-sm bg-white outline-none focus:border-gold" />
+                    </div>
+                    <div className="flex gap-2 mb-2">
+                      <button className={`cs-ghost ${upl.mode === 'link' ? 'cs-lesson-on' : ''}`} onClick={() => setUpl({ ...upl, mode: 'link', videoUrl: '', fileName: '' })}>🔗 Havola (YouTube / mp4)</button>
+                      <button className={`cs-ghost ${upl.mode === 'file' ? 'cs-lesson-on' : ''}`} onClick={() => setUpl({ ...upl, mode: 'file', videoUrl: '', fileName: '' })}>📁 Fayldan yuklash</button>
+                    </div>
+                    {upl.mode === 'link' ? (
+                      <div className="relative mb-3">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate/60"><Icon.video width="14" height="14" /></span>
+                        <input placeholder="https://youtu.be/... yoki https://.../video.mp4" value={upl.videoUrl} onChange={(e) => setUpl({ ...upl, videoUrl: e.target.value })} className="w-full border border-line rounded-lg pl-9 pr-3 py-2 text-sm bg-white outline-none focus:border-gold" />
+                      </div>
+                    ) : (
+                      <label className="block mb-3 border border-dashed border-line rounded-lg px-3 py-3 text-sm text-slate cursor-pointer hover:border-gold">
+                        {upl.fileName ? `✓ ${upl.fileName}` : 'Video faylni tanlash (mp4, webm…)'}
+                        <input type="file" accept="video/*" style={{ display: 'none' }} onChange={(e) => onPickVideoFile(e.target.files[0])} />
+                      </label>
+                    )}
+                    <button onClick={submitLesson} className="text-sm px-4 py-2 bg-forest text-white rounded-lg hover:opacity-90">+ Darsni joylash</button>
+                  </div>
+                )}
               </div>
-              <Icon.chevron width="16" height="16" className="topic-row-chevron" style={{ transform: 'rotate(-90deg)' }} />
-            </button>
-          ))}
+            )}
 
-          {activeCat.subtopics.length === 0 && !canEdit && (
-            <p className="text-sm text-slate p-4">Hali bo'lim qo'shilmagan.</p>
-          )}
-        </div>
+            <div className="topic-list">
+              {canEdit && (
+                <button onClick={() => setAddSubModalFor(activeCat.id)} className="topic-row topic-row-add">
+                  <span className="topic-row-icon"><Icon.plus width="18" height="18" /></span>
+                  <div className="topic-row-body text-left">
+                    <div className="topic-row-name">Yangi bo'lim qo'shish</div>
+                    <div className="topic-row-meta">Masalan: TypeScript</div>
+                  </div>
+                </button>
+              )}
+              {activeCat.subtopics.map((sub, si) => (
+                <button key={sub.id} onClick={() => {
+                  if (sub.lessons.length) { setOpenSub(sub.id); setPreviewLesson(sub.lessons[0].id); }
+                  else if (canEdit) { setUplOpen(true); setUpl({ ...upl, subId: sub.id }); notify(`«${sub.name}» bo'limida hali video yo'q — yuqorida video joylang`); }
+                }} className="topic-row">
+                  <div className={`topic-row-icon ${!sub.image ? `topic-grad-${si % 6}` : ''}`}>
+                    {sub.image ? <img src={sub.image} alt="" /> : sub.name.slice(0, 2).toUpperCase()}
+                  </div>
+                  <div className="topic-row-body text-left">
+                    <div className="topic-row-name truncate">{sub.name}</div>
+                    <div className="topic-row-meta"><Icon.video width="12" height="12" />{sub.lessons.length} ta video dars</div>
+                  </div>
+                  <Icon.chevron width="16" height="16" className="topic-row-chevron" style={{ transform: 'rotate(-90deg)' }} />
+                </button>
+              ))}
+              {activeCat.subtopics.length === 0 && !canEdit && <p className="text-sm text-slate p-4">Hali bo'lim qo'shilmagan.</p>}
+            </div>
+          </div>
+        )}
 
         {addSubModalFor && (
           <SdModal title="Yangi bo'lim qo'shish" icon="book" onClose={() => { setAddSubModalFor(null); setNewSubImage({ ...newSubImage, [addSubModalFor]: '' }); }}>
@@ -5393,35 +5539,46 @@ function StudentApp({ me, categories, students, setStudents, onLogout, notify })
 
         {page === 'home' && catId && !subId && (() => {
           const cat = categories.find((c) => c.id === catId);
+          // Qaysi darsgacha kelgan bo'lsa — o'sha (birinchi tugallanmagan) darsdan boshlaydi
+          const resume = (sub) => {
+            if (!sub.lessons.length) return;
+            const nx = sub.lessons.find((l) => !lessonProgress(l.id).completed) || sub.lessons[0];
+            setLessonId(nx.id);
+            setSubId(sub.id);
+          };
           return (
             <div>
               <button onClick={() => setCatId(null)} className="text-sm text-slate hover:text-ink mb-4">← Kurslarga qaytish</button>
               <h1 className="font-display text-3xl text-ink mb-6">{cat.name}</h1>
-              <div className="grid sm:grid-cols-3 gap-5">
-                {cat.subtopics.map((sub) => {
+              <div className="topic-list">
+                {cat.subtopics.map((sub, si) => {
                   const done = sub.lessons.filter((l) => lessonProgress(l.id).completed).length;
                   const pct = sub.lessons.length ? Math.round((done / sub.lessons.length) * 100) : 0;
+                  const label = !sub.lessons.length ? "Video yo'q" : pct === 0 ? 'Boshlash' : pct === 100 ? "Qayta ko'rish" : 'Darsni davom ettirish';
                   return (
-                    <button key={sub.id} onClick={() => setSubId(sub.id)} className="text-left bg-card border border-line rounded-xl p-5 hover:border-gold transition">
-                      <div className="flex items-center justify-between mb-2">
-                        <h3 className="font-semibold text-ink">{sub.name}</h3>
-                        {pct === 100 && <span className="text-forest"><Icon.check width="15" height="15"/></span>}
+                    <div key={sub.id} className="topic-row" onClick={() => resume(sub)} style={!sub.lessons.length ? { cursor: 'default' } : undefined}>
+                      <div className={`topic-row-icon ${!sub.image ? `topic-grad-${si % 6}` : ''}`}>
+                        {sub.image ? <img src={sub.image} alt="" /> : sub.name.slice(0, 2).toUpperCase()}
                       </div>
-                      <p className="text-xs text-slate mt-1 mb-3">{sub.lessons.length} ta video dars</p>
-                      <Progress pct={pct} />
-                      <div className="text-xs text-slate mt-2">{pct}% tugallangan</div>
-                    </button>
+                      <div className="topic-row-body text-left">
+                        <div className="topic-row-name truncate">{sub.name}</div>
+                        <div className="topic-row-meta"><Icon.video width="12" height="12" />{sub.lessons.length} ta video dars · {done} tugallangan</div>
+                        <div className="sp-progress"><div className="sp-bar"><div style={{ width: `${pct}%` }} /></div><span>{pct}%</span></div>
+                      </div>
+                      <button type="button" disabled={!sub.lessons.length} className={`sp-btn ${pct === 100 ? 'sp-btn-ghost' : ''}`}>{label}</button>
+                    </div>
                   );
                 })}
+                {cat.subtopics.length === 0 && <p className="text-sm text-slate p-4">Hali bo'lim qo'shilmagan.</p>}
               </div>
             </div>
           );
         })()}
 
         {page === 'home' && catId && subId && (
-          <LessonView
+          <CourseStudy
             category={categories.find((c) => c.id === catId)}
-            subtopic={categories.find((c) => c.id === catId).subtopics.find((s) => s.id === subId)}
+            initialSubId={subId}
             access={student.access[catId]}
             payBlocked={!!(courseBill(catId) && courseBill(catId).blocked)}
             payDebt={courseBill(catId) ? courseBill(catId).debt : 0}
@@ -5503,26 +5660,111 @@ function AttendancePanel({ state }) {
   );
 }
 
-function LessonView({ category, subtopic, access, payBlocked, payDebt, attendance, forceSunday, lessonId, setLessonId, progressOf, onProgress, onBack }) {
-  const lessons = subtopic.lessons;
+/* ==========================================================================
+   Kurs ichi: chapda accordion (bo'lim -> darslar), o'ngda video pleyer.
+   Talaba ham, admin ham shu CourseAccordion'dan foydalanadi.
+   ========================================================================== */
+function CourseAccordion({ category, openSubId, onToggleSub, activeLessonId, onPickLesson, stateOf, addRow, lessonExtra }) {
+  return (
+    <div className="topic-list">
+      {addRow}
+      {category.subtopics.map((sub, si) => {
+        const open = openSubId === sub.id;
+        const done = sub.lessons.filter((l, i) => (stateOf(l, sub, i) || {}).completed).length;
+        return (
+          <div key={sub.id} className={`cs-sec ${open ? 'cs-sec-open' : ''}`}>
+            <button onClick={() => onToggleSub(sub.id)} className="topic-row" aria-expanded={open}>
+              <div className={`topic-row-icon ${!sub.image ? `topic-grad-${si % 6}` : ''}`}>
+                {sub.image ? <img src={sub.image} alt="" /> : sub.name.slice(0, 2).toUpperCase()}
+              </div>
+              <div className="topic-row-body text-left">
+                <div className="topic-row-name truncate">{sub.name}</div>
+                <div className="topic-row-meta">
+                  <Icon.video width="12" height="12" />
+                  {sub.lessons.length} ta video dars{done > 0 ? ` · ${done} tugallangan` : ''}
+                </div>
+              </div>
+              <Icon.chevron width="16" height="16" className="topic-row-chevron" style={{ transform: open ? 'rotate(0deg)' : 'rotate(-90deg)' }} />
+            </button>
+            {open && (
+              <div className="cs-lessons">
+                {sub.lessons.map((l, i) => {
+                  const st = stateOf(l, sub, i) || {};
+                  const on = activeLessonId === l.id;
+                  return (
+                    <div key={l.id} className="cs-lrow">
+                      <button disabled={!!st.locked} onClick={() => onPickLesson(sub, l)} className={`cs-lesson ${on ? 'cs-lesson-on' : ''}`}>
+                        <span className={`cs-dot ${st.completed ? 'cs-dot-done' : on ? 'cs-dot-on' : ''}`}>
+                          {st.completed ? <Icon.check /> : st.locked ? <Icon.lock width="11" height="11" /> : i + 1}
+                        </span>
+                        <span className="flex-1 min-w-0">
+                          <div className="cs-l-title truncate">{l.title}</div>
+                          <div className="cs-l-meta">{l.duration}{st.pct > 0 && !st.completed ? ` · ${st.pct}% ko'rildi` : ''}</div>
+                        </span>
+                      </button>
+                      {lessonExtra && lessonExtra(l, sub)}
+                    </div>
+                  );
+                })}
+                {sub.lessons.length === 0 && <p className="text-xs text-slate p-3">Hali dars qo'shilmagan.</p>}
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function CourseStudy({ category, initialSubId, access, payBlocked, payDebt, attendance, forceSunday, lessonId, setLessonId, progressOf, onProgress, onBack }) {
+  const subs = category.subtopics;
   const overdue = !!payBlocked;
   const dayOk = isScheduleDayOk(access, forceSunday);
   const attnBlocked = !!(attendance && attendance.isBlocked);
   const blocked = overdue || !dayOk || attnBlocked;
+  /* Toq (Du/Chor/Ju) va juft (Se/Pay/Sha) kunli o'quvchilar bir kunda bitta dars ko'radi:
+     keyingi dars keyingi dars kunida ochiladi, oraliqda takrorlash tavsiya etiladi. */
+  const waits = !!access && (access.schedule === 'odd' || access.schedule === 'even');
+  const dayNames = access && access.schedule === 'odd' ? 'Du / Chor / Ju' : 'Se / Pay / Sha';
+  const [restModal, setRestModal] = useState(false);
 
-  const active = lessons.find((l) => l.id === lessonId) || lessons[0];
-  useEffect(() => { if (!lessonId && lessons[0]) setLessonId(lessons[0].id); }, []);
+  const flat = subs.flatMap((s) => s.lessons.map((l, i) => ({ s, l, i })));
+  const at = flat.findIndex((x) => x.l.id === lessonId);
+  const cur = at >= 0 ? flat[at] : null;
+  const [openSub, setOpenSub] = useState(cur ? cur.s.id : (initialSubId || (subs[0] ? subs[0].id : null)));
+  const [wide, setWide] = useState(false);
+  useEffect(() => { if (!cur) { const s0 = subs.find((x) => x.id === initialSubId); if (s0 && s0.lessons[0]) setLessonId(s0.lessons[0].id); } }, []);
 
-  const isLocked = (idx) => {
-    if (blocked) return true;
-    if (idx === 0) return false;
-    return !progressOf(lessons[idx - 1].id).completed;
+  const restLocked = (l) => {
+    if (!waits || progressOf(l.id).completed) return false;
+    const k = flat.findIndex((x) => x.l.id === l.id);
+    if (k < 1) return false;
+    const p = progressOf(flat[k - 1].l.id);
+    return !!(p.completed && p.completedAt === todayISO());
   };
+  const isLocked = (s, i) => blocked || (i > 0 && !progressOf(s.lessons[i - 1].id).completed) || restLocked(s.lessons[i]);
+  const stateOf = (l, s, i) => { const p = progressOf(l.id); return { completed: p.completed, locked: isLocked(s, i), pct: p.watched }; };
+  const pick = (s, l) => { setOpenSub(s.id); setLessonId(l.id); };
+  const go = (k) => { const t = flat[k]; if (t) pick(t.s, t.l); };
+
+  const doneCount = flat.filter((x) => progressOf(x.l.id).completed).length;
+  const pctAll = flat.length ? Math.round((doneCount / flat.length) * 100) : 0;
+  const resume = flat.find((x) => !progressOf(x.l.id).completed && !isLocked(x.s, x.i)) || flat[0];
+  const curLocked = cur ? isLocked(cur.s, cur.i) : false;
+  const curDone = cur ? progressOf(cur.l.id) : null;
 
   return (
     <div>
-      <button onClick={onBack} className="text-sm text-slate hover:text-ink mb-4">← {category.name} bo'limlariga qaytish</button>
-      <h1 className="font-display text-3xl text-ink mb-6">{subtopic.name}</h1>
+      <div className="cs-toolbar">
+        <div>
+          <button onClick={onBack} className="text-sm text-slate hover:text-ink mb-2">← {category.name} bo'limlariga qaytish</button>
+          <h1 className="font-display text-3xl text-ink">{category.name}</h1>
+        </div>
+        <div className="flex items-center gap-3">
+          <span className="text-xs text-slate">{doneCount}/{flat.length} dars · {pctAll}%</span>
+          <button className="cs-ghost" onClick={() => setWide(!wide)}>{wide ? "Ro'yxatni ko'rsatish" : 'Kino rejimi'}</button>
+        </div>
+      </div>
 
       {blocked && (
         <div className="bg-clay/10 border border-clay/30 text-clay rounded-xl px-5 py-4 mb-6 text-sm font-medium flex items-center gap-3">
@@ -5534,51 +5776,89 @@ function LessonView({ category, subtopic, access, payBlocked, payDebt, attendanc
             : "Bugun dam kuni — sizning dars jadvalingiz bo'yicha video dars ochilmaydi."}
         </div>
       )}
-
+      {!blocked && cur && restLocked(cur.l) && (
+        <div className="bg-clay/10 border border-clay/30 text-clay rounded-xl px-5 py-4 mb-6 text-sm font-medium flex items-center gap-3">
+          <Icon.warn width="18" height="18" className="shrink-0" />
+          Bu dars keyingi dars kuningizda ({dayNames}) ochiladi. Shu vaqtgacha o'tilgan darslarni takrorlang.
+        </div>
+      )}
       {attendance && <AttendancePanel state={attendance} />}
 
-      <div className="grid md:grid-cols-[280px_1fr] gap-6">
-        <div className="bg-card border border-line rounded-xl p-3 relative">
-          <div className="absolute left-[26px] top-6 bottom-6 w-px bg-line" />
-          {lessons.map((l, idx) => {
-            const locked = isLocked(idx);
-            const p = progressOf(l.id);
-            const isActive = active?.id === l.id;
-            return (
-              <button key={l.id} disabled={locked}
-                onClick={() => setLessonId(l.id)}
-                className={`relative w-full flex items-center gap-3 text-left px-3 py-3 rounded-lg mb-1 transition ${isActive ? 'bg-paper rail-active' : 'hover:bg-paper/70'} ${locked ? 'opacity-50 cursor-not-allowed' : ''}`}>
-                <span className={`rail-dot w-6 h-6 shrink-0 rounded-full flex items-center justify-center text-xs font-semibold z-10 ${p.completed ? 'bg-forest text-white' : isActive ? 'bg-gold text-white' : 'bg-white border border-line text-slate'}`}>
-                  {p.completed ? <Icon.check /> : locked ? <Icon.lock width="12" height="12" /> : idx + 1}
-                </span>
-                <span className="flex-1 min-w-0">
-                  <div className="text-sm text-ink truncate">{l.title}</div>
-                  <div className="text-xs text-slate">{l.duration}</div>
-                </span>
-              </button>
-            );
-          })}
-        </div>
+      <div className={`cs-layout ${wide ? 'cs-wide' : ''}`}>
+        <aside className="cs-side">
+          <CourseAccordion category={category} openSubId={openSub}
+            onToggleSub={(id) => setOpenSub(openSub === id ? null : id)}
+            activeLessonId={lessonId} onPickLesson={pick} stateOf={stateOf} />
+          {subs.length === 0 && <p className="text-sm text-slate p-4">Hali bo'lim qo'shilmagan.</p>}
+        </aside>
 
-        <VideoPlayer key={active?.id} lesson={active} locked={blocked || isLocked(lessons.findIndex((l) => l.id === active?.id))}
-          progress={progressOf(active?.id)} onProgress={(w, c) => onProgress(active.id, w, c)}
-          onNext={() => { const i = lessons.findIndex((l) => l.id === active.id); if (lessons[i + 1]) setLessonId(lessons[i + 1].id); }}
-          hasNext={lessons.findIndex((l) => l.id === active?.id) < lessons.length - 1} />
+        <section className="cs-main">
+          {cur ? (
+            <div>
+              <VideoPlayer key={cur.l.id} lesson={cur.l} locked={curLocked}
+                progress={progressOf(cur.l.id)} onProgress={(w, c) => onProgress(cur.l.id, w, c)}
+                onNext={() => { const nx = flat[at + 1]; if (nx && restLocked(nx.l)) setRestModal(true); else go(at + 1); }} hasNext={at < flat.length - 1}
+                onPrev={() => go(at - 1)} hasPrev={at > 0} />
+              <div className="cs-info">
+                <div>
+                  <div className="cs-info-sub">{cur.s.name} · {cur.i + 1}/{cur.s.lessons.length}-dars</div>
+                  <h2 className="font-display text-2xl text-ink">{cur.l.title}</h2>
+                </div>
+                {curDone.completed && <span className="cs-done">✓ Tugallangan</span>}
+              </div>
+            </div>
+          ) : (
+            <div className="cs-intro">
+              <h2 className="font-display text-2xl text-ink">Darsni tanlang</h2>
+              <p>Chapdagi ro'yxatdan bo'limni oching va videoni tanlang. Jarayoningiz avtomatik saqlanadi.</p>
+              {resume && !blocked && <button className="cs-cta" onClick={() => pick(resume.s, resume.l)}>▶ Boshlash: {resume.l.title}</button>}
+            </div>
+          )}
+        </section>
       </div>
+
+      {restModal && (
+        <Modal title="Bugungi dars yakunlandi 🎉" onClose={() => setRestModal(false)}>
+          <p className="text-ink text-base leading-relaxed">
+            Keyingi darsgacha o'tilgan darslarni <b>takrorlang</b>, o'rgangan kodlaringizni <b>amaliyotda sinab ko'ring</b> va <b>o'z ustingizda ishlang</b>.
+          </p>
+          <p className="text-slate text-sm mt-2">Keyingi dars sizning dars kuningizda ({dayNames}) ochiladi.</p>
+          <div className="mt-6">
+            <button onClick={() => setRestModal(false)} className="bg-forest text-white text-sm px-5 py-2.5 rounded-lg">Tushunarli</button>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }
 
-function VideoPlayer({ lesson, locked, progress, onProgress, onNext, hasNext }) {
+const VP_SPEEDS = [0.5, 0.75, 1, 1.25, 1.5];
+const fmtClock = (s) => { s = Math.max(0, Math.floor(s || 0)); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`; };
+
+function VideoPlayer({ lesson, locked, progress, onProgress, onNext, hasNext, onPrev, hasPrev, free }) {
+  const boxRef = useRef(null);
   const videoRef = useRef(null);
+  const trackRef = useRef(null);
   const [playing, setPlaying] = useState(false);
   const [pct, setPct] = useState(progress?.watched || 0);
+  const [cur, setCur] = useState(0);
+  const [dur, setDur] = useState(0);
+  const [vol, setVol] = useState(1);
+  const [muted, setMuted] = useState(false);
+  const [rate, setRate] = useState(1);
+  const [menu, setMenu] = useState(false);
+  const [ended, setEnded] = useState(false);
+  const [fs, setFs] = useState(false);
   const maxAllowed = useRef((progress?.watched || 0) / 100);
 
-  useEffect(() => { maxAllowed.current = (progress?.watched || 0) / 100; setPct(progress?.watched || 0); }, [lesson?.id]);
+  useEffect(() => { maxAllowed.current = (progress?.watched || 0) / 100; setPct(progress?.watched || 0); setEnded(false); }, [lesson?.id]);
+  useEffect(() => {
+    const h = () => setFs(document.fullscreenElement === boxRef.current);
+    document.addEventListener('fullscreenchange', h);
+    return () => document.removeEventListener('fullscreenchange', h);
+  }, []);
 
   if (!lesson) return null;
-
   if (locked) {
     return (
       <div className="bg-ink rounded-xl aspect-video flex flex-col items-center justify-center text-white/70 gap-3">
@@ -5588,65 +5868,116 @@ function VideoPlayer({ lesson, locked, progress, onProgress, onNext, hasNext }) 
     );
   }
 
-  const togglePlay = () => {
-    const v = videoRef.current;
-    if (!v) return;
-    if (v.paused) { v.play(); setPlaying(true); } else { v.pause(); setPlaying(false); }
-  };
+  const yt = lesson.videoUrl && lesson.videoUrl.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{11})/);
+  if (yt) {
+    return (
+      <div className="vp">
+        <iframe src={`https://www.youtube.com/embed/${yt[1]}?rel=0`} title={lesson.title} allow="accelerometer; encrypted-media; picture-in-picture; fullscreen" allowFullScreen style={{ width: '100%', aspectRatio: '16/9', border: 0, display: 'block' }} />
+        <div className="vp-bar"><div className="vp-row">
+          <button className="vp-btn" disabled={!hasPrev} onClick={onPrev}>⏮</button>
+          <span className="vp-time">YouTube video</span><span className="vp-spacer" />
+          {!free && !progress?.completed && <button className="vp-btn vp-main" onClick={() => onProgress(100, true)}>✓ Darsni tugatdim</button>}
+          <button className="vp-btn" disabled={!hasNext || (!free && !progress?.completed)} onClick={onNext}>⏭</button>
+        </div></div>
+      </div>
+    );
+  }
+  const el = () => videoRef.current;
+  // Oldinga o'tkazish faqat allaqachon ko'rilgan qismgacha (admin ko'rigida — cheklovsiz)
+  const limit = () => (free ? Infinity : maxAllowed.current * (el()?.duration || 0) + 0.5);
+  const togglePlay = () => { const v = el(); if (!v) return; if (v.paused) v.play(); else v.pause(); };
+  const seekTo = (t) => { const v = el(); if (!v || !v.duration) return; v.currentTime = Math.max(0, Math.min(t, limit(), v.duration)); };
+  const skip = (d) => seekTo((el()?.currentTime || 0) + d);
 
+  const onMeta = () => {
+    const v = el(); setDur(v.duration);
+    const start = maxAllowed.current < 0.95 ? maxAllowed.current * v.duration : 0;   // qolgan joydan davom ettirish
+    if (!free && start > 3) v.currentTime = start - 1;
+  };
   const onTimeUpdate = () => {
-    const v = videoRef.current;
-    if (!v || !v.duration) return;
+    const v = el(); if (!v || !v.duration) return;
+    setCur(v.currentTime);
     const frac = v.currentTime / v.duration;
+    if (free) { setPct(Math.round(frac * 100)); return; }
     if (frac > maxAllowed.current) maxAllowed.current = frac;
-    const newPct = Math.round(maxAllowed.current * 100);
-    setPct(newPct);
-    onProgress(newPct, newPct >= 95);
+    const p = Math.round(maxAllowed.current * 100);
+    setPct(p);
+    onProgress(p, p >= 95);
   };
-
-  // Oldinga o'tkazib yuborish (seek) taqiqlanadi — faqat pauza/davom va ovoz ruxsat etiladi.
   const onSeeking = () => {
-    const v = videoRef.current;
-    if (!v) return;
-    const allowedTime = maxAllowed.current * v.duration + 0.5;
-    if (v.currentTime > allowedTime) v.currentTime = allowedTime;
+    const v = el(); if (!v || free) return;
+    const a = maxAllowed.current * v.duration + 0.5;
+    if (v.currentTime > a) v.currentTime = a;
   };
-
-  const clickScrub = (e) => {
-    const v = videoRef.current;
-    if (!v || !v.duration) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    const frac = (e.clientX - rect.left) / rect.width;
-    if (frac <= maxAllowed.current) v.currentTime = frac * v.duration; // faqat allaqachon ko'rilgan qismga o'tish mumkin
+  const scrub = (e) => {
+    const v = el(); if (!v || !v.duration) return;
+    const r = trackRef.current.getBoundingClientRect();
+    seekTo(((e.clientX - r.left) / r.width) * v.duration);
   };
+  const setVolume = (x) => { const v = el(); v.volume = x; v.muted = x === 0; setVol(x); setMuted(x === 0); };
+  const toggleMute = () => { const v = el(); v.muted = !v.muted; setMuted(v.muted); };
+  const changeRate = (r) => { el().playbackRate = r; setRate(r); setMenu(false); };
+  const toggleFs = () => {
+    if (document.fullscreenElement) document.exitFullscreen();
+    else if (boxRef.current && boxRef.current.requestFullscreen) boxRef.current.requestFullscreen();
+  };
+  const replay = () => { const v = el(); v.currentTime = 0; v.play(); };
+  const onKey = (e) => {
+    const k = e.key;
+    if (e.target.tagName === 'INPUT' || (e.target.tagName === 'BUTTON' && k === ' ')) return;
+    if (k === ' ' || k === 'k' || k === 'K') { e.preventDefault(); togglePlay(); }
+    else if (k === 'ArrowLeft') { e.preventDefault(); skip(-10); }
+    else if (k === 'ArrowRight') { e.preventDefault(); skip(10); }
+    else if (k === 'ArrowUp') { e.preventDefault(); setVolume(Math.min(1, vol + 0.1)); }
+    else if (k === 'ArrowDown') { e.preventDefault(); setVolume(Math.max(0, vol - 0.1)); }
+    else if (k === 'm' || k === 'M') toggleMute();
+    else if (k === 'f' || k === 'F') toggleFs();
+  };
+  const nextReady = hasNext && (free || pct >= 95);
 
   return (
-    <div className="bg-ink rounded-xl overflow-hidden">
-      <div className="relative">
-        <video ref={videoRef} src={DEMO_VIDEO} className="w-full aspect-video bg-black" controls={false}
-          onTimeUpdate={onTimeUpdate} onSeeking={onSeeking} onEnded={() => onProgress(100, true)}
-          onContextMenu={(e) => e.preventDefault()} disablePictureInPicture controlsList="nodownload noplaybackrate nofullscreen" />
-      </div>
-      <div className="px-4 py-3">
-        <div onClick={clickScrub} className="h-1.5 w-full bg-white/15 rounded-full cursor-pointer relative mb-3">
-          <div className="h-full bg-gold rounded-full" style={{ width: `${pct}%` }} />
-        </div>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3 text-white">
-            <button onClick={togglePlay} className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20">
-              {playing ? <Icon.pause /> : <Icon.play />}
-            </button>
-            <Icon.vol />
-            <input type="range" min="0" max="1" step="0.05" defaultValue="1"
-              onChange={(e) => { if (videoRef.current) videoRef.current.volume = e.target.value; }} className="w-20 accent-gold" />
-            <span className="text-xs text-white/50">{lesson.title}</span>
+    <div className="vp" ref={boxRef} tabIndex={0} onKeyDown={onKey}>
+      <div style={{ position: 'relative' }}>
+        <video ref={videoRef} src={lesson.videoUrl || DEMO_VIDEO} controls={false}
+          onClick={togglePlay} onLoadedMetadata={onMeta} onTimeUpdate={onTimeUpdate} onSeeking={onSeeking}
+          onPlay={() => { setPlaying(true); setEnded(false); }} onPause={() => setPlaying(false)}
+          onEnded={() => { setPlaying(false); setEnded(true); if (!free) onProgress(100, true); }}
+          onContextMenu={(e) => e.preventDefault()} disablePictureInPicture controlsList="nodownload" />
+        {ended && (
+          <div className="vp-end">
+            <button className="vp-btn" onClick={replay}>↻ Qayta ko'rish</button>
+            {hasNext && <button className="vp-btn vp-main" onClick={onNext}>Keyingi dars →</button>}
           </div>
-          <div className="flex items-center gap-3">
-            <span className="text-xs text-white/50">{pct}% ko'rildi</span>
-            {pct >= 95 && hasNext && <button onClick={onNext} className="text-xs bg-gold text-ink px-3 py-1.5 rounded-lg font-medium">Keyingi dars →</button>}
+        )}
+      </div>
+      <div className="vp-bar">
+        <div className="vp-track" ref={trackRef} onClick={scrub}>
+          {!free && <div className="vp-allowed" style={{ width: `${pct}%` }} />}
+          <div className="vp-played" style={{ width: dur ? `${(cur / dur) * 100}%` : '0%' }} />
+        </div>
+        <div className="vp-row">
+          <button className="vp-btn" disabled={!hasPrev} onClick={onPrev} title="Oldingi dars">⏮</button>
+          <button className="vp-btn" onClick={() => skip(-10)} title="10 soniya orqaga (←)">↺10</button>
+          <button className="vp-btn vp-main" onClick={togglePlay} title="Ijro / pauza (Space)">{playing ? <Icon.pause /> : <Icon.play />}</button>
+          <button className="vp-btn" onClick={() => skip(10)} title={free ? '10 soniya oldinga (→)' : "10 soniya oldinga — faqat ko'rilgan qismgacha (→)"}>10↻</button>
+          <button className="vp-btn" onClick={toggleMute} title="Ovoz (M)">{muted || vol === 0 ? '🔇' : <Icon.vol />}</button>
+          <input className="vp-vol" type="range" min="0" max="1" step="0.05" value={muted ? 0 : vol} onChange={(e) => setVolume(Number(e.target.value))} />
+          <span className="vp-time">{fmtClock(cur)} / {fmtClock(dur)}</span>
+          <span className="vp-spacer" />
+          {!free && <span className="vp-time">{pct}% ko'rildi</span>}
+          <div className="vp-menuwrap">
+            <button className="vp-btn" onClick={() => setMenu(!menu)} title="Tezlik">{rate}x</button>
+            {menu && (
+              <div className="vp-menu">
+                {VP_SPEEDS.map((r) => <button key={r} className={r === rate ? 'on' : ''} onClick={() => changeRate(r)}>{r === 1 ? 'Oddiy' : `${r}x`}</button>)}
+              </div>
+            )}
           </div>
+          <button className="vp-btn" onClick={toggleFs} title="To'liq ekran (F)">{fs ? '⤡' : '⛶'}</button>
+          <button className={`vp-btn ${nextReady ? 'vp-main' : ''}`} disabled={!nextReady} onClick={onNext} title={free ? 'Keyingi dars' : "Keyingi dars — 95% ko'rilgach ochiladi"}>⏭</button>
         </div>
       </div>
+      <div className="vp-hint">Space — ijro/pauza · ← → — 10 soniya · ↑ ↓ — ovoz · M — ovozsiz · F — to'liq ekran</div>
     </div>
   );
 }
