@@ -572,6 +572,10 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   }
   .monthly-chart-year:focus { border-color: #CC8B65; box-shadow: none; }
   .monthly-chart-svg { width: 100%; height: auto; display: block; }
+  /* Dashboard chart kartasi: kirganda pastdan yumshoq ko'tarilib paydo bo'ladi */
+  @keyframes chartCardIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+  .chart-enter { animation: chartCardIn .6s cubic-bezier(.2,.7,.2,1) both; }
+  @media (prefers-reduced-motion: reduce) { .chart-enter { animation: none; } }
   .monthly-chart-scroll { width: 100%; overflow: hidden; }
   /* Chartdagi matn/chiziqlar — ikkala rejimda ham (light/dark) bir xil o'qilishi uchun CSS orqali beriladi */
   .chart-grid-line { stroke: rgba(1,51,40,.08); }
@@ -1532,7 +1536,9 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   .sd-backdrop{ position:fixed; inset:0; background:var(--sd-backdrop); -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; padding:1rem; z-index:999; }
   .sd-modal{ width:100%; max-width:400px; background:var(--sd-modal); border:1px solid var(--sd-line); border-radius:1.1rem; box-shadow:var(--sd-shadow); padding:1.4rem; color:var(--sd-text); font-family:'Manrope', sans-serif; max-height:90vh; overflow-y:auto; }
   .sd-modal-lg{ max-width:460px; }
-  .sd-title{ display:flex; align-items:center; gap:.5rem; font-size:1.1rem; font-weight:800; color:var(--sd-text); margin-bottom:1.1rem; }
+  .sd-title{ display:flex; align-items:center; gap:.65rem; font-size:1.1rem; font-weight:800; color:var(--sd-text); margin-bottom:1.1rem; }
+  .sd-title-icon{ display:inline-flex; align-items:center; justify-content:center; width:2rem; height:2rem; border-radius:.65rem; flex-shrink:0; background:rgba(204,139,101,.16); color:#ac6a45; }
+  .sd-title-icon.is-danger{ background:rgba(239,68,68,.14); color:var(--c-red); }
   .sd-field{ margin-bottom:.95rem; }
   .sd-label{ display:block; font-size:.68rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:var(--sd-muted); margin-bottom:.4rem; }
   .sd-input, .sd-select, .sd-textarea{ width:100%; background:var(--sd-field); border:1px solid var(--sd-line); border-radius:.55rem; padding:.62rem .75rem; font-size:.9rem; color:var(--sd-text); outline:none; transition:border-color .15s ease; }
@@ -2150,6 +2156,8 @@ const Icon = {
   search: (p) => (<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>),
   image: (p) => (<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.7"/><path d="m21 16-5.5-5.5L4 21"/></svg>),
   camera: (p) => (<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M4 8a2 2 0 0 1 2-2h1.2l1-1.6A2 2 0 0 1 9.9 3.5h4.2a2 2 0 0 1 1.7.9L17 6h1a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8Z"/><circle cx="12" cy="13" r="3.5"/></svg>),
+  cap: (p) => (<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M2 9l10-5 10 5-10 5-10-5Z"/><path d="M6 11.5V16c0 1.4 2.7 3 6 3s6-1.6 6-3v-4.5"/><path d="M22 9v5"/></svg>),
+  key: (p) => (<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><circle cx="8" cy="15" r="4"/><path d="M11 12l9-9"/><path d="M16 7l3 3"/><path d="M14 9l2 2"/></svg>),
 };
 const CATEGORY_STYLES = [
   { bg: 'rgba(204,139,101,.14)', fg: '#9C7A22', icon: Icon.layers },
@@ -2288,6 +2296,32 @@ function ComboBarLineChart({ data, barLabel, lineLabel, barColor = '#4F7DF3', li
 }
 
 /* =========================================================================
+   ANIMATSIYA YORDAMCHILARI — Dashboard'ga kirganda chart "jonlanib" chiqishi uchun
+   (komponent har safar qayta mount bo'lganda — ya'ni Dashboard'ga kirilganda — qaytadan ijro etiladi)
+   ========================================================================= */
+const REV_ANIM_MS = 750 + 12 * 90;               // umumiy davomiylik (ustunlar birin-ketin o'sadi)
+const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
+const clamp01 = (t) => Math.max(0, Math.min(1, t));
+function useMountAnimation(duration) {
+  const reduced = typeof window !== 'undefined' && window.matchMedia
+    && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const [ms, setMs] = useState(reduced ? duration : 0);
+  useEffect(() => {
+    if (reduced) return undefined;
+    let raf = 0, start = null;
+    const tick = (ts) => {
+      if (start === null) start = ts;
+      const elapsed = Math.min(duration, ts - start);
+      setMs(elapsed);
+      if (elapsed < duration) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+  return ms;
+}
+
+/* =========================================================================
    COURSE REVENUE CHART (har bir kursdan tushayotgan pul, avtomatik o'sadigan shkala)
    ========================================================================= */
 function CourseRevenueChart({ revenue }) {
@@ -2300,6 +2334,12 @@ function CourseRevenueChart({ revenue }) {
     window.addEventListener('resize', onResize);
     return () => window.removeEventListener('resize', onResize);
   }, []);
+
+  /* Kirish animatsiyasi: ustunlar pastdan birin-ketin o'sadi, setka/yozuvlar paydo bo'ladi, "Jami" sanaladi */
+  const ms = useMountAnimation(REV_ANIM_MS);
+  const gridP = easeOutCubic(clamp01(ms / 450));
+  const barP = (i) => easeOutCubic(clamp01((ms - Math.min(i, 12) * 90) / 750));
+  const labelP = (i) => easeOutCubic(clamp01((ms - Math.min(i, 12) * 90) / 450));
 
   if (data.length === 0) {
     return (
@@ -2342,32 +2382,73 @@ function CourseRevenueChart({ revenue }) {
     tipTopPct = (yFor(hovered.amount) / height) * 100;
   }
 
+  /* MOBIL: gorizontal ustunlar — kurs nomlari chapda o'qiladigan, bir-birining ustiga tushmaydigan qilib joylashadi */
+  if (isMobile) {
+    const mW = 400, rowH = 36, barH = 16;
+    const mPad = { top: 6, right: 52, bottom: 26, left: 96 };
+    const mInnerW = mW - mPad.left - mPad.right;
+    const mH = mPad.top + rowH * n + mPad.bottom;
+    const xFor = (v) => mPad.left + (v / niceMax) * mInnerW;
+    const mShort = (s) => (s.length > 13 ? s.slice(0, 12) + '…' : s);
+    return (
+      <div className="monthly-chart-card chart-enter">
+        <div className="monthly-chart-head">
+          <h3 className="monthly-chart-title"><span className="monthly-chart-accent" />KURSLARDAN TUSHUM</h3>
+          <span className="monthly-chart-total">Jami: {fmtMoney(revenue.total * easeOutCubic(clamp01(ms / 1400)))}</span>
+        </div>
+        <div className="monthly-chart-scroll">
+          <svg viewBox={`0 0 ${mW} ${mH}`} className="monthly-chart-svg" preserveAspectRatio="xMidYMid meet" style={{ overflow: 'visible' }}>
+            {tickVals.map((v, i) => (
+              <g key={i} opacity={gridP}>
+                <line x1={xFor(v)} x2={xFor(v)} y1={mPad.top} y2={mH - mPad.bottom} className="chart-grid-line" strokeWidth="1" />
+                <text x={xFor(v)} y={mH - mPad.bottom + 16} textAnchor={i === 0 ? 'start' : i === tickVals.length - 1 ? 'end' : 'middle'}
+                  fontSize="10" className="chart-axis-label">{fmtMoneyShort(v)}</text>
+              </g>
+            ))}
+            {data.map((d, i) => {
+              const cy = mPad.top + rowH * i + rowH / 2;
+              const w = Math.max(0, (xFor(d.amount) - mPad.left) * barP(i));
+              return (
+                <g key={d.id}>
+                  <text x={mPad.left - 8} y={cy + 4} textAnchor="end" fontSize="11" fontWeight="600" className="chart-name-label" opacity={labelP(i)}>{mShort(d.name)}</text>
+                  <rect x={mPad.left} y={cy - barH / 2} width={w} height={barH} rx="6" fill={barColor(i)} />
+                  <text x={mPad.left + w + 6} y={cy + 4} fontSize="10.5" fontWeight="700" className="chart-name-label" opacity={labelP(i)}>{fmtMoneyShort(d.amount)}</text>
+                </g>
+              );
+            })}
+          </svg>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="monthly-chart-card">
+    <div className="monthly-chart-card chart-enter">
       <div className="monthly-chart-head">
         <h3 className="monthly-chart-title"><span className="monthly-chart-accent" />KURSLARDAN TUSHUM</h3>
-        <span className="monthly-chart-total">Jami: {fmtMoney(revenue.total)}</span>
+        <span className="monthly-chart-total">Jami: {fmtMoney(revenue.total * easeOutCubic(clamp01(ms / 1400)))}</span>
       </div>
       <div className="chart-tooltip-anchor">
       <div className="monthly-chart-scroll">
         <svg viewBox={`0 0 ${width} ${height}`} className="monthly-chart-svg" preserveAspectRatio="xMidYMid meet" style={{ overflow: 'visible' }}>
           {tickVals.map((v, i) => (
-            <g key={i}>
+            <g key={i} opacity={gridP}>
               <line x1={padding.left} x2={width - padding.right} y1={yFor(v)} y2={yFor(v)} className="chart-grid-line" strokeWidth="1" />
               <text x={padding.left - 10} y={yFor(v) + 3.5} textAnchor="end" fontSize={axisFontSize} className="chart-axis-label">{fmtMoneyShort(v)}</text>
             </g>
           ))}
           {data.map((d, i) => {
             const x = padding.left + bandW * i + (bandW - barW) / 2;
-            const y = yFor(d.amount);
-            const h = padding.top + innerH - y;
+            const fullH = padding.top + innerH - yFor(d.amount);
+            const h = Math.max(0, fullH * barP(i));          // animatsiya: 0 -> to'liq balandlik
+            const y = padding.top + innerH - h;
             return (
-              <rect key={d.id} x={x} y={y} width={barW} height={Math.max(0, h)} rx="7" fill={barColor(i)}
+              <rect key={d.id} x={x} y={y} width={barW} height={h} rx="7" fill={barColor(i)}
                 opacity={hoverIdx == null || hoverIdx === i ? 1 : 0.55} style={{ transition: 'opacity .15s ease' }} />
             );
           })}
           {data.map((d, i) => (
-            <text key={`x${d.id}`} x={padding.left + bandW * i + bandW / 2} y={height - padding.bottom + 18} textAnchor="middle" fontSize={nameFontSize} className="chart-name-label">
+            <text key={`x${d.id}`} x={padding.left + bandW * i + bandW / 2} y={height - padding.bottom + 18} textAnchor="middle" fontSize={nameFontSize} className="chart-name-label" opacity={labelP(i)}>
               {shortName(d.name)}
             </text>
           ))}
@@ -3237,6 +3318,16 @@ function CoursesManager({ categories, setCategories, canEdit, notify, students, 
         <p className="text-slate text-sm mb-6">{activeCat.subtitle || `${activeCat.subtopics.length} bo'lim`}</p>
 
         <div className="topic-list">
+          {canEdit && (
+            <button onClick={() => setAddSubModalFor(activeCat.id)} className="topic-row topic-row-add">
+              <span className="topic-row-icon"><Icon.plus width="18" height="18" /></span>
+              <div className="topic-row-body text-left">
+                <div className="topic-row-name">Yangi bo'lim qo'shish</div>
+                <div className="topic-row-meta">Masalan: TypeScript</div>
+              </div>
+            </button>
+          )}
+
           {activeCat.subtopics.map((sub, si) => (
             <button key={sub.id} onClick={() => setOpenSub(sub.id)} className="topic-row">
               <div className={`topic-row-icon ${!sub.image ? `topic-grad-${si % 6}` : ''}`}>
@@ -3253,23 +3344,13 @@ function CoursesManager({ categories, setCategories, canEdit, notify, students, 
             </button>
           ))}
 
-          {canEdit && (
-            <button onClick={() => setAddSubModalFor(activeCat.id)} className="topic-row topic-row-add">
-              <span className="topic-row-icon"><Icon.plus width="18" height="18" /></span>
-              <div className="topic-row-body text-left">
-                <div className="topic-row-name">Yangi bo'lim qo'shish</div>
-                <div className="topic-row-meta">Masalan: TypeScript</div>
-              </div>
-            </button>
-          )}
-
           {activeCat.subtopics.length === 0 && !canEdit && (
             <p className="text-sm text-slate p-4">Hali bo'lim qo'shilmagan.</p>
           )}
         </div>
 
         {addSubModalFor && (
-          <SdModal title="Yangi bo'lim qo'shish" icon="📚" onClose={() => { setAddSubModalFor(null); setNewSubImage({ ...newSubImage, [addSubModalFor]: '' }); }}>
+          <SdModal title="Yangi bo'lim qo'shish" icon="book" onClose={() => { setAddSubModalFor(null); setNewSubImage({ ...newSubImage, [addSubModalFor]: '' }); }}>
             <p className="sd-confirm-text">
               <b>{activeCat.name}</b> kursiga yangi bo'lim qo'shing (masalan: TypeScript).
             </p>
@@ -3612,7 +3693,7 @@ function SdModal({ title, icon, onClose, children, size }) {
   return ReactDOM.createPortal(
     <div className="sd-backdrop" onClick={onClose}>
       <div className={`sd-modal ${size === 'lg' ? 'sd-modal-lg' : ''}`} onClick={(e) => e.stopPropagation()}>
-        <div className="sd-title">{icon ? <span>{icon}</span> : null}<span>{title}</span></div>
+        <div className="sd-title">{icon ? <span className={`sd-title-icon ${icon === 'warn' ? 'is-danger' : ''}`}>{Icon[icon] ? React.createElement(Icon[icon], { width: 18, height: 18 }) : icon}</span> : null}<span>{title}</span></div>
         {children}
       </div>
     </div>,
@@ -3773,10 +3854,10 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
     if (!entries.length) return { cls: 'stu-pill-mut', text: 'Kurs biriktirilmagan' };
     const b = studentBilling(s, categories);
     if (b.blocked) {
-      if (b.paid > 0) return { cls: 'stu-pill-part', text: `⚠️ Qisman: ${fmtMoney(b.blockedDebt)} qarz` };
+      if (b.paid > 0) return { cls: 'stu-pill-part', icon: 'warn', text: `Qisman: ${fmtMoney(b.blockedDebt)} qarz` };
       return { cls: 'stu-pill-debt', text: `Qarzdor: ${fmtMoney(b.blockedDebt)}` };
     }
-    if (entries.every(([, a]) => a.isFullyPaid) || (b.total > 0 && b.debt === 0)) return { cls: 'stu-pill-paid', text: "To'langan ✅" };
+    if (entries.every(([, a]) => a.isFullyPaid) || (b.total > 0 && b.debt === 0)) return { cls: 'stu-pill-paid', icon: 'check', text: "To'langan" };
     return { cls: 'stu-pill-part', text: `Keyingi to'lov: ${fmtDate(b.nextDate)}` };
   };
 
@@ -3819,7 +3900,7 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
                 <div className="stu-meta">
                   <span>{metaOf(s)}</span>
                   <span>·</span>
-                  <span className={`stu-pill ${st.cls}`}>{st.text}</span>
+                  <span className={`stu-pill ${st.cls}`}>{st.icon && Icon[st.icon] ? React.createElement(Icon[st.icon], { width: 12, height: 12 }) : null}{st.text}</span>
                 </div>
               </div>
               <div className="stu-acts">
@@ -3859,7 +3940,7 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
 
       {/* ---------- Yangi o'quvchi ---------- */}
       {showAdd && (
-        <SdModal title={created ? "O'quvchi qo'shildi" : "Yangi o'quvchi"} icon="🎓" onClose={resetAdd}>
+        <SdModal title={created ? "O'quvchi qo'shildi" : "Yangi o'quvchi"} icon="cap" onClose={resetAdd}>
           {!created && (
             <React.Fragment>
               <div className="sd-field">
@@ -3910,7 +3991,7 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
                 <button className="sd-btn sd-btn-ghost" onClick={resetAdd}>Yopish</button>
                 <button className="sd-btn sd-btn-primary"
                   onClick={() => copyText(`Login: ${created.username}\nParol: ${created.password}`, setCopied)}>
-                  {copied ? 'Nusxalandi ✓' : 'Nusxalash'}
+                  {copied ? <React.Fragment><Icon.check width="13" height="13" /> Nusxalandi</React.Fragment> : 'Nusxalash'}
                 </button>
               </div>
             </React.Fragment>
@@ -3920,7 +4001,7 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
 
       {/* ---------- O'chirishni tasdiqlash ---------- */}
       {delStu && (
-        <SdModal title="O'quvchini o'chirish" icon="⚠️" onClose={() => setDelStu(null)}>
+        <SdModal title="O'quvchini o'chirish" icon="warn" onClose={() => setDelStu(null)}>
           <p className="sd-confirm-text"><b>{delStu.name}</b> ro'yxatdan o'chirilsinmi? Bu amalni ortga qaytarib bo'lmaydi.</p>
           <div className="sd-foot">
             <button className="sd-btn sd-btn-ghost" onClick={() => setDelStu(null)}>Bekor qilish</button>
@@ -3931,7 +4012,7 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
 
       {/* ---------- Login va parol ---------- */}
       {credsFor && (
-        <SdModal title="Login va parol" icon="🔐" onClose={() => setCredsFor(null)}>
+        <SdModal title="Login va parol" icon="lock" onClose={() => setCredsFor(null)}>
           <p className="sd-hint" style={{ marginTop: 0, marginBottom: '.8rem' }}>
             {credsFor.name} tizimga shu login va parol orqali kiradi.
           </p>
@@ -3949,7 +4030,7 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
             <button className="sd-btn sd-btn-ghost" onClick={() => setCredsFor(null)}>Yopish</button>
             <button className="sd-btn sd-btn-primary"
               onClick={() => copyText(`Login: ${credsFor.username}\nParol: ${credsFor.password}`, setCredsCopied)}>
-              <Icon.copy width="13" height="13" /> {credsCopied ? 'Nusxalandi ✓' : 'Nusxalash'}
+              {credsCopied ? <Icon.check width="13" height="13" /> : <Icon.copy width="13" height="13" />} {credsCopied ? 'Nusxalandi' : 'Nusxalash'}
             </button>
           </div>
         </SdModal>
@@ -3988,10 +4069,10 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
             </div>
           </div>
           {already && (
-            <div className="pay-warn">⚠️ {payMonth} {payYear} oyi uchun to'lov allaqachon amalga oshirilgan. Faqat "+" tugmasi orqali qo'shimcha summa kiritishingiz mumkin.</div>
+            <div className="pay-warn"><Icon.warn width="14" height="14" style={{ verticalAlign: '-2px', marginRight: 6 }} />{payMonth} {payYear} oyi uchun to'lov allaqachon amalga oshirilgan. Faqat "+" tugmasi orqali qo'shimcha summa kiritishingiz mumkin.</div>
           )}
           {over && (
-            <div className="pay-warn">⚠️ O'quvchining qarzi faqat {groupDigits(left) || 0} so'm. Ko'proq kiritmoqchi bo'lsangiz, ortiqcha qismini "+" tugmasi orqali qo'shimcha summa sifatida yozing.</div>
+            <div className="pay-warn"><Icon.warn width="14" height="14" style={{ verticalAlign: '-2px', marginRight: 6 }} />O'quvchining qarzi faqat {groupDigits(left) || 0} so'm. Ko'proq kiritmoqchi bo'lsangiz, ortiqcha qismini "+" tugmasi orqali qo'shimcha summa sifatida yozing.</div>
           )}
           {payExtraOpen && (
             <React.Fragment>
@@ -4032,7 +4113,7 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
 
       {/* ---------- To'lov so'rash / xabar ---------- */}
       {alertFor && (
-        <SdModal title={`${alertFor.name} ga xabar`} icon="💬" size="lg" onClose={() => setAlertFor(null)}>
+        <SdModal title={`${alertFor.name} ga xabar`} icon="msg" size="lg" onClose={() => setAlertFor(null)}>
           <div className="sd-field">
             <label className="sd-label">Xabar matni</label>
             <textarea className="sd-textarea" rows={5} value={alertText}
@@ -4310,7 +4391,7 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
   const [avaBg, avaFg] = avaColor(student.id || student.name);
 
   const status = (actives.length && totalFee > 0 && paidSum >= totalFee)
-    ? { cls: 'stu-pill-paid', text: "To'langan ✅" }
+    ? { cls: 'stu-pill-paid', icon: 'check', text: "To'langan" }
     : overdueSum
       ? { cls: 'stu-pill-debt', text: `Qarzdor: ${fmtMoney(overdueSum)}` }
       : actives.length
@@ -4340,7 +4421,7 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
             </div>
           </div>
 
-          <span className={`stu-pill ${status.cls}`}>{status.text}</span>
+          <span className={`stu-pill ${status.cls}`}>{status.icon && Icon[status.icon] ? React.createElement(Icon[status.icon], { width: 12, height: 12 }) : null}{status.text}</span>
 
           <div className="ed-divider" />
 
@@ -4557,7 +4638,7 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
                             <div className="ed-warn" style={{ display: 'flex', flexDirection: 'column', gap: '.6rem' }}>
                               {reasons.includes('frozen') && (
                                 <div className="flex items-center justify-between gap-3 flex-wrap">
-                                  <span>⏸ Bu kurs administratsiya tomonidan <b>vaqtincha muzlatilgan</b>.</span>
+                                  <span><Icon.pause width="13" height="13" style={{ verticalAlign: '-2px', marginRight: 6 }} />Bu kurs administratsiya tomonidan <b>vaqtincha muzlatilgan</b>.</span>
                                   {canEdit && (
                                     <button onClick={() => setFreezeState(cat, false, true)} className="text-xs font-semibold px-3 py-1.5 rounded-lg shrink-0" style={{ background: '#2E6F4E', color: '#fff' }}>
                                       Muzlatishni bekor qilish
@@ -4567,7 +4648,7 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
                               )}
                               {reasons.includes('manual') && (
                                 <div className="flex items-center justify-between gap-3 flex-wrap">
-                                  <span>⚠ Bu kurs administratsiya tomonidan <b>qo'lda bloklangan</b>.</span>
+                                  <span><Icon.warn width="13" height="13" style={{ verticalAlign: '-2px', marginRight: 6 }} />Bu kurs administratsiya tomonidan <b>qo'lda bloklangan</b>.</span>
                                   {canEdit && (
                                     <button onClick={() => setBlockState(cat, false, true)} className="text-xs font-semibold px-3 py-1.5 rounded-lg shrink-0" style={{ background: '#2E6F4E', color: '#fff' }}>
                                       Blokni ochish
@@ -4577,7 +4658,7 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
                               )}
                               {reasons.includes('payment') && (
                                 <div className="flex items-center justify-between gap-3 flex-wrap">
-                                  <span>⚠ Bu kurs <b>to'lov muddati o'tgani</b> uchun bloklangan. Blok faqat to'lov qilingandan keyin avtomatik ochiladi.</span>
+                                  <span><Icon.warn width="13" height="13" style={{ verticalAlign: '-2px', marginRight: 6 }} />Bu kurs <b>to'lov muddati o'tgani</b> uchun bloklangan. Blok faqat to'lov qilingandan keyin avtomatik ochiladi.</span>
                                   {canEdit && (
                                     <button onClick={() => openPayModal(cat)} className="text-xs font-semibold px-3 py-1.5 rounded-lg shrink-0" style={{ background: '#2E6F4E', color: '#fff' }}>
                                       To'lov qilish
@@ -4587,7 +4668,7 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
                               )}
                               {reasons.includes('attendance') && (
                                 <div className="flex items-center justify-between gap-3 flex-wrap">
-                                  <span>⚠ Bu kurs <b>darslik nazorati</b> tufayli bloklangan — oxirgi {ATTEND_WINDOW_DAYS} kunda {attn.penaltyPoints}/{attn.maxPenaltyPoints} dars kuni o'tkazib yuborilgan.</span>
+                                  <span><Icon.warn width="13" height="13" style={{ verticalAlign: '-2px', marginRight: 6 }} />Bu kurs <b>darslik nazorati</b> tufayli bloklangan — oxirgi {ATTEND_WINDOW_DAYS} kunda {attn.penaltyPoints}/{attn.maxPenaltyPoints} dars kuni o'tkazib yuborilgan.</span>
                                   {canEdit && (
                                     <button onClick={() => setAttnUnblockConfirm(cat)} className="text-xs font-semibold px-3 py-1.5 rounded-lg shrink-0" style={{ background: '#2E6F4E', color: '#fff' }}>
                                       Blokni ochish (nazorat)
@@ -4647,7 +4728,7 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
                       <div className="ed-warn" style={{ display: 'flex', flexDirection: 'column', gap: '.6rem' }}>
                         {reasons.includes('payment') && (
                           <div className="flex items-center justify-between gap-3 flex-wrap">
-                            <span>⚠ Bu kurs <b>to'lov muddati o'tgani</b> uchun bloklangan. Blok faqat to'lov qilingandan keyin avtomatik ochiladi — to'lovsiz blokni ochib bo'lmaydi.</span>
+                            <span><Icon.warn width="13" height="13" style={{ verticalAlign: '-2px', marginRight: 6 }} />Bu kurs <b>to'lov muddati o'tgani</b> uchun bloklangan. Blok faqat to'lov qilingandan keyin avtomatik ochiladi — to'lovsiz blokni ochib bo'lmaydi.</span>
                             {canEdit && (
                               <button onClick={() => openPayModal(cat)} className="text-xs font-semibold px-3 py-1.5 rounded-lg shrink-0" style={{ background: '#2E6F4E', color: '#fff' }}>
                                 To'lov qilish
@@ -4657,7 +4738,7 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
                         )}
                         {reasons.includes('attendance') && (
                           <div className="flex items-center justify-between gap-3 flex-wrap">
-                            <span>⚠ Bu kurs <b>darslik nazorati</b> tufayli bloklangan — oxirgi {ATTEND_WINDOW_DAYS} kunda {attn.penaltyPoints}/{attn.maxPenaltyPoints} dars kuni o'tkazib yuborilgan.</span>
+                            <span><Icon.warn width="13" height="13" style={{ verticalAlign: '-2px', marginRight: 6 }} />Bu kurs <b>darslik nazorati</b> tufayli bloklangan — oxirgi {ATTEND_WINDOW_DAYS} kunda {attn.penaltyPoints}/{attn.maxPenaltyPoints} dars kuni o'tkazib yuborilgan.</span>
                             {canEdit && (
                               <button onClick={() => setAttnUnblockConfirm(cat)} className="text-xs font-semibold px-3 py-1.5 rounded-lg shrink-0" style={{ background: '#2E6F4E', color: '#fff' }}>
                                 Blokni ochish (nazorat)
@@ -4676,7 +4757,7 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
       </div>
 
       {pwConfirm && (
-        <SdModal title="Parolni o'zgartirish" icon="🔑" onClose={() => setPwConfirm(false)}>
+        <SdModal title="Parolni o'zgartirish" icon="key" onClose={() => setPwConfirm(false)}>
           <p className="sd-confirm-text"><b>{student.name}</b> uchun yangi tasodifiy parol yaratilsinmi? Eski parol ishlamay qoladi, login o'zgarmaydi.</p>
           <div className="sd-foot">
             <button className="sd-btn sd-btn-ghost" onClick={() => setPwConfirm(false)}>Bekor qilish</button>
@@ -4686,7 +4767,7 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
       )}
 
       {attnUnblockConfirm && (
-        <SdModal title="Blokni ochish" icon="⚠️" onClose={() => setAttnUnblockConfirm(null)}>
+        <SdModal title="Blokni ochish" icon="warn" onClose={() => setAttnUnblockConfirm(null)}>
           <p className="sd-confirm-text">
             <b>«{attnUnblockConfirm.name}»</b> kursidagi <b>darslik nazorati bloki</b> olib tashlansinmi?
             To'plangan jarima ballari nolga tushiriladi va o'quvchi kursga darhol qayta kira oladi.
@@ -4702,7 +4783,7 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
       )}
 
       {freezeConfirm && (
-        <SdModal title="Kursni muzlatish" icon="⏸️" onClose={() => setFreezeConfirm(null)}>
+        <SdModal title="Kursni muzlatish" icon="pause" onClose={() => setFreezeConfirm(null)}>
           <p className="sd-confirm-text">
             <b>{form.name}</b> uchun <b>«{freezeConfirm.name}»</b> kursi vaqtincha muzlatilsinmi?
             O'quvchi bu kursga muzlatish bekor qilinguncha kira olmaydi.
@@ -4724,7 +4805,7 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
       )}
 
       {blockConfirm && (
-        <SdModal title="Kursni bloklash" icon="🔒" onClose={() => setBlockConfirm(null)}>
+        <SdModal title="Kursni bloklash" icon="lock" onClose={() => setBlockConfirm(null)}>
           <p className="sd-confirm-text">
             <b>{form.name}</b> uchun <b>«{blockConfirm.name}»</b> kursi bloklansinmi?
             O'quvchi bu kursga blok ochilguncha kira olmaydi.
@@ -4746,7 +4827,7 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
       )}
 
       {delPay && (
-        <SdModal title="To'lovni o'chirish" icon="⚠️" onClose={() => setDelPay(null)}>
+        <SdModal title="To'lovni o'chirish" icon="warn" onClose={() => setDelPay(null)}>
           <p className="sd-confirm-text"><b>{delPay.month} {delPay.year}</b> uchun <b>{fmtMoney(delPay.amount)}</b>{delPay.extra ? ` (+${fmtMoney(delPay.extra)} qo'shimcha)` : ''} to'lovi o'chirilsinmi? Bu amalni ortga qaytarib bo'lmaydi.</p>
           <p className="sd-hint" style={{ marginTop: 0 }}>Eslatma: to'lov o'chirilgach, agar joriy oy qarzi qayta paydo bo'lsa, o'quvchi yana bloklanadi.</p>
           <div className="sd-foot">
@@ -4824,10 +4905,10 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
             </div>
           </div>
           {gAlready && (
-            <div className="pay-warn">⚠️ {gMonth} {gYear} oyi uchun to'lov allaqachon amalga oshirilgan. Faqat "+" tugmasi orqali qo'shimcha summa kiritishingiz mumkin.</div>
+            <div className="pay-warn"><Icon.warn width="14" height="14" style={{ verticalAlign: '-2px', marginRight: 6 }} />{gMonth} {gYear} oyi uchun to'lov allaqachon amalga oshirilgan. Faqat "+" tugmasi orqali qo'shimcha summa kiritishingiz mumkin.</div>
           )}
           {gOver && (
-            <div className="pay-warn">⚠️ O'quvchining qarzi faqat {groupDigits(gLeft) || 0} so'm. Ko'proq kiritmoqchi bo'lsangiz, ortiqcha qismini "+" tugmasi orqali qo'shimcha summa sifatida yozing.</div>
+            <div className="pay-warn"><Icon.warn width="14" height="14" style={{ verticalAlign: '-2px', marginRight: 6 }} />O'quvchining qarzi faqat {groupDigits(gLeft) || 0} so'm. Ko'proq kiritmoqchi bo'lsangiz, ortiqcha qismini "+" tugmasi orqali qo'shimcha summa sifatida yozing.</div>
           )}
           {gExtraOpen && (
             <React.Fragment>
