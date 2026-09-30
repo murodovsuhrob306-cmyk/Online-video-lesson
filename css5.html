@@ -1070,6 +1070,68 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   .topic-logo-hint { font-size: .74rem; color: var(--sd-muted); line-height: 1.4; }
   .quick-add-card { border: 1.5px dashed rgba(33,150,90,.4); border-radius: 1.1rem; background: rgba(204,139,101,.05); padding: 1.5rem; }
   html.theme-dark .quick-add-card { background: rgba(204,139,101,.07); border-color: rgba(204,139,101,.3); }
+
+  /* ================= Yangi video darslik — trigger + modal ================= */
+  .vu-trigger { display: flex; align-items: center; gap: 1rem; width: 100%; text-align: left; padding: 1rem 1.2rem; border-radius: 1.15rem; border: 1.5px dashed rgba(204,139,101,.55); background: linear-gradient(135deg, rgba(204,139,101,.10), rgba(204,139,101,.03)); cursor: pointer; transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease, background .15s ease; }
+  .vu-trigger:hover { border-color: #cc8b65; transform: translateY(-1px); box-shadow: 0 14px 30px -18px rgba(172,106,69,.55); background: linear-gradient(135deg, rgba(204,139,101,.16), rgba(204,139,101,.05)); }
+  .vu-trigger-ic { width: 46px; height: 46px; border-radius: .95rem; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #e3a985, #cc8b65); color: #fff; flex-shrink: 0; box-shadow: 0 8px 18px -8px rgba(172,106,69,.7); }
+  .vu-trigger-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: .2rem; }
+  .vu-trigger-name { font-size: .96rem; font-weight: 800; color: #ac6a45; }
+  .vu-trigger-meta { font-size: .78rem; color: rgba(1,51,40,.55); }
+  .vu-trigger-plus { width: 34px; height: 34px; border-radius: 999px; display: flex; align-items: center; justify-content: center; background: rgba(204,139,101,.16); color: #ac6a45; flex-shrink: 0; transition: transform .2s ease, background .2s ease, color .2s ease; }
+  .vu-trigger:hover .vu-trigger-plus { transform: rotate(90deg); background: #cc8b65; color: #fff; }
+  html.theme-dark .vu-trigger-name { color: #e3a985; }
+  html.theme-dark .vu-trigger-meta { color: rgba(237,239,246,.5); }
+  html.theme-dark .vu-trigger-plus { color: #e3a985; }
+
+  .sd-modal-xl { max-width: 500px; padding: 1.9rem 1.9rem 1.7rem; }
+  .sd-modal-xl .sd-title { margin-bottom: .4rem; font-size: 1.15rem; }
+  .sd-modal-xl .sd-label { margin-bottom: .55rem; }
+  .sd-modal-xl .sd-input, .sd-modal-xl .sd-select { padding: .78rem .95rem; border-radius: .7rem; }
+  .sd-modal-xl .sd-field { margin-bottom: 1.2rem; }
+  .vu-lead { font-size: .86rem; line-height: 1.5; color: var(--sd-muted); margin: 0 0 1.7rem; }
+  .vu-lead b { color: var(--sd-text); }
+  .vu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 1.1rem; }
+  .vu-span2 { grid-column: 1 / -1; }
+  .vu-range { text-transform: none; letter-spacing: 0; font-weight: 600; opacity: .8; }
+  .vu-info { display: flex; gap: .55rem; align-items: flex-start; font-size: .78rem; line-height: 1.5; color: var(--sd-muted); background: rgba(204,139,101,.09); border: 1px solid rgba(204,139,101,.25); border-radius: .75rem; padding: .7rem .9rem; margin: -.1rem 0 1.3rem; }
+  .vu-info svg { flex-shrink: 0; margin-top: .12rem; color: #ac6a45; }
+  .vu-info b { color: var(--sd-text); }
+
+  .vu-seg { display: grid; grid-template-columns: 1fr 1fr; gap: .3rem; padding: .3rem; border-radius: .85rem; background: var(--sd-field); border: 1px solid var(--sd-line); margin-bottom: 1rem; }
+  .vu-seg button { display: flex; align-items: center; justify-content: center; gap: .45rem; padding: .7rem .8rem; border-radius: .6rem; font-size: .84rem; font-weight: 700; color: var(--sd-muted); border: 0; background: transparent; cursor: pointer; transition: background .15s ease, color .15s ease, box-shadow .15s ease; }
+  .vu-seg button:hover:not(.on) { color: var(--sd-text); }
+  .vu-seg button.on { background: linear-gradient(180deg, #e3a985, #cc8b65); color: #fff; box-shadow: 0 6px 14px -6px rgba(172,106,69,.7); }
+
+  .vu-urlwrap { position: relative; }
+  .vu-urlwrap > svg { position: absolute; left: .85rem; top: 50%; transform: translateY(-50%); color: var(--sd-muted); pointer-events: none; }
+  .vu-urlwrap .sd-input, .sd-modal-xl .vu-urlwrap .sd-input { padding-left: 2.6rem; }
+  .vu-preview { display: flex; gap: .9rem; align-items: center; margin-top: .9rem; padding: .7rem; border-radius: .85rem; background: var(--sd-field); border: 1px solid var(--sd-line); }
+  .vu-preview img { width: 112px; aspect-ratio: 16 / 9; object-fit: cover; border-radius: .55rem; flex-shrink: 0; }
+  .vu-preview-txt { display: flex; flex-direction: column; gap: .2rem; font-size: .8rem; color: var(--sd-muted); min-width: 0; }
+  .vu-preview-txt b { color: var(--sd-text); font-size: .86rem; }
+
+  .vu-drop { display: flex; flex-direction: column; align-items: center; gap: .3rem; text-align: center; padding: 1.8rem 1rem; border: 1.5px dashed var(--sd-line); border-radius: .95rem; background: var(--sd-field); color: var(--sd-muted); font-size: .8rem; cursor: pointer; transition: border-color .15s ease, background .15s ease; }
+  .vu-drop:hover, .vu-drop.drag { border-color: #cc8b65; background: rgba(204,139,101,.08); }
+  .vu-drop b { color: var(--sd-text); font-size: .9rem; }
+  .vu-drop-ic { width: 46px; height: 46px; border-radius: 999px; display: flex; align-items: center; justify-content: center; background: rgba(204,139,101,.16); color: #ac6a45; margin-bottom: .2rem; }
+  .vu-file { display: flex; align-items: center; gap: .7rem; padding: .7rem .85rem; border-radius: .85rem; background: rgba(34,197,94,.10); border: 1px solid rgba(34,197,94,.35); }
+  .vu-file-ic { width: 28px; height: 28px; border-radius: 999px; display: flex; align-items: center; justify-content: center; background: rgba(34,197,94,.2); color: var(--c-green); flex-shrink: 0; }
+  .vu-file-name { flex: 1; min-width: 0; font-size: .86rem; font-weight: 700; color: var(--sd-text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .vu-file-x { width: 26px; height: 26px; border-radius: 999px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--sd-line); background: var(--sd-ghost); color: var(--sd-muted); cursor: pointer; flex-shrink: 0; }
+  .vu-file-x:hover { color: var(--c-red); border-color: rgba(239,68,68,.4); }
+
+  .vu-foot { margin-top: 2rem; gap: .8rem; }
+  .vu-foot .sd-btn { padding: .8rem 1.1rem; }
+  .vu-foot .sd-btn-ghost { flex: 0 0 auto; padding-left: 1.4rem; padding-right: 1.4rem; }
+  .vu-submit { flex: 1; color: #fff; border: 0; background: linear-gradient(180deg, #2f9a67, #1f7a4d); box-shadow: 0 8px 20px -8px rgba(31,122,77,.65); }
+  @media (max-width: 560px) {
+    .vu-grid { grid-template-columns: 1fr; }
+    .vu-preview { flex-direction: column; align-items: flex-start; }
+    .vu-preview img { width: 100%; }
+    .vu-foot { flex-direction: column-reverse; }
+    .vu-foot .sd-btn-ghost { flex: 1; }
+  }
   .text-white\/80 { color: rgba(255,255,255,.8); }
   .rounded-2xl { border-radius: 1rem; }
 
@@ -1753,6 +1815,59 @@ html.theme-dark .cs-intro p{color:rgba(237,239,246,.6)}
   .cs-side{position:static;max-height:none;order:2}
   .cs-main{order:1}
 }
+
+/* Kurs ichi (video ko'rish): sahifa ekranga sig'adi, scroll faqat bloklar ichida (desktop) */
+@media(min-width:1024px){
+  main:has(> .cs-page--ws){overflow:hidden;display:flex;flex-direction:column}
+  .cs-page--ws{flex:1;min-height:0;display:flex;flex-direction:column}
+  .cs-page--ws > .back-btn{align-self:flex-start;flex-shrink:0}
+  .cs-page--ws > h1{flex-shrink:0}
+  .cs-page--ws > p{flex-shrink:0;margin-bottom:1rem!important}
+  .cs-page--ws .cs-layout{flex:1;min-height:0;grid-template-rows:minmax(0,1fr);align-items:stretch}
+  .cs-page--ws .cs-side{position:static;max-height:none;height:100%;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
+  .cs-page--ws .cs-main{min-height:0;height:100%;overflow-y:auto;overscroll-behavior:contain;padding-right:.35rem;container-type:size;scrollbar-width:thin}
+  /* Video + boshqaruv paneli + sarlavha ekranga to'liq sig'adi: kengligi bo'sh balandlikdan hisoblanadi */
+  .cs-page--ws .cs-stage{width:min(100%,max(420px,calc((100cqh - 235px) * 16 / 9)));margin-inline:auto}
+}
+
+/* Scroll chizig'i: saytga moslangan — ingichka, odatda ko'rinmaydi, sichqoncha ustida yumshoq paydo bo'ladi */
+.cs-side,.cs-main,.app-main > main,.sd-modal,.notif-dropdown-body{scrollbar-width:thin;scrollbar-color:transparent transparent}
+.cs-side:hover,.cs-main:hover,.app-main > main:hover,.sd-modal:hover,.notif-dropdown-body:hover{scrollbar-color:rgba(204,139,101,.45) transparent}
+@supports not (scrollbar-color:auto){
+  .cs-side::-webkit-scrollbar,.cs-main::-webkit-scrollbar,.app-main > main::-webkit-scrollbar,.sd-modal::-webkit-scrollbar,.notif-dropdown-body::-webkit-scrollbar{width:6px;height:6px}
+  .cs-side::-webkit-scrollbar-track,.cs-main::-webkit-scrollbar-track,.app-main > main::-webkit-scrollbar-track,.sd-modal::-webkit-scrollbar-track,.notif-dropdown-body::-webkit-scrollbar-track{background:transparent}
+  .cs-side::-webkit-scrollbar-button,.cs-main::-webkit-scrollbar-button,.app-main > main::-webkit-scrollbar-button,.sd-modal::-webkit-scrollbar-button,.notif-dropdown-body::-webkit-scrollbar-button{display:none;width:0;height:0}
+  .cs-side::-webkit-scrollbar-thumb,.cs-main::-webkit-scrollbar-thumb,.app-main > main::-webkit-scrollbar-thumb,.sd-modal::-webkit-scrollbar-thumb,.notif-dropdown-body::-webkit-scrollbar-thumb{background:transparent;border-radius:99px}
+  .cs-side:hover::-webkit-scrollbar-thumb,.cs-main:hover::-webkit-scrollbar-thumb,.app-main > main:hover::-webkit-scrollbar-thumb,.sd-modal:hover::-webkit-scrollbar-thumb,.notif-dropdown-body:hover::-webkit-scrollbar-thumb{background:rgba(204,139,101,.45)}
+}
+
+/* Bo'lim va darslar uchun tahrirlash / o'chirish tugmalari */
+.cs-sec-head{display:flex;align-items:center}
+.cs-sec-head .topic-row{flex:1;min-width:0;width:auto}
+.sec-acts{display:inline-flex;align-items:center;gap:.35rem;flex-shrink:0}
+.cs-sec-head .sec-acts{padding-right:.85rem}
+.sec-act{width:30px;height:30px;border-radius:.6rem;display:inline-flex;align-items:center;justify-content:center;border:1px solid transparent;background:rgba(1,51,40,.06);color:#013328;cursor:pointer;transition:background .15s ease,color .15s ease,transform .15s ease}
+.sec-act:hover{background:rgba(204,139,101,.22);color:#8a5a2b;transform:translateY(-1px)}
+.sec-act.del{background:rgba(179,39,26,.08);color:#B3271A}
+.sec-act.del:hover{background:rgba(179,39,26,.18);color:#B3271A}
+html.theme-dark .sec-act{background:rgba(255,255,255,.07);color:#EDEFF6}
+html.theme-dark .sec-act:hover{background:rgba(204,139,101,.25);color:#e3a985}
+html.theme-dark .sec-act.del{background:rgba(239,68,68,.12);color:#fca5a5}
+html.theme-dark .sec-act.del:hover{background:rgba(239,68,68,.22)}
+.cs-acts{display:inline-flex;align-items:center;flex-shrink:0}
+.cs-x{display:inline-flex;align-items:center;justify-content:center}
+.cs-x.cs-edit{color:#8a5a2b}
+.cs-x.cs-edit:hover{background:rgba(204,139,101,.18)}
+html.theme-dark .cs-x.cs-edit{color:#e3a985}
+/* Pleyer: sifat menyusi */
+.vp-q{position:relative}
+.vp-qbtn{gap:.35rem;padding:0 .75rem}
+.vp-qmenu{position:absolute;right:0;bottom:calc(100% + 10px);min-width:190px;background:#141a24;border:1px solid rgba(255,255,255,.12);border-radius:.85rem;padding:.35rem;box-shadow:0 18px 40px -12px rgba(0,0,0,.75);z-index:30}
+.vp-qmenu .hd{font-size:.64rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.4);padding:.4rem .7rem .25rem}
+.vp-qmenu button{display:flex;align-items:center;justify-content:space-between;gap:1rem;width:100%;padding:.5rem .7rem;border-radius:.55rem;font-size:.8rem;font-weight:600;color:rgba(255,255,255,.85);background:transparent;border:0;cursor:pointer;text-align:left}
+.vp-qmenu button:hover{background:rgba(255,255,255,.08)}
+.vp-qmenu button.on{background:rgba(204,139,101,.22);color:#fff}
+.vp-qmenu button small{font-size:.68rem;opacity:.65;font-weight:600}
 /* Video pleyer */
 .vp{background:#0b0f14;border-radius:1rem;overflow:hidden;outline:none;position:relative}
 .vp:fullscreen{border-radius:0;display:flex;flex-direction:column;justify-content:center}
@@ -1897,15 +2012,15 @@ html.theme-dark .lt-area,html.theme-dark .lt-list button{background:#10151F;colo
 html.theme-dark .lt-hint,html.theme-dark .lt-list button span{color:#9AA3B8}
 
 /* ---- YouTube pleyer: brendingsiz, o'z boshqaruvlarimiz bilan ---- */
-.vp-yt{position:relative;aspect-ratio:16/9;background:#000;overflow:hidden}
-.vp-yt-frame{position:absolute}
+.vp-yt{position:relative;aspect-ratio:16/9;background:#000;overflow:hidden;isolation:isolate}
+.vp-yt-frame{position:absolute;pointer-events:none;background:#000}
 .vp-yt-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}
 .vp-yt-shield{position:absolute;inset:0;z-index:2;cursor:pointer}
 .vp-yt-top{position:absolute;left:0;right:0;top:0;height:16%;z-index:3;pointer-events:none;background:linear-gradient(#000 60%,transparent)}
 .vp-yt-cover{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.8rem;cursor:pointer;background:#0b0f0e center/cover no-repeat}
 .vp-yt-cover::before{content:"";position:absolute;inset:0;background:rgba(6,10,9,.55)}
 .vp-yt-cover.paused{background-image:none}
-.vp-yt-cover.paused::before{background:rgba(6,10,9,.94)}
+.vp-yt-cover.paused::before{background:#0b0f0e}
 .vp-yt-cover>*{position:relative}
 .vp-yt-play{width:68px;height:68px;border-radius:999px;border:0;background:#CC8B65;color:#100C0D;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 12px 30px -8px rgba(204,139,101,.7);transition:transform .15s}
 .vp-yt-play svg{width:26px;height:26px}
@@ -3374,6 +3489,11 @@ function CoursesManager({ categories, setCategories, canEdit, notify, students, 
   const [newSubPosters, setNewSubPosters] = useState({});   // catId bo'yicha video posterlari
   const [posterFor, setPosterFor] = useState(null);         // { catId, subId } — mavjud bo'lim posterlarini tahrirlash
   const [addSubModalFor, setAddSubModalFor] = useState(null);   // qaysi kategoriyaga bo'lim qo'shish modali ochiq
+  const [editSub, setEditSub] = useState(null);       // bo'limni tahrirlash modali: { catId, subId, name, image, posters }
+  const [delSub, setDelSub] = useState(null);         // bo'limni o'chirish tasdig'i: { catId, sub }
+  const [el, setEl] = useState(null);                 // darsni tahrirlash modali
+  const [delLesson, setDelLesson] = useState(null);   // darsni o'chirish tasdig'i: { catId, subId, lesson }
+  const ytSt3 = useYtAuto(el && el.mode === 'link' ? el.videoUrl : '', (m) => setEl((u) => (u && u.videoUrl !== u.origUrl) ? { ...u, duration: fmtDur(m.duration), title: u.title || m.title } : u));
 
   useEffect(() => { if (quickAdd) setShowAddModal(true); }, [quickAdd]);
 
@@ -3497,6 +3617,80 @@ function CoursesManager({ categories, setCategories, canEdit, notify, students, 
     }));
   };
 
+  /* ---- Bo'lim: tahrirlash / o'chirish ---- */
+  const openEditSub = (cat, sub) => setEditSub({ catId: cat.id, subId: sub.id, name: sub.name, image: sub.image || '', posters: sub.posters || [] });
+  const onPickEditSubImage = (file) => {
+    if (!file) return;
+    compressImageFile(file, 200, 0.8)
+      .then((d) => setEditSub((e) => e ? { ...e, image: d } : e))
+      .catch(() => notify("Logotipni yuklab bo'lmadi", 'danger'));
+  };
+  const saveSub = () => {
+    if (!editSub) return;
+    if (!editSub.name.trim()) { notify("Bo'lim nomini kiriting", 'danger'); return; }
+    setCategories(categories.map((c) => c.id !== editSub.catId ? c : {
+      ...c, subtopics: c.subtopics.map((x) => x.id !== editSub.subId ? x : { ...x, name: editSub.name.trim(), image: editSub.image, posters: editSub.posters }),
+    }));
+    setEditSub(null);
+    notify("Bo'lim yangilandi");
+    // API: PATCH /api/admin/topics/{id}/  (name, image, posters)
+  };
+  const confirmDelSub = () => {
+    if (!delSub) return;
+    const { catId, sub } = delSub;
+    setCategories(categories.map((c) => c.id !== catId ? c : { ...c, subtopics: c.subtopics.filter((x) => x.id !== sub.id) }));
+    if (openSub === sub.id) { setOpenSub(null); setPreviewLesson(null); }
+    if (upl.subId === sub.id) setUpl({ ...upl, subId: '' });
+    setDelSub(null);
+    notify("Bo'lim o'chirildi", 'danger');
+    // API: DELETE /api/admin/topics/{id}/
+  };
+
+  /* ---- Dars: tahrirlash / o'chirish ---- */
+  const openEditLesson = (cat, sub, l) => {
+    const isFile = /^blob:/.test(l.videoUrl || '');
+    setEl({ catId: cat.id, subId: sub.id, lessonId: l.id, title: l.title, duration: l.duration || '', num: String(sub.lessons.findIndex((x) => x.id === l.id) + 1), total: sub.lessons.length, mode: isFile ? 'file' : 'link', videoUrl: l.videoUrl || '', origUrl: l.videoUrl || '', fileName: isFile ? 'Yuklangan video' : '' });
+  };
+  const onPickEditFile = (file) => {
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    const v = document.createElement('video');
+    v.preload = 'metadata';
+    v.onloadedmetadata = () => { const t = Math.round(v.duration || 0); setEl((u) => u ? { ...u, duration: `${Math.floor(t / 60)}:${String(t % 60).padStart(2, '0')}` } : u); };
+    v.src = url;
+    setEl((u) => u ? { ...u, videoUrl: url, fileName: file.name } : u);
+  };
+  const saveLesson = () => {
+    if (!el) return;
+    if (!el.title.trim()) { notify('Dars nomini kiriting', 'danger'); return; }
+    if (!el.videoUrl.trim()) { notify(el.mode === 'file' ? 'Video faylni tanlang' : 'Video havolasini kiriting', 'danger'); return; }
+    if (el.mode === 'link' && !isVideoLink(el.videoUrl)) { notify("Havola noto'g'ri. YouTube (https://youtu.be/...) yoki mp4 havolasini kiriting", 'danger'); return; }
+    setCategories(categories.map((c) => c.id !== el.catId ? c : {
+      ...c, subtopics: c.subtopics.map((x) => {
+        if (x.id !== el.subId) return x;
+        const curIdx = x.lessons.findIndex((z) => z.id === el.lessonId);
+        if (curIdx < 0) return x;
+        const upd = { ...x.lessons[curIdx], title: el.title.trim(), duration: el.duration.trim() || '00:00', videoUrl: el.videoUrl.trim() };
+        const arr = x.lessons.filter((z) => z.id !== el.lessonId);
+        const n = Math.min(Math.max(parseInt(el.num, 10) || curIdx + 1, 1), arr.length + 1);
+        arr.splice(n - 1, 0, upd);
+        return { ...x, lessons: arr };
+      }),
+    }));
+    setEl(null);
+    notify('Dars yangilandi');
+    // API: PATCH /api/admin/lessons/{id}/  (order, title, duration, videoUrl | file)
+  };
+  const confirmDelLesson = () => {
+    if (!delLesson) return;
+    const { catId, subId, lesson } = delLesson;
+    removeLesson(catId, subId, lesson.id);
+    if (previewLesson === lesson.id) setPreviewLesson(null);
+    setDelLesson(null);
+    notify("Dars o'chirildi", 'danger');
+    // API: DELETE /api/admin/lessons/{id}/
+  };
+
 
   const onPickVideoFile = (file) => {
     if (!file) return;
@@ -3519,6 +3713,7 @@ function CoursesManager({ categories, setCategories, canEdit, notify, students, 
       ...c, subtopics: c.subtopics.map((s) => { if (s.id !== sub.id) return s; const arr = [...s.lessons]; arr.splice(n - 1, 0, lesson); return { ...s, lessons: arr }; }),
     }));
     setUpl({ ...upl, num: '', title: '', duration: '', videoUrl: '', fileName: '' });
+    setUplOpen(false);
     notify(`Dars ${n}-o'ringa joylandi`);
     // API: POST /api/admin/lessons/  (topic, order, title, duration, videoUrl | file)
   };
@@ -3532,7 +3727,7 @@ function CoursesManager({ categories, setCategories, canEdit, notify, students, 
     const workspace = !!(activeSub && activeSub.lessons.length > 0);
     const uplSub = activeCat.subtopics.find((s) => s.id === upl.subId);
     return (
-      <div>
+      <div className={workspace ? 'cs-page cs-page--ws' : 'cs-page'}>
         <button onClick={() => { if (workspace) { setOpenSub(null); setPreviewLesson(null); } else { setOpenCat(null); setOpenSub(null); setPreviewLesson(null); } }} className="back-btn"><span className="back-ic"><Icon.arrowLeft /></span><span>{workspace ? `${activeCat.name} bo'limlariga qaytish` : 'Kurslarga qaytish'}</span></button>
         <h1 className="font-display text-3xl text-ink mb-1">{activeCat.name}</h1>
         <p className="text-slate text-sm mb-6">{activeCat.subtitle || `${activeCat.subtopics.length} bo'lim`}</p>
@@ -3547,7 +3742,18 @@ function CoursesManager({ categories, setCategories, canEdit, notify, students, 
                 activeLessonId={previewLesson}
                 onPickLesson={(s, l) => { setOpenSub(s.id); setPreviewLesson(l.id); }}
                 stateOf={() => ({})}
-                lessonExtra={(l, s) => canEdit && <button className="cs-x" title="Darsni o'chirish" onClick={() => { removeLesson(activeCat.id, s.id, l.id); if (previewLesson === l.id) setPreviewLesson(null); }}>×</button>}
+                subExtra={(s) => canEdit && (
+                  <span className="sec-acts">
+                    <button type="button" className="sec-act" title="Bo'limni tahrirlash" onClick={() => openEditSub(activeCat, s)}><Icon.edit width="13" height="13" /></button>
+                    <button type="button" className="sec-act del" title="Bo'limni o'chirish" onClick={() => setDelSub({ catId: activeCat.id, sub: s })}><Icon.trash width="13" height="13" /></button>
+                  </span>
+                )}
+                lessonExtra={(l, s) => canEdit && (
+                  <span className="cs-acts">
+                    <button type="button" className="cs-x cs-edit" title="Darsni tahrirlash" onClick={() => openEditLesson(activeCat, s, l)}><Icon.edit width="13" height="13" /></button>
+                    <button type="button" className="cs-x" title="Darsni o'chirish" onClick={() => setDelLesson({ catId: activeCat.id, subId: s.id, lesson: l })}><Icon.trash width="13" height="13" /></button>
+                  </span>
+                )}
               />
             </aside>
             <section className="cs-main">
@@ -3556,8 +3762,8 @@ function CoursesManager({ categories, setCategories, canEdit, notify, students, 
                 <button className="cs-ghost" onClick={() => setWideMode(!wideMode)}>{wideMode ? "Ro'yxatni ko'rsatish" : 'Kino rejimi'}</button>
               </div>
               {previewLessonObj ? (
-                <div>
-                  <VideoPlayer key={previewLessonObj.id} lesson={previewLessonObj} poster={posterOf(activeSub, previewLessonObj)} locked={false} free progress={{ watched: 0 }} onProgress={() => {}} hasNext={false} hasPrev={false} />
+                <div className="cs-stage">
+                  <VideoPlayer key={`${previewLessonObj.id}|${previewLessonObj.videoUrl}`} lesson={previewLessonObj} poster={posterOf(activeSub, previewLessonObj)} locked={false} free progress={{ watched: 0 }} onProgress={() => {}} hasNext={false} hasPrev={false} />
                   <div className="cs-info"><div><div className="cs-info-sub">{activeSub.name}</div><h2 className="font-display text-2xl text-ink">{previewLessonObj.title}</h2></div></div>
                 </div>
               ) : (
@@ -3568,49 +3774,14 @@ function CoursesManager({ categories, setCategories, canEdit, notify, students, 
         ) : (
           <div>
             {canEdit && (
-              <div className="topic-list mb-4">
-                <button onClick={() => setUplOpen(!uplOpen)} className="topic-row topic-row-add">
-                  <span className="topic-row-icon"><Icon.video width="18" height="18" /></span>
-                  <div className="topic-row-body text-left">
-                    <div className="topic-row-name">Yangi video darslik joylash</div>
-                    <div className="topic-row-meta">Bo'lim, dars raqami va video (havola yoki fayl)</div>
-                  </div>
-                  <Icon.chevron width="16" height="16" className="topic-row-chevron" style={{ transform: uplOpen ? 'rotate(0deg)' : 'rotate(-90deg)' }} />
-                </button>
-                {uplOpen && (
-                  <div className="quick-add-card" style={{ borderRadius: 0, border: 0 }}>
-                    <div className="grid sm:grid-cols-2 gap-2 mb-2">
-                      <select value={upl.subId} onChange={(e) => setUpl({ ...upl, subId: e.target.value })} className="border border-line rounded-lg px-3 py-2 text-sm bg-white outline-none focus:border-gold">
-                        <option value="">Bo'limni tanlang…</option>
-                        {activeCat.subtopics.map((s) => <option key={s.id} value={s.id}>{s.name} ({s.lessons.length} ta dars)</option>)}
-                      </select>
-                      <input type="number" min="1" placeholder={uplSub ? `Nechanchi dars (1–${uplSub.lessons.length + 1})` : 'Nechanchi dars'} value={upl.num} onChange={(e) => setUpl({ ...upl, num: e.target.value })} className="border border-line rounded-lg px-3 py-2 text-sm bg-white outline-none focus:border-gold" />
-                    </div>
-                    {uplSub && <p className="text-xs text-slate mb-2">«{uplSub.name}» bo'limida hozir {uplSub.lessons.length} ta dars bor. Raqam kiritilmasa oxiriga ({uplSub.lessons.length + 1}-dars) qo'shiladi; mavjud raqam kiritsangiz, keyingi darslar bittaga suriladi.</p>}
-                    <div className="grid sm:grid-cols-2 gap-2 mb-3">
-                      <input placeholder="Dars nomi" value={upl.title} onChange={(e) => setUpl({ ...upl, title: e.target.value })} className="border border-line rounded-lg px-3 py-2 text-sm bg-white outline-none focus:border-gold" />
-                      <input placeholder="Davomiyligi, masalan 12:34" value={upl.duration} onChange={(e) => setUpl({ ...upl, duration: e.target.value })} className="border border-line rounded-lg px-3 py-2 text-sm bg-white outline-none focus:border-gold" />
-                    </div>
-                    {ytSt2 && <p className="lt-hint" style={{ margin: '-.3rem 0 .6rem' }}>{ytStatusText(ytSt2)}</p>}
-                    <div className="flex gap-2 mb-2">
-                      <button className={`cs-ghost ${upl.mode === 'link' ? 'cs-lesson-on' : ''}`} onClick={() => setUpl({ ...upl, mode: 'link', videoUrl: '', fileName: '' })}>🔗 Havola (YouTube / mp4)</button>
-                      <button className={`cs-ghost ${upl.mode === 'file' ? 'cs-lesson-on' : ''}`} onClick={() => setUpl({ ...upl, mode: 'file', videoUrl: '', fileName: '' })}>📁 Fayldan yuklash</button>
-                    </div>
-                    {upl.mode === 'link' ? (
-                      <div className="relative mb-3">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate/60"><Icon.video width="14" height="14" /></span>
-                        <input placeholder="https://youtu.be/... yoki https://.../video.mp4" value={upl.videoUrl} onChange={(e) => setUpl({ ...upl, videoUrl: e.target.value })} className="w-full border border-line rounded-lg pl-9 pr-3 py-2 text-sm bg-white outline-none focus:border-gold" />
-                      </div>
-                    ) : (
-                      <label className="block mb-3 border border-dashed border-line rounded-lg px-3 py-3 text-sm text-slate cursor-pointer hover:border-gold">
-                        {upl.fileName ? `✓ ${upl.fileName}` : 'Video faylni tanlash (mp4, webm…)'}
-                        <input type="file" accept="video/*" style={{ display: 'none' }} onChange={(e) => onPickVideoFile(e.target.files[0])} />
-                      </label>
-                    )}
-                    <button onClick={submitLesson} className="text-sm px-4 py-2 bg-forest text-white rounded-lg hover:opacity-90">+ Darsni joylash</button>
-                  </div>
-                )}
-              </div>
+              <button onClick={() => setUplOpen(true)} className="vu-trigger mb-4">
+                <span className="vu-trigger-ic"><Icon.video width="20" height="20" /></span>
+                <span className="vu-trigger-body">
+                  <span className="vu-trigger-name">Yangi video darslik joylash</span>
+                  <span className="vu-trigger-meta">Bo'lim, dars raqami va video (havola yoki fayl)</span>
+                </span>
+                <span className="vu-trigger-plus"><Icon.plus width="16" height="16" /></span>
+              </button>
             )}
 
             <div className="topic-list">
@@ -3626,7 +3797,7 @@ function CoursesManager({ categories, setCategories, canEdit, notify, students, 
               {activeCat.subtopics.map((sub, si) => (
                 <button key={sub.id} onClick={() => {
                   if (sub.lessons.length) { setOpenSub(sub.id); setPreviewLesson(sub.lessons[0].id); }
-                  else if (canEdit) { setUplOpen(true); setUpl({ ...upl, subId: sub.id }); notify(`«${sub.name}» bo'limida hali video yo'q — yuqorida video joylang`); }
+                  else if (canEdit) { setUplOpen(true); setUpl({ ...upl, subId: sub.id }); notify(`«${sub.name}» bo'limida hali video yo'q — ochilgan oynada video joylang`); }
                 }} className="topic-row">
                   <div className={`topic-row-icon ${!sub.image ? `topic-grad-${si % 6}` : ''}`}>
                     {sub.image ? <img src={sub.image} alt="" /> : sub.name.slice(0, 2).toUpperCase()}
@@ -3636,6 +3807,12 @@ function CoursesManager({ categories, setCategories, canEdit, notify, students, 
                     <div className="topic-row-meta"><Icon.video width="12" height="12" />{sub.lessons.length} ta video dars</div>
                   </div>
                   {canEdit && <span role="button" className="lt-postbtn" onClick={(e) => { e.stopPropagation(); setPosterFor({ catId: activeCat.id, subId: sub.id }); }}>🖼 Posterlar ({(sub.posters || []).length})</span>}
+                  {canEdit && (
+                    <span className="sec-acts">
+                      <span role="button" className="sec-act" title="Bo'limni tahrirlash" onClick={(e) => { e.stopPropagation(); openEditSub(activeCat, sub); }}><Icon.edit width="13" height="13" /></span>
+                      <span role="button" className="sec-act del" title="Bo'limni o'chirish" onClick={(e) => { e.stopPropagation(); setDelSub({ catId: activeCat.id, sub }); }}><Icon.trash width="13" height="13" /></span>
+                    </span>
+                  )}
                   <Icon.chevron width="16" height="16" className="topic-row-chevron" style={{ transform: 'rotate(-90deg)' }} />
                 </button>
               ))}
@@ -3644,6 +3821,211 @@ function CoursesManager({ categories, setCategories, canEdit, notify, students, 
           </div>
         )}
 
+        {uplOpen && canEdit && (() => {
+          const vid = upl.mode === 'link' ? ytId(upl.videoUrl) : null;
+          const closeUpl = () => setUplOpen(false);
+          return (
+            <SdModal title="Yangi video darslik joylash" icon="video" size="xl" onClose={closeUpl}>
+              <p className="vu-lead"><b>{activeCat.name}</b> kursiga yangi dars qo'shing</p>
+
+              <div className="vu-grid">
+                <div className="sd-field">
+                  <label className="sd-label">Bo'lim</label>
+                  <select value={upl.subId} onChange={(e) => setUpl({ ...upl, subId: e.target.value })} className="sd-select">
+                    <option value="">Bo'limni tanlang…</option>
+                    {activeCat.subtopics.map((s) => <option key={s.id} value={s.id}>{s.name} ({s.lessons.length} ta dars)</option>)}
+                  </select>
+                </div>
+                <div className="sd-field">
+                  <label className="sd-label">Nechanchi dars {uplSub ? <span className="vu-range">(1–{uplSub.lessons.length + 1})</span> : null}</label>
+                  <input type="number" min="1" placeholder={uplSub ? `Oxiriga: ${uplSub.lessons.length + 1}` : 'Masalan: 1'} value={upl.num} onChange={(e) => setUpl({ ...upl, num: e.target.value })} className="sd-input" />
+                </div>
+                {uplSub && (
+                  <p className="vu-info vu-span2">
+                    <Icon.layers width="14" height="14" />
+                    <span>Bo'limda hozir <b>{uplSub.lessons.length} ta</b> dars bor. Raqam kiritilmasa, oxiriga qo'shiladi.</span>
+                  </p>
+                )}
+                <div className="sd-field">
+                  <label className="sd-label">Dars nomi</label>
+                  <input placeholder="Masalan: Flexbox asoslari" value={upl.title} onChange={(e) => setUpl({ ...upl, title: e.target.value })} className="sd-input" />
+                </div>
+                <div className="sd-field">
+                  <label className="sd-label">Davomiyligi</label>
+                  <input placeholder="Masalan: 12:34" value={upl.duration} onChange={(e) => setUpl({ ...upl, duration: e.target.value })} className="sd-input" />
+                </div>
+              </div>
+
+              <label className="sd-label">Video manbasi</label>
+              <div className="vu-seg">
+                <button type="button" className={upl.mode === 'link' ? 'on' : ''} onClick={() => setUpl({ ...upl, mode: 'link', videoUrl: '', fileName: '' })}>
+                  <Icon.arrowRight width="14" height="14" style={{ transform: 'rotate(-45deg)' }} /> Havola (YouTube / mp4)
+                </button>
+                <button type="button" className={upl.mode === 'file' ? 'on' : ''} onClick={() => setUpl({ ...upl, mode: 'file', videoUrl: '', fileName: '' })}>
+                  <Icon.image width="14" height="14" /> Fayldan yuklash
+                </button>
+              </div>
+
+              {upl.mode === 'link' ? (
+                <div>
+                  <div className="vu-urlwrap">
+                    <Icon.video width="15" height="15" />
+                    <input autoFocus placeholder="https://youtu.be/... yoki https://.../video.mp4" value={upl.videoUrl} onChange={(e) => setUpl({ ...upl, videoUrl: e.target.value })} className="sd-input" />
+                  </div>
+                  {(vid || ytSt2) && (
+                    <div className="vu-preview">
+                      {vid && <img src={`https://i.ytimg.com/vi/${vid}/mqdefault.jpg`} alt="" onError={(e) => { e.currentTarget.style.display = 'none'; }} />}
+                      <div className="vu-preview-txt">
+                        {vid && <b>YouTube video topildi</b>}
+                        {ytSt2 && <span>{ytStatusText(ytSt2)}</span>}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : upl.fileName ? (
+                <div className="vu-file">
+                  <span className="vu-file-ic"><Icon.check width="15" height="15" /></span>
+                  <span className="vu-file-name" title={upl.fileName}>{upl.fileName}</span>
+                  <button type="button" className="vu-file-x" title="Olib tashlash" onClick={() => setUpl({ ...upl, videoUrl: '', fileName: '' })}><Icon.close width="12" height="12" /></button>
+                </div>
+              ) : (
+                <label className="vu-drop"
+                  onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add('drag'); }}
+                  onDragLeave={(e) => e.currentTarget.classList.remove('drag')}
+                  onDrop={(e) => { e.preventDefault(); e.currentTarget.classList.remove('drag'); onPickVideoFile(e.dataTransfer.files[0]); }}>
+                  <span className="vu-drop-ic"><Icon.video width="20" height="20" /></span>
+                  <b>Video faylni tanlang yoki bu yerga tashlang</b>
+                  <span>mp4, webm va boshqa video formatlar</span>
+                  <input type="file" accept="video/*" style={{ display: 'none' }} onChange={(e) => onPickVideoFile(e.target.files[0])} />
+                </label>
+              )}
+
+              <div className="sd-foot vu-foot">
+                <button className="sd-btn sd-btn-ghost" onClick={closeUpl}>Bekor qilish</button>
+                <button className="sd-btn vu-submit" onClick={submitLesson}><Icon.plus width="14" height="14" /> Darsni joylash</button>
+              </div>
+            </SdModal>
+          );
+        })()}
+        {editSub && (
+          <SdModal title="Bo'limni tahrirlash" icon="edit" size="xl" onClose={() => setEditSub(null)}>
+            <div className="flex items-center gap-4 mb-5">
+              <label className="topic-logo-pick">
+                <div className="topic-logo-preview">
+                  {editSub.image ? <img src={editSub.image} alt="" /> : <Icon.image width="20" height="20" />}
+                </div>
+                <span className="topic-logo-cam"><Icon.camera width="12" height="12" /></span>
+                <input type="file" accept="image/*" onChange={(e) => { onPickEditSubImage(e.target.files[0]); e.target.value = ''; }} />
+                {editSub.image && (
+                  <span className="topic-logo-remove" onClick={(e) => { e.preventDefault(); setEditSub({ ...editSub, image: '' }); }}><Icon.close width="11" height="11" /></span>
+                )}
+              </label>
+              <p className="topic-logo-hint">Ixtiyoriy: bo'lim logotipi.<br />Olib tashlansa, nomning bosh harflari ko'rinadi.</p>
+            </div>
+            <div className="sd-field">
+              <label className="sd-label">Bo'lim nomi</label>
+              <input autoFocus className="sd-input" placeholder="Bo'lim nomi" value={editSub.name}
+                onChange={(e) => setEditSub({ ...editSub, name: e.target.value })}
+                onKeyDown={(e) => { if (e.key === 'Enter') saveSub(); }} />
+            </div>
+            <label className="sd-label">Video posterlari (ixtiyoriy)</label>
+            <PosterPicker posters={editSub.posters} notify={notify} onChange={(v) => setEditSub({ ...editSub, posters: v })} />
+            <div className="sd-foot vu-foot">
+              <button className="sd-btn sd-btn-ghost" onClick={() => setEditSub(null)}>Bekor qilish</button>
+              <button className="sd-btn vu-submit" onClick={saveSub}><Icon.check width="14" height="14" /> Saqlash</button>
+            </div>
+          </SdModal>
+        )}
+        {delSub && (
+          <SdModal title="Bo'limni o'chirish" icon="warn" onClose={() => setDelSub(null)}>
+            <p className="sd-confirm-text">
+              <b>«{delSub.sub.name}»</b> bo'limi{delSub.sub.lessons.length > 0 ? <React.Fragment> va undagi <b>{delSub.sub.lessons.length} ta video dars</b></React.Fragment> : null} o'chiriladi. Bu amalni qaytarib bo'lmaydi.
+            </p>
+            <div className="sd-foot">
+              <button className="sd-btn sd-btn-ghost" onClick={() => setDelSub(null)}>Bekor qilish</button>
+              <button className="sd-btn sd-btn-danger" onClick={confirmDelSub}><Icon.trash width="14" height="14" /> O'chirish</button>
+            </div>
+          </SdModal>
+        )}
+        {el && (() => {
+          const evid = el.mode === 'link' ? ytId(el.videoUrl) : null;
+          return (
+            <SdModal title="Darsni tahrirlash" icon="edit" size="xl" onClose={() => setEl(null)}>
+              <div className="vu-grid">
+                <div className="sd-field vu-span2">
+                  <label className="sd-label">Dars nomi</label>
+                  <input autoFocus placeholder="Dars nomi" value={el.title} onChange={(e) => setEl({ ...el, title: e.target.value })} className="sd-input" />
+                </div>
+                <div className="sd-field">
+                  <label className="sd-label">Davomiyligi</label>
+                  <input placeholder="Masalan: 12:34" value={el.duration} onChange={(e) => setEl({ ...el, duration: e.target.value })} className="sd-input" />
+                </div>
+                <div className="sd-field">
+                  <label className="sd-label">Nechanchi dars <span className="vu-range">(1–{el.total})</span></label>
+                  <input type="number" min="1" max={el.total} value={el.num} onChange={(e) => setEl({ ...el, num: e.target.value })} className="sd-input" />
+                </div>
+              </div>
+
+              <label className="sd-label">Video manbasi</label>
+              <div className="vu-seg">
+                <button type="button" className={el.mode === 'link' ? 'on' : ''} onClick={() => setEl({ ...el, mode: 'link', videoUrl: el.origUrl && !/^blob:/.test(el.origUrl) ? el.origUrl : '', fileName: '' })}>
+                  <Icon.arrowRight width="14" height="14" style={{ transform: 'rotate(-45deg)' }} /> Havola (YouTube / mp4)
+                </button>
+                <button type="button" className={el.mode === 'file' ? 'on' : ''} onClick={() => setEl({ ...el, mode: 'file', videoUrl: /^blob:/.test(el.origUrl) ? el.origUrl : '', fileName: /^blob:/.test(el.origUrl) ? 'Yuklangan video' : '' })}>
+                  <Icon.image width="14" height="14" /> Fayldan yuklash
+                </button>
+              </div>
+
+              {el.mode === 'link' ? (
+                <div>
+                  <div className="vu-urlwrap">
+                    <Icon.video width="15" height="15" />
+                    <input placeholder="https://youtu.be/... yoki https://.../video.mp4" value={el.videoUrl} onChange={(e) => setEl({ ...el, videoUrl: e.target.value })} className="sd-input" />
+                  </div>
+                  {(evid || ytSt3) && (
+                    <div className="vu-preview">
+                      {evid && <img src={`https://i.ytimg.com/vi/${evid}/mqdefault.jpg`} alt="" onError={(e) => { e.currentTarget.style.display = 'none'; }} />}
+                      <div className="vu-preview-txt">
+                        {evid && <b>YouTube video</b>}
+                        {ytSt3 && <span>{ytStatusText(ytSt3)}</span>}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : el.fileName ? (
+                <div className="vu-file">
+                  <span className="vu-file-ic"><Icon.check width="15" height="15" /></span>
+                  <span className="vu-file-name" title={el.fileName}>{el.fileName}</span>
+                  <button type="button" className="vu-file-x" title="Olib tashlash" onClick={() => setEl({ ...el, videoUrl: '', fileName: '' })}><Icon.close width="12" height="12" /></button>
+                </div>
+              ) : (
+                <label className="vu-drop"
+                  onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add('drag'); }}
+                  onDragLeave={(e) => e.currentTarget.classList.remove('drag')}
+                  onDrop={(e) => { e.preventDefault(); e.currentTarget.classList.remove('drag'); onPickEditFile(e.dataTransfer.files[0]); }}>
+                  <span className="vu-drop-ic"><Icon.video width="20" height="20" /></span>
+                  <b>Video faylni tanlang yoki bu yerga tashlang</b>
+                  <span>mp4, webm va boshqa video formatlar</span>
+                  <input type="file" accept="video/*" style={{ display: 'none' }} onChange={(e) => onPickEditFile(e.target.files[0])} />
+                </label>
+              )}
+
+              <div className="sd-foot vu-foot">
+                <button className="sd-btn sd-btn-ghost" onClick={() => setEl(null)}>Bekor qilish</button>
+                <button className="sd-btn vu-submit" onClick={saveLesson}><Icon.check width="14" height="14" /> Saqlash</button>
+              </div>
+            </SdModal>
+          );
+        })()}
+        {delLesson && (
+          <SdModal title="Darsni o'chirish" icon="warn" onClose={() => setDelLesson(null)}>
+            <p className="sd-confirm-text"><b>«{delLesson.lesson.title}»</b> darsi o'chiriladi. Bu amalni qaytarib bo'lmaydi.</p>
+            <div className="sd-foot">
+              <button className="sd-btn sd-btn-ghost" onClick={() => setDelLesson(null)}>Bekor qilish</button>
+              <button className="sd-btn sd-btn-danger" onClick={confirmDelLesson}><Icon.trash width="14" height="14" /> O'chirish</button>
+            </div>
+          </SdModal>
+        )}
         {posterFor && (() => {
           const pc = categories.find((c) => c.id === posterFor.catId);
           const ps = pc && pc.subtopics.find((s) => s.id === posterFor.subId);
@@ -4001,7 +4383,7 @@ function SdModal({ title, icon, onClose, children, size }) {
      regardless of any scrollable/overflow ancestor it's opened from. */
   return ReactDOM.createPortal(
     <div className="sd-backdrop" onClick={onClose}>
-      <div className={`sd-modal ${size === 'lg' ? 'sd-modal-lg' : ''}`} onClick={(e) => e.stopPropagation()}>
+      <div className={`sd-modal ${size === 'lg' ? 'sd-modal-lg' : size === 'xl' ? 'sd-modal-xl' : ''}`} onClick={(e) => e.stopPropagation()}>
         <div className="sd-title">{icon ? <span className={`sd-title-icon ${icon === 'warn' ? 'is-danger' : ''}`}>{Icon[icon] ? React.createElement(Icon[icon], { width: 18, height: 18 }) : icon}</span> : null}<span>{title}</span></div>
         {children}
       </div>
@@ -5863,7 +6245,7 @@ function AttendancePanel({ state }) {
    Kurs ichi: chapda accordion (bo'lim -> darslar), o'ngda video pleyer.
    Talaba ham, admin ham shu CourseAccordion'dan foydalanadi.
    ========================================================================== */
-function CourseAccordion({ category, openSubId, onToggleSub, activeLessonId, onPickLesson, stateOf, addRow, lessonExtra }) {
+function CourseAccordion({ category, openSubId, onToggleSub, activeLessonId, onPickLesson, stateOf, addRow, lessonExtra, subExtra }) {
   return (
     <div className="topic-list">
       {addRow}
@@ -5872,6 +6254,7 @@ function CourseAccordion({ category, openSubId, onToggleSub, activeLessonId, onP
         const done = sub.lessons.filter((l, i) => (stateOf(l, sub, i) || {}).completed).length;
         return (
           <div key={sub.id} className={`cs-sec ${open ? 'cs-sec-open' : ''}`}>
+            <div className="cs-sec-head">
             <button onClick={() => onToggleSub(sub.id)} className="topic-row" aria-expanded={open}>
               <div className={`topic-row-icon ${!sub.image ? `topic-grad-${si % 6}` : ''}`}>
                 {sub.image ? <img src={sub.image} alt="" /> : sub.name.slice(0, 2).toUpperCase()}
@@ -5885,6 +6268,8 @@ function CourseAccordion({ category, openSubId, onToggleSub, activeLessonId, onP
               </div>
               <Icon.chevron width="16" height="16" className="topic-row-chevron" style={{ transform: open ? 'rotate(0deg)' : 'rotate(-90deg)' }} />
             </button>
+            {subExtra && subExtra(sub)}
+            </div>
             {open && (
               <div className="cs-lessons">
                 {sub.lessons.map((l, i) => {
@@ -6160,11 +6545,25 @@ function useYtAuto(url, apply) {
 }
 const ytStatusText = (st) => st === 'loading' ? '⏳ Video davomiyligi aniqlanmoqda…' : st === 'ok' ? '✓ Davomiylik videodan avtomatik aniqlandi' : st === 'fail' ? "Davomiylikni aniqlab bo'lmadi — internetni tekshiring yoki qo'lda kiriting" : '';
 
+/* Sifat: ekran imkoniyatiga qarab eng yuqori sifat avtomatik tanlanadi (2K ekranda 1440p, qolganda 1080p) */
+const ytDims = () => {
+  const px = ((window.screen && window.screen.width) || 0) * (window.devicePixelRatio || 1);
+  return px >= 2400 ? { W: 2560, H: 1440, q: 'hd1440' } : { W: 1920, H: 1080, q: 'hd1080' };
+};
+const YT_QH = { hd2160: 2160, hd1440: 1440, hd1080: 1080, hd720: 720, large: 480, medium: 360, small: 240, tiny: 144 };
+const YT_QORDER = ['hd2160', 'hd1440', 'hd1080', 'hd720', 'large', 'medium', 'small', 'tiny'];
+const ytQLabel = (q) => YT_QH[q] ? YT_QH[q] + 'p' : (q || '');
+const ytDimsFor = (q) => { const dpr = Math.max(1, window.devicePixelRatio || 1); const h = Math.max(144, Math.round((YT_QH[q] || 1080) / dpr)); return { W: Math.round(h * 16 / 9), H: h, q }; };
+const ytBoost = (p, q) => {
+  try { if (p.setPlaybackQualityRange) p.setPlaybackQualityRange(q, q); } catch (e) {}
+  try { p.setPlaybackQuality(q); } catch (e) {}
+};
+
 function YtPlayer({ id, lesson, poster, progress, onProgress, onNext, hasNext, onPrev, hasPrev, free }) {
   const boxRef = useRef(null), hostRef = useRef(null), trackRef = useRef(null), pRef = useRef(null);
   const opRef = useRef(onProgress); opRef.current = onProgress;
   const maxAllowed = useRef((progress?.watched || 0) / 100);
-  const resumed = useRef(false), maskT = useRef(null);
+  const resumed = useRef(false), maskT = useRef(null), resumeRef = useRef(null), nudgeRef = useRef(0), tickRef = useRef(0);
   const [ready, setReady] = useState(false);
   const [fail, setFail] = useState(false);
   const [state, setState] = useState(-1);
@@ -6176,6 +6575,10 @@ function YtPlayer({ id, lesson, poster, progress, onProgress, onNext, hasNext, o
   const [vol, setVol] = useState(100);
   const [muted, setMuted] = useState(false);
   const [fs, setFs] = useState(false);
+  const [qSel, setQSel] = useState('auto');
+  const [qCur, setQCur] = useState('');
+  const [qList, setQList] = useState([]);
+  const [qOpen, setQOpen] = useState(false);
   /* Sifat: iframe 1920x1080 o'lchamda ochiladi va ekranga moslab kichraytiriladi — YouTube shunda eng yuqori sifatni (1080p) tanlaydi */
   const ytRef = useRef(null);
   const [box, setBox] = useState({ w: 640, h: 360 });
@@ -6185,26 +6588,32 @@ function YtPlayer({ id, lesson, poster, progress, onProgress, onNext, hasNext, o
     m(); const ro = new ResizeObserver(m); ro.observe(el);
     return () => ro.disconnect();
   }, []);
-  const EXTRA = 170;
-  const k = Math.max(0.05, Math.min(box.w / 1920, box.h / 1080));
-  const frameStyle = { width: 1920, height: 1080 + 2 * EXTRA, transform: `scale(${k})`, transformOrigin: '0 0', left: (box.w - 1920 * k) / 2, top: (box.h - 1080 * k) / 2 - EXTRA * k };
+  const D = qSel === 'auto' ? ytDims() : ytDimsFor(qSel);
+  const dRef = useRef(D); dRef.current = D;
+  const EXTRA = Math.max(90, Math.round(170 * D.H / 1080));
+  const k = Math.max(0.05, Math.min(box.w / D.W, box.h / D.H));
+  const frameStyle = { width: D.W, height: D.H + 2 * EXTRA, transform: `scale(${k})`, transformOrigin: '0 0', left: Math.round((box.w - D.W * k) / 2), top: Math.round((box.h - D.H * k) / 2 - EXTRA * k) };
 
   useEffect(() => {
     let dead = false, p = null;
+    setReady(false); setState(-1); nudgeRef.current = 0; tickRef.current = 0;
     loadYT().then((YT) => {
       if (dead) return;
-      p = new YT.Player(hostRef.current, {
+      const holder = document.createElement('div');
+      hostRef.current.innerHTML = '';
+      hostRef.current.appendChild(holder);
+      p = new YT.Player(holder, {
         videoId: id,
-        playerVars: { vq: 'hd1080', controls: 0, disablekb: 1, fs: 0, modestbranding: 1, rel: 0, iv_load_policy: 3, playsinline: 1, cc_load_policy: 0 },
+        playerVars: { vq: dRef.current.q, ...(/^https?:/.test(window.location.protocol) ? { origin: window.location.origin } : {}), controls: 0, disablekb: 1, fs: 0, modestbranding: 1, rel: 0, iv_load_policy: 3, playsinline: 1, cc_load_policy: 0 },
         events: {
-          onReady: () => { if (dead) return; pRef.current = p; try { p.setPlaybackQuality('hd1080'); } catch (e) {} setDur(p.getDuration() || 0); setReady(true); },
+          onReady: () => { if (dead) return; pRef.current = p; ytBoost(p, dRef.current.q); setDur(p.getDuration() || 0); setReady(true); const rs = resumeRef.current; if (rs) { resumeRef.current = null; try { p.seekTo(rs.t, true); if (rs.play) p.playVideo(); } catch (e) {} } },
           onError: () => { if (!dead) setFail(true); },
           onStateChange: (e) => {
             if (dead) return;
             const s = e.data; setState(s);
             if (s === 1) {
               setStarted(true);
-              try { p.setPlaybackQuality('hd1080'); } catch (e) {}
+              ytBoost(p, dRef.current.q);
               if (!resumed.current) {
                 resumed.current = true;
                 const d = p.getDuration();
@@ -6219,15 +6628,28 @@ function YtPlayer({ id, lesson, poster, progress, onProgress, onNext, hasNext, o
     }).catch(() => { if (!dead) setFail(true); });
     const h = () => setFs(document.fullscreenElement === boxRef.current);
     document.addEventListener('fullscreenchange', h);
-    return () => { dead = true; clearTimeout(maskT.current); document.removeEventListener('fullscreenchange', h); try { p && p.destroy(); } catch (e) {} };
-  }, [id]);
+    return () => { dead = true; clearTimeout(maskT.current); document.removeEventListener('fullscreenchange', h); pRef.current = null; try { p && p.destroy(); } catch (e) {} if (hostRef.current) hostRef.current.innerHTML = ''; };
+  }, [id, qSel]);
 
   useEffect(() => {
     if (!ready) return;
     const iv = setInterval(() => {
       const p = pRef.current; if (!p || !p.getCurrentTime) return;
       const d = p.getDuration() || 0, t = p.getCurrentTime() || 0;
-      setCur(t); if (d) setDur(d); if (!d) return;
+      setCur(t); if (d) setDur(d);
+      try {
+        const qq = p.getPlaybackQuality && p.getPlaybackQuality(); if (qq) setQCur(qq);
+        const ll = p.getAvailableQualityLevels && p.getAvailableQualityLevels();
+        if (ll && ll.length) setQList((pv) => pv.join() === ll.join() ? pv : ll);
+        if (p.getPlayerState() === 1 && ll && ll.length) {
+          tickRef.current += 1;
+          if (tickRef.current % 10 === 0 && nudgeRef.current < 4) {       // har ~5 soniyada, eng ko'pi bilan 4 marta
+            const tgt = YT_QORDER.find((x) => ll.includes(x) && YT_QH[x] <= YT_QH[dRef.current.q]);
+            if (tgt && qq && YT_QH[qq] && YT_QH[qq] < YT_QH[tgt]) { nudgeRef.current += 1; ytBoost(p, tgt); p.seekTo(t, true); }
+          }
+        }
+      } catch (e) {}
+      if (!d) return;
       const frac = t / d;
       if (free) { setPct(Math.round(frac * 100)); return; }
       const lim = maxAllowed.current * d + 2;
@@ -6240,6 +6662,21 @@ function YtPlayer({ id, lesson, poster, progress, onProgress, onNext, hasNext, o
   }, [ready]);
 
   const P = () => pRef.current;
+  const pickQuality = (q) => {
+    setQOpen(false);
+    if (q === qSel) return;
+    const p = P();
+    resumeRef.current = p && p.getCurrentTime ? { t: p.getCurrentTime() || 0, play: p.getPlayerState() === 1 } : null;
+    setQCur('');
+    setQSel(q);   // D o'zgaradi → iframe shu o'lchamda qayta yaratiladi, YouTube o'sha sifatni tanlaydi
+  };
+  useEffect(() => {
+    if (!qOpen) return;
+    const h = (e) => { if (!e.target.closest || !e.target.closest('.vp-q')) setQOpen(false); };
+    document.addEventListener('mousedown', h);
+    return () => document.removeEventListener('mousedown', h);
+  }, [qOpen]);
+  const qShow = (qList.length ? YT_QORDER.filter((q) => qList.includes(q)) : ['hd1440', 'hd1080', 'hd720', 'large', 'medium', 'small']);
   const playing = state === 1;
   const togglePlay = () => { const p = P(); if (!p) return; if (state === 1) p.pauseVideo(); else p.playVideo(); };
   const seekTo = (t) => { const p = P(); if (!p) return; const d = p.getDuration() || 0; const lim = free ? d : maxAllowed.current * d + 0.5; p.seekTo(Math.max(0, Math.min(t, lim, d)), true); };
@@ -6266,7 +6703,7 @@ function YtPlayer({ id, lesson, poster, progress, onProgress, onNext, hasNext, o
   return (
     <div className="vp" ref={boxRef} tabIndex={0} onKeyDown={onKey}>
       <div className="vp-yt" ref={ytRef} onContextMenu={(e) => e.preventDefault()}>
-        <div className="vp-yt-frame" style={frameStyle}><div ref={hostRef} /></div>
+        <div className="vp-yt-frame" ref={hostRef} style={frameStyle}></div>
         <div className="vp-yt-shield" onClick={togglePlay} />
         {showCover && (
           <div className={`vp-yt-cover ${poster ? 'has-poster' : started ? 'paused' : ''}`} onClick={togglePlay}
@@ -6301,6 +6738,20 @@ function YtPlayer({ id, lesson, poster, progress, onProgress, onNext, hasNext, o
           <span className="vp-spacer" />
           {!free && <span className="vp-time">{pct}% ko'rildi</span>}
           {fail && !free && !progress?.completed && <button className="vp-btn vp-main" onClick={() => onProgress(100, true)}>✓ Darsni tugatdim</button>}
+          <div className="vp-q">
+            <button className="vp-btn vp-qbtn" disabled={!ready} onClick={() => setQOpen(!qOpen)} title="Video sifati">
+              <Icon.gear width="14" height="14" /> {qSel === 'auto' ? `Avto${qCur && YT_QH[qCur] ? ' · ' + ytQLabel(qCur) : ''}` : `${ytQLabel(qSel)}${qCur && YT_QH[qCur] && qCur !== qSel ? ' → ' + ytQLabel(qCur) : ''}`}
+            </button>
+            {qOpen && (
+              <div className="vp-qmenu">
+                <div className="hd">Video sifati</div>
+                <button className={qSel === 'auto' ? 'on' : ''} onClick={() => pickQuality('auto')}>Avto (eng yuqori) <small>{qSel === 'auto' && qCur && YT_QH[qCur] ? ytQLabel(qCur) : ''}</small></button>
+                {qShow.map((q) => (
+                  <button key={q} className={qSel === q ? 'on' : ''} onClick={() => pickQuality(q)}>{ytQLabel(q)} <small>{q === 'hd1080' || q === 'hd720' ? 'HD' : q === 'hd1440' ? '2K' : q === 'hd2160' ? '4K' : ''}</small></button>
+                ))}
+              </div>
+            )}
+          </div>
           <button className="vp-btn" onClick={toggleFs} title="To'liq ekran (F)">{fs ? '⤡' : '⛶'}</button>
           <button className={`vp-btn ${nextReady ? 'vp-main' : ''}`} disabled={!nextReady} onClick={onNext} title={free ? 'Keyingi dars' : "Keyingi dars — 95% ko'rilgach ochiladi"}>⏭</button>
         </div>
