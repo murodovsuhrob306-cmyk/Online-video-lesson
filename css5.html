@@ -1845,6 +1845,59 @@ html.theme-dark .cs-intro p{color:rgba(237,239,246,.6)}
   .cs-side:hover::-webkit-scrollbar-thumb,.cs-main:hover::-webkit-scrollbar-thumb,.app-main > main:hover::-webkit-scrollbar-thumb,.sd-modal:hover::-webkit-scrollbar-thumb,.notif-dropdown-body:hover::-webkit-scrollbar-thumb{background:rgba(204,139,101,.45)}
 }
 
+
+/* ===== Mobil: dars ro'yxati pastdan chiqadigan panel (bottom sheet) — video bilan qo'shilib ketmasligi uchun ===== */
+.cs-sheet-fab,.cs-sheet-backdrop,.cs-sheet-head{display:none}
+@media(max-width:1023px){
+  .cs-layout,.cs-layout.cs-wide{grid-template-columns:minmax(0,1fr)}
+  .cs-layout.cs-wide .cs-side{display:block}
+  .cs-head-r .cs-wide-btn,.cs-toolbar .cs-wide-btn{display:none}
+  .cs-layout .cs-side{
+    position:fixed;left:0;right:0;bottom:0;top:auto;order:0;z-index:90;
+    max-height:78vh;height:auto;overflow-y:auto;overscroll-behavior:contain;
+    border-radius:1.3rem 1.3rem 0 0;background:#fff;
+    box-shadow:0 -18px 50px -12px rgba(0,0,0,.45);
+    transform:translateY(105%);visibility:hidden;
+    transition:transform .3s cubic-bezier(.2,.8,.2,1),visibility 0s linear .3s;
+    padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  .cs-layout .cs-side.cs-sheet-open{transform:translateY(0);visibility:visible;transition:transform .3s cubic-bezier(.2,.8,.2,1),visibility 0s}
+  .cs-sheet-head{
+    display:flex;align-items:center;justify-content:space-between;gap:.75rem;
+    position:sticky;top:0;z-index:2;background:inherit;padding:.55rem 1rem .6rem;
+    border-bottom:1px solid rgba(1,51,40,.08);
+  }
+  .cs-sheet-grab{position:absolute;top:6px;left:50%;transform:translateX(-50%);width:42px;height:4px;border-radius:99px;background:rgba(1,51,40,.2)}
+  .cs-sheet-title{font-weight:700;font-size:.95rem;color:#013328;margin-top:.55rem}
+  .cs-sheet-close{margin-top:.55rem;width:32px;height:32px;border-radius:99px;border:0;background:rgba(1,51,40,.07);color:#013328;font-size:1.05rem;cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
+  .cs-sheet-backdrop{
+    display:block;position:fixed;inset:0;z-index:85;background:rgba(6,20,15,.5);backdrop-filter:blur(2px);
+    opacity:0;pointer-events:none;transition:opacity .25s ease;
+  }
+  .cs-sheet-backdrop.on{opacity:1;pointer-events:auto}
+  .cs-sheet-fab{
+    display:inline-flex;align-items:center;gap:.5rem;position:fixed;left:50%;transform:translateX(-50%);
+    bottom:calc(1rem + env(safe-area-inset-bottom,0px));z-index:55;
+    padding:.6rem 1.05rem;border-radius:999px;border:0;cursor:pointer;white-space:nowrap;line-height:1.2;
+    background:#013328;color:#fff;font-weight:700;font-size:.82rem;
+    box-shadow:0 10px 28px -8px rgba(0,0,0,.5);
+  }
+  body:has(.mobile-bottom-nav) .cs-sheet-fab{bottom:calc(5.3rem + env(safe-area-inset-bottom,0px))}
+  .cs-sheet-fab .cs-fab-count{background:#cc8b65;color:#101312;border-radius:99px;font-size:.7rem;padding:.1rem .5rem}
+  .cs-main{padding-bottom:5.5rem}
+  /* position:fixed paneli ekranga bog'lanishi uchun: ota-elementlarda transform/animatsiya qoldig'i bo'lmasligi shart */
+  main:has(.cs-layout), main > :has(.cs-layout), main > * > :has(.cs-layout), .app-main:has(.cs-layout), .app-shell:has(.cs-layout){
+    animation:none!important;transform:none!important;will-change:auto!important;
+  }
+  html.theme-dark .cs-layout .cs-side{background:#171D2C}
+  html.theme-dark .cs-sheet-title,html.theme-dark .cs-sheet-close{color:#EDEFF6}
+  html.theme-dark .cs-sheet-close{background:rgba(255,255,255,.08)}
+  html.theme-dark .cs-sheet-head{border-bottom-color:rgba(255,255,255,.08)}
+  html.theme-dark .cs-sheet-grab{background:rgba(255,255,255,.25)}
+  html.theme-dark .cs-sheet-fab{background:#cc8b65;color:#101312}
+  html.theme-dark .cs-sheet-fab .cs-fab-count{background:#101312;color:#fff}
+}
+
 /* Bo'lim va darslar uchun tahrirlash / o'chirish tugmalari */
 .cs-sec-head{display:flex;align-items:center}
 .cs-sec-head .topic-row{flex:1;min-width:0;width:auto}
@@ -2126,6 +2179,34 @@ html.theme-dark .cm-act.edit:hover{background:rgba(204,139,101,.28)}
 html.theme-dark .cm-act.del{background:rgba(232,138,122,.1);color:#f0998a}
 html.theme-dark .cm-act.del:hover{background:rgba(232,138,122,.2);border-color:rgba(232,138,122,.45)}
 html.theme-dark .cm-confirm{background:rgba(232,138,122,.1);border-color:rgba(232,138,122,.3);color:#f0998a}
+
+  /* ================= Bloklanganlar sahifasi ================= */
+  .blk-toolbar { display:flex; flex-wrap:wrap; gap:.75rem; align-items:center; margin-bottom:1.25rem; }
+  .blk-search { flex:1 1 240px; min-width:200px; padding:.6rem .9rem; border-radius:.75rem; border:1px solid rgba(1,51,40,.15); background:transparent; font:inherit; font-size:.88rem; color:inherit; outline:none; }
+  .blk-search:focus { border-color:#AC4B3B; }
+  .blk-chips { display:flex; flex-wrap:wrap; gap:.4rem; }
+  .blk-chip { padding:.38rem .8rem; border-radius:999px; font-size:.76rem; font-weight:600; border:1px solid rgba(172,75,59,.3); background:transparent; color:#AC4B3B; cursor:pointer; transition:all .15s ease; }
+  .blk-chip:hover { background:rgba(172,75,59,.08); }
+  .blk-chip.on { background:#AC4B3B; color:#fff; border-color:#AC4B3B; }
+  .blk-list { display:grid; gap:.9rem; grid-template-columns:repeat(auto-fill,minmax(340px,1fr)); }
+  .blk-card { border:1px solid rgba(172,75,59,.3); border-radius:1rem; padding:1rem 1.1rem; display:flex; flex-direction:column; gap:.8rem; }
+  .blk-head { display:flex; align-items:center; gap:.7rem; }
+  .blk-avatar { width:40px; height:40px; background:rgba(172,75,59,.14); color:#AC4B3B; font-size:.85rem; }
+  .blk-name { font-weight:700; font-size:.98rem; line-height:1.2; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .blk-sub { font-size:.74rem; opacity:.65; }
+  .blk-open { margin-left:auto; flex-shrink:0; font-size:.74rem; font-weight:600; padding:.38rem .7rem; border-radius:.6rem; border:1px solid rgba(1,51,40,.2); background:transparent; color:inherit; cursor:pointer; }
+  .blk-open:hover { background:rgba(1,51,40,.07); }
+  .blk-course { border-top:1px dashed rgba(172,75,59,.3); padding-top:.7rem; display:flex; flex-direction:column; gap:.45rem; }
+  .blk-course-top { display:flex; align-items:center; justify-content:space-between; gap:.5rem; }
+  .blk-course-name { font-weight:600; font-size:.88rem; }
+  .blk-reason { display:flex; gap:.5rem; align-items:flex-start; font-size:.8rem; line-height:1.4; padding:.45rem .65rem; border-radius:.6rem; background:rgba(172,75,59,.07); }
+  .blk-reason b { color:#AC4B3B; }
+  .blk-empty { padding:2.5rem 1rem; text-align:center; opacity:.65; font-size:.9rem; }
+  .nav-badge { margin-left:auto; min-width:20px; height:20px; padding:0 .4rem; border-radius:999px; background:#AC4B3B; color:#fff; font-size:.68rem; font-weight:700; display:inline-flex; align-items:center; justify-content:center; }
+  .side-modern .nav-pill.active .nav-badge { background:#100C0D; color:#fff; }
+  .side-modern.is-collapsed .nav-badge { position:absolute; top:2px; right:6px; min-width:16px; height:16px; font-size:.6rem; padding:0 .25rem; }
+  html.theme-dark .blk-search { border-color:rgba(255,255,255,.18); }
+  html.theme-dark .blk-open { border-color:rgba(255,255,255,.22); }
 </style>
 </head>
 <body>
@@ -2306,6 +2387,31 @@ const attendanceState = (student, category, access, forceSunday) => {
     maxPenaltyPoints: ATTEND_MAX_POINTS,
     isBlocked: penaltyPoints >= ATTEND_MAX_POINTS,
   };
+};
+
+/* ---------------------------- BLOKLANGANLAR ----------------------------
+   Barcha bloklangan o'quvchi+kurs juftliklari va blok sabablari (to'lov, qo'lda bloklash,
+   muzlatish, darslik nazorati). Sidebardagi "Bloklanganlar" sahifasi shundan foydalanadi. */
+const studentBlockEntries = (students, categories) => {
+  const out = [];
+  (students || []).forEach((st) => {
+    const stu = { ...st, progress: st.progress || {} };
+    const billing = studentBilling(stu, categories);
+    Object.entries(stu.access || {}).forEach(([catId, a]) => {
+      if (!a || !a.active) return;
+      const cat = categories.find((c) => c.id === catId);
+      if (!cat) return;
+      const reasons = [];
+      if (a.frozen) reasons.push({ type: 'frozen', title: 'Muzlatilgan', text: 'Kurs administratsiya tomonidan muzlatilgan.' });
+      if (a.manualBlocked) reasons.push({ type: 'manual', title: "Qo'lda bloklangan", text: "Administratsiya tomonidan qo'lda bloklangan." });
+      const bc = billing.courses.find((x) => x.catId === catId);
+      if (bc && bc.blocked) reasons.push({ type: 'payment', title: "To'lov qilinmagan", text: `To'lov muddati o'tgan (${fmtDate(a.nextPaymentDate)}). Qarz: ${fmtMoney(bc.debt)}.` });
+      const at = cat.subtopics ? attendanceState(stu, cat, a, false) : null;
+      if (at && at.isBlocked) reasons.push({ type: 'attendance', title: 'Darslik nazorati', text: `Oxirgi ${ATTEND_WINDOW_DAYS} kunda ${at.penaltyPoints}/${at.maxPenaltyPoints} dars kuni o'tkazib yuborilgan.` });
+      if (reasons.length) out.push({ student: st, cat, catId, reasons });
+    });
+  });
+  return out;
 };
 const uid = (p) => p + Math.random().toString(36).slice(2, 9);
 const DEMO_VIDEO = 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4';
@@ -2940,6 +3046,7 @@ function Sidebar({ roleLabel, navItems, activePage, onNavigate, footerName, foot
                 className={`nav-pill w-full flex items-center gap-3 text-left px-3 py-2.5 text-sm transition ${activePage === n.id ? 'active text-white' : 'text-white/60 hover:text-white'}`}>
                 <span className="nav-pill-icon"><n.icon width="15" height="15" /></span>
                 <span className="side-label">{n.label}</span>
+                {n.badge > 0 && <span className="nav-badge">{n.badge}</span>}
               </button>
             </React.Fragment>
           ))}
@@ -3162,6 +3269,11 @@ function StaffApp({ me, staff, setStaff, categories, setCategories, students, se
   );
   const markAllNotifsRead = () => setReadNotifIds(overdueStudents.map((s) => s.id));
 
+  const blockedStudentCount = useMemo(
+    () => new Set(studentBlockEntries(students, categories).map((e) => e.student.id)).size,
+    [students, categories]
+  );
+
   const nav = [
     { id: 'overview', label: 'Dashboard', icon: Icon.home },
     { id: 'students', label: "O'quvchilar", icon: Icon.users },
@@ -3169,6 +3281,7 @@ function StaffApp({ me, staff, setStaff, categories, setCategories, students, se
     ...(canEdit ? [{ id: 'add-video', label: "Darslik qo'shish", icon: Icon.video }] : []),
     { id: 'statistics', label: 'Statistika', icon: Icon.chart },
     { id: 'payments', label: "To'lovlar", icon: Icon.warn },
+    { id: 'blocked', label: 'Bloklanganlar', icon: Icon.lock, badge: blockedStudentCount },
     ...(me.role === 'ceo' ? [{ id: 'permissions', label: 'Ruxsatlar', icon: Icon.lock }] : []),
     { id: 'profile', label: 'Profil', icon: Icon.user, dividerBefore: true },
   ];
@@ -3261,6 +3374,11 @@ function StaffApp({ me, staff, setStaff, categories, setCategories, students, se
 
         {page === 'payments' && (
           <PaymentsPage students={students} categories={categories} />
+        )}
+
+        {page === 'blocked' && (
+          <BlockedPage students={students} categories={categories}
+            onOpenStudent={(id) => { setPage('students'); setEditingStudentId(id); }} />
         )}
 
         {page === 'permissions' && me.role === 'ceo' && (
@@ -3428,6 +3546,89 @@ function StatisticsPage({ stats, revenue, students, categories }) {
 /* =========================================================================
    TO'LOVLAR (payments)
    ========================================================================= */
+
+/* =========================================================================
+   BLOKLANGANLAR sahifasi — ism-familiya + nima uchun bloklangani
+   ========================================================================= */
+function BlockedPage({ students, categories, onOpenStudent }) {
+  const [query, setQuery] = useState('');
+  const [filter, setFilter] = useState('all');
+  const entries = useMemo(() => studentBlockEntries(students, categories), [students, categories]);
+
+  const FILTERS = [
+    ['all', 'Hammasi'],
+    ['payment', "To'lov"],
+    ['manual', "Qo'lda"],
+    ['frozen', 'Muzlatilgan'],
+    ['attendance', 'Nazorat'],
+  ];
+  const countOf = (f) => (f === 'all'
+    ? new Set(entries.map((e) => e.student.id)).size
+    : new Set(entries.filter((e) => e.reasons.some((r) => r.type === f)).map((e) => e.student.id)).size);
+
+  const q = query.trim().toLowerCase();
+  const byStudent = new Map();
+  entries.forEach((e) => {
+    if (filter !== 'all' && !e.reasons.some((r) => r.type === filter)) return;
+    if (!byStudent.has(e.student.id)) byStudent.set(e.student.id, { student: e.student, items: [] });
+    byStudent.get(e.student.id).items.push(e);
+  });
+  const groups = [...byStudent.values()].filter((g) => !q || (g.student.name || '').toLowerCase().includes(q)
+    || g.items.some((i) => (i.cat.name || '').toLowerCase().includes(q)));
+  const initialsOf = (n) => (n || '?').split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase();
+
+  return (
+    <div>
+      <h1 className="font-display text-3xl text-ink mb-1 flex items-center gap-2">
+        <Icon.lock width="24" height="24" /> Bloklanganlar
+      </h1>
+      <p className="text-slate text-sm mb-6">Bloklangan o'quvchilar va blok sababi. Jami: {countOf('all')} ta o'quvchi.</p>
+
+      <div className="blk-toolbar">
+        <input className="blk-search" placeholder="Ism, familiya yoki kurs bo'yicha qidirish…" value={query} onChange={(e) => setQuery(e.target.value)} />
+        <div className="blk-chips">
+          {FILTERS.map(([id, label]) => (
+            <button key={id} type="button" className={`blk-chip ${filter === id ? 'on' : ''}`} onClick={() => setFilter(id)}>
+              {label} · {countOf(id)}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {groups.length === 0 && <div className="blk-empty">Hozircha bloklangan o'quvchilar yo'q.</div>}
+
+      <div className="blk-list">
+        {groups.map(({ student, items }) => (
+          <div key={student.id} className="blk-card bg-card">
+            <div className="blk-head">
+              <span className="avatar blk-avatar">{initialsOf(student.name)}</span>
+              <div className="min-w-0">
+                <div className="blk-name text-ink" title={student.name}>{student.name}</div>
+                <div className="blk-sub text-slate">{items.length} ta kurs bloklangan</div>
+              </div>
+              <button type="button" className="blk-open" onClick={() => onOpenStudent(student.id)}>Ochish</button>
+            </div>
+            {items.map(({ cat, catId, reasons }) => (
+              <div key={catId} className="blk-course">
+                <div className="blk-course-top">
+                  <span className="blk-course-name text-ink">{cat.name}</span>
+                  <span className="pill pill-warn shrink-0"><Icon.lock width="10" height="10" /> Bloklangan</span>
+                </div>
+                {reasons.map((r) => (
+                  <div key={r.type} className="blk-reason text-ink">
+                    <Icon.warn width="13" height="13" style={{ marginTop: 2, flexShrink: 0, color: '#AC4B3B' }} />
+                    <span><b>{r.title}.</b> {r.text}</span>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function PaymentsPage({ students, categories }) {
   const [query, setQuery] = useState('');
   const [pg, setPg] = useState(1);
@@ -3552,6 +3753,7 @@ function CoursesManager({ categories, setCategories, canEdit, notify, students, 
   const [openSub, setOpenSub] = useState(null);
   const [previewLesson, setPreviewLesson] = useState(null);
   const [wideMode, setWideMode] = useState(false);
+  const [sheetOpen, setSheetOpen] = useState(false);
   const [uplOpen, setUplOpen] = useState(false);
   const [upl, setUpl] = useState({ subId: '', num: '', title: '', duration: '', mode: 'link', videoUrl: '', fileName: '' });
   const ytSt2 = useYtAuto(upl.mode === 'link' ? upl.videoUrl : '', (m) => setUpl((u) => ({ ...u, duration: fmtDur(m.duration), title: u.title || m.title })));
@@ -3819,20 +4021,23 @@ function CoursesManager({ categories, setCategories, canEdit, notify, students, 
         {workspace && activeSub && (
           <div className="cs-toolbar cs-head-r">
             <span className="text-sm text-slate">{activeSub.name} · {activeSub.lessons.length} ta video dars</span>
-            <button className="cs-ghost" onClick={() => setWideMode(!wideMode)}>{wideMode ? "Ro'yxatni ko'rsatish" : 'Kino rejimi'}</button>
+            <button className="cs-ghost cs-wide-btn" onClick={() => setWideMode(!wideMode)}>{wideMode ? "Ro'yxatni ko'rsatish" : 'Kino rejimi'}</button>
           </div>
         )}
         </div>
 
         {workspace ? (
           <div className={`cs-layout ${wideMode ? 'cs-wide' : ''}`}>
-            <aside className="cs-side">
+            <CsSheetBackdrop open={sheetOpen} onClose={() => setSheetOpen(false)} />
+            <CsSheetFab onClick={() => setSheetOpen(true)} count={activeCat.subtopics.reduce((n, x) => n + x.lessons.length, 0)} />
+            <aside className={`cs-side ${sheetOpen ? 'cs-sheet-open' : ''}`}>
+              <CsSheetHead title={`${activeCat.name} — darslar`} onClose={() => setSheetOpen(false)} />
               <CourseAccordion
                 category={activeCat}
                 openSubId={openSub}
                 onToggleSub={(id) => setOpenSub(openSub === id ? null : id)}
                 activeLessonId={previewLesson}
-                onPickLesson={(s, l) => { setOpenSub(s.id); setPreviewLesson(l.id); }}
+                onPickLesson={(s, l) => { setOpenSub(s.id); setPreviewLesson(l.id); setSheetOpen(false); }}
                 stateOf={() => ({})}
                 subExtra={(s) => canEdit && (
                   <span className="sec-acts">
@@ -4172,28 +4377,6 @@ function CoursesManager({ categories, setCategories, canEdit, notify, students, 
   /* ---- Level 1: barcha kurslar (light-uslub kartalar) ---- */
   return (
     <div>
-      {blockedCourseInfo.length > 0 && (
-        <div className="mb-8">
-          <h2 className="font-display text-xl text-clay flex items-center gap-2 mb-3">
-            <Icon.lock width="16" height="16" /> Bloklangan kurslar
-          </h2>
-          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-3">
-            {blockedCourseInfo.map(({ cat, blockedCount }) => (
-              <button key={cat.id} onClick={() => setOpenCat(cat.id)}
-                className="text-left bg-card border border-clay/30 rounded-xl p-4 hover:border-clay transition">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="font-semibold text-ink text-sm truncate">{cat.name}</span>
-                  <span className="pill pill-warn shrink-0"><Icon.lock width="10" height="10" /> Bloklangan</span>
-                </div>
-                <p className="text-xs text-slate">
-                  {blockedCount} ta o'quvchi to'lov qilmagani uchun bloklangan
-                </p>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
       <div className="flex items-center justify-between mb-6">
         <h1 className="font-display text-3xl text-ink">Kurslar</h1>
         {canEdit && (
@@ -6335,6 +6518,29 @@ function AttendancePanel({ state }) {
    Kurs ichi: chapda accordion (bo'lim -> darslar), o'ngda video pleyer.
    Talaba ham, admin ham shu CourseAccordion'dan foydalanadi.
    ========================================================================== */
+
+/* Mobil bottom-sheet uchun umumiy elementlar: orqa fon + sarlavha + suzuvchi tugma */
+function CsSheetBackdrop({ open, onClose }) {
+  return <div className={`cs-sheet-backdrop ${open ? 'on' : ''}`} onClick={onClose} />;
+}
+function CsSheetHead({ title, onClose }) {
+  return (
+    <div className="cs-sheet-head">
+      <span className="cs-sheet-grab" />
+      <span className="cs-sheet-title">{title}</span>
+      <button type="button" className="cs-sheet-close" onClick={onClose} aria-label="Yopish">✕</button>
+    </div>
+  );
+}
+function CsSheetFab({ onClick, count }) {
+  return (
+    <button type="button" className="cs-sheet-fab" onClick={onClick}>
+      <Icon.book width="16" height="16" /> Darslar ro'yxati
+      {count > 0 && <span className="cs-fab-count">{count}</span>}
+    </button>
+  );
+}
+
 function CourseAccordion({ category, openSubId, onToggleSub, activeLessonId, onPickLesson, stateOf, addRow, lessonExtra, subExtra }) {
   return (
     <div className="topic-list">
@@ -6407,6 +6613,7 @@ function CourseStudy({ uid, userName, category, initialSubId, access, payBlocked
   const cur = at >= 0 ? flat[at] : null;
   const [openSub, setOpenSub] = useState(cur ? cur.s.id : (initialSubId || (subs[0] ? subs[0].id : null)));
   const [wide, setWide] = useState(false);
+  const [sheetOpen, setSheetOpen] = useState(false);
   useEffect(() => { if (cur) saveLS('last_' + uid, { catId: category.id, subId: cur.s.id, lessonId: cur.l.id, title: cur.l.title, course: category.name }); }, [lessonId]);
   useEffect(() => { if (!cur) { const s0 = subs.find((x) => x.id === initialSubId); if (s0 && s0.lessons[0]) setLessonId(s0.lessons[0].id); } }, []);
 
@@ -6419,7 +6626,7 @@ function CourseStudy({ uid, userName, category, initialSubId, access, payBlocked
   };
   const isLocked = (s, i) => blocked || (i > 0 && !progressOf(s.lessons[i - 1].id).completed) || restLocked(s.lessons[i]);
   const stateOf = (l, s, i) => { const p = progressOf(l.id); return { completed: p.completed, locked: isLocked(s, i), pct: p.watched }; };
-  const pick = (s, l) => { setOpenSub(s.id); setLessonId(l.id); };
+  const pick = (s, l) => { setOpenSub(s.id); setLessonId(l.id); setSheetOpen(false); };
   const go = (k) => { const t = flat[k]; if (t) pick(t.s, t.l); };
 
   const doneCount = flat.filter((x) => progressOf(x.l.id).completed).length;
@@ -6443,7 +6650,7 @@ function CourseStudy({ uid, userName, category, initialSubId, access, payBlocked
         </div>
         <div className="flex items-center gap-3">
           <span className="text-xs text-slate">{doneCount}/{flat.length} dars · {pctAll}%</span>
-          <button className="cs-ghost" onClick={() => setWide(!wide)}>{wide ? "Ro'yxatni ko'rsatish" : 'Kino rejimi'}</button>
+          <button className="cs-ghost cs-wide-btn" onClick={() => setWide(!wide)}>{wide ? "Ro'yxatni ko'rsatish" : 'Kino rejimi'}</button>
         </div>
       </div>
 
@@ -6466,7 +6673,10 @@ function CourseStudy({ uid, userName, category, initialSubId, access, payBlocked
       {attendance && <AttendancePanel state={attendance} />}
 
       <div className={`cs-layout ${wide ? 'cs-wide' : ''}`}>
-        <aside className="cs-side">
+        <CsSheetBackdrop open={sheetOpen} onClose={() => setSheetOpen(false)} />
+        <CsSheetFab onClick={() => setSheetOpen(true)} count={flat.length} />
+        <aside className={`cs-side ${sheetOpen ? 'cs-sheet-open' : ''}`}>
+          <CsSheetHead title={`${category.name} — darslar`} onClose={() => setSheetOpen(false)} />
           <CourseAccordion category={category} openSubId={openSub}
             onToggleSub={(id) => setOpenSub(openSub === id ? null : id)}
             activeLessonId={lessonId} onPickLesson={pick} stateOf={stateOf} />
