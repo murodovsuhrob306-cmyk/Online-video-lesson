@@ -757,15 +757,49 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
       padding: .4rem; box-shadow: 0 -14px 34px -16px rgba(0,0,0,.55), 0 10px 30px -14px rgba(0,0,0,.4);
     }
     .mobile-bottom-nav-item {
+      position: relative; z-index: 1;
       flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
       gap: .2rem; padding: .4rem .3rem; border-radius: 1rem; border: none; background: none; cursor: pointer;
       color: rgba(255,255,255,.55); font-size: .6rem; font-weight: 600; line-height: 1.1; white-space: nowrap;
-      transition: color .15s ease, background .15s ease, transform .15s ease;
+      -webkit-tap-highlight-color: transparent;
+      transition: color .35s ease, transform .35s cubic-bezier(.3,1.4,.5,1);
     }
-    .mobile-bottom-nav-item:active { transform: scale(.94); }
-    .mobile-bottom-nav-item.active {
-      color: #100C0D; background-image: linear-gradient(135deg, #E9C4A4, #CC8B65);
-      box-shadow: 0 8px 16px -6px rgba(204,139,101,.6);
+    .mobile-bottom-nav-item:active { transform: scale(.92); }
+    .mobile-bottom-nav-item.active { color: #fff; }
+    .mobile-bottom-nav-item.active .mbn-icon { transform: translateY(-1px) scale(1.12); }
+    .mbn-icon { position: relative; display: inline-flex; transition: transform .45s cubic-bezier(.3,1.5,.5,1); }
+    .mbn-badge {
+      position: absolute; top: -5px; right: -9px; min-width: 14px; height: 14px; padding: 0 4px; border-radius: 999px;
+      background: #E5484D; color: #fff; font-size: .55rem; font-weight: 700; line-height: 14px; text-align: center;
+      box-shadow: 0 0 0 2px #171D2C;
+    }
+
+    /* ---- iOS liquid glass indicator ---- */
+    .mobile-bottom-nav {
+      background-color: rgba(23,29,44,.82);
+      -webkit-backdrop-filter: blur(22px) saturate(1.7); backdrop-filter: blur(22px) saturate(1.7);
+    }
+    .mbn-glass {
+      position: absolute; left: 0; top: 0; z-index: 0; pointer-events: none;
+      width: 0; height: 0; border-radius: 1rem; opacity: 0;
+      translate: 0 0;
+      transition: translate .55s cubic-bezier(.34,1.45,.5,1), width .55s cubic-bezier(.34,1.45,.5,1), opacity .25s ease;
+      background:
+        radial-gradient(120% 90% at 22% 0%, rgba(255,255,255,.55), rgba(255,255,255,0) 55%),
+        linear-gradient(160deg, rgba(233,196,164,.42), rgba(204,139,101,.22));
+      border: 1px solid rgba(255,255,255,.38);
+      -webkit-backdrop-filter: blur(10px) saturate(1.9) brightness(1.15);
+      backdrop-filter: blur(10px) saturate(1.9) brightness(1.15);
+      box-shadow:
+        inset 0 1.5px 1px rgba(255,255,255,.65),
+        inset 0 -10px 16px -6px rgba(255,255,255,.14),
+        inset 0 0 0 1px rgba(255,255,255,.06),
+        0 10px 24px -8px rgba(204,139,101,.55),
+        0 2px 6px rgba(0,0,0,.25);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .mbn-glass { transition: none; }
+      .mbn-icon, .mobile-bottom-nav-item { transition: none; }
     }
   }
 
@@ -1219,6 +1253,52 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   @media (max-width: 640px) { .topbar-profile-name { display: none; } }
 
   .dropdown-backdrop { position: fixed; inset: 0; z-index: 39; background: transparent; }
+
+  /* ================= Kirishdagi "bloklangan bor" modali + bildirishnoma qatori ================= */
+  .notif-item-link { width: 100%; text-align: left; background: none; border: 0; border-top: 1px solid rgba(1,51,40,.06); cursor: pointer; font: inherit; color: inherit; border-radius: .5rem; transition: background .15s ease; }
+  .notif-item-link:first-child { border-top: 0; }
+  .notif-item-link:hover { background: rgba(172,75,59,.06); }
+  .notif-item-link .pill { display: inline-flex; align-items: center; gap: .25rem; }
+  html.theme-dark .notif-item-link { border-top-color: rgba(255,255,255,.07); }
+  html.theme-dark .notif-item-link:hover { background: rgba(255,255,255,.05); }
+  .bi-backdrop {
+    position: fixed; inset: 0; z-index: 90; background: rgba(1,14,10,.58);
+    -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px);
+    display: flex; align-items: center; justify-content: center; padding: 1.25rem;
+    animation: fadeUp .22s ease both;
+  }
+  .bi-card {
+    width: 100%; max-width: 26rem; background: #fff; color: #013328; text-align: center;
+    border-radius: 1.4rem; border: 1px solid rgba(1,51,40,.08); padding: 1.7rem 1.5rem 1.4rem;
+    box-shadow: 0 34px 80px -22px rgba(0,0,0,.55); transform-origin: center;
+    animation: biPop .5s cubic-bezier(.2,.9,.3,1.25) both;
+  }
+  @keyframes biPop { 0% { transform: scale(.8) translateY(14px); opacity: 0; } 100% { transform: scale(1) translateY(0); opacity: 1; } }
+  html.theme-dark .bi-card { background: #171D2C; border-color: rgba(255,255,255,.08); color: #EDEFF6; }
+  .bi-icon {
+    width: 3.6rem; height: 3.6rem; margin: 0 auto .9rem; border-radius: 999px; display: flex; align-items: center; justify-content: center;
+    color: #fff; background: linear-gradient(135deg, #FF8A65, #E6503B 60%, #B8352A);
+    box-shadow: 0 12px 26px -8px rgba(230,80,59,.7), 0 0 0 7px rgba(230,80,59,.12);
+  }
+  .bi-title { font-size: 1.3rem; margin-bottom: .35rem; }
+  .bi-text { font-size: .84rem; opacity: .75; line-height: 1.5; margin-bottom: 1rem; }
+  .bi-list { text-align: left; border: 1px solid rgba(1,51,40,.08); border-radius: .9rem; padding: .25rem .65rem; margin-bottom: 1.1rem; }
+  html.theme-dark .bi-list { border-color: rgba(255,255,255,.09); }
+  .bi-row { display: flex; align-items: center; gap: .65rem; padding: .5rem 0; border-top: 1px solid rgba(1,51,40,.06); }
+  html.theme-dark .bi-row { border-top-color: rgba(255,255,255,.07); }
+  .bi-row:first-child { border-top: 0; }
+  .bi-row-body { min-width: 0; flex: 1; }
+  .bi-row-name { font-size: .84rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bi-row-sub { font-size: .7rem; opacity: .65; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bi-more { font-size: .72rem; opacity: .6; padding: .4rem 0 .3rem; border-top: 1px solid rgba(1,51,40,.06); }
+  .bi-actions { display: flex; gap: .6rem; }
+  .bi-btn { flex: 1; border: 0; border-radius: .85rem; padding: .7rem .8rem; font-weight: 700; font-size: .82rem; cursor: pointer; transition: transform .15s ease, filter .15s ease; }
+  .bi-btn:active { transform: scale(.96); }
+  .bi-btn-ghost { background: rgba(1,51,40,.07); color: inherit; }
+  html.theme-dark .bi-btn-ghost { background: rgba(255,255,255,.08); }
+  .bi-btn-main { background-image: linear-gradient(135deg, #E9C4A4, #CC8B65); color: #100C0D; box-shadow: 0 10px 20px -8px rgba(204,139,101,.7); }
+  .bi-btn-main:hover { filter: brightness(1.06); }
+  @media (prefers-reduced-motion: reduce) { .bi-card, .bi-backdrop { animation: none; } }
 
   /* ================= Universal center modal ================= */
   .modal-backdrop {
@@ -2212,7 +2292,7 @@ html.theme-dark .cm-confirm{background:rgba(232,138,122,.1);border-color:rgba(23
 <body>
 <div id="root"></div>
 <script type="text/plain" id="app-source">
-const { useState, useMemo, useRef, useEffect } = React;
+const { useState, useMemo, useRef, useEffect, useLayoutEffect } = React;
 
 /* =========================================================================
    EduStream — front-end demo
@@ -3074,17 +3154,78 @@ function Sidebar({ roleLabel, navItems, activePage, onNavigate, footerName, foot
    else lives behind the hamburger menu, which opens the sidebar as a drawer
    ========================================================================= */
 function MobileBottomNav({ navItems, activePage, onNavigate }) {
-  const mobileIds = ['overview', 'students', 'payments', 'profile'];
+  const mobileIds = ['overview', 'payments', 'blocked', 'profile'];
   const items = mobileIds
     .map((id) => navItems.find((n) => n.id === id))
     .filter(Boolean);
 
+  const navRef = useRef(null);
+  const glassRef = useRef(null);
+  const prevIdx = useRef(-1);
+  const activeIdx = items.findIndex((n) => n.id === activePage);
+
+  /* iOS "liquid glass" indicator: bitta shisha kapsula tablar orasida suzib o'tadi —
+     yo'lda cho'ziladi (suyuqdek), manzilda esa prujinadek joylashadi. */
+  useLayoutEffect(() => {
+    const nav = navRef.current, glass = glassRef.current;
+    if (!nav || !glass) return;
+    const btns = nav.querySelectorAll('.mobile-bottom-nav-item');
+    const btn = btns[activeIdx];
+    if (!btn || !btn.offsetWidth) { glass.style.opacity = '0'; prevIdx.current = -1; return; }
+
+    const place = () => {
+      glass.style.width = btn.offsetWidth + 'px';
+      glass.style.height = btn.offsetHeight + 'px';
+      glass.style.translate = btn.offsetLeft + 'px ' + btn.offsetTop + 'px';
+    };
+    const from = prevIdx.current;
+
+    if (from === -1) {
+      // birinchi chiqish: sakrab o'tmasin — joyida paydo bo'lsin
+      glass.style.transition = 'none';
+      place();
+      glass.style.opacity = '0';
+      void glass.offsetWidth;
+      glass.style.transition = '';
+      glass.style.opacity = '1';
+      if (glass.animate) glass.animate(
+        [{ scale: '.7 .7', opacity: 0 }, { scale: '1 1', opacity: 1 }],
+        { duration: 380, easing: 'cubic-bezier(.2,.9,.3,1.3)' }
+      );
+    } else if (from !== activeIdx) {
+      const dist = Math.abs(activeIdx - from);
+      place();
+      if (glass.animate) glass.animate(
+        [
+          { scale: '1 1' },
+          { scale: (1 + 0.18 * dist) + ' ' + (1 - 0.07 * Math.min(dist, 2)) , offset: 0.38 },
+          { scale: '.96 1.05', offset: 0.78 },
+          { scale: '1 1' }
+        ],
+        { duration: 560 + dist * 40, easing: 'cubic-bezier(.3,.7,.3,1)' }
+      );
+    } else {
+      place();
+    }
+    prevIdx.current = activeIdx;
+
+    const onResize = () => {
+      glass.style.transition = 'none'; place(); void glass.offsetWidth; glass.style.transition = '';
+    };
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, [activeIdx]);
+
   return (
-    <nav className="mobile-bottom-nav">
+    <nav className="mobile-bottom-nav" ref={navRef}>
+      <span className="mbn-glass" ref={glassRef} aria-hidden="true" />
       {items.map((n) => (
         <button key={n.id} onClick={() => onNavigate(n.id)}
           className={`mobile-bottom-nav-item ${activePage === n.id ? 'active' : ''}`}>
-          <n.icon width="19" height="19" />
+          <span className="mbn-icon">
+            <n.icon width="19" height="19" />
+            {n.badge > 0 && <span className="mbn-badge">{n.badge > 99 ? '99+' : n.badge}</span>}
+          </span>
           <span>{n.label}</span>
         </button>
       ))}
@@ -3093,12 +3234,76 @@ function MobileBottomNav({ navItems, activePage, onNavigate }) {
 }
 
 /* =========================================================================
+   KIRISHDAGI "BLOKLANGAN O'QUVCHILAR BOR" MODALI
+   Yopilganda modal qo'ng'iroqchaga (bildirishnomalarga) so'rilib ketadi.
+   ========================================================================= */
+function BlockedIntroModal({ items, onFinish }) {
+  const cardRef = useRef(null);
+  const backRef = useRef(null);
+  const closing = useRef(false);
+
+  const close = (goBlocked) => {
+    if (closing.current) return;
+    closing.current = true;
+    const card = cardRef.current, back = backRef.current;
+    const bell = document.querySelector('.notif-bell-btn');
+    const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!card || !back || !bell || !card.animate || reduce) { onFinish(goBlocked); return; }
+    const c = card.getBoundingClientRect(), b = bell.getBoundingClientRect();
+    const dx = (b.left + b.width / 2) - (c.left + c.width / 2);
+    const dy = (b.top + b.height / 2) - (c.top + c.height / 2);
+    back.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 700, easing: 'ease-in', fill: 'forwards' });
+    const anim = card.animate([
+      { transform: 'translate(0,0) scale(1,1)', opacity: 1, filter: 'blur(0px)', offset: 0 },
+      { transform: 'translate(' + dx * 0.1 + 'px,' + dy * 0.1 + 'px) scale(.92,1.05)', opacity: 1, filter: 'blur(0px)', offset: 0.18 },
+      { transform: 'translate(' + dx * 0.55 + 'px,' + dy * 0.5 + 'px) scale(.36,.5) skewX(-8deg)', opacity: 0.95, filter: 'blur(1px)', offset: 0.62 },
+      { transform: 'translate(' + dx + 'px,' + dy + 'px) scale(.03,.03)', opacity: 0, filter: 'blur(3px)', offset: 1 },
+    ], { duration: 820, easing: 'cubic-bezier(.55,.05,.35,1)', fill: 'forwards' });
+    anim.onfinish = () => onFinish(goBlocked);
+  };
+
+  useEffect(() => {
+    const onKey = (e) => { if (e.key === 'Escape') close(false); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
+  const shown = items.slice(0, 4);
+  return (
+    <div className="bi-backdrop" ref={backRef} onClick={() => close(false)}>
+      <div className="bi-card" ref={cardRef} role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
+        <div className="bi-icon"><Icon.lock width="26" height="26" /></div>
+        <h3 className="bi-title font-display">Bloklangan o'quvchilar bor</h3>
+        <p className="bi-text">Hozir <b>{items.length} ta</b> o'quvchining kursi bloklangan. Bu xabar muammo hal bo'lguncha bildirishnomalarda turadi.</p>
+        <div className="bi-list">
+          {shown.map((n) => (
+            <div key={n.id} className="bi-row">
+              <span className="avatar w-8 h-8 bg-paper text-ink text-xs border border-line">{n.initials}</span>
+              <div className="bi-row-body">
+                <div className="bi-row-name">{n.name}</div>
+                <div className="bi-row-sub">{n.reasonText}</div>
+              </div>
+            </div>
+          ))}
+          {items.length > shown.length && <div className="bi-more">+ yana {items.length - shown.length} ta o'quvchi</div>}
+        </div>
+        <div className="bi-actions">
+          <button type="button" className="bi-btn bi-btn-ghost" onClick={() => close(false)}>Keyinroq</button>
+          <button type="button" className="bi-btn bi-btn-main" onClick={() => close(true)}>Bloklanganlarni ko'rish</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* =========================================================================
    TOPBAR (dark/light, bildirishnomalar modal, profil paneli)
    ========================================================================= */
-function Topbar({ me, roleLabel, initials, theme, onToggleTheme, notifications, onMarkAllRead, onGoProfile, onLogout, onOpenMenu }) {
+function Topbar({ me, roleLabel, initials, theme, onToggleTheme, notifications, onMarkAllRead, onGoProfile, onLogout, onOpenMenu, badgeHidden, onOpenBlocked }) {
   const [notifOpen, setNotifOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const unread = notifications.length;
+  const badgeCount = badgeHidden ? 0 : unread; // modal so'rilib bo'lguncha badge ko'rinmaydi
   const [bellShake, setBellShake] = useState(false);
   const prevUnreadRef = useRef(unread);
   const [markPulse, setMarkPulse] = useState(false);
@@ -3110,14 +3315,14 @@ function Topbar({ me, roleLabel, initials, theme, onToggleTheme, notifications, 
   };
 
   useEffect(() => {
-    if (unread > prevUnreadRef.current) {
+    if (badgeCount > prevUnreadRef.current) {
       setBellShake(true);
       const t = setTimeout(() => setBellShake(false), 820);
-      prevUnreadRef.current = unread;
+      prevUnreadRef.current = badgeCount;
       return () => clearTimeout(t);
     }
-    prevUnreadRef.current = unread;
-  }, [unread]);
+    prevUnreadRef.current = badgeCount;
+  }, [badgeCount]);
 
   return (
     <header className="topbar">
@@ -3137,7 +3342,7 @@ function Topbar({ me, roleLabel, initials, theme, onToggleTheme, notifications, 
         <div className="topbar-notif-wrap">
           <button className={`topbar-icon-btn notif-bell-btn ${bellShake ? 'is-shaking' : ''}`} onClick={() => setNotifOpen((v) => !v)} aria-label="Bildirishnomalar">
             <Icon.bell width="17" height="17" />
-            {unread > 0 && <span className="notif-badge">{unread > 9 ? '9+' : unread}</span>}
+            {badgeCount > 0 && <span className="notif-badge">{badgeCount > 9 ? '9+' : badgeCount}</span>}
           </button>
           {notifOpen && (
             <React.Fragment>
@@ -3146,7 +3351,7 @@ function Topbar({ me, roleLabel, initials, theme, onToggleTheme, notifications, 
                 <div className="notif-dropdown-head">
                   <h3 className="font-display">Bildirishnomalar</h3>
                   <div className="notif-dropdown-head-acts">
-                    {(notifications.length > 0 || markPulse) && (
+                    {(notifications.some((n) => !n.persistent) || markPulse) && (
                       <button
                         type="button"
                         className={`notif-mark-all ${markPulse ? 'is-success' : ''}`}
@@ -3169,14 +3374,15 @@ function Topbar({ me, roleLabel, initials, theme, onToggleTheme, notifications, 
                 <div className="notif-dropdown-body">
                   {notifications.length === 0 && <p className="text-sm text-slate p-3">Hozircha bildirishnoma yo'q.</p>}
                   {notifications.map((n) => (
-                    <div key={n.id} className="notif-item">
+                    <button type="button" key={n.id} className="notif-item notif-item-link"
+                      onClick={() => { setNotifOpen(false); if (onOpenBlocked) onOpenBlocked(); }}>
                       <span className="avatar w-8 h-8 bg-paper text-ink text-xs border border-line">{n.initials}</span>
                       <div className="notif-item-body">
                         <div className="notif-item-title">{n.name}</div>
-                        <div className="notif-item-sub">To'lov muddati o'tgan</div>
+                        <div className="notif-item-sub">{n.courses} ta kurs bloklangan · {n.reasonText}</div>
                       </div>
-                      <span className="pill pill-warn shrink-0">Diqqat</span>
-                    </div>
+                      <span className="pill pill-warn shrink-0"><Icon.lock width="10" height="10" /> Bloklangan</span>
+                    </button>
                   ))}
                 </div>
               </div>
@@ -3261,12 +3467,26 @@ function StaffApp({ me, staff, setStaff, categories, setCategories, students, se
   );
   const [readNotifIds, setReadNotifIds] = useState(() => loadLS('readNotifIds', []));
   useEffect(() => { saveLS('readNotifIds', readNotifIds); }, [readNotifIds]);
-  const notifications = useMemo(
-    () => overdueStudents
-      .filter((s) => !readNotifIds.includes(s.id))
-      .map((s) => ({ id: s.id, name: s.name, initials: s.name.split(' ').map((w) => w[0]).slice(0, 2).join('') })),
-    [overdueStudents, readNotifIds]
-  );
+  /* Bildirishnomalar = hozir bloklangan o'quvchilar. "O'qilgan" deb belgilanmaydi:
+     muammo (blok) bartaraf bo'lgandagina o'zi yo'qoladi. */
+  const notifications = useMemo(() => {
+    const map = new Map();
+    studentBlockEntries(students, categories).forEach((e) => {
+      const g = map.get(e.student.id) || { id: e.student.id, name: e.student.name || '', courses: 0, reasons: new Set() };
+      g.courses += 1;
+      e.reasons.forEach((r) => g.reasons.add(r.title));
+      map.set(e.student.id, g);
+    });
+    return [...map.values()].map((g) => ({
+      id: g.id, name: g.name, courses: g.courses, persistent: true,
+      reasonText: [...g.reasons].join(', '),
+      initials: g.name.split(' ').map((w) => w[0]).slice(0, 2).join(''),
+    }));
+  }, [students, categories]);
+
+  /* Saytga kirganda bloklanganlar bo'lsa — modal chiqadi, so'ng qo'ng'iroqchaga "so'rilib" ketadi */
+  const [intro, setIntro] = useState('pending'); // pending -> show -> done
+  useEffect(() => { setIntro(notifications.length > 0 ? 'show' : 'done'); }, []);
   const markAllNotifsRead = () => setReadNotifIds(overdueStudents.map((s) => s.id));
 
   const blockedStudentCount = useMemo(
@@ -3296,6 +3516,10 @@ function StaffApp({ me, staff, setStaff, categories, setCategories, students, se
 
   return (
     <div className="min-h-screen bg-paper flex app-shell">
+      {intro === 'show' && (
+        <BlockedIntroModal items={notifications}
+          onFinish={(goBlocked) => { setIntro('done'); if (goBlocked) goTo('blocked'); }} />
+      )}
       <Sidebar roleLabel={roleLabel} navItems={nav}
         activePage={page} onNavigate={goTo}
         footerName={me.name} footerSub="Profilni ko'rish" footerInitials={initials}
@@ -3306,6 +3530,7 @@ function StaffApp({ me, staff, setStaff, categories, setCategories, students, se
         <Topbar me={me} roleLabel={roleLabel} initials={initials}
           theme={theme} onToggleTheme={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
           notifications={notifications} onMarkAllRead={markAllNotifsRead} onGoProfile={() => goTo('profile')} onLogout={onLogout}
+          badgeHidden={intro !== 'done'} onOpenBlocked={() => goTo('blocked')}
           onOpenMenu={() => setMobileMenuOpen(true)} />
 
         <main className="flex-1 p-8 overflow-y-auto max-h-screen">
