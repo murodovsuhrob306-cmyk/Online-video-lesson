@@ -2297,7 +2297,144 @@ html.theme-dark .cm-confirm{background:rgba(232,138,122,.1);border-color:rgba(23
   .side-modern.is-collapsed .nav-badge { position:absolute; top:2px; right:6px; min-width:16px; height:16px; font-size:.6rem; padding:0 .25rem; }
   html.theme-dark .blk-search { border-color:rgba(255,255,255,.18); }
   html.theme-dark .blk-open { border-color:rgba(255,255,255,.22); }
+
+  /* ===================== ULTRA-MODERN v2 (aurora + glass + bento) ===================== */
+  html.theme-dark, html.theme-dark body { background: #060b09 !important; }
+  html:not(.theme-dark), html:not(.theme-dark) body { background: #eef3f0 !important; }
+  body::before { content:''; position:fixed; inset:0; z-index:0; pointer-events:none;
+    background: radial-gradient(560px 460px at 10% -8%, rgba(16,185,129,.42), transparent 70%),
+                radial-gradient(500px 460px at 98% 32%, rgba(124,58,237,.34), transparent 70%),
+                radial-gradient(520px 440px at 36% 108%, rgba(217,119,6,.26), transparent 70%);
+    animation: v2Aur 20s ease-in-out infinite alternate; }
+  body::after { content:''; position:fixed; inset:0; z-index:0; pointer-events:none;
+    background-image: radial-gradient(rgba(255,255,255,.07) 1px, transparent 1px); background-size:26px 26px;
+    -webkit-mask-image: radial-gradient(ellipse at 50% 30%, #000 20%, transparent 75%); mask-image: radial-gradient(ellipse at 50% 30%, #000 20%, transparent 75%); }
+  html:not(.theme-dark) body::before { opacity:.55; } html:not(.theme-dark) body::after { opacity:.5; filter:invert(1); }
+  @keyframes v2Aur { to { transform: translate(50px,34px) scale(1.1); } }
+  .app-shell { position:relative; z-index:1; }
+
+  /* Boshqa sahifalardagi kartalar ham shisha uslubida */
+  .bg-card, .monthly-chart-card, .stat-modern { background: rgba(255,255,255,.62) !important; border:1px solid rgba(255,255,255,.7) !important;
+    backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border-radius:1.4rem !important; }
+  html.theme-dark .bg-card, html.theme-dark .monthly-chart-card, html.theme-dark .stat-modern { background: rgba(255,255,255,.045) !important; border:1px solid rgba(255,255,255,.09) !important; box-shadow: 0 20px 50px -20px rgba(0,0,0,.6) !important; }
+
+  /* Yon panel: suzib turuvchi shisha rail, sichqoncha ustiga borganda ochiladi */
+  aside.side-modern.bg-ink { background-color: rgba(10,20,15,.72) !important; backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border:1px solid rgba(255,255,255,.1) !important; }
+  .topbar { background-color: rgba(10,20,15,.7) !important; backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border-color: rgba(255,255,255,.1) !important; }
+  .side-modern::before { background: radial-gradient(circle, rgba(52,211,153,.28), transparent 70%) !important; }
+  .side-modern .nav-pill.active { background-image: linear-gradient(90deg, rgba(52,211,153,.24), rgba(52,211,153,.04)) !important;
+    box-shadow: inset 0 0 0 1px rgba(52,211,153,.35) !important; transform:none; }
+  .side-modern .nav-pill.active, .side-modern .nav-pill.active span { color:#fff !important; }
+  .side-modern .nav-pill.active .nav-pill-icon { background: rgba(52,211,153,.2) !important; color:#34d399 !important; box-shadow:0 0 14px rgba(52,211,153,.45); }
+  @media (min-width: 861px) {
+    .side-modern { position:relative; z-index:60; }
+    
+    .side-modern.is-collapsed:hover { width:15rem !important; margin-right:-9.15rem; }
+    .side-modern.is-collapsed:hover .side-label, .side-modern.is-collapsed:hover .side-footer-info { opacity:1; max-width:none; }
+    .side-modern.is-collapsed:hover .side-logo-row { justify-content:flex-start; }
+    .side-modern.is-collapsed:hover .side-logo-row .brand-text { display:inline; }
+    .side-modern.is-collapsed:hover nav.flex-1 button { justify-content:flex-start; padding-left:.75rem; padding-right:.75rem; }
+    .side-modern.is-collapsed:hover .side-footer { justify-content:flex-start; }
+  }
+
+  /* ---------- Dashboard v2 ---------- */
+  .v2 { --ink:#eef6f1; --mut:#8aa398; --glass:rgba(255,255,255,.045); --bd:rgba(255,255,255,.09); --line:rgba(255,255,255,.07); --dot:#0b1410;
+    --em:#34d399; --lime:#a3e635; --rose:#fb7185; --sh:0 20px 50px -20px rgba(0,0,0,.6);
+    color:var(--ink); font-family:Manrope,system-ui,sans-serif; max-width:1500px; }
+  html:not(.theme-dark) .v2 { --ink:#0d1f17; --mut:#5f776b; --glass:rgba(255,255,255,.7); --bd:rgba(13,31,23,.08); --line:rgba(13,31,23,.08); --dot:#fff; --sh:0 20px 40px -22px rgba(13,31,23,.25); }
+  .v2 h1, .v2 .v2-ct, .v2 .v2-v, .v2 .v2-big, .v2 .v2-tip b { font-family:Sora,Manrope,system-ui,sans-serif; }
+  .v2-top { display:flex; align-items:flex-end; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:22px; }
+  .v2-top p { color:var(--mut); font-size:13px; font-weight:600; text-transform:capitalize; }
+  .v2 h1 { font-size:30px; font-weight:700; letter-spacing:-.02em; line-height:1.15; color:var(--ink); }
+  .v2 h1 em { font-style:normal; background:linear-gradient(90deg,var(--em),var(--lime)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .v2-bento { display:grid; grid-template-columns:repeat(12,minmax(0,1fr)); gap:16px; }
+  .v2-c { background:var(--glass); border:1px solid var(--bd); border-radius:24px; padding:22px; backdrop-filter:blur(22px); -webkit-backdrop-filter:blur(22px);
+    box-shadow:var(--sh); position:relative; overflow:hidden; animation:v2Up .7s cubic-bezier(.2,.8,.2,1) both; transition:transform .3s, border-color .3s; text-align:left; font:inherit; color:inherit; }
+  .v2-c::before { content:''; position:absolute; inset:0; background:radial-gradient(380px circle at var(--mx,50%) var(--my,0%), rgba(255,255,255,.09), transparent 45%); opacity:0; transition:.3s; pointer-events:none; }
+  .v2-c:hover::before { opacity:1; } .v2-c:hover { border-color:rgba(255,255,255,.17); }
+  @keyframes v2Up { from { opacity:0; transform:translateY(24px) scale(.98); } }
+  .v2-hero { grid-column:span 6; grid-row:span 2; display:flex; flex-direction:column; background:linear-gradient(150deg, rgba(52,211,153,.2), rgba(124,58,237,.12) 60%, var(--glass)); }
+  .v2-tag { display:inline-flex; align-items:center; gap:7px; font-size:12px; font-weight:700; color:var(--em); background:rgba(52,211,153,.12); border:1px solid rgba(52,211,153,.25); padding:6px 12px; border-radius:99px; width:fit-content; }
+  .v2-tag::before { content:''; width:7px; height:7px; border-radius:50%; background:var(--em); box-shadow:0 0 10px var(--em); animation:v2Pl 1.8s infinite; }
+  @keyframes v2Pl { 50% { opacity:.3; } }
+  .v2-big { font-size:clamp(34px,4.4vw,58px); font-weight:700; letter-spacing:-.03em; margin:18px 0 4px; line-height:1.05;
+    background:linear-gradient(90deg,var(--ink),var(--em) 70%,var(--lime)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .v2-big small { font-size:.4em; color:var(--mut); -webkit-text-fill-color:var(--mut); margin-left:6px; font-weight:600; }
+  .v2-sub { color:var(--mut); font-size:14px; font-weight:600; } .v2-sub b { color:var(--em); }
+  .v2-acts { display:flex; gap:10px; margin-top:18px; flex-wrap:wrap; }
+  .v2-btn { display:inline-flex; align-items:center; gap:8px; padding:12px 18px; border-radius:14px; font-weight:800; font-size:14px; transition:.25s; font-family:inherit; }
+  .v2-p { background:linear-gradient(135deg,var(--em),var(--lime)); color:#052e1c; box-shadow:0 10px 30px -8px rgba(52,211,153,.7); }
+  .v2-p:hover { transform:translateY(-3px); box-shadow:0 16px 36px -8px rgba(52,211,153,.9); }
+  .v2-g { background:var(--glass); border:1px solid var(--bd); color:var(--ink); } .v2-g:hover { border-color:var(--em); }
+  .v2-hs { margin-top:auto; height:130px; margin-bottom:-10px; padding-top:20px; }
+  .v2-st { grid-column:span 3; display:flex; flex-direction:column; min-height:170px; cursor:pointer; }
+  .v2-st:hover { transform:translateY(-5px); border-color:var(--sc); }
+  .v2-ico { width:44px; height:44px; border-radius:14px; display:grid; place-items:center; margin-bottom:auto; }
+  .v2-v { font-size:36px; font-weight:700; letter-spacing:-.02em; line-height:1; margin-top:14px; color:var(--ink); }
+  .v2-l { color:var(--mut); font-weight:700; font-size:13px; margin-top:6px; }
+  .v2-dl { position:absolute; top:22px; right:20px; font-size:12px; font-weight:800; padding:4px 9px; border-radius:99px; color:var(--rose); background:rgba(251,113,133,.15); }
+  .v2-sp { position:absolute; right:0; bottom:0; width:55%; height:60px; opacity:.9; }
+  .v2-ch { display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin-bottom:12px; }
+  .v2-ct { font-weight:600; font-size:15px; color:var(--ink); } .v2-cs { color:var(--mut); font-size:12px; font-weight:600; margin-top:2px; }
+  .v2-seg { display:flex; background:var(--glass); border:1px solid var(--bd); border-radius:12px; padding:3px; }
+  .v2-seg button { padding:7px 14px; border-radius:9px; font-size:12px; font-weight:800; color:var(--mut); transition:.25s; }
+  .v2-seg .on { background:linear-gradient(135deg,var(--em),var(--lime)); color:#052e1c; }
+  .v2-w8 { grid-column:span 8; } .v2-w4 { grid-column:span 4; } .v2-w5 { grid-column:span 5; } .v2-w3 { grid-column:span 3; }
+  .v2-chart { position:relative; height:290px; }
+  .v2-tip { position:absolute; pointer-events:none; background:rgba(10,18,14,.92); color:#fff; border:1px solid rgba(255,255,255,.14); font-size:12px; padding:9px 13px; border-radius:12px; transform:translate(-50%,-120%); white-space:nowrap; z-index:5; }
+  .v2-tip b { display:block; font-size:15px; }
+  .v2-ax { fill:var(--mut); font:700 11px Manrope,sans-serif; } .v2-gl { stroke:var(--line); }
+  .v2-bar { transform-box:fill-box; transform-origin:bottom; animation:v2Gr .9s cubic-bezier(.2,.8,.2,1) both; transition:opacity .25s; }
+  @keyframes v2Gr { from { transform:scaleY(0); } }
+  .v2-chart:hover .v2-bar { opacity:.55; } .v2-chart .v2-bar:hover { opacity:1; }
+  .v2-dn { display:flex; flex-direction:column; align-items:center; gap:18px; }
+  .v2-leg { display:grid; gap:10px; width:100%; font-size:13px; font-weight:700; }
+  .v2-leg div { display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:12px; background:var(--glass); border:1px solid var(--line); }
+  .v2-leg i { width:10px; height:10px; border-radius:50%; } .v2-leg em { margin-left:auto; font-style:normal; color:var(--mut); }
+  .v2 table { width:100%; border-collapse:collapse; font-size:13px; }
+  .v2 th { text-align:left; color:var(--mut); font-size:11px; letter-spacing:.1em; text-transform:uppercase; padding-bottom:10px; }
+  .v2 td { padding:12px 0; border-top:1px solid var(--line); font-weight:700; color:var(--ink); }
+  .v2-pp { display:flex; align-items:center; gap:11px; }
+  .v2-av { width:36px; height:36px; border-radius:12px; background:linear-gradient(135deg,#a78bfa,#38bdf8); display:grid; place-items:center; font-weight:800; font-size:12px; color:#fff; flex-shrink:0; }
+  .v2-bd { font-size:11px; font-weight:800; padding:5px 11px; border-radius:99px; white-space:nowrap; }
+  .v2-ok { color:var(--em); background:rgba(52,211,153,.14); } .v2-wr { color:var(--rose); background:rgba(251,113,133,.15); }
+  .v2-it { display:flex; align-items:center; gap:12px; padding:12px; border-radius:16px; background:rgba(251,113,133,.08); border:1px solid rgba(251,113,133,.22); margin-bottom:10px; }
+  .v2-it .v2-av { background:rgba(251,113,133,.2); color:var(--rose); }
+  .v2-it b { font-size:13px; display:block; color:var(--ink); } .v2-it small { color:var(--mut); font-size:12px; font-weight:600; }
+  .v2-pr { margin-bottom:16px; font-size:13px; font-weight:700; }
+  .v2-pr > div:first-child { display:flex; justify-content:space-between; gap:8px; margin-bottom:8px; } .v2-pr span { color:var(--mut); }
+  .v2-tr { height:9px; background:var(--line); border-radius:9px; overflow:hidden; }
+  .v2-tr i { display:block; height:100%; border-radius:9px; box-shadow:0 0 14px currentColor; animation:v2W 1.2s cubic-bezier(.2,.8,.2,1) both; }
+  @keyframes v2W { from { width:0 !important; } }
+  .v2-bento > :nth-child(n+2) { animation-delay:.08s; } .v2-bento > :nth-child(n+6) { animation-delay:.22s; } .v2-bento > :nth-child(n+8) { animation-delay:.32s; }
+  @media (max-width:1280px) { .v2-hero, .v2-w8, .v2-w4, .v2-w5, .v2-w3 { grid-column:span 12; } .v2-st { grid-column:span 6; } .v2-hero { grid-row:auto; } }
+  @media (max-width:520px) { .v2-st { grid-column:span 12; } .v2 h1 { font-size:24px; } }
+  @media (prefers-reduced-motion:reduce) { body::before, .v2-c, .v2-bar, .v2-tr i, .v2-tag::before { animation:none !important; } }
+
+  /* ===================== SIDEBAR v2 (rasmdagidek: shisha panel, yashil faol holat) ===================== */
+  .side-modern { border-radius:24px !important; }
+  .side-top { padding:1rem 1rem .75rem; }
+  .side-top .rounded-md { width:40px; height:40px; border-radius:13px !important; background-image:linear-gradient(135deg,#34d399,#a3e635) !important; background-color:transparent !important; color:#052e1c !important; box-shadow:0 0 24px rgba(52,211,153,.5) !important; }
+  .side-top .brand-text { font-family:Sora,Manrope,system-ui,sans-serif !important; font-style:normal !important; font-weight:700; font-size:18px; letter-spacing:0; color:#fff; }
+  .side-top .flex.items-center.gap-2 { gap:12px; }
+  .side-modern nav.flex-1 { display:flex; flex-direction:column; padding:.3rem .8rem !important; gap:.3rem !important; }
+  .side-modern .nav-pill { padding:12px !important; gap:14px !important; border-radius:14px !important; font-size:14px; font-weight:700; line-height:1.2; transition:background .25s, color .25s; }
+  .side-modern .nav-pill:not(.active) { color:#8aa398 !important; }
+  .side-modern .nav-pill:hover:not(.active) { background:rgba(255,255,255,.05); color:#eef6f1 !important; transform:none; }
+  .side-modern .nav-pill-icon { background:transparent !important; width:20px; height:20px; border-radius:0; color:inherit; }
+  .side-modern .nav-pill-icon svg { width:20px; height:20px; stroke-width:1.7; }
+  .side-modern .nav-pill.active { background-image:linear-gradient(90deg, rgba(52,211,153,.45), rgba(52,211,153,.05)) !important; box-shadow:inset 0 0 0 1px rgba(52,211,153,.35), 0 10px 26px -12px rgba(52,211,153,.65) !important; }
+  .side-modern .nav-pill.active .nav-pill-icon { background:transparent !important; box-shadow:none; color:#6ee7b7 !important; }
+  .side-modern .nav-pill.active .nav-pill-icon svg { filter:drop-shadow(0 0 6px rgba(52,211,153,.8)); }
+  .side-modern .nav-pill:focus-visible { outline:2px solid rgba(110,231,183,.65); outline-offset:2px; }
+  .side-modern .nav-badge, .side-modern .nav-pill.active .nav-badge { background:#fb7185 !important; color:#fff; min-width:0; height:auto; padding:2px 8px; font-size:11px; font-weight:800; }
+  .side-modern .nav-pill-divider { margin-top:auto !important; height:0 !important; margin-bottom:0 !important; }
+  .side-modern .nav-pill-divider::after { content:none !important; }
+  .side-footer { background:rgba(255,255,255,.045) !important; border:1px solid rgba(255,255,255,.09); border-radius:14px !important; }
+  .side-footer:hover { background:rgba(255,255,255,.09) !important; }
+  .side-modern .avatar.bg-gold { background-image:linear-gradient(135deg,#a78bfa,#38bdf8) !important; background-color:transparent !important; color:#fff !important; border-radius:12px; }
 </style>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 <div id="root"></div>
@@ -2561,10 +2698,10 @@ const compressImageFile = (file, maxSize = 640, quality = 0.72) => new Promise((
   reader.readAsDataURL(file);
 });
 function useTheme() {
-  const [theme, setTheme] = useState(() => loadLS('theme', 'light'));
+  const [theme, setTheme] = useState(() => loadLS('theme_v2', 'dark'));
   useEffect(() => {
     document.documentElement.classList.toggle('theme-dark', theme === 'dark');
-    saveLS('theme', theme);
+    saveLS('theme_v2', theme);
   }, [theme]);
   return [theme, setTheme];
 }
@@ -2626,7 +2763,7 @@ const seedStudents = () => ([]);
 function Logo({ dark }) {
   return (
     <div className="flex items-center gap-2 select-none">
-      <div className="w-8 h-8 rounded-md bg-gold flex items-center justify-center font-display text-ink font-semibold">E</div>
+      <div className="w-8 h-8 rounded-md bg-gold flex items-center justify-center font-display text-ink font-semibold">{dark ? <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M7 4l13 8-13 8z" /></svg> : 'E'}</div>
       <span className={`font-display text-lg tracking-tight brand-text ${dark ? 'text-white' : 'text-ink'}`}>EduStream</span>
     </div>
   );
@@ -3101,6 +3238,239 @@ function CourseRevenueChart({ revenue }) {
 /* =========================================================================
    SIDEBAR (collapsible on desktop, slide-in drawer on mobile)
    ========================================================================= */
+
+/* =========================================================================
+   DASHBOARD v2 — aurora + glass + bento (CRM uslubi)
+   ========================================================================= */
+const V2_COLORS = ['#fbbf24', '#34d399', '#38bdf8', '#a78bfa', '#fb7185', '#f97316', '#8aa398'];
+const v2fmt = (n) => Number(n || 0).toLocaleString('ru-RU');
+const v2k = (v) => (v >= 1000 ? Math.round(v / 100) / 10 + 'k' : String(v));
+function v2Smooth(p) {
+  return p.reduce((s, q, i) => {
+    if (!i) return 'M' + q[0] + ' ' + q[1];
+    const a = p[i - 1], cx = (a[0] + q[0]) / 2;
+    return s + 'C' + cx + ' ' + a[1] + ' ' + cx + ' ' + q[1] + ' ' + q[0] + ' ' + q[1];
+  }, '');
+}
+function v2Pts(arr, w, h, pad) {
+  const mx = Math.max(...arr, 1), mn = Math.min(...arr), r = (mx - mn) || 1;
+  return arr.map((v, i) => [(arr.length > 1 ? i / (arr.length - 1) : 0) * w, h - pad - ((v - mn) / r) * (h - pad * 2)]);
+}
+function V2Count({ value }) {
+  const [v, setV] = useState(0);
+  useEffect(() => {
+    const t0 = performance.now(); let raf;
+    const step = (n) => { const p = Math.min((n - t0) / 1200, 1); setV(Math.round(value * (1 - Math.pow(1 - p, 4)))); if (p < 1) raf = requestAnimationFrame(step); };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, [value]);
+  return <React.Fragment>{v2fmt(v)}</React.Fragment>;
+}
+function V2Revenue({ items }) {
+  const [mode, setMode] = useState('bar');
+  const [tip, setTip] = useState(null);
+  const [W, setW] = useState(640);
+  const ref = useRef(null);
+  useLayoutEffect(() => {
+    const f = () => { if (ref.current) setW(ref.current.clientWidth || 640); };
+    f(); window.addEventListener('resize', f);
+    return () => window.removeEventListener('resize', f);
+  }, []);
+  const H = 290, m = { l: 50, r: 8, t: 14, b: 38 };
+  const w = Math.max(60, W - m.l - m.r), h = H - m.t - m.b;
+  const raw = Math.max(40000, ...items.map((d) => d.amount));
+  const unit = Math.pow(10, Math.floor(Math.log10(raw / 4)));
+  const stepV = Math.max(unit, Math.ceil(raw / 4 / unit) * unit);
+  const mx = stepV * 4;
+  const n = Math.max(1, items.length), bw = w / n;
+  const x = (i) => m.l + bw * i + bw / 2, y = (v) => m.t + h - (v / mx) * h;
+  const col = (i) => V2_COLORS[i % V2_COLORS.length];
+  const short = (s) => { const k = bw < 70 ? 6 : 10; return s.length > k ? s.slice(0, k - 1) + '…' : s; };
+  const pts = items.map((d, i) => [x(i), y(d.amount)]);
+  const move = (e, i) => { const b = ref.current.getBoundingClientRect(); setTip({ i, x: e.clientX - b.left, y: e.clientY - b.top }); };
+  const bwid = Math.min(bw * 0.55, 60);
+  const lineD = pts.length ? v2Smooth(pts) : '';
+  return (
+    <div className="v2-c v2-w8">
+      <div className="v2-ch">
+        <div><div className="v2-ct">Kurslardan tushum</div><div className="v2-cs">Har bir kurs bo'yicha, so'mda</div></div>
+        <div className="v2-seg">
+          <button className={mode === 'bar' ? 'on' : ''} onClick={() => setMode('bar')}>Ustun</button>
+          <button className={mode === 'line' ? 'on' : ''} onClick={() => setMode('line')}>Chiziq</button>
+        </div>
+      </div>
+      <div className="v2-chart" ref={ref} onMouseLeave={() => setTip(null)}>
+        {items.length === 0 ? <p className="v2-cs">Hali kurslar yo'q.</p> : (
+        <svg key={mode} width={W} height={H}>
+          <defs>
+            {items.map((d, i) => (<linearGradient key={i} id={'v2b' + i} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor={col(i)} /><stop offset="1" stopColor={col(i)} stopOpacity=".25" /></linearGradient>))}
+            <linearGradient id="v2la" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#34d399" stopOpacity=".4" /><stop offset="1" stopColor="#34d399" stopOpacity="0" /></linearGradient>
+          </defs>
+          {[0, 1, 2, 3, 4].map((k) => (
+            <g key={k}>
+              <line className="v2-gl" x1={m.l} x2={W - m.r} y1={y(stepV * k)} y2={y(stepV * k)} strokeDasharray={k ? '3 6' : undefined} />
+              <text className="v2-ax" x={m.l - 10} y={y(stepV * k) + 4} textAnchor="end">{v2k(stepV * k)}</text>
+            </g>
+          ))}
+          {items.map((d, i) => (<text key={'t' + i} className="v2-ax" x={x(i)} y={H - 12} textAnchor="middle">{short(d.name)}</text>))}
+          {mode === 'bar' ? items.map((d, i) => {
+            const bh = d.amount ? (d.amount / mx) * h : 4;
+            return (<rect key={i} className="v2-bar" onMouseMove={(e) => move(e, i)}
+              style={{ animationDelay: i * 0.07 + 's', filter: d.amount ? 'drop-shadow(0 0 14px ' + col(i) + '88)' : undefined, fill: d.amount ? undefined : 'var(--line)' }}
+              x={x(i) - bwid / 2} y={m.t + h - bh} width={bwid} height={bh} rx={d.amount ? 14 : 3} fill={d.amount ? 'url(#v2b' + i + ')' : undefined} />);
+          }) : (
+            <g>
+              <path d={lineD + 'L' + pts[n - 1][0] + ' ' + (m.t + h) + 'L' + pts[0][0] + ' ' + (m.t + h) + 'Z'} fill="url(#v2la)" />
+              <path d={lineD} fill="none" stroke="#34d399" strokeWidth="3" strokeLinecap="round" style={{ filter: 'drop-shadow(0 0 8px #34d399)' }} />
+              {pts.map((q, i) => (<circle key={i} className="v2-bar" onMouseMove={(e) => move(e, i)} cx={q[0]} cy={q[1]} r="6" strokeWidth="3" stroke={col(i)} style={{ fill: 'var(--dot)' }} />))}
+            </g>
+          )}
+        </svg>)}
+        {tip && items[tip.i] && (
+          <div className="v2-tip" style={{ left: tip.x, top: tip.y }}>
+            <span style={{ color: col(tip.i) }}>●</span> {items[tip.i].name}<b>{v2fmt(items[tip.i].amount)} so'm</b>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+function V2Donut({ items, total }) {
+  const R = 62, C = 2 * Math.PI * R; let o = 0;
+  const parts = items.map((d, i) => ({ d, i })).filter((p) => p.d.amount > 0);
+  return (
+    <div className="v2-c v2-w4">
+      <div className="v2-ch"><div><div className="v2-ct">Tushum ulushi</div><div className="v2-cs">Kurslar kesimida</div></div></div>
+      {parts.length === 0 ? <p className="v2-cs">Hali tushum yo'q.</p> : (
+      <div className="v2-dn">
+        <svg width="190" height="190" viewBox="0 0 190 190">
+          <g transform="rotate(-90 95 95)">
+            <circle cx="95" cy="95" r={R} fill="none" strokeWidth="20" style={{ stroke: 'var(--line)' }} />
+            {parts.map(({ d, i }) => {
+              const l = (d.amount / total) * C, seg = Math.max(l - 8, 1);
+              const el = (<circle key={i} cx="95" cy="95" r={R} fill="none" stroke={V2_COLORS[i % V2_COLORS.length]} strokeWidth="20" strokeLinecap="round"
+                strokeDasharray={seg + ' ' + (C - seg)} strokeDashoffset={-o} style={{ filter: 'drop-shadow(0 0 8px ' + V2_COLORS[i % V2_COLORS.length] + '99)' }} />);
+              o += l; return el;
+            })}
+          </g>
+          <text x="95" y="92" textAnchor="middle" fontSize="28" fontWeight="700" style={{ fill: 'var(--ink)', fontFamily: 'Sora,sans-serif' }}>{v2k(total)}</text>
+          <text x="95" y="112" textAnchor="middle" className="v2-ax">jami, so'm</text>
+        </svg>
+        <div className="v2-leg">
+          {parts.map(({ d, i }) => (<div key={i}><i style={{ background: V2_COLORS[i % V2_COLORS.length], boxShadow: '0 0 10px ' + V2_COLORS[i % V2_COLORS.length] }} />{d.name}<em>{Math.round((d.amount / total) * 100)}%</em></div>))}
+        </div>
+      </div>)}
+    </div>
+  );
+}
+function DashV2({ me, canEdit, stats, revenue, students, categories, overdueStudents, overdueShown, overdueCurPage, overduePageCount, setOverduePage, goTo, onNewCourse }) {
+  const first = (me.name || '').split(' ')[0];
+  const items = revenue.byCategory;
+  const cum = []; items.reduce((a, d) => { const t = a + d.amount; cum.push(t); return t; }, 0);
+  const hp = v2Pts([0, ...cum, ...(cum.length ? [] : [0])], 600, 130, 10), hd = v2Smooth(hp);
+  const ini = (name) => name.split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase();
+  const lessonCount = (c) => c.subtopics.reduce((b, s) => b + s.lessons.length, 0);
+  const maxL = Math.max(1, ...categories.map(lessonCount));
+  const cname = (s) => { const id = Object.keys(s.access || {}).find((k) => s.access[k] && s.access[k].active); const c = categories.find((x) => String(x.id) === String(id)); return c ? c.name : '—'; };
+  const recent = students.slice(-5).reverse();
+  const SP = [[1, 1, 2, 2, 2, 3, 3], [2, 3, 3, 4, 5, 5, 7], [6, 9, 12, 14, 18, 21, 25], [0, 0, 1, 0, 1, 1, 1]];
+  const cards = [
+    ["O'quvchilar", stats.students, Icon.users, '#34d399', 'students'],
+    ['Kategoriyalar', stats.categories, Icon.layers, '#a78bfa', 'courses'],
+    ['Darslar', stats.lessonsCount, Icon.book, '#38bdf8', 'courses'],
+    ["To'lovi o'tgan", stats.overdue, Icon.warn, '#fb7185', 'payments'],
+  ];
+  const rootRef = useRef(null);
+  useEffect(() => {
+    const el = rootRef.current; if (!el) return;
+    const mv = (e) => { const c = e.target.closest && e.target.closest('.v2-c'); if (!c) return; const b = c.getBoundingClientRect(); c.style.setProperty('--mx', e.clientX - b.left + 'px'); c.style.setProperty('--my', e.clientY - b.top + 'px'); };
+    el.addEventListener('pointermove', mv);
+    return () => el.removeEventListener('pointermove', mv);
+  }, []);
+  return (
+    <div className="v2" ref={rootRef}>
+      <div className="v2-top">
+        <div>
+          <p>{new Date().toLocaleDateString('uz-UZ', { weekday: 'long', day: 'numeric', month: 'long' })}</p>
+          <h1>Salom, <em>{first}</em> 👋</h1>
+        </div>
+      </div>
+      <div className="v2-bento">
+        <section className="v2-c v2-hero">
+          <span className="v2-tag">Dashboard · Markazingiz bo'yicha bugungi holat</span>
+          <div className="v2-big"><V2Count value={revenue.total} /><small>so'm</small></div>
+          <div className="v2-sub">Kurslardan jami tushum{revenue.atRiskTotal > 0 && <span> · <b style={{ color: '#fb7185' }}>Xavf ostida: {v2fmt(revenue.atRiskTotal)} so'm</b></span>}</div>
+          <div className="v2-acts">
+            {canEdit && <button className="v2-btn v2-p" onClick={onNewCourse}><Icon.plus width="16" height="16" />Yangi kurs</button>}
+            <button className="v2-btn v2-g" onClick={() => goTo('statistics')}><Icon.chart width="16" height="16" />Hisobot</button>
+          </div>
+          <div className="v2-hs">
+            <svg viewBox="0 0 600 130" preserveAspectRatio="none" width="100%" height="100%">
+              <defs><linearGradient id="v2hg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#34d399" stopOpacity=".45" /><stop offset="1" stopColor="#34d399" stopOpacity="0" /></linearGradient></defs>
+              <path d={hd + 'L600 130L0 130Z'} fill="url(#v2hg)" />
+              <path d={hd} fill="none" stroke="#34d399" strokeWidth="3" vectorEffect="non-scaling-stroke" style={{ filter: 'drop-shadow(0 0 8px #34d399)' }} />
+            </svg>
+          </div>
+        </section>
+
+        {cards.map(([label, val, Ic, color, target], i) => {
+          const sp = v2Pts(SP[i], 120, 60, 6), sd = v2Smooth(sp);
+          return (
+            <button key={label} type="button" className="v2-c v2-st" style={{ '--sc': color, animationDelay: 0.1 + i * 0.07 + 's' }} onClick={() => goTo(target)}>
+              <div className="v2-ico" style={{ background: color + '22', color, boxShadow: '0 0 22px ' + color + '33' }}><Ic width="20" height="20" /></div>
+              {target === 'payments' && val > 0 && <span className="v2-dl">! {val} ta</span>}
+              <div className="v2-v"><V2Count value={val} /></div>
+              <div className="v2-l">{label}</div>
+              <svg className="v2-sp" viewBox="0 0 120 60" preserveAspectRatio="none">
+                <defs><linearGradient id={'v2s' + i} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor={color} stopOpacity=".35" /><stop offset="1" stopColor={color} stopOpacity="0" /></linearGradient></defs>
+                <path d={sd + 'L120 60L0 60Z'} fill={'url(#v2s' + i + ')'} />
+                <path d={sd} fill="none" stroke={color} strokeWidth="2" vectorEffect="non-scaling-stroke" />
+              </svg>
+            </button>
+          );
+        })}
+
+        <V2Revenue items={items} />
+        <V2Donut items={items} total={revenue.total} />
+
+        <section className="v2-c v2-w5">
+          <div className="v2-ch"><div className="v2-ct">So'nggi o'quvchilar</div><button className="v2-cs" style={{ color: 'var(--em)', fontWeight: 800 }} onClick={() => goTo('students')}>Barchasi →</button></div>
+          {recent.length === 0 ? <p className="v2-cs">Hali o'quvchilar yo'q.</p> : (
+          <table>
+            <thead><tr><th>O'quvchi</th><th>Kurs</th><th>Holat</th></tr></thead>
+            <tbody>
+              {recent.map((s) => { const bl = studentBilling(s, categories).blocked; return (
+                <tr key={s.id}>
+                  <td><div className="v2-pp"><div className="v2-av">{ini(s.name)}</div>{s.name}</div></td>
+                  <td>{cname(s)}</td>
+                  <td><span className={'v2-bd ' + (bl ? 'v2-wr' : 'v2-ok')}>{bl ? "Muddati o'tgan" : "To'langan"}</span></td>
+                </tr>); })}
+            </tbody>
+          </table>)}
+        </section>
+
+        <section className="v2-c v2-w3">
+          <div className="v2-ch"><div className="v2-ct">To'lovi o'tganlar</div>{overdueStudents.length > 0 && <span className="v2-cs">Jami: {overdueStudents.length} ta</span>}</div>
+          {overdueStudents.length === 0 && <p className="v2-cs">Hozircha muddati o'tgan to'lovlar yo'q 🎉</p>}
+          {overdueShown.map((s) => (
+            <div key={s.id} className="v2-it"><div className="v2-av">{ini(s.name)}</div><div><b>{s.name}</b><small>To'lov muddati o'tgan</small></div></div>
+          ))}
+          <Pagination page={overdueCurPage} pageCount={overduePageCount} onChange={setOverduePage} />
+          {overdueStudents.length > 0 && <button className="v2-btn v2-p" style={{ width: '100%', justifyContent: 'center', marginTop: 12 }} onClick={() => goTo('payments')}>To'lovlarni ko'rish</button>}
+        </section>
+
+        <section className="v2-c v2-w4">
+          <div className="v2-ch"><div className="v2-ct">Kurslar bo'yicha darslar</div></div>
+          {categories.length === 0 && <p className="v2-cs">Hali kurslar yo'q.</p>}
+          {categories.map((c, i) => { const n = lessonCount(c); const cl = V2_COLORS[i % V2_COLORS.length]; return (
+            <div key={c.id} className="v2-pr"><div>{c.name}<span>{n} dars</span></div>
+              <div className="v2-tr"><i style={{ width: (n / maxL) * 100 + '%', background: cl, color: cl }} /></div></div>); })}
+        </section>
+      </div>
+    </div>
+  );
+}
+
 function Sidebar({ roleLabel, navItems, activePage, onNavigate, footerName, footerSub, footerInitials, onFooterClick, mobileOpen, onCloseMobile }) {
   const [collapsed, setCollapsed] = useState(false);
 
@@ -3605,52 +3975,10 @@ function StaffApp({ me, staff, setStaff, categories, setCategories, students, se
 
         <main className="flex-1 p-8 overflow-y-auto max-h-screen">
           {page === 'overview' && (
-            <div>
-              <h1 className="font-display text-3xl text-ink mb-1">Dashboard</h1>
-              <p className="text-slate text-sm mb-6">Markazingiz bo'yicha bugungi holat.</p>
-
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {[
-                  ['O\'quvchilar', stats.students, Icon.users, '#2E6F4E', 'rgba(46,111,78,.12)', 'students'],
-                  ['Kategoriyalar', stats.categories, Icon.layers, '#6D3FA0', 'rgba(109,63,160,.12)', 'courses'],
-                  ['Darslar', stats.lessonsCount, Icon.book, '#013328', 'rgba(1,51,40,.08)', 'courses'],
-                  ['To\'lovi o\'tgan', stats.overdue, Icon.warn, '#AC4B3B', 'rgba(172,75,59,.12)', 'payments'],
-                ].map(([label, val, Ic, fg, bg, target]) => (
-                  <button key={label} type="button" className="stat-modern stat-modern-link" style={{ '--sc-fg': fg, '--sc-bg': bg }}
-                    onClick={() => goTo(target)}>
-                    <div className="stat-icon"><Ic width="20" height="20" /></div>
-                    <div className="stat-value">{val}</div>
-                    <div className="stat-label">{label}</div>
-                  </button>
-                ))}
-              </div>
-
-              <div className="dash-combo-grid">
-                <CourseRevenueChart revenue={revenue} />
-
-                <div className="bg-card rounded-xl border border-line p-5 overdue-card">
-                  <div className="flex items-center justify-between mb-3 shrink-0">
-                    <h3 className="font-semibold text-ink flex items-center gap-2"><Icon.warn className="text-clay" width="15" height="15"/> To'lov holati bo'yicha diqqat talab qiluvchi o'quvchilar</h3>
-                    {overdueStudents.length > 0 && <span className="text-xs text-slate shrink-0">Jami: {overdueStudents.length} ta</span>}
-                  </div>
-                  <div className="overdue-card-list">
-                    {overdueStudents.length === 0 && (
-                      <p className="text-sm text-slate">Hozircha muddati o'tgan to'lovlar yo'q.</p>
-                    )}
-                    {overdueShown.map((s) => (
-                      <div key={s.id} className="flex items-center justify-between py-2.5 border-t border-line first:border-t-0">
-                        <span className="text-sm text-ink flex items-center gap-2">
-                          <span className="avatar w-7 h-7 bg-paper text-ink text-xs border border-line">{s.name.split(' ').map((w)=>w[0]).slice(0,2).join('')}</span>
-                          {s.name}
-                        </span>
-                        <span className="pill pill-warn shrink-0">To'lov muddati o'tgan</span>
-                      </div>
-                    ))}
-                  </div>
-                  <Pagination page={overdueCurPage} pageCount={overduePageCount} onChange={setOverduePage} />
-                </div>
-              </div>
-            </div>
+            <DashV2 me={me} canEdit={canEdit} stats={stats} revenue={revenue} students={students} categories={categories}
+              overdueStudents={overdueStudents} overdueShown={overdueShown} overdueCurPage={overdueCurPage}
+              overduePageCount={overduePageCount} setOverduePage={setOverduePage} goTo={goTo}
+              onNewCourse={() => { setQuickAddCourse(true); setPage('courses'); }} />
           )}
 
           {page === 'courses' && (
