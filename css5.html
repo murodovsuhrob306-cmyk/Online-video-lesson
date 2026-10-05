@@ -1911,6 +1911,16 @@ html.theme-dark .cs-intro p{color:rgba(237,239,246,.6)}
   .cs-page--ws .cs-stage .vp{width:min(100%,max(360px,calc((100cqh - 110px) * 16 / 9)));margin-inline:auto}
   .cs-page--ws .cs-stage .vp:fullscreen{width:100%;margin:0}
   .cs-page--ws .cs-head{flex-shrink:0}
+  /* Kino rejimi (ro'yxat yopiq): video balandlik bilan cheklanmaydi, bo'shagan joyning to'liq kengligiga cho'ziladi.
+     Balandlik oshgani uchun blok o'zi ichida scroll bo'ladi. Ro'yxat qaytsa — video yana ekranga sig'adi. */
+  .cs-main .vp{transition:width .4s cubic-bezier(.2,.8,.2,1)}
+  .cs-layout.cs-wide .cs-main .vp{width:100%}
+  .cs-page--ws .cs-layout.cs-wide .cs-stage .vp{width:100%}
+  .cs-layout.cs-wide .cs-main .vp:fullscreen{width:100%;transition:none}
+  /* Asosiy sidebar (EduStream menyusi) yig'ilganda bo'shagan joy video kengligiga qo'shiladi: video ustun to'liq kengligiga cho'ziladi.
+     Sidebar yoyilganda esa video avvalgidek ekranga sig'adigan o'lchamga qaytadi. */
+  .app-shell:has(.side-modern.is-collapsed) .cs-layout .cs-main .vp{width:100%}
+  .app-shell:has(.side-modern.is-collapsed) .cs-layout .cs-main .vp:fullscreen{transition:none}
   .cs-page--ws .cs-head p{margin-bottom:1rem!important}
 }
 
@@ -3250,15 +3260,75 @@ function BlockedIntroModal({ items, onFinish }) {
     const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (!card || !back || !bell || !card.animate || reduce) { onFinish(goBlocked); return; }
     const c = card.getBoundingClientRect(), b = bell.getBoundingClientRect();
-    const dx = (b.left + b.width / 2) - (c.left + c.width / 2);
-    const dy = (b.top + b.height / 2) - (c.top + c.height / 2);
-    back.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 700, easing: 'ease-in', fill: 'forwards' });
+    const bx = b.left + b.width / 2, by = b.top + b.height / 2;
+    const cx = c.left + c.width / 2, cy = c.top + c.height / 2;
+    const dx = bx - cx, dy = by - cy;
+    const dist = Math.hypot(dx, dy) || 1;
+    const ux = dx / dist, uy = dy / dist;      // qo'ng'iroqcha tomon yo'nalish
+    const px = -uy, py = ux;                    // unga perpendikulyar (yoy egriligi uchun)
+    const arc = Math.min(70, dist * 0.12);
+    const DUR = 1000;
+
+    // Karta qo'ng'iroqcha markazi atrofida kichrayadi => "so'rilib/turtib kiritilayotgandek"
+    card.style.transformOrigin = (bx - c.left) + 'px ' + (by - c.top) + 'px';
+
+    // Vaqtinchalik effekt elementlari (halqalar, zarrachalar) — keyin o'chiriladi
+    const fx = [];
+    const mk = (css) => {
+      const el = document.createElement('div');
+      el.style.cssText = 'position:fixed;pointer-events:none;z-index:95;' + css;
+      document.body.appendChild(el); fx.push(el); return el;
+    };
+
+    // Orqa fon (backdrop) sekin so'nadi
+    back.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 760, delay: 150, easing: 'ease-in', fill: 'forwards' });
+
+    // 1) Karta: avval orqaga tortiladi (taranglik) -> keyin tezlanib turtib kiritiladi
+    const tr = (tx, ty, sx, sy, rot) => 'translate(' + tx + 'px,' + ty + 'px) rotate(' + rot + 'deg) scale(' + sx + ',' + sy + ')';
     const anim = card.animate([
-      { transform: 'translate(0,0) scale(1,1)', opacity: 1, filter: 'blur(0px)', offset: 0 },
-      { transform: 'translate(' + dx * 0.1 + 'px,' + dy * 0.1 + 'px) scale(.92,1.05)', opacity: 1, filter: 'blur(0px)', offset: 0.18 },
-      { transform: 'translate(' + dx * 0.55 + 'px,' + dy * 0.5 + 'px) scale(.36,.5) skewX(-8deg)', opacity: 0.95, filter: 'blur(1px)', offset: 0.62 },
-      { transform: 'translate(' + dx + 'px,' + dy + 'px) scale(.03,.03)', opacity: 0, filter: 'blur(3px)', offset: 1 },
-    ], { duration: 820, easing: 'cubic-bezier(.55,.05,.35,1)', fill: 'forwards' });
+      { transform: tr(0, 0, 1, 1, 0), borderRadius: '1.4rem', opacity: 1, filter: 'blur(0px)', offset: 0, easing: 'cubic-bezier(.2,.7,.3,1)' },
+      { transform: tr(-ux * 16, -uy * 16, 1.05, .96, 0), borderRadius: '1.4rem', opacity: 1, filter: 'blur(0px)', offset: 0.17, easing: 'cubic-bezier(.62,0,.85,.45)' },
+      { transform: tr(px * arc, py * arc, .5, .34, -3), borderRadius: '2.2rem', opacity: 1, filter: 'blur(.5px)', offset: 0.62, easing: 'cubic-bezier(.5,0,.9,.6)' },
+      { transform: tr(px * arc * .4, py * arc * .4, .14, .08, -6), borderRadius: '50%', opacity: .9, filter: 'blur(2px)', offset: 0.9 },
+      { transform: tr(0, 0, .02, .02, -8), borderRadius: '50%', opacity: 0, filter: 'blur(3px)', offset: 1 },
+    ], { duration: DUR, fill: 'forwards' });
+
+    // 2) Qo'ng'iroqcha atrofida tortuvchi (so'ruvchi) halqalar
+    [0, 230].forEach((d) => {
+      const r = mk('left:' + (bx - 34) + 'px;top:' + (by - 34) + 'px;width:68px;height:68px;border-radius:50%;border:2px solid rgba(233,196,164,.9);');
+      r.animate([
+        { transform: 'scale(2.8)', opacity: 0 },
+        { transform: 'scale(1.6)', opacity: .75, offset: .4 },
+        { transform: 'scale(.45)', opacity: 0 },
+      ], { duration: 620, delay: 260 + d, easing: 'cubic-bezier(.4,0,.6,1)', fill: 'both' });
+    });
+
+    // 3) Kartadan qo'ng'iroqchaga oqib kiruvchi zarrachalar
+    for (let i = 0; i < 10; i++) {
+      const sx = c.left + Math.random() * c.width, sy = c.top + Math.random() * c.height;
+      const s = 5 + Math.random() * 5;
+      const dot = mk('left:' + (sx - s / 2) + 'px;top:' + (sy - s / 2) + 'px;width:' + s + 'px;height:' + s + 'px;border-radius:50%;background:' + (i % 2 ? '#E9C4A4' : '#FF8A65') + ';box-shadow:0 0 8px rgba(230,139,101,.7);');
+      const jit = Math.random() * 44 - 22;
+      const mx = (bx - sx) * .45 + px * jit, my = (by - sy) * .45 + py * jit;
+      dot.animate([
+        { transform: 'translate(0,0) scale(1)', opacity: 0 },
+        { transform: 'translate(' + mx + 'px,' + my + 'px) scale(.9)', opacity: 1, offset: .45 },
+        { transform: 'translate(' + (bx - sx) + 'px,' + (by - sy) + 'px) scale(.2)', opacity: 0 },
+      ], { duration: 620 + Math.random() * 200, delay: 140 + i * 45, easing: 'cubic-bezier(.5,0,.8,.6)', fill: 'both' });
+    }
+
+    // 4) Karta yetib borganda qo'ng'iroqcha "yutib yuboradi" (siqiladi va sakraydi)
+    setTimeout(() => {
+      if (bell.animate) bell.animate([
+        { transform: 'scale(1)', boxShadow: '0 0 0 0 rgba(230,169,133,.85)' },
+        { transform: 'scale(1.38,.82)', offset: .22 },
+        { transform: 'scale(.9,1.14)', offset: .48 },
+        { transform: 'scale(1.12,.95)', offset: .74, boxShadow: '0 0 0 12px rgba(230,169,133,0)' },
+        { transform: 'scale(1)', boxShadow: '0 0 0 0 rgba(230,169,133,0)' },
+      ], { duration: 540, easing: 'ease-out' });
+    }, DUR * 0.8);
+
+    setTimeout(() => fx.forEach((el) => el.remove()), DUR + 900);
     anim.onfinish = () => onFinish(goBlocked);
   };
 
