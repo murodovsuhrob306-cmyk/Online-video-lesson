@@ -2629,6 +2629,464 @@ html body .bs-alert-warning{ background:rgba(251,191,36,.16) !important; border-
 html.theme-dark body .bs-alert-warning{ color:#fcd34d !important; }
 ::selection{ background:rgba(52,211,153,.35); }
 </style>
+<style id="edu-blocked">
+/* ============ Bloklanganlar — yangi dizayn ============ */
+.blk-page{ --t-payment:#f59e0b; --t-manual:#f43f5e; --t-frozen:#38bdf8; --t-attendance:#a78bfa; --t-all:#34d399; }
+.blk-hero{ display:flex; align-items:center; gap:1rem; margin-bottom:1.4rem; }
+.blk-hero-icon{ width:48px; height:48px; border-radius:16px; display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  background:rgba(244,63,94,.12); color:#f43f5e; border:1px solid rgba(244,63,94,.28); }
+
+/* filtr kartalari */
+.blk-tiles{ display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:.7rem; margin-bottom:1rem; }
+.blk-tile{ --c:var(--t-all); position:relative; display:grid; grid-template-columns:auto 1fr; grid-template-rows:auto auto; column-gap:.65rem; align-items:center;
+  text-align:left; padding:.8rem .9rem; border-radius:16px; cursor:pointer; font:inherit; color:inherit;
+  background:rgba(127,127,127,.06); border:1px solid rgba(127,127,127,.18);
+  transition:transform .25s cubic-bezier(.2,.8,.2,1), border-color .2s ease, background .2s ease; }
+.blk-tile.t-payment{ --c:var(--t-payment); } .blk-tile.t-manual{ --c:var(--t-manual); }
+.blk-tile.t-frozen{ --c:var(--t-frozen); } .blk-tile.t-attendance{ --c:var(--t-attendance); }
+.blk-tile:hover{ transform:translateY(-2px); border-color:var(--c); }
+.blk-tile.on{ background:rgba(127,127,127,.1); border-color:var(--c); box-shadow:inset 0 0 0 1px var(--c); }
+.blk-tile-ic{ grid-row:1 / span 2; width:34px; height:34px; border-radius:11px; display:flex; align-items:center; justify-content:center;
+  background:color-mix(in srgb, var(--c) 18%, transparent); color:var(--c); }
+.blk-tile-num{ font-size:1.35rem; font-weight:800; line-height:1.05; }
+.blk-tile-lbl{ font-size:.72rem; opacity:.65; font-weight:600; }
+
+/* qidiruv */
+.blk-searchbox{ display:flex; align-items:center; gap:.6rem; padding:.2rem .9rem; border-radius:14px; margin-bottom:1.2rem;
+  background:rgba(127,127,127,.06); border:1px solid rgba(127,127,127,.18); transition:border-color .2s ease; }
+.blk-searchbox:focus-within{ border-color:rgba(52,211,153,.6); }
+.blk-searchbox svg{ opacity:.55; flex-shrink:0; }
+.blk-searchbox input{ flex:1; min-width:0; background:transparent; border:0; outline:0; font:inherit; font-size:.88rem; color:inherit; padding:.6rem 0; }
+.blk-clear{ width:22px; height:22px; border-radius:50%; border:0; cursor:pointer; background:rgba(127,127,127,.2); color:inherit; display:flex; align-items:center; justify-content:center; }
+.blk-clear:hover{ background:rgba(127,127,127,.35); }
+
+/* kartalar */
+.blk-list{ display:grid; gap:1rem; grid-template-columns:repeat(auto-fill,minmax(360px,1fr)); align-items:start; }
+.blk-card{ position:relative; overflow:hidden; border:1px solid rgba(127,127,127,.2) !important; border-radius:20px !important; padding:1.1rem 1.15rem 1.15rem !important;
+  display:flex; flex-direction:column; gap:.85rem; transition:transform .3s cubic-bezier(.2,.8,.2,1), border-color .25s ease; }
+.blk-card::before{ content:""; position:absolute; left:0; top:0; bottom:0; width:3px; background:linear-gradient(180deg,#f43f5e,rgba(244,63,94,.15)); }
+.blk-card:hover{ transform:translateY(-3px); border-color:rgba(244,63,94,.4) !important; }
+.blk-head{ display:flex; align-items:center; gap:.8rem; }
+.blk-avatar{ width:46px !important; height:46px !important; border-radius:15px !important; flex-shrink:0; font-size:.9rem; font-weight:800;
+  background:linear-gradient(135deg,rgba(244,63,94,.28),rgba(244,63,94,.1)) !important; color:#fb7185 !important; border:1px solid rgba(244,63,94,.3); font-family:Manrope,system-ui,sans-serif !important; }
+.blk-name{ font-weight:800; font-size:1.02rem; line-height:1.2; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.blk-sub{ font-size:.75rem; opacity:.65; margin-top:2px; }
+.blk-head-info{ flex:1; }
+
+/* "Ochish" tugmasi — endi har doim ko'rinadi */
+.blk-open{ margin-left:auto; flex-shrink:0; display:inline-flex; align-items:center; gap:.35rem; font-size:.76rem; font-weight:700; padding:.5rem .8rem;
+  border-radius:12px; cursor:pointer; border:1px solid rgba(52,211,153,.4); background:rgba(52,211,153,.12); color:#10b981;
+  transition:background .2s ease, color .2s ease, transform .2s ease; }
+html.theme-dark .blk-open{ color:#6ee7b7; border-color:rgba(52,211,153,.4); }
+.blk-open:hover{ background:#34d399; color:#052e1c !important; }
+.blk-open:hover svg{ transform:translateX(2px); }
+.blk-open svg{ transition:transform .2s ease; }
+
+/* sabab turlari (chiplar) */
+.blk-kinds{ display:flex; flex-wrap:wrap; gap:.35rem; }
+.blk-kind{ --c:#f43f5e; display:inline-flex; align-items:center; gap:.3rem; padding:.22rem .6rem; border-radius:999px; font-size:.68rem; font-weight:700;
+  color:var(--c); background:color-mix(in srgb, var(--c) 14%, transparent); border:1px solid color-mix(in srgb, var(--c) 30%, transparent); }
+.t-payment{ --c:var(--t-payment, #f59e0b); } .t-manual{ --c:var(--t-manual, #f43f5e); }
+.t-frozen{ --c:var(--t-frozen, #38bdf8); } .t-attendance{ --c:var(--t-attendance, #a78bfa); }
+
+/* kurs bloklari */
+.blk-courses{ display:flex; flex-direction:column; gap:.65rem; }
+.blk-course{ border:1px solid rgba(127,127,127,.18) !important; border-top:1px solid rgba(127,127,127,.18) !important; border-radius:16px; padding:.8rem !important;
+  background:rgba(127,127,127,.05); display:flex; flex-direction:column; gap:.6rem; }
+.blk-course-top{ display:flex; align-items:center; justify-content:space-between; gap:.5rem; }
+.blk-course-name{ display:inline-flex; align-items:center; gap:.45rem; font-weight:800; font-size:.9rem; }
+.blk-course-name svg{ opacity:.6; }
+.blk-reasons{ display:flex; flex-direction:column; gap:.4rem; }
+.blk-reason{ --c:#f43f5e; display:flex !important; gap:.65rem; align-items:flex-start; padding:.6rem .7rem !important; border-radius:12px !important;
+  background:color-mix(in srgb, var(--c) 9%, transparent) !important; border-left:3px solid var(--c); }
+.blk-reason-ic{ width:26px; height:26px; border-radius:9px; flex-shrink:0; display:flex; align-items:center; justify-content:center;
+  background:color-mix(in srgb, var(--c) 20%, transparent); color:var(--c); }
+.blk-reason-t{ font-size:.8rem; font-weight:800; color:var(--c); line-height:1.25; }
+.blk-reason-d{ font-size:.78rem; line-height:1.4; opacity:.8; margin-top:2px; }
+
+/* bo'sh holat */
+.blk-empty{ display:flex; flex-direction:column; align-items:center; gap:.4rem; padding:3rem 1rem; text-align:center; opacity:.85; font-size:.88rem; }
+.blk-empty-ic{ width:56px; height:56px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:rgba(52,211,153,.14); color:#34d399; margin-bottom:.3rem; }
+.blk-empty-t{ font-weight:800; font-size:1.05rem; }
+
+@media (max-width:980px){ .blk-tiles{ grid-template-columns:repeat(3,minmax(0,1fr)); } }
+@media (max-width:560px){ .blk-tiles{ grid-template-columns:repeat(2,minmax(0,1fr)); } .blk-list{ grid-template-columns:1fr; } }
+
+/* ===== DARK REJIM: shaffoflik olib tashlandi, matn kontrasti oshirildi ===== */
+html.theme-dark .blk-page{ --t-payment:#fbbf24; --t-manual:#fb7185; --t-frozen:#7dd3fc; --t-attendance:#c4b5fd; --t-all:#6ee7b7; }
+html.theme-dark body .blk-card.bg-card{
+  background:#101b16 !important; background-image:none !important;
+  -webkit-backdrop-filter:none !important; backdrop-filter:none !important;
+  border:1px solid rgba(255,255,255,.12) !important;
+  box-shadow:0 18px 40px -22px rgba(0,0,0,.85) !important;
+}
+html.theme-dark body .blk-card:hover{ border-color:rgba(251,113,133,.55) !important; }
+html.theme-dark .blk-name{ color:#ffffff !important; }
+html.theme-dark .blk-sub{ color:#a9bdb3 !important; opacity:1 !important; }
+html.theme-dark .blk-avatar{
+  background:#3a1820 !important; color:#ff9aab !important; border-color:rgba(251,113,133,.45) !important; }
+html.theme-dark .blk-kind{
+  background:#1d2a24; color:var(--c); border-color:color-mix(in srgb, var(--c) 45%, #101b16); }
+html.theme-dark body .blk-course{
+  background:#16241d !important; border:1px solid rgba(255,255,255,.10) !important; }
+html.theme-dark .blk-course-name{ color:#f1f8f4 !important; }
+html.theme-dark .blk-course-name svg{ opacity:.85; color:#a9bdb3; }
+html.theme-dark body .blk-reason{
+  background:color-mix(in srgb, var(--c) 14%, #16241d) !important; }
+html.theme-dark .blk-reason-ic{ background:color-mix(in srgb, var(--c) 28%, #16241d); }
+html.theme-dark .blk-reason-t{ color:var(--c); }
+html.theme-dark .blk-reason-d{ color:#dbe9e1; opacity:1; }
+html.theme-dark .blk-course .pill-warn{ background:#3a1820 !important; color:#ff9aab !important; }
+html.theme-dark .blk-tile{ background:#101b16; border-color:rgba(255,255,255,.12); }
+html.theme-dark .blk-tile.on{ background:#16241d; }
+html.theme-dark .blk-tile-ic{ background:color-mix(in srgb, var(--c) 22%, #101b16); }
+html.theme-dark .blk-tile-num{ color:#fff; }
+html.theme-dark .blk-tile-lbl{ color:#b8cbc1; opacity:1; }
+html.theme-dark .blk-searchbox{ background:#101b16; border-color:rgba(255,255,255,.14); }
+html.theme-dark .blk-searchbox input{ color:#f1f8f4; }
+html.theme-dark .blk-searchbox input::placeholder{ color:#8fa69b; }
+html.theme-dark .blk-searchbox svg{ opacity:.8; color:#a9bdb3; }
+html.theme-dark .blk-hero-icon{ background:#3a1820; color:#ff9aab; }
+html.theme-dark .blk-open{ background:#12372a; color:#8ff0c6; border-color:rgba(52,211,153,.5); }
+html.theme-dark .blk-open:hover{ background:#34d399; color:#052e1c !important; }
+html.theme-dark .blk-empty{ opacity:1; color:#cfe0d7; }
+
+/* YORUG' REJIM: matnlar xira bo'lib qolmasin */
+html:not(.theme-dark) .blk-sub{ opacity:1; color:#4f665b; }
+html:not(.theme-dark) .blk-reason-d{ opacity:1; color:#2a3d34; }
+html:not(.theme-dark) .blk-tile-lbl{ opacity:1; color:#4f665b; }
+html:not(.theme-dark) .blk-reason-t{ filter:brightness(.72) saturate(1.2); }
+
+/* ===== Qidiruv inputi: global input stillari (dark fon, ramka, soya) ichki inputga tushmasin ===== */
+html body .blk-searchbox input,
+html.theme-dark body .blk-searchbox input,
+html body .blk-searchbox input:focus,
+html.theme-dark body .blk-searchbox input:focus{
+  background:transparent !important; background-color:transparent !important;
+  border:0 !important; border-radius:0 !important; box-shadow:none !important; outline:0 !important;
+  padding:.62rem 0 !important; margin:0; height:auto; width:100%;
+  color:inherit !important; -webkit-appearance:none; appearance:none;
+}
+html.theme-dark body .blk-searchbox input{ color:#f1f8f4 !important; }
+html.theme-dark body .blk-searchbox{ background:#0e1914 !important; }
+html.theme-dark body .blk-searchbox:focus-within{ border-color:rgba(52,211,153,.6) !important; box-shadow:0 0 0 3px rgba(52,211,153,.12); }
+html body .blk-searchbox{ padding:0 .9rem; overflow:hidden; }
+.blk-searchbox input::-webkit-search-cancel-button{ display:none; }
+</style>
+<style id="edu-tweaks">
+/* =====================================================================
+   1) YORUG'LIK (GLOW) EFFEKTLARINI PASAYTIRISH — sidebar, logo, faol tugma
+   ===================================================================== */
+html body .side-top .rounded-md{ box-shadow:0 2px 8px -2px rgba(52,211,153,.28) !important; }
+html body .side-modern::before{ opacity:.35 !important; filter:blur(10px); }
+html body aside.side-modern::after{
+  background:
+    radial-gradient(120% 60% at 0% 0%, rgba(255,255,255,.05), transparent 45%),
+    linear-gradient(300deg, rgba(255,255,255,.03), transparent 35%) !important;
+}
+html body aside.side-modern.bg-ink.bg-ink.bg-ink{
+  background-image:linear-gradient(165deg, rgba(52,211,153,.035), transparent 50%) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.10), 0 18px 40px -24px rgba(0,0,0,.6) !important;
+}
+html body .side-modern .nav-pill.active{
+  background-image:linear-gradient(90deg, rgba(52,211,153,.20), rgba(52,211,153,.03)) !important;
+  box-shadow:inset 0 0 0 1px rgba(52,211,153,.26) !important;
+  -webkit-backdrop-filter:none; backdrop-filter:none;
+}
+html body .side-modern .nav-pill.active .nav-pill-icon{ box-shadow:none !important; }
+html body .side-modern .nav-pill.active .nav-pill-icon svg{ filter:none !important; }
+html body .side-modern .nav-pill:hover:not(.active){ box-shadow:none !important; }
+html body .side-collapse-btn:hover{ transform:none; }
+html body .notif-badge{ box-shadow:none !important; }
+
+/* =====================================================================
+   2) BILDIRISHNOMA: har bir element uchun "o'qildi" tugmasi
+   ===================================================================== */
+.notif-row{ display:flex; align-items:center; gap:.3rem; border-top:1px solid rgba(2,44,34,.06);
+  transition:opacity .3s ease; animation:eduRowIn .35s cubic-bezier(.2,.8,.2,1) backwards; }
+.notif-row:first-child{ border-top:0; }
+html.theme-dark .notif-row{ border-top-color:rgba(255,255,255,.07); }
+.notif-row .notif-item-link{ border-top:0 !important; flex:1; min-width:0; }
+.notif-row.is-read{ opacity:.5; }
+.notif-row.is-read .pill{ filter:grayscale(1); }
+.notif-read-btn{
+  flex-shrink:0; width:28px; height:28px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center;
+  background:rgba(52,211,153,.14); color:#10b981; border:1px solid rgba(52,211,153,.35); cursor:pointer;
+  transition:background .2s ease, color .2s ease, transform .2s ease;
+}
+.notif-read-btn:hover:not(:disabled){ background:#34d399; color:#052e1c; transform:scale(1.08); }
+.notif-read-btn:active:not(:disabled){ transform:scale(.92); }
+.notif-read-btn:disabled{ background:transparent; color:#8aa398; border-color:transparent; cursor:default; }
+.notif-row:nth-child(2){ animation-delay:.04s; } .notif-row:nth-child(3){ animation-delay:.08s; }
+.notif-row:nth-child(4){ animation-delay:.12s; } .notif-row:nth-child(n+5){ animation-delay:.16s; }
+@keyframes eduRowIn{ from{ opacity:0; transform:translateX(10px); } }
+
+/* =====================================================================
+   3) BO'LIMGA O'TGANDA ANIMATSIYA — barcha bloklar ketma-ket chiqib keladi
+   ===================================================================== */
+@keyframes eduPageIn{ from{ opacity:0; transform:translateY(18px) scale(.985); } }
+@keyframes eduBlockIn{ from{ opacity:0; transform:translateY(22px) scale(.97); } }
+
+/* 1-daraja: sahifaning asosiy bloklari */
+.page-enter > *{ animation:eduPageIn .5s cubic-bezier(.2,.8,.2,1) backwards; }
+.page-enter > *:nth-child(2){ animation-delay:.06s; }
+.page-enter > *:nth-child(3){ animation-delay:.12s; }
+.page-enter > *:nth-child(4){ animation-delay:.18s; }
+.page-enter > *:nth-child(n+5){ animation-delay:.24s; }
+
+/* 2-daraja: ichidagi kartalar, statistika bloklari, ro'yxat qatorlari, jadval qatorlari */
+.page-enter .bg-card, .page-enter .stat-modern, .page-enter .monthly-chart-card,
+.page-enter [class*="v2-c"], .page-enter [class*="card"], .page-enter table tbody tr,
+.page-enter .pill-tabs > *, .page-enter [class*="student-row"], .page-enter [class*="-row"]:not(.notif-row){
+  animation:eduBlockIn .55s cubic-bezier(.2,.8,.2,1) backwards;
+}
+.page-enter .grid > *:nth-child(1){ animation-delay:.10s; }
+.page-enter .grid > *:nth-child(2){ animation-delay:.16s; }
+.page-enter .grid > *:nth-child(3){ animation-delay:.22s; }
+.page-enter .grid > *:nth-child(4){ animation-delay:.28s; }
+.page-enter .grid > *:nth-child(5){ animation-delay:.34s; }
+.page-enter .grid > *:nth-child(n+6){ animation-delay:.40s; }
+.page-enter table tbody tr:nth-child(1){ animation-delay:.12s; } .page-enter table tbody tr:nth-child(2){ animation-delay:.17s; }
+.page-enter table tbody tr:nth-child(3){ animation-delay:.22s; } .page-enter table tbody tr:nth-child(4){ animation-delay:.27s; }
+.page-enter table tbody tr:nth-child(n+5){ animation-delay:.32s; }
+
+@media (prefers-reduced-motion:reduce){
+  .page-enter, .page-enter *, .notif-row{ animation:none !important; }
+}
+</style>
+<style id="edu-dark-solid">
+/* =====================================================================
+   DARK REJIM — barcha bo'limlarda "liquid glass" o'rniga oddiy, zich (solid) ko'rinish
+   ===================================================================== */
+html.theme-dark{
+  --solid-1:#0e1914;   /* karta / panel */
+  --solid-2:#14231c;   /* ichki panel */
+  --solid-3:#0b1410;   /* sidebar / topbar */
+  --solid-bd:rgba(255,255,255,.10);
+  --lg-bg:#0b1410; --lg-bg-strong:#0e1914; --lg-tint:transparent; --lg-sheen:transparent; --lg-hi:rgba(255,255,255,.06);
+}
+/* fondagi rangli "aurora" yorug'liklari va nuqtalar to'ri olib tashlandi */
+html.theme-dark body::before{ display:none !important; }
+html.theme-dark body::after{ opacity:.25; }
+html.theme-dark, html.theme-dark body{ background:#070d0a !important; }
+
+/* Dashboard kartalari (v2) */
+html.theme-dark .v2{ --glass:var(--solid-1); --bd:var(--solid-bd); }
+html.theme-dark body .v2-c{ background:var(--solid-1) !important; -webkit-backdrop-filter:none !important; backdrop-filter:none !important; }
+html.theme-dark body .v2-c::before{ display:none; }
+html.theme-dark body .v2-hero{ background:linear-gradient(150deg,#12332a,var(--solid-1) 65%) !important; }
+html.theme-dark body .v2-g{ background:var(--solid-1) !important; }
+
+/* Boshqa sahifalardagi kartalar */
+html.theme-dark body .bg-card,
+html.theme-dark body .monthly-chart-card,
+html.theme-dark body .stat-modern{
+  background:var(--solid-1) !important; background-image:none !important;
+  -webkit-backdrop-filter:none !important; backdrop-filter:none !important;
+  border:1px solid var(--solid-bd) !important;
+  box-shadow:0 14px 32px -20px rgba(0,0,0,.8) !important;
+}
+
+/* Sidebar */
+html.theme-dark body aside.side-modern.bg-ink.bg-ink.bg-ink,
+html.theme-dark body aside.side-modern.bg-ink{
+  background:var(--solid-3) !important; background-image:none !important;
+  -webkit-backdrop-filter:none !important; backdrop-filter:none !important;
+  border:1px solid var(--solid-bd) !important;
+  box-shadow:0 18px 40px -24px rgba(0,0,0,.8) !important;
+}
+html.theme-dark body aside.side-modern::after,
+html.theme-dark body .side-modern::before{ display:none !important; }
+html.theme-dark body .side-modern .nav-pill.active{
+  background:#143427 !important; background-image:none !important;
+  box-shadow:inset 0 0 0 1px rgba(52,211,153,.35) !important;
+  -webkit-backdrop-filter:none !important; backdrop-filter:none !important;
+}
+html.theme-dark body .side-modern .nav-pill:hover:not(.active){ background:#14231c !important; box-shadow:none !important; }
+html.theme-dark body .side-modern .side-footer{ background:var(--solid-1) !important; box-shadow:none !important; }
+html.theme-dark body .side-collapse-btn,
+html.theme-dark body .side-mobile-close{ background:var(--solid-2) !important; box-shadow:none !important; }
+
+/* Topbar */
+html.theme-dark body .topbar::before{
+  background:var(--solid-3) !important; background-image:none !important;
+  -webkit-backdrop-filter:none !important; backdrop-filter:none !important;
+}
+html.theme-dark body .topbar.topbar{ box-shadow:0 14px 32px -22px rgba(0,0,0,.8) !important; border-color:var(--solid-bd) !important; }
+html.theme-dark body .topbar .topbar-icon-btn,
+html.theme-dark body .topbar .topbar-profile-btn,
+html.theme-dark body .topbar .mobile-menu-btn{ background:var(--solid-2) !important; box-shadow:none !important; }
+
+/* Dropdownlar, modallar, bildirishnomalar */
+html.theme-dark body .notif-dropdown.notif-dropdown,
+html.theme-dark body .profile-dropdown.profile-dropdown{
+  background:var(--solid-1) !important; -webkit-backdrop-filter:none !important; backdrop-filter:none !important;
+  border:1px solid var(--solid-bd) !important; box-shadow:0 24px 50px -20px rgba(0,0,0,.9) !important;
+}
+html.theme-dark body .modal-card, html.theme-dark body .bi-card{ background:var(--solid-1) !important; }
+
+/* Toast xabarlar */
+html.theme-dark body .bs-alert{ -webkit-backdrop-filter:none !important; backdrop-filter:none !important; }
+html.theme-dark body .bs-alert-success{ background:#0f3a2b !important; }
+html.theme-dark body .bs-alert-danger{ background:#40161f !important; }
+html.theme-dark body .bs-alert-warning{ background:#3d3410 !important; }
+html.theme-dark body .bs-alert-info{ background:#10343d !important; }
+
+/* Mobil pastki menyu */
+html.theme-dark body .mobile-bottom-nav{
+  background:var(--solid-3) !important; background-image:none !important;
+  -webkit-backdrop-filter:none !important; backdrop-filter:none !important;
+}
+html.theme-dark body .mbn-glass{
+  background:#143427 !important; border:1px solid rgba(52,211,153,.4) !important; box-shadow:none !important;
+  -webkit-backdrop-filter:none !important; backdrop-filter:none !important;
+}
+</style>
+<style id="edu-courses">
+/* =====================================================================
+   KURS KARTALARI v2 — mesh-gradient muqova, statistika kartochkalari, gradient hover-ramka
+   ===================================================================== */
+html body .courses-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(270px,1fr)); gap:1.3rem; }
+
+html body .course-card{
+  --ac:color-mix(in srgb, var(--tc2,#34d399) 50%, #ffffff);
+  aspect-ratio:auto; min-height:0; display:flex; flex-direction:column; position:relative;
+  border-radius:26px; overflow:hidden; background:#0d1813;
+  border:1px solid rgba(255,255,255,.08);
+  box-shadow:0 20px 40px -28px rgba(0,0,0,.9);
+  transition:transform .4s cubic-bezier(.2,.8,.2,1), box-shadow .4s ease, border-color .3s ease;
+}
+html body .course-card:hover{ transform:translateY(-8px); box-shadow:0 34px 50px -30px rgba(0,0,0,.95); border-color:transparent; }
+
+/* hover: kursning o'z rangidagi gradient ramka */
+html body .course-card::before{
+  content:""; position:absolute; inset:0; border-radius:inherit; padding:1.5px; z-index:6; pointer-events:none;
+  background:linear-gradient(135deg,var(--ac),transparent 42%,transparent 62%,var(--tc1,#34d399));
+  -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor; mask-composite:exclude;
+  opacity:0; transition:opacity .35s ease;
+}
+html body .course-card:hover::before{ opacity:1; }
+/* kursor ortidan yuradigan yengil yoritgich */
+html body .course-card::after{
+  display:block; content:""; position:absolute; inset:0; z-index:5; pointer-events:none;
+  background:radial-gradient(280px circle at var(--mx,50%) var(--my,0%), rgba(255,255,255,.07), transparent 65%);
+  opacity:0; transition:opacity .35s ease;
+}
+html body .course-card:hover::after{ opacity:1; }
+
+/* ---------- muqova ---------- */
+html body .course-card-media{ position:relative; inset:auto; height:196px; flex-shrink:0; z-index:0; }
+html body .course-card-media-img{
+  background-image:
+    radial-gradient(90% 100% at 100% 0%, color-mix(in srgb,var(--tc2,#2563eb) 100%, #ffffff 18%), transparent 62%),
+    radial-gradient(80% 90% at 0% 100%, color-mix(in srgb,var(--tc1,#6d28d9) 100%, #000000 25%), transparent 70%),
+    linear-gradient(135deg,var(--tc1,#6d28d9),var(--tc2,#2563eb));
+  transition:transform .7s cubic-bezier(.2,.8,.2,1);
+}
+html body .course-card-media-img::before{
+  background:
+    radial-gradient(circle at 15% 8%, rgba(255,255,255,.26), transparent 42%),
+    radial-gradient(rgba(255,255,255,.16) 1px, transparent 1.3px) 0 0/18px 18px;
+}
+/* pastga tushganda panel rangiga silliq o'tish + yuqori-o'ngda halqalar */
+html body .course-card-media::after{
+  content:""; position:absolute; inset:0; z-index:0; pointer-events:none;
+  background:
+    linear-gradient(to top,#0d1813 2%,rgba(13,24,19,0) 58%),
+    repeating-radial-gradient(circle at 105% -5%, transparent 0 34px, rgba(255,255,255,.08) 34px 35px);
+}
+html body .course-card-mono{
+  position:absolute; right:.7rem; bottom:-3rem; z-index:0; pointer-events:none; user-select:none;
+  font-family:Sora,Manrope,system-ui,sans-serif; font-weight:800; font-size:11rem; line-height:1;
+  color:rgba(255,255,255,.07); -webkit-text-stroke:1.5px rgba(255,255,255,.4);
+  transition:transform .7s cubic-bezier(.2,.8,.2,1);
+}
+html body .course-card:hover .course-card-mono{ transform:translate(-10px,-8px) rotate(-3deg) scale(1.04); }
+html body .course-card-kicker{
+  position:absolute; left:1rem; bottom:1rem; z-index:2; display:inline-flex; align-items:center; gap:.35rem;
+  font-size:.68rem; font-weight:700; letter-spacing:.02em; color:#fff;
+  padding:.34rem .7rem; border-radius:999px; background:rgba(0,0,0,.3); border:1px solid rgba(255,255,255,.22);
+}
+
+/* play tugmasi */
+html body .course-card-play{
+  top:auto; left:auto; right:1rem; bottom:.95rem; transform:none; width:46px; height:46px;
+  background:#fff; color:#0b130f; border:0; -webkit-backdrop-filter:none; backdrop-filter:none;
+  box-shadow:0 10px 22px -8px rgba(0,0,0,.55), 0 0 0 0 rgba(255,255,255,.3); z-index:2;
+  transition:transform .3s cubic-bezier(.3,1.4,.5,1), box-shadow .3s ease;
+}
+html body .course-card-play svg{ margin-left:2px; }
+html body .course-card-media-hit:hover .course-card-play,
+html body .course-card:hover .course-card-play{ transform:scale(1.08); background:#fff; box-shadow:0 10px 22px -8px rgba(0,0,0,.55), 0 0 0 7px rgba(255,255,255,.2); }
+
+/* narx va menyu */
+html body .course-card-price{
+  top:.85rem; right:.85rem; background:rgba(6,12,9,.78); -webkit-backdrop-filter:none; backdrop-filter:none;
+  border:1px solid rgba(255,255,255,.16); color:#b6f7d8; font-size:.75rem; padding:.36rem .75rem;
+}
+html body .course-card-menu-wrap{ top:.85rem; left:.85rem; }
+html body .course-card-menu-btn{ background:rgba(6,12,9,.78); -webkit-backdrop-filter:none; backdrop-filter:none; border:1px solid rgba(255,255,255,.14); border-radius:.65rem; width:1.9rem; height:1.9rem; }
+html body .course-card-menu-btn:hover{ background:#050a08; border-color:rgba(255,255,255,.32); }
+
+/* ---------- pastki panel ---------- */
+html body .course-card-body{
+  position:static; padding:.2rem 1.2rem 1.2rem; background:none; flex:1; display:flex; flex-direction:column; z-index:1;
+}
+html body .course-card-title{
+  font-family:Sora,Manrope,system-ui,sans-serif; font-size:1.18rem; font-weight:800; letter-spacing:-.015em; line-height:1.2;
+  color:#fff; margin-bottom:.4rem; text-shadow:none;
+}
+html body .course-card-desc{ font-size:.8rem; line-height:1.5; color:#a9bdb3; margin-bottom:1rem; min-height:2.4em; }
+
+/* statistika kartochkalari */
+html body .course-card-tags{ display:grid; grid-auto-flow:column; grid-auto-columns:minmax(0,1fr); gap:.6rem; margin-bottom:1.05rem; }
+html body .course-card-tag{
+  display:flex; align-items:center; gap:.6rem; padding:.55rem .65rem; border-radius:15px;
+  background:#13221b; border:1px solid rgba(255,255,255,.07); color:#fff;
+}
+html body .cct-ic{
+  width:30px; height:30px; border-radius:10px; flex-shrink:0; display:flex; align-items:center; justify-content:center;
+  background:color-mix(in srgb,var(--ac) 20%, #13221b); color:var(--ac);
+}
+html body .cct-tx{ display:flex; flex-direction:column; line-height:1.1; min-width:0; }
+html body .cct-tx b{ font-size:1rem; font-weight:800; color:#fff; }
+html body .cct-tx em{ font-style:normal; font-size:.66rem; font-weight:600; color:#8fa69b; margin-top:2px; }
+
+/* tugma: matn chapda, o'q — doira ichida o'ngda */
+html body .course-card-cta{
+  margin-top:auto; display:flex; align-items:center; justify-content:space-between; gap:.6rem; text-align:left;
+  padding:.4rem .4rem .4rem 1.1rem; min-height:48px; border-radius:16px; border:1px solid rgba(255,255,255,.1);
+  background:#13221b; color:#eef6f1; font-weight:700; font-size:.84rem;
+  -webkit-backdrop-filter:none; backdrop-filter:none;
+  transition:background .3s ease, color .3s ease, border-color .3s ease;
+}
+html body .course-card-cta::after{
+  content:"\2192"; width:36px; height:36px; border-radius:12px; flex-shrink:0; display:inline-flex; align-items:center; justify-content:center;
+  font-size:1.05rem; font-weight:700; background:color-mix(in srgb,var(--ac) 22%, #13221b); color:var(--ac);
+  transition:transform .3s cubic-bezier(.3,1.4,.5,1), background .3s ease, color .3s ease;
+}
+html body .course-card-cta:hover:not(:disabled){ background:linear-gradient(135deg,var(--tc1,#34d399),var(--tc2,#a3e635)); color:#fff; border-color:transparent; transform:none; }
+html body .course-card-cta:hover:not(:disabled)::after{ background:#fff; color:#0b130f; transform:translateX(2px) rotate(-45deg); }
+html body .course-card-cta:disabled{ justify-content:center; padding:.4rem 1rem; }
+html body .course-card-cta:disabled::after{ display:none; }
+html body .course-card-cta-buy{ background:linear-gradient(135deg,#34d399,#a3e635); color:#052e1c; border-color:transparent; }
+html body .course-card-cta-buy::after{ background:rgba(5,46,28,.16); color:#052e1c; }
+html body .course-card-cta-buy:hover:not(:disabled){ background:linear-gradient(135deg,#6ee7b7,#bef264); color:#052e1c; }
+html body .course-card-cta-buy:hover:not(:disabled)::after{ background:#052e1c; color:#bef264; }
+
+/* muzlatilgan holat */
+html body .course-card-frozen-pill{ background:rgba(56,189,248,.14); border:1px solid rgba(56,189,248,.4); color:#7dd3fc; box-shadow:none; }
+html body .course-card-frozen .course-card-media{ opacity:1; filter:grayscale(.8) brightness(.72); }
+html body .course-card-frozen .course-card-title{ opacity:.85; }
+html body .course-card-body .flex.items-center.gap-1\.5{ margin-bottom:.05rem; }
+
+@media (max-width:560px){ html body .courses-grid{ grid-template-columns:1fr; } html body .course-card-media{ height:170px; } }
+@media (prefers-reduced-motion:reduce){
+  html body .course-card, html body .course-card-mono, html body .course-card-media-img, html body .course-card-play{ transition:none !important; }
+  html body .course-card:hover{ transform:none; }
+}
+</style>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -3927,10 +4385,10 @@ function BlockedIntroModal({ items, onFinish }) {
 /* =========================================================================
    TOPBAR (dark/light, bildirishnomalar modal, profil paneli)
    ========================================================================= */
-function Topbar({ me, roleLabel, initials, theme, onToggleTheme, notifications, onMarkAllRead, onGoProfile, onLogout, onOpenMenu, badgeHidden, onOpenBlocked }) {
+function Topbar({ me, roleLabel, initials, theme, onToggleTheme, notifications, onMarkAllRead, onMarkRead, onGoProfile, onLogout, onOpenMenu, badgeHidden, onOpenBlocked }) {
   const [notifOpen, setNotifOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
-  const unread = notifications.length;
+  const unread = notifications.filter((n) => !n.read).length;
   const badgeCount = badgeHidden ? 0 : unread; // modal so'rilib bo'lguncha badge ko'rinmaydi
   const [bellShake, setBellShake] = useState(false);
   const prevUnreadRef = useRef(unread);
@@ -3979,7 +4437,7 @@ function Topbar({ me, roleLabel, initials, theme, onToggleTheme, notifications, 
                 <div className="notif-dropdown-head">
                   <h3 className="font-display">Bildirishnomalar</h3>
                   <div className="notif-dropdown-head-acts">
-                    {(notifications.some((n) => !n.persistent) || markPulse) && (
+                    {(unread > 0 || markPulse) && (
                       <button
                         type="button"
                         className={`notif-mark-all ${markPulse ? 'is-success' : ''}`}
@@ -4002,15 +4460,23 @@ function Topbar({ me, roleLabel, initials, theme, onToggleTheme, notifications, 
                 <div className="notif-dropdown-body">
                   {notifications.length === 0 && <p className="text-sm text-slate p-3">Hozircha bildirishnoma yo'q.</p>}
                   {notifications.map((n) => (
-                    <button type="button" key={n.id} className="notif-item notif-item-link"
-                      onClick={() => { setNotifOpen(false); if (onOpenBlocked) onOpenBlocked(); }}>
-                      <span className="avatar w-8 h-8 bg-paper text-ink text-xs border border-line">{n.initials}</span>
-                      <div className="notif-item-body">
-                        <div className="notif-item-title">{n.name}</div>
-                        <div className="notif-item-sub">{n.courses} ta kurs bloklangan · {n.reasonText}</div>
-                      </div>
-                      <span className="pill pill-warn shrink-0"><Icon.lock width="10" height="10" /> Bloklangan</span>
-                    </button>
+                    <div key={n.id} className={`notif-row ${n.read ? 'is-read' : ''}`}>
+                      <button type="button" className="notif-item notif-item-link"
+                        onClick={() => { if (onMarkRead) onMarkRead(n.id); setNotifOpen(false); if (onOpenBlocked) onOpenBlocked(); }}>
+                        <span className="avatar w-8 h-8 bg-paper text-ink text-xs border border-line">{n.initials}</span>
+                        <div className="notif-item-body">
+                          <div className="notif-item-title">{n.name}</div>
+                          <div className="notif-item-sub">{n.courses} ta kurs bloklangan · {n.reasonText}</div>
+                        </div>
+                        <span className="pill pill-warn shrink-0"><Icon.lock width="10" height="10" /> Bloklangan</span>
+                      </button>
+                      <button type="button" className="notif-read-btn" disabled={n.read}
+                        onClick={() => onMarkRead && onMarkRead(n.id)}
+                        aria-label={n.read ? "O'qilgan" : "O'qilgan deb belgilash"}
+                        title={n.read ? "O'qilgan" : "O'qilgan deb belgilash"}>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 12.5L10 17.5L19 7" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                      </button>
+                    </div>
                   ))}
                 </div>
               </div>
@@ -4107,15 +4573,18 @@ function StaffApp({ me, staff, setStaff, categories, setCategories, students, se
     });
     return [...map.values()].map((g) => ({
       id: g.id, name: g.name, courses: g.courses, persistent: true,
+      read: readNotifIds.indexOf(g.id) !== -1,
       reasonText: [...g.reasons].join(', '),
       initials: g.name.split(' ').map((w) => w[0]).slice(0, 2).join(''),
     }));
-  }, [students, categories]);
+  }, [students, categories, readNotifIds]);
 
   /* Saytga kirganda bloklanganlar bo'lsa — modal chiqadi, so'ng qo'ng'iroqchaga "so'rilib" ketadi */
   const [intro, setIntro] = useState('pending'); // pending -> show -> done
-  useEffect(() => { setIntro(notifications.length > 0 ? 'show' : 'done'); }, []);
-  const markAllNotifsRead = () => setReadNotifIds(overdueStudents.map((s) => s.id));
+  useEffect(() => { setIntro(notifications.some((n) => !n.read) ? 'show' : 'done'); }, []);
+  const markAllNotifsRead = () => setReadNotifIds(notifications.map((n) => n.id));
+  const markNotifRead = (id) => setReadNotifIds((prev) => (prev.indexOf(id) === -1 ? [...prev, id] : prev));
+  const unreadNotifCount = notifications.filter((n) => !n.read).length;
 
   const blockedStudentCount = useMemo(
     () => new Set(studentBlockEntries(students, categories).map((e) => e.student.id)).size,
@@ -4157,11 +4626,12 @@ function StaffApp({ me, staff, setStaff, categories, setCategories, students, se
       <div className="app-main flex-1 flex flex-col">
         <Topbar me={me} roleLabel={roleLabel} initials={initials}
           theme={theme} onToggleTheme={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-          notifications={notifications} onMarkAllRead={markAllNotifsRead} onGoProfile={() => goTo('profile')} onLogout={onLogout}
+          notifications={notifications} onMarkAllRead={markAllNotifsRead} onMarkRead={markNotifRead} onGoProfile={() => goTo('profile')} onLogout={onLogout}
           badgeHidden={intro !== 'done'} onOpenBlocked={() => goTo('blocked')}
           onOpenMenu={() => setMobileMenuOpen(true)} />
 
         <main className="flex-1 p-8 overflow-y-auto max-h-screen">
+          <div key={page + (editingStudentId || '')} className="page-enter">
           {page === 'overview' && (
             <DashV2 me={me} canEdit={canEdit} stats={stats} revenue={revenue} students={students} categories={categories}
               overdueStudents={overdueStudents} overdueShown={overdueShown} overdueCurPage={overdueCurPage}
@@ -4207,6 +4677,7 @@ function StaffApp({ me, staff, setStaff, categories, setCategories, students, se
         )}
 
         {page === 'profile' && <StaffProfile me={me} staff={staff} setStaff={setStaff} notify={notify} onLogout={onLogout} />}
+          </div>
         </main>
       </div>
     </div>
@@ -4366,16 +4837,17 @@ function BlockedPage({ students, categories, onOpenStudent }) {
   const [filter, setFilter] = useState('all');
   const entries = useMemo(() => studentBlockEntries(students, categories), [students, categories]);
 
-  const FILTERS = [
-    ['all', 'Hammasi'],
-    ['payment', "To'lov"],
-    ['manual', "Qo'lda"],
-    ['frozen', 'Muzlatilgan'],
-    ['attendance', 'Nazorat'],
-  ];
+  const TYPES = {
+    payment:    { label: "To'lov",      icon: Icon.cash },
+    manual:     { label: "Qo'lda",      icon: Icon.lock },
+    frozen:     { label: 'Muzlatilgan', icon: Icon.clock },
+    attendance: { label: 'Nazorat',     icon: Icon.video },
+  };
+  const FILTERS = [['all', 'Hammasi'], ['payment', "To'lov"], ['manual', "Qo'lda"], ['frozen', 'Muzlatilgan'], ['attendance', 'Nazorat']];
   const countOf = (f) => (f === 'all'
     ? new Set(entries.map((e) => e.student.id)).size
     : new Set(entries.filter((e) => e.reasons.some((r) => r.type === f)).map((e) => e.student.id)).size);
+  const totalCourses = entries.length;
 
   const q = query.trim().toLowerCase();
   const byStudent = new Map();
@@ -4389,52 +4861,86 @@ function BlockedPage({ students, categories, onOpenStudent }) {
   const initialsOf = (n) => (n || '?').split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase();
 
   return (
-    <div>
-      <h1 className="font-display text-3xl text-ink mb-1 flex items-center gap-2">
-        <Icon.lock width="24" height="24" /> Bloklanganlar
-      </h1>
-      <p className="text-slate text-sm mb-6">Bloklangan o'quvchilar va blok sababi. Jami: {countOf('all')} ta o'quvchi.</p>
-
-      <div className="blk-toolbar">
-        <input className="blk-search" placeholder="Ism, familiya yoki kurs bo'yicha qidirish…" value={query} onChange={(e) => setQuery(e.target.value)} />
-        <div className="blk-chips">
-          {FILTERS.map(([id, label]) => (
-            <button key={id} type="button" className={`blk-chip ${filter === id ? 'on' : ''}`} onClick={() => setFilter(id)}>
-              {label} · {countOf(id)}
-            </button>
-          ))}
+    <div className="blk-page">
+      <div className="blk-hero">
+        <div className="blk-hero-icon"><Icon.lock width="22" height="22" /></div>
+        <div>
+          <h1 className="font-display text-3xl text-ink">Bloklanganlar</h1>
+          <p className="text-slate text-sm">{countOf('all')} ta o'quvchining {totalCourses} ta kursi hozir yopiq. Sababni ko'ring va tezda hal qiling.</p>
         </div>
       </div>
 
-      {groups.length === 0 && <div className="blk-empty">Hozircha bloklangan o'quvchilar yo'q.</div>}
+      <div className="blk-tiles">
+        {FILTERS.map(([id, label]) => (
+          <button key={id} type="button" className={`blk-tile t-${id} ${filter === id ? 'on' : ''}`} onClick={() => setFilter(id)}>
+            <span className="blk-tile-ic">{id === 'all' ? <Icon.users width="16" height="16" /> : React.createElement(TYPES[id].icon, { width: 16, height: 16 })}</span>
+            <span className="blk-tile-num">{countOf(id)}</span>
+            <span className="blk-tile-lbl">{label}</span>
+          </button>
+        ))}
+      </div>
+
+      <div className="blk-searchbox">
+        <Icon.search width="16" height="16" />
+        <input placeholder="Ism, familiya yoki kurs bo'yicha qidirish…" value={query} onChange={(e) => setQuery(e.target.value)} />
+        {query && <button type="button" className="blk-clear" onClick={() => setQuery('')} aria-label="Tozalash"><Icon.close width="11" height="11" /></button>}
+      </div>
+
+      {groups.length === 0 && (
+        <div className="blk-empty">
+          <div className="blk-empty-ic"><Icon.check width="26" height="26" /></div>
+          <div className="blk-empty-t">Hammasi joyida</div>
+          <div>{q || filter !== 'all' ? "Bu filtr bo'yicha hech narsa topilmadi." : "Hozircha bloklangan o'quvchilar yo'q."}</div>
+        </div>
+      )}
 
       <div className="blk-list">
-        {groups.map(({ student, items }) => (
-          <div key={student.id} className="blk-card bg-card">
-            <div className="blk-head">
-              <span className="avatar blk-avatar">{initialsOf(student.name)}</span>
-              <div className="min-w-0">
-                <div className="blk-name text-ink" title={student.name}>{student.name}</div>
-                <div className="blk-sub text-slate">{items.length} ta kurs bloklangan</div>
-              </div>
-              <button type="button" className="blk-open" onClick={() => onOpenStudent(student.id)}>Ochish</button>
-            </div>
-            {items.map(({ cat, catId, reasons }) => (
-              <div key={catId} className="blk-course">
-                <div className="blk-course-top">
-                  <span className="blk-course-name text-ink">{cat.name}</span>
-                  <span className="pill pill-warn shrink-0"><Icon.lock width="10" height="10" /> Bloklangan</span>
+        {groups.map(({ student, items }) => {
+          const kinds = [...new Set(items.flatMap((i) => i.reasons.map((r) => r.type)))];
+          const reasonCount = items.reduce((a, i) => a + i.reasons.length, 0);
+          return (
+            <div key={student.id} className="blk-card bg-card">
+              <div className="blk-head">
+                <span className="avatar blk-avatar">{initialsOf(student.name)}</span>
+                <div className="min-w-0 blk-head-info">
+                  <div className="blk-name text-ink" title={student.name}>{student.name}</div>
+                  <div className="blk-sub text-slate">{items.length} ta kurs · {reasonCount} ta sabab</div>
                 </div>
-                {reasons.map((r) => (
-                  <div key={r.type} className="blk-reason text-ink">
-                    <Icon.warn width="13" height="13" style={{ marginTop: 2, flexShrink: 0, color: '#d13b4f' }} />
-                    <span><b>{r.title}.</b> {r.text}</span>
+                <button type="button" className="blk-open" onClick={() => onOpenStudent(student.id)}>
+                  Ochish <Icon.arrowRight width="12" height="12" />
+                </button>
+              </div>
+
+              <div className="blk-kinds">
+                {kinds.map((k) => (
+                  <span key={k} className={`blk-kind t-${k}`}>{React.createElement(TYPES[k].icon, { width: 11, height: 11 })} {TYPES[k].label}</span>
+                ))}
+              </div>
+
+              <div className="blk-courses">
+                {items.map(({ cat, catId, reasons }) => (
+                  <div key={catId} className="blk-course">
+                    <div className="blk-course-top">
+                      <span className="blk-course-name text-ink"><Icon.book width="14" height="14" /> {cat.name}</span>
+                      <span className="pill pill-warn shrink-0"><Icon.lock width="10" height="10" /> Bloklangan</span>
+                    </div>
+                    <div className="blk-reasons">
+                      {reasons.map((r) => (
+                        <div key={r.type} className={`blk-reason t-${r.type}`}>
+                          <span className="blk-reason-ic">{React.createElement(TYPES[r.type].icon, { width: 13, height: 13 })}</span>
+                          <div className="blk-reason-tx">
+                            <div className="blk-reason-t">{r.title}</div>
+                            <div className="blk-reason-d">{r.text}</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 ))}
               </div>
-            ))}
-          </div>
-        ))}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
@@ -4553,10 +5059,10 @@ function PermissionsPage({ me, staff, setStaff, notify }) {
 }
 
 const THUMB_GRADIENTS = [
-  ['#241236', '#4a1942'],
-  ['#0f2b3a', '#0b5b57'],
-  ['#2a1414', '#5c2323'],
-  ['#12233a', '#1c4a63'],
+  ['#6d28d9', '#2563eb'],
+  ['#047857', '#0e7490'],
+  ['#c2410c', '#be185d'],
+  ['#0369a1', '#4338ca'],
 ];
 
 function CoursesManager({ categories, setCategories, canEdit, notify, students, quickAdd, onQuickAddDone, me }) {
@@ -5301,9 +5807,11 @@ function CoursesManager({ categories, setCategories, canEdit, notify, students, 
           const [c1, c2] = THUMB_GRADIENTS[ci % THUMB_GRADIENTS.length];
           const lessonCount = cat.subtopics.reduce((a, s) => a + s.lessons.length, 0);
           return (
-            <div key={cat.id} className={`course-card ${cat.frozen ? 'course-card-frozen' : ''}`}>
+            <div key={cat.id} className={`course-card ${cat.frozen ? 'course-card-frozen' : ''}`} style={{ '--tc1': c1, '--tc2': c2 }}>
               <div className="course-card-media">
                 <div className="course-card-media-img" style={cat.image ? { backgroundImage: `url(${cat.image})`, backgroundSize: 'cover', backgroundPosition: 'center' } : { '--tc1': c1, '--tc2': c2 }} />
+                <span className="course-card-mono" aria-hidden="true">{(cat.name || '?').trim().charAt(0).toUpperCase()}</span>
+                <span className="course-card-kicker"><Icon.video width="11" height="11" /> Video kurs</span>
                 <button onClick={() => setOpenCat(cat.id)} className="course-card-media-hit" aria-label={cat.name}>
                   <span className="course-card-play"><Icon.play width="18" height="18" /></span>
                 </button>
@@ -5352,8 +5860,8 @@ function CoursesManager({ categories, setCategories, canEdit, notify, students, 
                 </div>
                 <p className="course-card-desc">{cat.subtitle || `${cat.subtopics.length} bo'lim, ${lessonCount} dars`}</p>
                 <div className="course-card-tags">
-                  <span className="course-card-tag">Kurs</span>
-                  <span className="course-card-tag">{lessonCount} dars</span>
+                  <span className="course-card-tag"><span className="cct-ic"><Icon.layers width="14" height="14" /></span><span className="cct-tx"><b>{cat.subtopics.length}</b><em>bo'lim</em></span></span>
+                  <span className="course-card-tag"><span className="cct-ic"><Icon.video width="14" height="14" /></span><span className="cct-tx"><b>{lessonCount}</b><em>dars</em></span></span>
                 </div>
                 <button onClick={() => setOpenCat(cat.id)} className="course-card-cta">Kursni ochish</button>
               </div>
@@ -7158,9 +7666,11 @@ function StudentApp({ me, categories, students, setStudents, onLogout, notify })
                   else setCatId(cat.id);
                 };
                 return (
-                  <div key={cat.id} className={`course-card ${cat.frozen ? 'course-card-frozen' : ''}`}>
+                  <div key={cat.id} className={`course-card ${cat.frozen ? 'course-card-frozen' : ''}`} style={{ '--tc1': gc1, '--tc2': gc2 }}>
                     <div className="course-card-media">
                       <div className="course-card-media-img" style={cat.image ? { backgroundImage: `url(${cat.image})`, backgroundSize: 'cover', backgroundPosition: 'center' } : { '--tc1': gc1, '--tc2': gc2 }} />
+                      <span className="course-card-mono" aria-hidden="true">{(cat.name || '?').trim().charAt(0).toUpperCase()}</span>
+                      <span className="course-card-kicker"><Icon.video width="11" height="11" /> Video kurs</span>
                       <button onClick={openCourse} className="course-card-media-hit" aria-label={cat.name}>
                         <span className="course-card-play"><Icon.play width="18" height="18" /></span>
                       </button>
@@ -7185,7 +7695,7 @@ function StudentApp({ me, categories, students, setStudents, onLogout, notify })
                         </div>
                       ) : (
                         <div className="course-card-tags">
-                          <span className="course-card-tag">{stat.total} dars</span>
+                          <span className="course-card-tag"><span className="cct-ic"><Icon.video width="14" height="14" /></span><span className="cct-tx"><b>{stat.total}</b><em>dars</em></span></span>
                         </div>
                       )}
                       <button onClick={openCourse} disabled={cat.frozen} className={`course-card-cta ${!enrolled && !cat.frozen ? 'course-card-cta-buy' : ''}`}>
@@ -8342,5 +8852,15 @@ ReactDOM.createRoot(document.getElementById('root')).render(<App />);
     document.body.appendChild(s);
   })();
 </script> 
+<script>
+  // Kurs kartasi: kursor holatiga qarab yengil yoritgich
+  document.addEventListener('mousemove', function (e) {
+    var c = e.target.closest && e.target.closest('.course-card');
+    if (!c) return;
+    var b = c.getBoundingClientRect();
+    c.style.setProperty('--mx', (e.clientX - b.left) + 'px');
+    c.style.setProperty('--my', (e.clientY - b.top) + 'px');
+  }, { passive: true });
+</script>
 </body>
 </html>
