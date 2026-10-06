@@ -2,7 +2,7 @@
 <html lang="uz">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <title>EduStream — Video ta'lim platformasi</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -679,7 +679,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
     display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; flex-shrink: 0;
     transition: background .15s ease, color .15s ease, transform .15s ease;
   }
-  .side-collapse-btn:hover { background: #34d399; color: #052e1c; transform: scale(1.06); }
+  .side-collapse-btn:hover { background: #34d399; color: #052e1c; }
   .side-collapse-btn svg { transition: transform .28s cubic-bezier(.4,0,.2,1); }
   .side-badge-row { padding: .5rem 1.05rem 0; overflow: hidden; position: relative; z-index: 1; }
   .side-label { display: inline-block; opacity: 1; max-width: 160px; overflow: hidden; white-space: nowrap; transition: opacity .16s ease, max-width .26s ease; vertical-align: middle; }
@@ -764,9 +764,9 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
       -webkit-tap-highlight-color: transparent;
       transition: color .35s ease, transform .35s cubic-bezier(.3,1.4,.5,1);
     }
-    .mobile-bottom-nav-item:active { transform: scale(.92); }
+    .mobile-bottom-nav-item:active { transform: none; }
     .mobile-bottom-nav-item.active { color: #fff; }
-    .mobile-bottom-nav-item.active .mbn-icon { transform: translateY(-1px) scale(1.12); }
+    .mobile-bottom-nav-item.active .mbn-icon { transform: translateY(-1px); }
     .mbn-icon { position: relative; display: inline-flex; transition: transform .45s cubic-bezier(.3,1.5,.5,1); }
     .mbn-badge {
       position: absolute; top: -5px; right: -9px; min-width: 14px; height: 14px; padding: 0 4px; border-radius: 999px;
@@ -855,7 +855,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   }
   html.theme-dark .course-card { background: #08110d; }
   .course-card:hover { box-shadow: 0 22px 44px -18px rgba(0,0,0,.6), 0 2px 8px -4px rgba(0,0,0,.22); }
-  .course-card:hover .course-card-media-img { transform: scale(1.06); }
+  .course-card:hover .course-card-media-img { transform: none; }
   .course-card::after {
     content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none;
     background: linear-gradient(to bottom, rgba(0,0,0,.4), transparent 32%);
@@ -881,7 +881,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
     display: flex; align-items: center; justify-content: center; color: #fff; box-shadow: 0 10px 22px rgba(0,0,0,.4);
     transition: transform .2s ease, background .2s ease;
   }
-  .course-card-media-hit:hover .course-card-play { transform: translate(-50%, -50%) scale(1.1); background: rgba(255,255,255,.26); }
+  .course-card-media-hit:hover .course-card-play { transform: translate(-50%, -50%); background: rgba(255,255,255,.26); }
   .course-card-price {
     position: absolute; z-index: 3; top: .65rem; right: .65rem; display: inline-flex; align-items: center; gap: .28rem;
     background: rgba(10,12,16,.6); border: 1px solid rgba(255,255,255,.14); backdrop-filter: blur(6px);
@@ -1293,7 +1293,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   .bi-more { font-size: .72rem; opacity: .6; padding: .4rem 0 .3rem; border-top: 1px solid rgba(2,44,34,.06); }
   .bi-actions { display: flex; gap: .6rem; }
   .bi-btn { flex: 1; border: 0; border-radius: .85rem; padding: .7rem .8rem; font-weight: 700; font-size: .82rem; cursor: pointer; transition: transform .15s ease, filter .15s ease; }
-  .bi-btn:active { transform: scale(.96); }
+  .bi-btn:active { transform: none; }
   .bi-btn-ghost { background: rgba(2,44,34,.07); color: inherit; }
   html.theme-dark .bi-btn-ghost { background: rgba(255,255,255,.08); }
   .bi-btn-main { background-image: linear-gradient(135deg, #6ee7b7, #34d399); color: #052e1c; box-shadow: 0 10px 20px -8px rgba(52,211,153,.7); }
@@ -1379,7 +1379,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
       0 10px 22px -8px rgba(168,98,58,.9), 0 3px 6px -1px rgba(168,98,58,.55),
       inset 0 0 0 1px rgba(255,255,255,.5), inset 0 -2px 3px rgba(80,35,10,.25);
   }
-  .notif-mark-all:active { transform: translateY(0) scale(.88); }
+  .notif-mark-all:active { transform: translateY(0); }
   .notif-mark-all-icon { overflow: visible; display: block; filter: drop-shadow(0 1px 1px rgba(80,35,10,.35)); }
   .notif-mark-all-check { stroke-dasharray: 22; stroke-dashoffset: 22; animation: notifCheckDraw 2.4s ease-in-out infinite; transform-origin: center; }
   .notif-mark-all-check--front { animation-delay: .15s; }
@@ -1394,7 +1394,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
     opacity: 0; transform: scale(.3) rotate(0deg);
     transition: opacity .3s ease, transform .55s cubic-bezier(.2,.9,.3,1.4);
   }
-  .notif-mark-all:hover::after { opacity: 1; transform: scale(1.6) rotate(35deg); }
+  .notif-mark-all:hover::after { opacity: 1; transform: rotate(35deg); }
   .notif-mark-all-count {
     position: absolute; top: -5px; right: -5px; min-width: 15px; height: 15px; padding: 0 3px;
     border-radius: 999px; background: #E23D3D; color: #fff; font-size: .56rem; font-weight: 800;
@@ -2146,7 +2146,7 @@ html.theme-dark .sp-progress span{color:#6ee7b7}
 .lt-rate{display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
 .lt-stars button{font-size:2rem;line-height:1;background:none;border:0;cursor:pointer;color:rgba(2,44,34,.2);transition:transform .12s,color .12s}
 .lt-stars button.on{color:#E0A526}
-.lt-stars button:hover{transform:scale(1.18)}
+.lt-stars button:hover{transform:none}
 .lt-list{display:flex;flex-direction:column;gap:.4rem}
 .lt-list button{font:inherit;text-align:left;display:flex;flex-direction:column;gap:.1rem;padding:.6rem .8rem;border-radius:.7rem;border:1px solid rgba(2,44,34,.12);background:#f5faf7;color:#022c22;cursor:pointer}
 .lt-list button span{font-size:.72rem;color:#5f776b}
@@ -2177,7 +2177,7 @@ html.theme-dark .lt-hint,html.theme-dark .lt-list button span{color:#8aa398}
 .vp-yt-play{width:68px;height:68px;border-radius:999px;border:0;background:#34d399;color:#052e1c;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 12px 30px -8px rgba(52,211,153,.7);transition:transform .15s}
 .vp-yt-play svg{width:26px;height:26px}
 .vp:fullscreen .vp-yt{aspect-ratio:auto;height:100vh;width:100%}
-.vp-yt-cover:hover .vp-yt-play{transform:scale(1.08)}
+.vp-yt-cover:hover .vp-yt-play{transform:none}
 .vp-yt-title{color:#fff;font-weight:700;font-size:1rem;text-align:center;padding:0 1.5rem;max-width:90%}
 .vp-yt-msg{color:rgba(255,255,255,.85);font-size:.9rem;text-align:center;padding:0 1.5rem}
 .vp-yt .vp-end{z-index:5;height:100%;background:#0b0f0e}
@@ -2814,8 +2814,8 @@ html.theme-dark .notif-row{ border-top-color:rgba(255,255,255,.07); }
   background:rgba(52,211,153,.14); color:#10b981; border:1px solid rgba(52,211,153,.35); cursor:pointer;
   transition:background .2s ease, color .2s ease, transform .2s ease;
 }
-.notif-read-btn:hover:not(:disabled){ background:#34d399; color:#052e1c; transform:scale(1.08); }
-.notif-read-btn:active:not(:disabled){ transform:scale(.92); }
+.notif-read-btn:hover:not(:disabled){ background:#34d399; color:#052e1c; }
+.notif-read-btn:active:not(:disabled){ transform:none; }
 .notif-read-btn:disabled{ background:transparent; color:#8aa398; border-color:transparent; cursor:default; }
 .notif-row:nth-child(2){ animation-delay:.04s; } .notif-row:nth-child(3){ animation-delay:.08s; }
 .notif-row:nth-child(4){ animation-delay:.12s; } .notif-row:nth-child(n+5){ animation-delay:.16s; }
@@ -3002,7 +3002,7 @@ html body .course-card-mono{
   color:rgba(255,255,255,.07); -webkit-text-stroke:1.5px rgba(255,255,255,.4);
   transition:transform .7s cubic-bezier(.2,.8,.2,1);
 }
-html body .course-card:hover .course-card-mono{ transform:translate(-10px,-8px) rotate(-3deg) scale(1.04); }
+html body .course-card:hover .course-card-mono{ transform:translate(-10px,-8px) rotate(-3deg); }
 html body .course-card-kicker{
   position:absolute; left:1rem; bottom:1rem; z-index:2; display:inline-flex; align-items:center; gap:.35rem;
   font-size:.68rem; font-weight:700; letter-spacing:.02em; color:#fff;
@@ -3018,7 +3018,7 @@ html body .course-card-play{
 }
 html body .course-card-play svg{ margin-left:2px; }
 html body .course-card-media-hit:hover .course-card-play,
-html body .course-card:hover .course-card-play{ transform:scale(1.08); background:#fff; box-shadow:0 10px 22px -8px rgba(0,0,0,.55), 0 0 0 7px rgba(255,255,255,.2); }
+html body .course-card:hover .course-card-play{  background:#fff; box-shadow:0 10px 22px -8px rgba(0,0,0,.55), 0 0 0 7px rgba(255,255,255,.2); }
 
 /* narx va menyu */
 html body .course-card-price{
@@ -3088,6 +3088,33 @@ html body .course-card-body .flex.items-center.gap-1\.5{ margin-bottom:.05rem; }
 }
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700&display=swap" rel="stylesheet">
+<style id="no-zoom-lock">
+/* ZOOM TAQIQLANGAN: pinch-zoom, double-tap zoom va matn avtomatik kattalashishi o'chirilgan */
+html, body { touch-action: pan-x pan-y; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+* { -webkit-tap-highlight-color: transparent; }
+input, select, textarea { font-size: max(16px, 1em); } /* iOS fokusda avtomatik zoom qilmasligi uchun */
+</style>
+<script id="no-zoom-lock-js">
+(function () {
+  var stop = function (e) { e.preventDefault(); };
+  // iOS Safari pinch gesturalari
+  ['gesturestart', 'gesturechange', 'gestureend'].forEach(function (t) { document.addEventListener(t, stop, { passive: false }); });
+  // Ctrl/Cmd + g'ildirak (trackpad pinch ham shunday keladi)
+  window.addEventListener('wheel', function (e) { if (e.ctrlKey || e.metaKey) e.preventDefault(); }, { passive: false });
+  // Ctrl/Cmd + "+", "-", "=", "0"
+  window.addEventListener('keydown', function (e) {
+    if ((e.ctrlKey || e.metaKey) && ['+', '-', '=', '_', '0', 'Add', 'Subtract'].indexOf(e.key) !== -1) e.preventDefault();
+  });
+  // Ikki barmoq bilan tegish va tez ikki marta bosish (double-tap)
+  document.addEventListener('touchmove', function (e) { if (e.touches && e.touches.length > 1) e.preventDefault(); }, { passive: false });
+  var last = 0;
+  document.addEventListener('touchend', function (e) {
+    var now = Date.now();
+    if (now - last < 350) e.preventDefault();
+    last = now;
+  }, { passive: false });
+})();
+</script>
 </head>
 <body>
 <div id="root"></div>
