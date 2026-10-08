@@ -1594,7 +1594,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
   /* ================= O'QUVCHILAR BO'LIMI — light / dark mavzuga moslashadi ================= */
   /* Modallar <body> ga portal orqali chiqadi (.stu-dark ning tashqarisida), shuning uchun
      ranglar o'zgaruvchilari .sd-backdrop uchun ham e'lon qilinadi — aks holda modal "yo'qolib" qoladi. */
-  .stu-dark, .sd-backdrop{
+  .stu-dark, .sd-backdrop, .av-page{
     /* ---- LIGHT (standart) ---- */
     --sd-bg:#eaf3ee;
     --sd-row:#FFFFFF;
@@ -1621,7 +1621,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
     display:flex; flex-direction:column;
   }
   /* ---- DARK ---- */
-  html.theme-dark .stu-dark, html.theme-dark .sd-backdrop{
+  html.theme-dark .stu-dark, html.theme-dark .sd-backdrop, html.theme-dark .av-page{
     --sd-bg:#0f1a15;
     --sd-row:#0f1a15;
     --sd-card:#0f1a15;
@@ -1844,6 +1844,258 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
     .ed-grid{ grid-template-columns:1fr; }
     .ed-fields, .ed-course-body{ grid-template-columns:1fr; }
     .ed-check, .ed-warn{ grid-column:span 1; }
+  }
+
+  /* ===== Kurslar tabi (o'quvchi tahriri) — zamonaviy kartalar ===== */
+  .kc-stats{ display:grid; grid-template-columns:repeat(4,1fr); gap:.6rem; margin-bottom:1rem; }
+  .kc-stat{ background:var(--sd-field); border:1px solid var(--sd-line); border-radius:.85rem; padding:.7rem .85rem; display:flex; flex-direction:column; gap:.2rem; min-width:0; }
+  .kc-stat-bad{ border-color:rgba(209,59,79,.4); background:rgba(209,59,79,.06); }
+  .kc-stat-k{ font-size:.7rem; color:var(--sd-muted); font-weight:600; letter-spacing:.02em; }
+  .kc-stat-v{ font-size:1.02rem; color:var(--sd-text); font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .kc-stat-v small{ font-size:.75rem; color:var(--sd-muted); font-weight:600; }
+  .kc-green{ color:var(--c-green) !important; }
+  .kc-red{ color:var(--c-red) !important; }
+  .kc-toolbar{ display:flex; align-items:center; gap:.7rem; flex-wrap:wrap; margin-bottom:.9rem; }
+  .kc-search{ flex:1; min-width:200px; max-width:340px; }
+  .kc-seg{ display:inline-flex; gap:.2rem; padding:.2rem; background:var(--sd-field); border:1px solid var(--sd-line); border-radius:.7rem; }
+  .kc-seg button{ border:0; background:transparent; color:var(--sd-muted); font-size:.78rem; font-weight:700; padding:.4rem .7rem; border-radius:.5rem; display:inline-flex; align-items:center; gap:.35rem; cursor:pointer; white-space:nowrap; }
+  .kc-seg button span{ font-size:.68rem; padding:.05rem .4rem; border-radius:999px; background:var(--sd-ghost); color:var(--sd-muted); }
+  .kc-seg button.is-on{ background:var(--sd-row); color:var(--sd-text); box-shadow:0 1px 4px rgba(0,0,0,.12); }
+  .kc-seg-fill{ display:flex; } .kc-seg-fill button{ flex:1; justify-content:center; }
+  .kc-seg button:disabled{ opacity:.5; cursor:not-allowed; }
+  .kc-empty{ font-size:.85rem; color:var(--sd-muted); padding:1rem .2rem; }
+  .kc-list{ display:flex; flex-direction:column; gap:.75rem; }
+  .kc{ background:var(--sd-field); border:1px solid var(--sd-line); border-radius:1rem; padding:.9rem 1rem; transition:border-color .15s ease; }
+  .kc-on{ background:var(--sd-row); border-color:rgba(52,211,153,.35); }
+  .kc-bad{ border-color:rgba(209,59,79,.45); background:rgba(209,59,79,.04); }
+  .kc-top{ display:flex; align-items:center; gap:.75rem; }
+  .kc-ico{ width:38px; height:38px; flex:none; border-radius:.7rem; display:flex; align-items:center; justify-content:center; background:var(--sd-ghost); color:var(--sd-muted); }
+  .kc-on .kc-ico{ background:rgba(52,211,153,.16); color:#10b981; }
+  .kc-bad .kc-ico{ background:rgba(209,59,79,.12); color:var(--c-red); }
+  .kc-title{ flex:1; min-width:0; }
+  .kc-name{ font-weight:800; font-size:.95rem; color:var(--sd-text); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .kc-sub{ font-size:.75rem; color:var(--sd-muted); margin-top:.1rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .kc-pill{ display:inline-flex; align-items:center; gap:.3rem; font-size:.7rem; font-weight:700; padding:.22rem .6rem; border-radius:999px; white-space:nowrap; }
+  .kc-pill-off{ background:var(--sd-ghost); color:var(--sd-muted); }
+  .kc-pill-ok{ background:rgba(34,197,94,.15); color:var(--c-green); }
+  .kc-pill-warn{ background:rgba(245,158,11,.16); color:var(--c-amber); }
+  .kc-pill-bad{ background:rgba(209,59,79,.14); color:var(--c-red); }
+  .kc-metrics{ display:grid; grid-template-columns:repeat(4,1fr); gap:.5rem; margin-top:.85rem; }
+  .kc-m{ background:var(--sd-field); border:1px solid var(--sd-line); border-radius:.7rem; padding:.55rem .7rem; min-width:0; }
+  .kc-m-wide{ grid-column:span 3; }
+  .kc-m span{ display:block; font-size:.68rem; color:var(--sd-muted); font-weight:600; margin-bottom:.15rem; }
+  .kc-m b{ font-size:.86rem; color:var(--sd-text); font-weight:800; }
+  .kc-alerts{ display:flex; flex-direction:column; gap:.5rem; margin-top:.75rem; }
+  .kc-alert{ display:flex; align-items:flex-start; gap:.65rem; flex-wrap:wrap; padding:.7rem .8rem; border-radius:.75rem; border:1px solid transparent; }
+  .kc-alert > svg{ flex:none; margin-top:.15rem; }
+  .kc-alert > div:not(.kc-alert-acts){ flex:1; min-width:180px; }
+  .kc-alert b{ display:block; font-size:.82rem; }
+  .kc-alert p{ font-size:.76rem; line-height:1.45; margin-top:.15rem; color:var(--sd-muted); font-weight:500; }
+  .kc-alert-bad{ background:rgba(209,59,79,.08); border-color:rgba(209,59,79,.28); color:var(--c-red); }
+  .kc-alert-warn{ background:rgba(245,158,11,.09); border-color:rgba(245,158,11,.3); color:var(--c-amber); }
+  .kc-alert-acts{ display:flex; gap:.4rem; flex-wrap:wrap; width:100%; padding-left:1.7rem; }
+  .kc-actions{ display:flex; flex-wrap:wrap; gap:.45rem; margin-top:.8rem; }
+  .kc-push{ margin-left:auto; }
+  .kc-btn{ display:inline-flex; align-items:center; gap:.4rem; font-size:.78rem; font-weight:700; padding:.5rem .8rem; border-radius:.6rem; border:1px solid var(--sd-line); background:var(--sd-field); color:var(--sd-text); cursor:pointer; transition:filter .15s ease; }
+  .kc-btn:hover{ filter:brightness(.97); }
+  html.theme-dark .kc-btn:hover{ filter:brightness(1.2); }
+  .kc-btn-pay{ background:rgba(34,197,94,.14); border-color:rgba(34,197,94,.35); color:var(--c-green); }
+  .kc-btn-danger{ color:var(--c-red); border-color:rgba(209,59,79,.3); }
+  .kc-btn-on{ background:rgba(245,158,11,.15); border-color:rgba(245,158,11,.4); color:var(--c-amber); }
+  .kc-btn-ghost{ background:transparent; color:var(--sd-muted); }
+  .kc-settings{ margin-top:.8rem; padding-top:.85rem; border-top:1px dashed var(--sd-line); display:grid; grid-template-columns:1fr 1fr; gap:.9rem; }
+  .kc-field{ min-width:0; }
+  .kc-chips{ display:flex; gap:.35rem; margin-top:.5rem; flex-wrap:wrap; }
+  .kc-chips button{ font-size:.72rem; font-weight:700; padding:.28rem .65rem; border-radius:999px; border:1px solid var(--sd-line); background:var(--sd-field); color:var(--sd-muted); cursor:pointer; }
+  .kc-chips button.is-on{ background:rgba(52,211,153,.16); border-color:rgba(52,211,153,.5); color:var(--c-green); }
+  .kc-hint{ font-size:.74rem; color:var(--sd-muted); margin-top:.45rem; }
+  .kc-hint b{ color:var(--sd-text); }
+  .kc-span{ grid-column:span 2; margin-top:0; }
+  .kc-opt{ display:flex; align-items:flex-start; gap:.6rem; padding:.65rem .75rem; border:1px solid var(--sd-line); border-radius:.7rem; background:var(--sd-field); cursor:pointer; }
+  .kc-opt input{ width:16px; height:16px; margin-top:.15rem; accent-color:#10b981; flex:none; }
+  .kc-opt b{ display:block; font-size:.82rem; color:var(--sd-text); }
+  .kc-opt small{ display:block; font-size:.72rem; color:var(--sd-muted); margin-top:.1rem; }
+  .kc-save{ position:sticky; bottom:0; z-index:5; margin-top:1rem; display:flex; align-items:center; justify-content:space-between; gap:.8rem; flex-wrap:wrap; padding:.7rem .85rem; background:var(--sd-row); border:1px solid var(--sd-line); border-radius:.9rem; box-shadow:0 -6px 18px rgba(0,0,0,.06); }
+  .kc-save-note{ font-size:.78rem; color:var(--sd-muted); display:flex; align-items:center; gap:.45rem; }
+  .kc-save-note.is-dirty{ color:var(--c-amber); font-weight:700; }
+  .kc-dot{ width:8px; height:8px; border-radius:50%; background:var(--c-amber); }
+  .kc-save .sd-btn{ min-width:130px; }
+  @media (max-width: 900px){
+    .kc-stats{ grid-template-columns:1fr 1fr; }
+    .kc-metrics{ grid-template-columns:1fr 1fr; }
+    .kc-m-wide{ grid-column:span 2; }
+    .kc-settings{ grid-template-columns:1fr; }
+    .kc-span{ grid-column:span 1; }
+    .kc-top{ flex-wrap:wrap; }
+    .kc-title{ flex-basis:calc(100% - 140px); }
+    .kc-alert-acts{ padding-left:0; }
+    .kc-push{ margin-left:0; }
+    .kc-save .sd-btn{ flex:1; }
+  }
+
+  /* ===== Yangi darslik joylash sahifasi (sidebar → Darslik qo'shish) ===== */
+  .av-page{ font-family:'Manrope', sans-serif; color:var(--sd-text); max-width:1180px; }
+  .av-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:1rem; flex-wrap:wrap; margin-bottom:1.1rem; }
+  .av-head h1{ font-family:'Fraunces', serif; font-size:1.7rem; line-height:1.15; color:var(--sd-text); }
+  .av-head p{ font-size:.86rem; color:var(--sd-muted); margin-top:.25rem; }
+  .av-stats{ display:flex; gap:.5rem; flex-wrap:wrap; }
+  .av-stats span{ font-size:.76rem; color:var(--sd-muted); background:var(--sd-row); border:1px solid var(--sd-line); border-radius:999px; padding:.3rem .8rem; }
+  .av-stats b{ color:var(--sd-text); font-weight:800; }
+  .av-grid{ display:grid; grid-template-columns:minmax(0,1fr) 340px; gap:1rem; align-items:start; }
+  .av-main{ display:flex; flex-direction:column; gap:1rem; min-width:0; }
+  .av-side{ position:sticky; top:1rem; display:flex; flex-direction:column; gap:1rem; min-width:0; }
+  .av-card{ background:var(--sd-row); border:1px solid var(--sd-line); border-radius:1.1rem; padding:1.15rem 1.2rem; }
+  .av-step{ display:flex; align-items:center; gap:.6rem; font-weight:800; font-size:.95rem; margin-bottom:1rem; color:var(--sd-text); }
+  .av-step span{ width:24px; height:24px; border-radius:50%; background:linear-gradient(135deg,#34d399,#a3e635); color:#052e1c; font-size:.75rem; font-weight:800; display:flex; align-items:center; justify-content:center; }
+  .av-chips{ display:flex; flex-wrap:wrap; gap:.45rem; }
+  .av-chips button{ display:inline-flex; flex-direction:column; align-items:flex-start; gap:.05rem; padding:.55rem .9rem; border-radius:.75rem; border:1px solid var(--sd-line); background:var(--sd-field); color:var(--sd-text); font-weight:700; font-size:.84rem; cursor:pointer; text-align:left; transition:border-color .15s ease, background .15s ease; }
+  .av-chips button small{ font-size:.68rem; color:var(--sd-muted); font-weight:600; }
+  .av-chips button:hover{ border-color:rgba(52,211,153,.6); }
+  .av-chips button.is-on{ border-color:#34d399; background:rgba(52,211,153,.14); }
+  .av-subs{ display:flex; flex-direction:column; gap:.4rem; max-height:260px; overflow:auto; padding-right:.2rem; }
+  .av-sub{ display:flex; align-items:center; gap:.7rem; padding:.55rem .75rem; border-radius:.75rem; border:1px solid var(--sd-line); background:var(--sd-field); color:var(--sd-text); cursor:pointer; text-align:left; transition:border-color .15s ease, background .15s ease; }
+  .av-sub:hover{ border-color:rgba(52,211,153,.6); }
+  .av-sub.is-on{ border-color:#34d399; background:rgba(52,211,153,.12); color:var(--c-green); }
+  .av-sub-ic{ width:30px; height:30px; flex:none; border-radius:.6rem; background:var(--sd-ghost); color:var(--sd-muted); font-size:.68rem; font-weight:800; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+  .av-sub-ic img{ width:100%; height:100%; object-fit:cover; }
+  .av-sub-name{ flex:1; min-width:0; font-weight:700; font-size:.86rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .av-sub-n{ font-size:.72rem; color:var(--sd-muted); white-space:nowrap; }
+  .av-addsub{ margin-top:.7rem; display:inline-flex; align-items:center; gap:.4rem; font-size:.8rem; font-weight:700; color:var(--c-green); background:transparent; border:1px dashed rgba(52,211,153,.55); border-radius:.65rem; padding:.45rem .8rem; cursor:pointer; }
+  .av-addsub:hover{ background:rgba(52,211,153,.1); }
+  .av-newsub{ margin-top:.7rem; display:flex; gap:.45rem; flex-wrap:wrap; }
+  .av-newsub .sd-input{ flex:1; min-width:180px; }
+  .av-two{ display:grid; grid-template-columns:1fr 1fr; gap:0 1rem; }
+  .av-range{ text-transform:none; letter-spacing:0; font-weight:600; opacity:.8; }
+  .av-hint{ font-size:.72rem; color:var(--sd-muted); margin-top:.4rem; line-height:1.4; }
+  .av-err{ font-size:.76rem; color:var(--c-red); font-weight:700; margin-top:.4rem; }
+  .av-note{ font-size:.78rem; color:var(--sd-muted); line-height:1.5; margin-top:.7rem; }
+  .av-stepper{ display:flex; gap:.4rem; }
+  .av-stepper .sd-input{ text-align:center; -moz-appearance:textfield; }
+  .av-stepper .sd-input::-webkit-outer-spin-button, .av-stepper .sd-input::-webkit-inner-spin-button{ -webkit-appearance:none; margin:0; }
+  .av-stepper button{ width:40px; flex:none; border-radius:.55rem; border:1px solid var(--sd-line); background:var(--sd-field); color:var(--sd-text); font-size:1.1rem; font-weight:700; cursor:pointer; }
+  .av-stepper button:disabled{ opacity:.4; cursor:not-allowed; }
+  .av-quick{ display:flex; gap:.35rem; margin-top:.5rem; }
+  .av-quick button{ font-size:.72rem; font-weight:700; padding:.28rem .7rem; border-radius:999px; border:1px solid var(--sd-line); background:var(--sd-field); color:var(--sd-muted); cursor:pointer; }
+  .av-quick button.is-on{ background:rgba(52,211,153,.16); border-color:rgba(52,211,153,.5); color:var(--c-green); }
+  .av-quick button:disabled{ opacity:.4; cursor:not-allowed; }
+  .av-seg{ display:grid; grid-template-columns:1fr 1fr; gap:.3rem; padding:.3rem; border-radius:.85rem; background:var(--sd-field); border:1px solid var(--sd-line); margin-bottom:.9rem; }
+  .av-seg button{ display:flex; align-items:center; justify-content:center; gap:.45rem; padding:.6rem .5rem; border-radius:.65rem; border:0; background:transparent; color:var(--sd-muted); font-size:.82rem; font-weight:700; cursor:pointer; }
+  .av-seg button.is-on{ background:var(--sd-row); color:var(--sd-text); box-shadow:0 1px 6px rgba(0,0,0,.14); }
+  .av-url{ position:relative; display:flex; align-items:center; }
+  .av-url > svg{ position:absolute; left:.9rem; color:var(--sd-muted); pointer-events:none; }
+  .av-url .sd-input{ padding-left:2.6rem; padding-right:2.4rem; }
+  .av-url-x{ position:absolute; right:.6rem; width:24px; height:24px; border-radius:50%; border:0; background:var(--sd-ghost); color:var(--sd-muted); display:flex; align-items:center; justify-content:center; cursor:pointer; }
+  .av-file{ position:relative; display:flex; align-items:center; gap:.7rem; padding:.75rem 2.8rem .75rem .85rem; border-radius:.8rem; border:1px solid rgba(52,211,153,.45); background:rgba(52,211,153,.1); }
+  .av-file-ic{ width:28px; height:28px; border-radius:50%; background:#34d399; color:#052e1c; display:flex; align-items:center; justify-content:center; flex:none; }
+  .av-file-name{ font-size:.85rem; font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .av-drop{ display:flex; flex-direction:column; align-items:center; gap:.3rem; text-align:center; padding:1.7rem 1rem; border:1.5px dashed rgba(52,211,153,.55); border-radius:1rem; background:rgba(52,211,153,.05); cursor:pointer; transition:background .15s ease, border-color .15s ease; }
+  .av-drop:hover, .av-drop.drag{ background:rgba(52,211,153,.14); border-color:#34d399; }
+  .av-drop b{ font-size:.88rem; }
+  .av-drop > span:last-of-type{ font-size:.75rem; color:var(--sd-muted); }
+  .av-drop-ic{ width:44px; height:44px; border-radius:.9rem; background:linear-gradient(135deg,#6ee7b7,#34d399); color:#fff; display:flex; align-items:center; justify-content:center; margin-bottom:.3rem; }
+  .av-submitbar{ display:flex; align-items:center; justify-content:space-between; gap:.8rem; flex-wrap:wrap; padding:.8rem .95rem; background:var(--sd-row); border:1px solid var(--sd-line); border-radius:1rem; position:sticky; bottom:.6rem; z-index:4; box-shadow:0 -6px 20px rgba(0,0,0,.07); }
+  .av-where{ font-size:.8rem; color:var(--sd-muted); min-width:0; }
+  .av-where b{ color:var(--sd-text); }
+  .av-btn{ display:inline-flex; align-items:center; justify-content:center; gap:.4rem; font-size:.8rem; font-weight:700; padding:.55rem .9rem; border-radius:.65rem; border:1px solid var(--sd-line); background:var(--sd-field); color:var(--sd-text); cursor:pointer; }
+  .av-btn-pri{ background:linear-gradient(135deg,#34d399,#a3e635); border-color:transparent; color:#052e1c; }
+  .av-btn-pri:hover{ filter:brightness(1.07); }
+  .av-btn-lg{ padding:.7rem 1.3rem; font-size:.88rem; border-radius:.75rem; }
+  .av-btn-sm{ padding:.3rem .6rem; font-size:.72rem; }
+  .av-prev{ background:var(--sd-row); border:1px solid var(--sd-line); border-radius:1.1rem; overflow:hidden; }
+  .av-thumb{ position:relative; aspect-ratio:16/9; background:var(--sd-field); display:flex; align-items:center; justify-content:center; overflow:hidden; }
+  .av-thumb img, .av-thumb video{ width:100%; height:100%; object-fit:cover; display:block; }
+  .av-thumb-ph{ color:var(--sd-muted); opacity:.6; }
+  .av-dur{ position:absolute; right:.5rem; bottom:.5rem; background:rgba(0,0,0,.75); color:#fff; font-size:.7rem; font-weight:700; padding:.1rem .45rem; border-radius:.4rem; }
+  .av-prev-body{ padding:.8rem .95rem .95rem; }
+  .av-prev-pos{ font-size:.68rem; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:var(--c-green); }
+  .av-prev-title{ font-weight:800; font-size:.95rem; margin-top:.2rem; line-height:1.3; word-break:break-word; }
+  .av-prev-meta{ font-size:.75rem; color:var(--sd-muted); margin-top:.25rem; }
+  .av-order, .av-recent{ padding:.95rem 1rem; }
+  .av-order-h{ display:flex; align-items:center; justify-content:space-between; font-size:.86rem; margin-bottom:.6rem; }
+  .av-order-h span{ font-size:.72rem; color:var(--sd-muted); background:var(--sd-ghost); padding:.1rem .5rem; border-radius:999px; }
+  .av-order-list{ display:flex; flex-direction:column; gap:.25rem; max-height:280px; overflow:auto; }
+  .av-row{ display:flex; align-items:center; gap:.6rem; padding:.4rem .55rem; border-radius:.55rem; border:1px solid transparent; background:transparent; color:var(--sd-text); font-size:.8rem; text-align:left; cursor:pointer; }
+  button.av-row:hover{ background:var(--sd-field); border-color:var(--sd-line); }
+  .av-row-n{ width:22px; height:22px; flex:none; border-radius:.45rem; background:var(--sd-ghost); color:var(--sd-muted); font-size:.7rem; font-weight:800; display:flex; align-items:center; justify-content:center; }
+  .av-row-t{ flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:600; }
+  .av-row small{ color:var(--sd-muted); font-size:.7rem; }
+  .av-row-new{ background:rgba(52,211,153,.14); border-color:rgba(52,211,153,.5); }
+  .av-row-new .av-row-n{ background:#34d399; color:#052e1c; }
+  .av-row-new em{ font-style:normal; font-size:.66rem; font-weight:800; color:var(--c-green); text-transform:uppercase; }
+  .av-tip{ font-size:.72rem; color:var(--sd-muted); margin-top:.6rem; line-height:1.4; }
+  .av-rec{ display:flex; align-items:center; gap:.6rem; padding:.45rem 0; border-top:1px solid var(--sd-line); }
+  .av-rec:first-of-type{ border-top:0; }
+  .av-rec-ic{ width:20px; height:20px; flex:none; border-radius:50%; background:rgba(34,197,94,.18); color:var(--c-green); display:flex; align-items:center; justify-content:center; }
+  .av-rec-b{ flex:1; min-width:0; font-size:.8rem; font-weight:700; }
+  .av-rec-b div{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .av-rec-b small{ display:block; font-size:.68rem; color:var(--sd-muted); font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  @media (max-width: 960px){
+    .av-grid{ grid-template-columns:1fr; }
+    .av-side{ position:static; order:-1; }
+    .av-prev{ display:none; }
+    .av-two{ grid-template-columns:1fr; }
+    .av-submitbar{ bottom:5.2rem; }
+    .av-submitbar .av-btn-lg{ flex:1; }
+  }
+
+  /* ===== Darslik qo'shish — v2 qo'shimchalari ===== */
+  .av-tabs{ display:inline-flex; gap:.3rem; padding:.3rem; margin-bottom:1rem; background:var(--sd-row); border:1px solid var(--sd-line); border-radius:.9rem; }
+  .av-tabs button{ display:inline-flex; align-items:center; gap:.45rem; padding:.55rem 1rem; border-radius:.65rem; border:0; background:transparent; color:var(--sd-muted); font-size:.84rem; font-weight:800; cursor:pointer; }
+  .av-tabs button.is-on{ background:linear-gradient(135deg,#34d399,#a3e635); color:#052e1c; }
+  .av-tabs em{ font-style:normal; font-size:.6rem; font-weight:800; text-transform:uppercase; letter-spacing:.05em; padding:.1rem .4rem; border-radius:999px; background:rgba(0,0,0,.12); }
+  .av-ta{ resize:vertical; min-height:130px; font-family:ui-monospace, SFMono-Regular, Menlo, monospace; font-size:.8rem; line-height:1.6; white-space:pre; overflow:auto; }
+  .av-opts{ display:grid; grid-template-columns:1fr 1fr; gap:.6rem; margin-top:.9rem; }
+  .av-opt{ display:flex; align-items:flex-start; gap:.6rem; padding:.65rem .75rem; border:1px solid var(--sd-line); border-radius:.7rem; background:var(--sd-field); cursor:pointer; }
+  .av-opt input{ width:16px; height:16px; margin-top:.15rem; accent-color:#10b981; flex:none; }
+  .av-opt b{ display:block; font-size:.8rem; color:var(--sd-text); }
+  .av-opt small{ display:block; font-size:.7rem; color:var(--sd-muted); margin-top:.1rem; }
+  .av-parsed{ margin-top:1rem; border:1px solid var(--sd-line); border-radius:.85rem; overflow:hidden; }
+  .av-parsed-h{ display:flex; align-items:center; gap:.5rem; flex-wrap:wrap; padding:.6rem .8rem; background:var(--sd-field); font-size:.82rem; border-bottom:1px solid var(--sd-line); }
+  .av-parsed-list{ max-height:250px; overflow:auto; }
+  .av-prow{ display:flex; align-items:center; gap:.65rem; padding:.5rem .8rem; border-top:1px solid var(--sd-line); }
+  .av-prow:first-child{ border-top:0; }
+  .av-prow.is-skip{ opacity:.55; }
+  .av-prow-b{ flex:1; min-width:0; }
+  .av-prow-b div{ font-size:.8rem; font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .av-prow-b small{ display:block; font-size:.68rem; color:var(--sd-muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .av-tag{ font-size:.66rem; font-weight:800; padding:.15rem .5rem; border-radius:999px; white-space:nowrap; }
+  .av-tag-ok{ background:rgba(34,197,94,.15); color:var(--c-green); }
+  .av-tag-warn{ background:rgba(245,158,11,.16); color:var(--c-amber); }
+  .av-tag-bad{ background:rgba(209,59,79,.14); color:var(--c-red); }
+  .av-warn{ display:flex; align-items:flex-start; gap:.5rem; margin-top:.7rem; padding:.55rem .75rem; border-radius:.7rem; font-size:.78rem; line-height:1.45; background:rgba(245,158,11,.1); border:1px solid rgba(245,158,11,.3); color:var(--c-amber); font-weight:600; }
+  .av-warn svg{ flex:none; margin-top:.15rem; }
+  .av-kbd{ display:inline-block; margin-left:.4rem; font-size:.66rem; font-weight:700; padding:.08rem .4rem; border-radius:.35rem; border:1px solid var(--sd-line); background:var(--sd-field); color:var(--sd-muted); }
+  .av-progress{ flex:1; min-width:180px; }
+  .av-progress-t{ font-size:.8rem; color:var(--sd-muted); margin-bottom:.35rem; }
+  .av-progress-t b{ color:var(--sd-text); }
+  .av-progress-bar{ height:8px; border-radius:999px; background:var(--sd-ghost); overflow:hidden; }
+  .av-progress-bar span{ display:block; height:100%; background:linear-gradient(90deg,#34d399,#a3e635); transition:width .25s ease; }
+  .av-btn-stop{ color:var(--c-red); border-color:rgba(209,59,79,.35); pointer-events:auto; }
+  .av-btn-danger{ background:rgba(209,59,79,.14); border-color:rgba(209,59,79,.4); color:var(--c-red); }
+  .av-busy .av-main > .av-card, .av-busy .av-side, .av-busy .av-tabs{ pointer-events:none; opacity:.6; }
+  /* bo'limdagi darslar — boshqarish */
+  .av-row{ position:relative; gap:.35rem; padding:.25rem .3rem; border:1px solid transparent; border-radius:.6rem; }
+  .av-row:hover{ background:var(--sd-field); border-color:var(--sd-line); }
+  .av-row.is-drag{ opacity:.45; }
+  .av-row.is-over{ border-color:#34d399; background:rgba(52,211,153,.1); }
+  .av-grip{ color:var(--sd-muted); opacity:.5; cursor:grab; display:flex; flex:none; }
+  .av-row-main{ flex:1; min-width:0; display:flex; align-items:center; gap:.6rem; background:transparent; border:0; padding:.2rem .1rem; color:var(--sd-text); font-size:.8rem; text-align:left; cursor:pointer; }
+  .av-row-acts{ display:none; gap:.15rem; flex:none; }
+  .av-row:hover .av-row-acts{ display:flex; }
+  .av-ico{ width:24px; height:24px; border-radius:.45rem; border:1px solid var(--sd-line); background:var(--sd-row); color:var(--sd-muted); display:flex; align-items:center; justify-content:center; cursor:pointer; flex:none; }
+  .av-ico:hover{ color:var(--sd-text); }
+  .av-ico:disabled{ opacity:.35; cursor:not-allowed; }
+  .av-ico-ok{ background:rgba(34,197,94,.15); color:var(--c-green); border-color:rgba(34,197,94,.4); }
+  .av-ico-del:hover{ color:var(--c-red); border-color:rgba(209,59,79,.4); }
+  .av-row-input{ flex:1; min-width:0; padding:.3rem .5rem !important; font-size:.8rem !important; }
+  .av-row-del{ color:var(--c-red); font-weight:700; }
+  .av-ins{ display:flex; align-items:center; gap:.5rem; margin:.15rem 0; }
+  .av-ins span{ flex:1; height:2px; border-radius:2px; background:linear-gradient(90deg,#34d399,#a3e635); }
+  .av-ins em{ font-style:normal; font-size:.68rem; font-weight:800; color:var(--c-green); white-space:nowrap; }
+  @media (max-width: 960px){
+    .av-opts{ grid-template-columns:1fr; }
+    .av-row-acts{ display:flex; }
+    .av-tabs{ display:flex; } .av-tabs button{ flex:1; justify-content:center; padding:.55rem .4rem; }
   }
 
 /* ===== Kurs ichi: accordion sidebar + video ko'rish ===== */
@@ -4588,6 +4840,7 @@ function Topbar({ me, roleLabel, initials, theme, onToggleTheme, notifications, 
 function StaffApp({ me, staff, setStaff, categories, setCategories, students, setStudents, onLogout, notify }) {
   const [page, setPage] = useState('overview');
   const [editingStudentId, setEditingStudentId] = useState(null);
+  const [editingStudentTab, setEditingStudentTab] = useState('info');
   const [quickAddCourse, setQuickAddCourse] = useState(false);
   const [theme, setTheme] = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -4724,7 +4977,7 @@ function StaffApp({ me, staff, setStaff, categories, setCategories, students, se
 
         {page === 'blocked' && (
           <BlockedPage students={students} categories={categories}
-            onOpenStudent={(id) => { setPage('students'); setEditingStudentId(id); }} />
+            onOpenStudent={(id) => { setPage('students'); setEditingStudentTab('info'); setEditingStudentId(id); }} />
         )}
 
         {page === 'permissions' && me.role === 'ceo' && (
@@ -4733,11 +4986,11 @@ function StaffApp({ me, staff, setStaff, categories, setCategories, students, se
 
         {page === 'students' && !editingStudentId && (
           <StudentsList students={students} setStudents={setStudents} categories={categories} canEdit={canEdit}
-            onOpen={setEditingStudentId} notify={notify} staff={staff} me={me} />
+            onOpen={(id, tab) => { setEditingStudentTab(tab || 'info'); setEditingStudentId(id); }} notify={notify} staff={staff} me={me} />
         )}
         {page === 'students' && editingStudentId && (
           <StudentEditor student={students.find((s) => s.id === editingStudentId)} categories={categories}
-            canEdit={canEdit} staff={staff} onBack={() => setEditingStudentId(null)}
+            canEdit={canEdit} staff={staff} initialTab={editingStudentTab} onBack={() => setEditingStudentId(null)}
             onSave={(upd, opts) => { setStudents(students.map((s) => (s.id === upd.id ? upd : s))); notify((opts && opts.message) || 'O\'quvchi ma\'lumotlari saqlandi', opts && opts.variant); }} />
         )}
 
@@ -4753,76 +5006,507 @@ function StaffApp({ me, staff, setStaff, categories, setCategories, students, se
    YANGI VIDEO DARSLIK QO'SHISH (quick add lesson)
    ========================================================================= */
 function AddVideoQuick({ categories, setCategories, notify }) {
-  const [catId, setCatId] = useState(categories[0]?.id || '');
-  const cat = categories.find((c) => c.id === catId);
-  const [subId, setSubId] = useState('');
-  const sub = cat?.subtopics.find((s) => s.id === subId);
+  const [catId, setCatId] = useState(categories[0] ? categories[0].id : '');
+  const cat = categories.find((c) => c.id === catId) || null;
+  const [subId, setSubId] = useState(cat && cat.subtopics[0] ? cat.subtopics[0].id : '');
+  const sub = cat ? (cat.subtopics.find((s) => s.id === subId) || null) : null;
+  const [tab, setTab] = useState('single');          // single | bulk
+  const [num, setNum] = useState('');
   const [title, setTitle] = useState('');
-  const [link, setLink] = useState('');
   const [duration, setDuration] = useState('');
-  const ytSt = useYtAuto(link, (m) => { setDuration(fmtDur(m.duration)); setTitle((t) => t || m.title); });
+  const [mode, setMode] = useState('link');          // link | file
+  const [videoUrl, setVideoUrl] = useState('');
+  const [fileName, setFileName] = useState('');
+  const [tried, setTried] = useState(false);
+  const [newSubOpen, setNewSubOpen] = useState(false);
+  const [newSubName, setNewSubName] = useState('');
+  const [recent, setRecent] = useState([]);
+  /* ko'plab havola rejimi */
+  const [bulkText, setBulkText] = useState('');
+  const [autoMeta, setAutoMeta] = useState(true);
+  const [skipDup, setSkipDup] = useState(true);
+  const [prefix, setPrefix] = useState('Dars');
+  const [busy, setBusy] = useState(null);            // { done, total }
+  /* bo'limdagi darslarni boshqarish */
+  const [editId, setEditId] = useState(null);
+  const [editText, setEditText] = useState('');
+  const [delId, setDelId] = useState(null);
+  const [dragIdx, setDragIdx] = useState(null);
+  const [overIdx, setOverIdx] = useState(null);
+  const titleRef = useRef(null);
+  const cancelRef = useRef(false);
+  const catsRef = useRef(categories); catsRef.current = categories;
+  const ytSt = useYtAuto(tab === 'single' && mode === 'link' ? videoUrl : '', (m) => { setDuration(fmtDur(m.duration)); setTitle((t) => t || m.title); });
 
-  useEffect(() => { setSubId(cat?.subtopics[0]?.id || ''); }, [catId]);
+  const lessons = sub ? sub.lessons : [];
+  const total = lessons.length;
+  const pos = Math.min(Math.max(parseInt(num, 10) || total + 1, 1), total + 1);
+  const vid = mode === 'link' ? ytId(videoUrl) : null;
+  const totalLessons = categories.reduce((n, c) => n + c.subtopics.reduce((m, s) => m + s.lessons.length, 0), 0);
+  const totalSubs = categories.reduce((n, c) => n + c.subtopics.length, 0);
 
-  const addLesson = () => {
-    if (!cat || !sub || !title.trim()) return;
-    const url = link.trim();
-    if (!url) { notify('YouTube havolasini kiriting', 'danger'); return; }
-    if (!isVideoLink(url)) { notify("Havola noto'g'ri. Masalan: https://youtu.be/dQw4w9WgXcQ", 'danger'); return; }
-    setCategories(categories.map((c) => c.id !== cat.id ? c : {
-      ...c,
-      subtopics: c.subtopics.map((s) => s.id !== sub.id ? s : {
-        ...s,
-        lessons: [...s.lessons, { id: uid('l'), title: title.trim(), duration: duration.trim() || '00:00', videoUrl: url }],
-      }),
-    }));
-    notify("Yangi video darslik qo'shildi");
-    setTitle(''); setLink(''); setDuration('');
-    // API: POST /api/admin/lessons/  (categoryId, subtopicId, title, youtubeLink, duration)
+  /* davomiylik yig'indisi */
+  const toSec = (d) => { const p = String(d || '').split(':').map((x) => parseInt(x, 10) || 0); return p.length === 3 ? p[0] * 3600 + p[1] * 60 + p[2] : p.length === 2 ? p[0] * 60 + p[1] : 0; };
+  const fmtTotal = (sec) => { const h = Math.floor(sec / 3600), m = Math.round((sec % 3600) / 60); return h ? `${h} soat ${m} daq` : `${m} daq`; };
+  const subSec = lessons.reduce((t, l) => t + toSec(l.duration), 0);
+
+  /* takroriy videolarni aniqlash (butun kurs bo'yicha) */
+  const keyOf = (u) => ytId(u) || String(u || '').trim();
+  const existing = new Map();
+  if (cat) cat.subtopics.forEach((s) => s.lessons.forEach((l) => { if (!/^blob:/.test(l.videoUrl || '')) existing.set(keyOf(l.videoUrl), l.title); }));
+  const dupTitle = tab === 'single' && mode === 'link' && videoUrl.trim() ? existing.get(keyOf(videoUrl)) : null;
+
+  const err = {};
+  if (!cat) err.cat = 'Kursni tanlang';
+  else if (!sub) err.sub = "Bo'limni tanlang yoki yangi bo'lim yarating";
+  if (tab === 'single') {
+    if (!title.trim()) err.title = 'Dars nomini kiriting';
+    if (!videoUrl.trim()) err.video = mode === 'file' ? 'Video faylni tanlang' : 'Video havolasini kiriting';
+    else if (mode === 'link' && !isVideoLink(videoUrl)) err.video = "Havola noto'g'ri. Masalan: https://youtu.be/dQw4w9WgXcQ";
+    if (duration.trim() && !/^\d{1,3}:\d{2}(:\d{2})?$/.test(duration.trim())) err.duration = 'Format: 12:34';
+  }
+  const ok = Object.keys(err).length === 0;
+  const show = (k) => (tried && err[k] ? <div className="av-err">{err[k]}</div> : null);
+
+  /* ko'plab havolalarni tahlil qilish: "Nom | havola" yoki faqat havola */
+  const seen = new Set();
+  const parsed = tab !== 'bulk' ? [] : bulkText.split('\n').map((l) => l.trim()).filter(Boolean).map((line) => {
+    let t = '', u = line;
+    const bar = line.indexOf('|');
+    if (bar > 0) { t = line.slice(0, bar).trim(); u = line.slice(bar + 1).trim(); }
+    const valid = isVideoLink(u);
+    const key = keyOf(u);
+    const dup = valid && (existing.has(key) ? 'kursda bor' : seen.has(key) ? 'takror' : '');
+    if (valid) seen.add(key);
+    return { t, u, valid, dup, skip: !valid || (skipDup && !!dup) };
+  });
+  const bulkItems = parsed.filter((p) => !p.skip);
+  const bulkBad = parsed.filter((p) => !p.valid).length;
+  const bulkDup = parsed.filter((p) => p.valid && p.dup).length;
+
+  const pickCat = (id) => {
+    const c = categories.find((x) => x.id === id);
+    setCatId(id); setSubId(c && c.subtopics[0] ? c.subtopics[0].id : ''); setNum(''); setNewSubOpen(false); setEditId(null); setDelId(null);
+  };
+  const pickSub = (id) => { setSubId(id); setNum(''); setEditId(null); setDelId(null); };
+  const switchMode = (m) => { setMode(m); setVideoUrl(''); setFileName(''); };
+
+  const patchLessons = (fn, cId, sId) => setCategories(catsRef.current.map((c) => c.id !== (cId || cat.id) ? c : {
+    ...c, subtopics: c.subtopics.map((s) => s.id !== (sId || sub.id) ? s : { ...s, lessons: fn(s.lessons) }),
+  }));
+
+  const addSection = () => {
+    const name = newSubName.trim();
+    if (!cat) return;
+    if (!name) { notify("Bo'lim nomini kiriting", 'danger'); return; }
+    const id = uid('s');
+    setCategories(categories.map((c) => c.id !== cat.id ? c : { ...c, subtopics: [...c.subtopics, { id, name, image: '', posters: [], lessons: [] }] }));
+    setSubId(id); setNum(''); setNewSubName(''); setNewSubOpen(false);
+    notify(`«${name}» bo'limi yaratildi`);
+    // API: POST /api/admin/topics/  (categoryId, name)
   };
 
-  return (
-    <div className="max-w-lg">
-      <h1 className="font-display text-3xl text-ink mb-1">Yangi video darslik qo'shish</h1>
-      <p className="text-slate text-sm mb-6">Kategoriya va mavzuni tanlang, so'ng darslik ma'lumotlarini kiriting.</p>
+  const onPickFile = (file) => {
+    if (!file) return;
+    if (file.type && !/^video\//.test(file.type)) { notify('Faqat video fayl tanlang (mp4, webm...)', 'danger'); return; }
+    const url = URL.createObjectURL(file);   // demo: brauzer xotirasida; haqiqiy loyihada serverga upload qilinadi
+    const v = document.createElement('video');
+    v.preload = 'metadata';
+    v.onloadedmetadata = () => { const t = Math.round(v.duration || 0); if (t) setDuration((d) => d || `${Math.floor(t / 60)}:${String(t % 60).padStart(2, '0')}`); };
+    v.src = url;
+    setVideoUrl(url); setFileName(file.name);
+    setTitle((t) => t || file.name.replace(/\.[^.]+$/, ''));
+  };
 
-      {categories.length === 0 ? (
-        <p className="text-sm text-slate">Avval kamida bitta kategoriya yarating.</p>
-      ) : (
-        <div className="bg-card border border-line rounded-xl p-5 space-y-4">
-          <div>
-            <label className="text-xs font-semibold text-slate uppercase tracking-wide">Kategoriya</label>
-            <select value={catId} onChange={(e) => setCatId(e.target.value)} className="mt-1 w-full border border-line rounded-lg px-3 py-2 text-sm bg-white outline-none focus:border-gold">
-              {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-            </select>
-          </div>
-          <div>
-            <label className="text-xs font-semibold text-slate uppercase tracking-wide">Mavzu</label>
-            <select value={subId} onChange={(e) => setSubId(e.target.value)} className="mt-1 w-full border border-line rounded-lg px-3 py-2 text-sm bg-white outline-none focus:border-gold">
-              {(cat?.subtopics || []).map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
-            </select>
-            {cat && cat.subtopics.length === 0 && <p className="text-xs text-clay mt-1">Bu kategoriyada hali mavzu yo'q, avval Kurslar bo'limida mavzu qo'shing.</p>}
-          </div>
-          <div>
-            <label className="text-xs font-semibold text-slate uppercase tracking-wide">Darslik nomi</label>
-            <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Masalan: Massivlar bilan ishlash" className="mt-1 w-full border border-line rounded-lg px-3 py-2 text-sm bg-white outline-none focus:border-gold" />
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="text-xs font-semibold text-slate uppercase tracking-wide">YouTube havola</label>
-              <input value={link} onChange={(e) => setLink(e.target.value)} placeholder="https://youtu.be/... yoki youtube.com/watch?v=..." className="mt-1 w-full border border-line rounded-lg px-3 py-2 text-sm bg-white outline-none focus:border-gold" />
-            </div>
-            <div>
-              <label className="text-xs font-semibold text-slate uppercase tracking-wide">Davomiylik {ytSt && <span style={{ textTransform: 'none', letterSpacing: 0, fontWeight: 500 }}>· {ytStatusText(ytSt)}</span>}</label>
-              <input value={duration} onChange={(e) => setDuration(e.target.value)} placeholder="12:30" className="mt-1 w-full border border-line rounded-lg px-3 py-2 text-sm bg-white outline-none focus:border-gold" />
-            </div>
-          </div>
-          <button onClick={addLesson} disabled={!sub || !title.trim() || !link.trim()}
-            className="bg-forest text-white text-sm px-4 py-2 rounded-lg disabled:opacity-40 flex items-center gap-2">
-            <Icon.plus width="14" height="14" /> Darslikni qo'shish
-          </button>
+  const pushRecent = (ids, label, at) => setRecent((r) => [{ key: ids[0], ids, catId: cat.id, subId: sub.id, title: label, where: `${cat.name} · ${sub.name} · ${at}` }, ...r].slice(0, 6));
+
+  const submit = () => {
+    if (busy) return;
+    setTried(true);
+    if (!ok) { notify(Object.values(err)[0], 'danger'); return; }
+    const lesson = { id: uid('l'), title: title.trim(), duration: duration.trim() || '00:00', videoUrl: videoUrl.trim() };
+    patchLessons((ls) => { const arr = [...ls]; arr.splice(pos - 1, 0, lesson); return arr; });
+    pushRecent([lesson.id], lesson.title, `${pos}-dars`);
+    notify(`Dars ${pos}-o'ringa joylandi`);
+    setTitle(''); setDuration(''); setVideoUrl(''); setFileName(''); setTried(false);
+    setNum(String(pos + 1));   // keyingi dars uchun joy tayyor
+    setTimeout(() => { if (titleRef.current) titleRef.current.focus(); }, 60);
+    // API: POST /api/admin/lessons/  (categoryId, topicId, order, title, duration, videoUrl | file)
+  };
+
+  const submitBulk = async () => {
+    if (busy) return;
+    setTried(true);
+    if (!cat || !sub) { notify(err.cat || err.sub, 'danger'); return; }
+    if (!bulkItems.length) { notify(parsed.length ? "Qo'shiladigan to'g'ri havola yo'q" : 'Havolalarni kiriting', 'danger'); return; }
+    const items = bulkItems.slice(); const at = pos; const cId = cat.id, sId = sub.id, cName = cat.name, sName = sub.name;
+    cancelRef.current = false;
+    setBusy({ done: 0, total: items.length });
+    const out = [];
+    for (let k = 0; k < items.length; k++) {
+      if (cancelRef.current) break;
+      const it = items[k]; let t = it.t, d = '00:00';
+      const id = ytId(it.u);
+      if (id && autoMeta) {
+        try { const m = await ytMeta(id); d = fmtDur(m.duration); if (!t) t = m.title; } catch (e) { /* internet yo'q — standart nom */ }
+      }
+      if (!t) t = `${prefix.trim() || 'Dars'} ${at + k}`;
+      out.push({ id: uid('l'), title: t, duration: d, videoUrl: it.u });
+      setBusy({ done: k + 1, total: items.length });
+    }
+    setBusy(null);
+    if (!out.length) { notify("To'xtatildi — hech narsa qo'shilmadi", 'danger'); return; }
+    patchLessons((ls) => { const arr = [...ls]; arr.splice(Math.min(at - 1, arr.length), 0, ...out); return arr; }, cId, sId);
+    setRecent((r) => [{ key: out[0].id, ids: out.map((x) => x.id), catId: cId, subId: sId, title: `${out.length} ta dars`, where: `${cName} · ${sName} · ${at}–${at + out.length - 1}-darslar` }, ...r].slice(0, 6));
+    notify(`${out.length} ta dars ${at}-o'rindan boshlab joylandi`);
+    setBulkText(''); setTried(false); setNum(String(at + out.length));
+    // API: POST /api/admin/lessons/bulk/  (categoryId, topicId, startOrder, lessons[])
+  };
+
+  const undo = (r) => {
+    patchLessons((ls) => ls.filter((l) => !r.ids.includes(l.id)), r.catId, r.subId);
+    setRecent((rs) => rs.filter((x) => x.key !== r.key));
+    notify('Bekor qilindi', 'danger');
+    // API: DELETE /api/admin/lessons/{id}/
+  };
+
+  /* ---- bo'limdagi darslarni boshqarish ---- */
+  const moveLesson = (from, to) => {
+    if (to < 0 || to >= total || from === to) return;
+    patchLessons((ls) => { const a = [...ls]; const [x] = a.splice(from, 1); a.splice(to, 0, x); return a; });
+    notify(`Dars ${to + 1}-o'ringa ko'chirildi`);
+    // API: PATCH /api/admin/lessons/{id}/  (order)
+  };
+  const saveRename = () => {
+    const t = editText.trim();
+    if (!t) { notify('Dars nomi bo\'sh bo\'lmasin', 'danger'); return; }
+    patchLessons((ls) => ls.map((l) => l.id === editId ? { ...l, title: t } : l));
+    setEditId(null); notify('Dars nomi yangilandi');
+    // API: PATCH /api/admin/lessons/{id}/  (title)
+  };
+  const confirmDelete = (id) => {
+    patchLessons((ls) => ls.filter((l) => l.id !== id));
+    setDelId(null); setRecent((rs) => rs.filter((r) => !r.ids.includes(id)));
+    notify("Dars o'chirildi", 'danger');
+    // API: DELETE /api/admin/lessons/{id}/
+  };
+
+  const onKey = (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); if (tab === 'bulk') submitBulk(); else submit(); }
+  };
+
+  if (categories.length === 0) {
+    return (
+      <div className="av-page">
+        <div className="av-head"><div><h1>Yangi darslik joylash</h1><p>Avval «Kurslar» bo'limida kamida bitta kurs yarating.</p></div></div>
+      </div>
+    );
+  }
+
+  const thumb = vid
+    ? <img src={`https://i.ytimg.com/vi/${vid}/hqdefault.jpg`} alt="" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+    : (videoUrl && (mode === 'file' || isVideoLink(videoUrl))) ? <video src={videoUrl} muted preload="metadata" />
+    : <span className="av-thumb-ph"><Icon.video width="26" height="26" /></span>;
+
+  const insBar = (
+    <div key="ins" className="av-ins"><span /><em>{tab === 'bulk' && bulkItems.length > 1 ? `${pos}–${pos + bulkItems.length - 1}-o'ringa` : `${pos}-o'ringa`} yangi dars{tab === 'bulk' && bulkItems.length > 1 ? 'lar' : ''} tushadi</em><span /></div>
+  );
+
+  return (
+    <div className={`av-page ${busy ? 'av-busy' : ''}`} onKeyDown={onKey}>
+      <div className="av-head">
+        <div>
+          <h1>Yangi darslik joylash</h1>
+          <p>Kurs va bo'limni tanlang, so'ng bitta dars yoki ko'plab havolalarni birdaniga qo'shing.</p>
         </div>
-      )}
+        <div className="av-stats">
+          <span><b>{categories.length}</b> kurs</span>
+          <span><b>{totalSubs}</b> bo'lim</span>
+          <span><b>{totalLessons}</b> dars</span>
+        </div>
+      </div>
+
+      <div className="av-tabs">
+        <button type="button" className={tab === 'single' ? 'is-on' : ''} onClick={() => { setTab('single'); setTried(false); }}><Icon.video width="14" height="14" /> Bitta dars</button>
+        <button type="button" className={tab === 'bulk' ? 'is-on' : ''} onClick={() => { setTab('bulk'); setTried(false); }}><Icon.layers width="14" height="14" /> Ko'plab havolalar <em>tez</em></button>
+      </div>
+
+      <div className="av-grid">
+        <div className="av-main">
+          {/* 1 — kurs va bo'lim */}
+          <section className="av-card">
+            <div className="av-step"><span>1</span> Kurs va bo'lim</div>
+            <label className="sd-label">Kurs</label>
+            <div className="av-chips">
+              {categories.map((c) => (
+                <button key={c.id} type="button" className={c.id === catId ? 'is-on' : ''} onClick={() => pickCat(c.id)}>
+                  {c.name}<small>{c.subtopics.length} bo'lim</small>
+                </button>
+              ))}
+            </div>
+            {show('cat')}
+
+            <label className="sd-label" style={{ marginTop: '1.1rem' }}>Bo'lim</label>
+            {cat && cat.subtopics.length > 0 && (
+              <div className="av-subs">
+                {cat.subtopics.map((s) => (
+                  <button key={s.id} type="button" className={`av-sub ${s.id === subId ? 'is-on' : ''}`} onClick={() => pickSub(s.id)}>
+                    <span className="av-sub-ic">{s.image ? <img src={s.image} alt="" /> : s.name.slice(0, 2).toUpperCase()}</span>
+                    <span className="av-sub-name">{s.name}</span>
+                    <span className="av-sub-n">{s.lessons.length} ta dars</span>
+                    {s.id === subId && <Icon.check width="14" height="14" />}
+                  </button>
+                ))}
+              </div>
+            )}
+            {cat && cat.subtopics.length === 0 && <p className="av-note">Bu kursda hali bo'lim yo'q — pastdan birinchi bo'limni yarating.</p>}
+            {show('sub')}
+
+            {newSubOpen ? (
+              <div className="av-newsub">
+                <input autoFocus className="sd-input" placeholder="Yangi bo'lim nomi" value={newSubName}
+                  onChange={(e) => setNewSubName(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === 'Enter') addSection(); if (e.key === 'Escape') setNewSubOpen(false); }} />
+                <button type="button" className="av-btn av-btn-pri" onClick={addSection}><Icon.check width="13" height="13" /> Yaratish</button>
+                <button type="button" className="av-btn" onClick={() => { setNewSubOpen(false); setNewSubName(''); }}>Bekor</button>
+              </div>
+            ) : (
+              <button type="button" className="av-addsub" onClick={() => setNewSubOpen(true)}><Icon.plus width="13" height="13" /> Yangi bo'lim yaratish</button>
+            )}
+          </section>
+
+          {tab === 'single' ? (
+            <React.Fragment>
+              {/* 2 — dars ma'lumotlari */}
+              <section className="av-card">
+                <div className="av-step"><span>2</span> Dars ma'lumotlari</div>
+                <div className="sd-field">
+                  <label className="sd-label">Dars nomi</label>
+                  <input ref={titleRef} className="sd-input" placeholder="Masalan: Flexbox asoslari" value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === 'Enter') submit(); }} />
+                  {show('title')}
+                </div>
+                <div className="av-two">
+                  <div className="sd-field">
+                    <label className="sd-label">Davomiyligi</label>
+                    <input className="sd-input" placeholder="12:34" value={duration} onChange={(e) => setDuration(e.target.value)} />
+                    {ytSt ? <div className="av-hint">{ytStatusText(ytSt)}</div> : <div className="av-hint">Bo'sh qolsa — 00:00. YouTube havolasidan avtomatik aniqlanadi.</div>}
+                    {show('duration')}
+                  </div>
+                  <div className="sd-field">
+                    <label className="sd-label">Nechanchi dars {sub ? <span className="av-range">(1–{total + 1})</span> : null}</label>
+                    <div className="av-stepper">
+                      <button type="button" disabled={!sub || pos <= 1} onClick={() => setNum(String(pos - 1))} aria-label="Oldinga">−</button>
+                      <input type="number" min="1" max={total + 1} className="sd-input" placeholder={`Oxiriga: ${total + 1}`} value={num} onChange={(e) => setNum(e.target.value)} />
+                      <button type="button" disabled={!sub || pos >= total + 1} onClick={() => setNum(String(pos + 1))} aria-label="Orqaga">+</button>
+                    </div>
+                    <div className="av-quick">
+                      <button type="button" className={pos === 1 && total > 0 ? 'is-on' : ''} disabled={!sub || total === 0} onClick={() => setNum('1')}>Boshiga</button>
+                      <button type="button" className={pos === total + 1 ? 'is-on' : ''} disabled={!sub} onClick={() => setNum('')}>Oxiriga</button>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              {/* 3 — video */}
+              <section className="av-card">
+                <div className="av-step"><span>3</span> Video</div>
+                <div className="av-seg">
+                  <button type="button" className={mode === 'link' ? 'is-on' : ''} onClick={() => switchMode('link')}><Icon.arrowRight width="14" height="14" style={{ transform: 'rotate(-45deg)' }} /> Havola (YouTube / mp4)</button>
+                  <button type="button" className={mode === 'file' ? 'is-on' : ''} onClick={() => switchMode('file')}><Icon.image width="14" height="14" /> Fayldan yuklash</button>
+                </div>
+
+                {mode === 'link' ? (
+                  <div className="av-url">
+                    <Icon.video width="15" height="15" />
+                    <input className="sd-input" placeholder="https://youtu.be/... yoki https://.../video.mp4" value={videoUrl}
+                      onChange={(e) => setVideoUrl(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') submit(); }} />
+                    {videoUrl && <button type="button" className="av-url-x" onClick={() => setVideoUrl('')} aria-label="Tozalash"><Icon.close width="12" height="12" /></button>}
+                  </div>
+                ) : fileName ? (
+                  <div className="av-file">
+                    <span className="av-file-ic"><Icon.check width="15" height="15" /></span>
+                    <span className="av-file-name" title={fileName}>{fileName}</span>
+                    <button type="button" className="av-url-x" onClick={() => { setVideoUrl(''); setFileName(''); }} aria-label="Olib tashlash"><Icon.close width="12" height="12" /></button>
+                  </div>
+                ) : (
+                  <label className="av-drop"
+                    onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add('drag'); }}
+                    onDragLeave={(e) => e.currentTarget.classList.remove('drag')}
+                    onDrop={(e) => { e.preventDefault(); e.currentTarget.classList.remove('drag'); onPickFile(e.dataTransfer.files[0]); }}>
+                    <span className="av-drop-ic"><Icon.video width="22" height="22" /></span>
+                    <b>Video faylni tanlang yoki shu yerga tashlang</b>
+                    <span>mp4, webm va boshqa video formatlar</span>
+                    <input type="file" accept="video/*" style={{ display: 'none' }} onChange={(e) => { onPickFile(e.target.files[0]); e.target.value = ''; }} />
+                  </label>
+                )}
+                {dupTitle && <div className="av-warn"><Icon.warn width="14" height="14" /> Bu video shu kursda allaqachon bor: «{dupTitle}». Baribir qo'shish mumkin.</div>}
+                {mode === 'file' && <p className="av-note">Demo rejimida fayl brauzer xotirasida saqlanadi (sahifa yangilansa yo'qoladi). Doimiy saqlash uchun YouTube havolasidan foydalaning yoki backendga ulang.</p>}
+                {show('video')}
+              </section>
+            </React.Fragment>
+          ) : (
+            <section className="av-card">
+              <div className="av-step"><span>2</span> Havolalarni joylang</div>
+              <label className="sd-label">Har qatorga bitta havola</label>
+              <textarea className="sd-textarea av-ta" rows="7" disabled={!!busy}
+                placeholder={"https://youtu.be/aaaaaaaaaaa\nFlexbox asoslari | https://youtu.be/bbbbbbbbbbb\nhttps://youtu.be/ccccccccccc"}
+                value={bulkText} onChange={(e) => setBulkText(e.target.value)} />
+              <div className="av-hint">Nom bergingiz kelsa: <b>Nom | havola</b> shaklida yozing. Nom yozilmasa, YouTube'dan olinadi yoki «{prefix.trim() || 'Dars'} N» deb qo'yiladi.</div>
+
+              <div className="av-opts">
+                <label className="av-opt"><input type="checkbox" checked={autoMeta} onChange={(e) => setAutoMeta(e.target.checked)} /><span><b>Nom va davomiylikni YouTube'dan olish</b><small>Har bir video uchun ~3–5 soniya ketadi</small></span></label>
+                <label className="av-opt"><input type="checkbox" checked={skipDup} onChange={(e) => setSkipDup(e.target.checked)} /><span><b>Takroriy videolarni o'tkazib yuborish</b><small>Kursda bor yoki ro'yxatda qaytarilgan</small></span></label>
+              </div>
+              <div className="sd-field" style={{ marginTop: '.9rem', maxWidth: 260 }}>
+                <label className="sd-label">Standart nom boshi</label>
+                <input className="sd-input" value={prefix} onChange={(e) => setPrefix(e.target.value)} placeholder="Dars" />
+              </div>
+
+              <div className="av-two" style={{ marginTop: '.4rem' }}>
+                <div className="sd-field">
+                  <label className="sd-label">Boshlanish o'rni {sub ? <span className="av-range">(1–{total + 1})</span> : null}</label>
+                  <div className="av-stepper">
+                    <button type="button" disabled={!sub || pos <= 1} onClick={() => setNum(String(pos - 1))} aria-label="Oldinga">−</button>
+                    <input type="number" min="1" max={total + 1} className="sd-input" placeholder={`Oxiriga: ${total + 1}`} value={num} onChange={(e) => setNum(e.target.value)} />
+                    <button type="button" disabled={!sub || pos >= total + 1} onClick={() => setNum(String(pos + 1))} aria-label="Orqaga">+</button>
+                  </div>
+                </div>
+                <div className="sd-field">
+                  <label className="sd-label">Tezkor</label>
+                  <div className="av-quick" style={{ marginTop: 0 }}>
+                    <button type="button" disabled={!sub || total === 0} className={pos === 1 && total > 0 ? 'is-on' : ''} onClick={() => setNum('1')}>Boshiga</button>
+                    <button type="button" disabled={!sub} className={pos === total + 1 ? 'is-on' : ''} onClick={() => setNum('')}>Oxiriga</button>
+                  </div>
+                </div>
+              </div>
+
+              {parsed.length > 0 && (
+                <div className="av-parsed">
+                  <div className="av-parsed-h">
+                    <b>{bulkItems.length} ta dars qo'shiladi</b>
+                    {bulkBad > 0 && <span className="av-tag av-tag-bad">{bulkBad} ta noto'g'ri</span>}
+                    {bulkDup > 0 && <span className="av-tag av-tag-warn">{bulkDup} ta takror</span>}
+                  </div>
+                  <div className="av-parsed-list">
+                    {(() => { let k = 0; return parsed.map((p, i) => {
+                      const n = p.skip ? null : pos + k++;
+                      return (
+                        <div key={i} className={`av-prow ${p.skip ? 'is-skip' : ''}`}>
+                          <span className="av-row-n">{n || '—'}</span>
+                          <div className="av-prow-b">
+                            <div>{p.t || (autoMeta && ytId(p.u) ? "Nomi YouTube'dan olinadi" : `${prefix.trim() || 'Dars'} ${n || ''}`)}</div>
+                            <small>{p.u}</small>
+                          </div>
+                          {!p.valid ? <span className="av-tag av-tag-bad">Noto'g'ri havola</span> : p.dup ? <span className="av-tag av-tag-warn">{skipDup ? `O'tkazib yuboriladi (${p.dup})` : p.dup}</span> : <span className="av-tag av-tag-ok">Tayyor</span>}
+                        </div>
+                      );
+                    }); })()}
+                  </div>
+                </div>
+              )}
+              {tried && parsed.length === 0 && <div className="av-err">Kamida bitta havola kiriting</div>}
+            </section>
+          )}
+
+          <div className="av-submitbar">
+            {busy ? (
+              <React.Fragment>
+                <div className="av-progress">
+                  <div className="av-progress-t">Joylanmoqda… <b>{busy.done}/{busy.total}</b></div>
+                  <div className="av-progress-bar"><span style={{ width: `${(busy.done / busy.total) * 100}%` }} /></div>
+                </div>
+                <button type="button" className="av-btn av-btn-lg av-btn-stop" onClick={() => { cancelRef.current = true; }}>To'xtatish</button>
+              </React.Fragment>
+            ) : (
+              <React.Fragment>
+                <div className="av-where">{cat && sub ? <React.Fragment><b>{cat.name}</b> · {sub.name} · <b>{tab === 'bulk' && bulkItems.length > 1 ? `${pos}–${pos + bulkItems.length - 1}-darslar` : `${pos}-dars`}</b> bo'ladi <span className="av-kbd">Ctrl + Enter</span></React.Fragment> : 'Kurs va bo\'limni tanlang'}</div>
+                {tab === 'bulk'
+                  ? <button type="button" className="av-btn av-btn-pri av-btn-lg" onClick={submitBulk}><Icon.plus width="14" height="14" /> {bulkItems.length ? `${bulkItems.length} ta darsni joylash` : 'Darslarni joylash'}</button>
+                  : <button type="button" className="av-btn av-btn-pri av-btn-lg" onClick={submit}><Icon.plus width="14" height="14" /> Darsni joylash</button>}
+              </React.Fragment>
+            )}
+          </div>
+        </div>
+
+        <aside className="av-side">
+          {tab === 'single' && (
+            <div className="av-prev">
+              <div className="av-thumb">{thumb}{duration.trim() && <span className="av-dur">{duration.trim()}</span>}</div>
+              <div className="av-prev-body">
+                <div className="av-prev-pos">{sub ? `${pos}-dars` : '—'}</div>
+                <div className="av-prev-title">{title.trim() || 'Dars nomi shu yerda ko\'rinadi'}</div>
+                <div className="av-prev-meta">{cat ? cat.name : ''}{sub ? ` · ${sub.name}` : ''}</div>
+              </div>
+            </div>
+          )}
+
+          <div className="av-card av-order">
+            <div className="av-order-h"><b>Bo'limdagi darslar</b><span>{total} ta{subSec ? ` · ${fmtTotal(subSec)}` : ''}</span></div>
+            {!sub ? <p className="av-note">Bo'lim tanlang.</p> : (
+              <React.Fragment>
+                <div className="av-order-list">
+                  {lessons.map((l, i) => (
+                    <React.Fragment key={l.id}>
+                      {i === pos - 1 && insBar}
+                      <div className={`av-row ${dragIdx === i ? 'is-drag' : ''} ${overIdx === i && dragIdx !== null && dragIdx !== i ? 'is-over' : ''}`}
+                        draggable={editId !== l.id && delId !== l.id}
+                        onDragStart={(e) => { setDragIdx(i); e.dataTransfer.effectAllowed = 'move'; try { e.dataTransfer.setData('text/plain', String(i)); } catch (x) {} }}
+                        onDragOver={(e) => { e.preventDefault(); if (overIdx !== i) setOverIdx(i); }}
+                        onDrop={(e) => { e.preventDefault(); if (dragIdx !== null) moveLesson(dragIdx, i); setDragIdx(null); setOverIdx(null); }}
+                        onDragEnd={() => { setDragIdx(null); setOverIdx(null); }}>
+                        <span className="av-grip" title="Sudrab tartibini o'zgartiring"><Icon.dots width="14" height="14" /></span>
+                        {editId === l.id ? (
+                          <React.Fragment>
+                            <input autoFocus className="sd-input av-row-input" value={editText} onChange={(e) => setEditText(e.target.value)}
+                              onKeyDown={(e) => { if (e.key === 'Enter') saveRename(); if (e.key === 'Escape') setEditId(null); }} />
+                            <button type="button" className="av-ico av-ico-ok" title="Saqlash" onClick={saveRename}><Icon.check width="12" height="12" /></button>
+                            <button type="button" className="av-ico" title="Bekor" onClick={() => setEditId(null)}><Icon.close width="11" height="11" /></button>
+                          </React.Fragment>
+                        ) : delId === l.id ? (
+                          <React.Fragment>
+                            <span className="av-row-t av-row-del">«{l.title}» o'chirilsinmi?</span>
+                            <button type="button" className="av-btn av-btn-sm av-btn-danger" onClick={() => confirmDelete(l.id)}>Ha</button>
+                            <button type="button" className="av-btn av-btn-sm" onClick={() => setDelId(null)}>Yo'q</button>
+                          </React.Fragment>
+                        ) : (
+                          <React.Fragment>
+                            <button type="button" className="av-row-main" title="Yangi dars shu darsning oldiga qo'yiladi" onClick={() => setNum(String(i + 1))}>
+                              <span className="av-row-n">{i + 1}</span><span className="av-row-t">{l.title}</span><small>{l.duration}</small>
+                            </button>
+                            <span className="av-row-acts">
+                              <button type="button" className="av-ico" title="Yuqoriga" disabled={i === 0} onClick={() => moveLesson(i, i - 1)}><Icon.chevron width="12" height="12" style={{ transform: 'rotate(180deg)' }} /></button>
+                              <button type="button" className="av-ico" title="Pastga" disabled={i === total - 1} onClick={() => moveLesson(i, i + 1)}><Icon.chevron width="12" height="12" /></button>
+                              <button type="button" className="av-ico" title="Nomini o'zgartirish" onClick={() => { setEditId(l.id); setEditText(l.title); setDelId(null); }}><Icon.edit width="12" height="12" /></button>
+                              <button type="button" className="av-ico av-ico-del" title="O'chirish" onClick={() => { setDelId(l.id); setEditId(null); }}><Icon.trash width="12" height="12" /></button>
+                            </span>
+                          </React.Fragment>
+                        )}
+                      </div>
+                    </React.Fragment>
+                  ))}
+                  {pos === total + 1 && insBar}
+                </div>
+                <p className="av-tip">Darsni bossangiz — yangi dars uning oldiga tushadi. Tartibni sudrab yoki ↑↓ bilan o'zgartiring.</p>
+              </React.Fragment>
+            )}
+          </div>
+
+          {recent.length > 0 && (
+            <div className="av-card av-recent">
+              <div className="av-order-h"><b>Hozir qo'shilganlar</b><span>{recent.length}</span></div>
+              {recent.map((r) => (
+                <div key={r.key} className="av-rec">
+                  <span className="av-rec-ic"><Icon.check width="12" height="12" /></span>
+                  <div className="av-rec-b"><div>{r.title}</div><small>{r.where}</small></div>
+                  <button type="button" className="av-btn av-btn-sm" onClick={() => undo(r)}>Bekor qilish</button>
+                </div>
+              ))}
+            </div>
+          )}
+        </aside>
+      </div>
     </div>
   );
 }
@@ -6079,11 +6763,14 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
   const [flt, setFlt] = useState('all');   // all | debt | paid | none
   const searched = students.filter((s) => (s.name + ' ' + s.username).toLowerCase().includes(q.toLowerCase()));
 
-  const resetAdd = () => {
+  const resetAdd = (goCourses) => {
+    const newId = created && created.id;
     setDraft(emptyDraft());
     setCreated(null);
     setCopied(false);
     setShowAdd(false);
+    // Yangi o'quvchi qo'shilgach — to'g'ridan-to'g'ri uning "Kurslar" bo'limiga o'tamiz
+    if (goCourses === true && newId) onOpen(newId, 'courses');
   };
 
   const pickGroup = (gid) => {
@@ -6100,14 +6787,15 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
     if (!name) return;
     const username = genUniqueLogin(name.split(' ')[0], students.map((s) => s.username));
     const password = genPassword6();
+    const newId = uid('st');
     setStudents([...students, {
-      id: uid('st'), name, phone: draft.phone.trim(), address: '', username, password,
+      id: newId, name, phone: draft.phone.trim(), address: '', username, password,
       access: {}, progress: {}, alerts: [], payments: [],
       ownerId: me ? me.id : (staffList[0] ? staffList[0].id : ''),
       monthlyFee: 0,
       customPrice: false,
     }]);
-    setCreated({ name, username, password });
+    setCreated({ id: newId, name, username, password });
     notify("Yangi o'quvchi ro'yxatga olindi");
     // API: POST /api/admin/students/  (name, phone) — kurs, narx va boshqalar keyin Tahrirlash sahifasida beriladi
   };
@@ -6311,7 +6999,7 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
 
       {/* ---------- Yangi o'quvchi ---------- */}
       {showAdd && (
-        <SdModal title={created ? "O'quvchi qo'shildi" : "Yangi o'quvchi"} icon="cap" onClose={resetAdd}>
+        <SdModal title={created ? "O'quvchi qo'shildi" : "Yangi o'quvchi"} icon="cap" onClose={() => resetAdd(!!created)}>
           {!created && (
             <React.Fragment>
               <div className="sd-field">
@@ -6336,7 +7024,7 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
               </p>
 
               <div className="sd-foot">
-                <button className="sd-btn sd-btn-ghost" onClick={resetAdd}>Bekor</button>
+                <button className="sd-btn sd-btn-ghost" onClick={() => resetAdd(false)}>Bekor</button>
                 <button className="sd-btn sd-btn-primary" onClick={addStudent} disabled={!draft.fullName.trim()}>
                   <Icon.check width="14" height="14" /> Saqlash
                 </button>
@@ -6357,12 +7045,14 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
                   <div className="sd-creds-v">{created.password}</div>
                 </div>
               </div>
-              <p className="sd-hint">Bu login va parolni o'quvchiga bering — u tizimga shular orqali kiradi.</p>
+              <p className="sd-hint">Bu login va parolni o'quvchiga bering — u tizimga shular orqali kiradi. Keyingi qadam: o'quvchini kurslarga biriktirish.</p>
               <div className="sd-foot">
-                <button className="sd-btn sd-btn-ghost" onClick={resetAdd}>Yopish</button>
-                <button className="sd-btn sd-btn-primary"
+                <button className="sd-btn sd-btn-ghost"
                   onClick={() => copyText(`Login: ${created.username}\nParol: ${created.password}`, setCopied)}>
                   {copied ? <React.Fragment><Icon.check width="13" height="13" /> Nusxalandi</React.Fragment> : 'Nusxalash'}
+                </button>
+                <button className="sd-btn sd-btn-primary" onClick={() => resetAdd(true)}>
+                  Kurslarni biriktirish
                 </button>
               </div>
             </React.Fragment>
@@ -6505,10 +7195,11 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
   );
 }
 
-function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) {
-  const [tab, setTab] = useState('info');
+function StudentEditor({ student, categories, canEdit, onBack, onSave, staff, initialTab }) {
+  const [tab, setTab] = useState(initialTab || 'info');
   const [form, setForm] = useState({ ...student });
   const [courseQuery, setCourseQuery] = useState('');
+  const [courseFilter, setCourseFilter] = useState('all'); // all | on | bad
   const [expandedCourses, setExpandedCourses] = useState({});
   const [payFor, setPayFor] = useState(null); // catId of course being paid
   const [payAmount, setPayAmount] = useState('');
@@ -6918,159 +7609,216 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff }) 
             </React.Fragment>
           )}
 
-          {tab === 'courses' && (
-            <React.Fragment>
-              <div className="stu-search" style={{ marginBottom: '.9rem', maxWidth: '320px' }}>
-                <Icon.search width="14" height="14" />
-                <input value={courseQuery} onChange={(e) => setCourseQuery(e.target.value)} placeholder="Kursni qidirish..." />
-              </div>
-              {categories
-                .filter((cat) => cat.name.toLowerCase().includes(courseQuery.toLowerCase()))
-                .map((cat) => {
-                const a = form.access[cat.id] || { active: false, nextPaymentDate: todayISO(), isFullyPaid: false, schedule: 'daily', includeSunday: false, enrolledAt: todayISO() };
-                const isOpen = !!expandedCourses[cat.id];
-                const rowBlock = a.active ? blockReasons(cat.id) : { reasons: [] };
-                const rowBlocked = rowBlock.reasons.length > 0;
-                return (
-                  <div key={cat.id} className={`ed-course ${rowBlocked ? 'ed-course-blocked' : ''}`}>
-                    <div className="ed-course-head">
-                      <div className="flex items-center gap-2 flex-1 min-w-0" style={{ cursor: a.active ? 'pointer' : 'default' }}
-                        onClick={() => a.active && toggleExpanded(cat.id)}>
-                        {a.active && <Icon.chevron width="13" height="13" className="text-slate shrink-0" style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(-90deg)', transition: 'transform .15s ease' }} />}
-                        <div className="min-w-0">
-                          <div className="flex items-center gap-1.5 flex-wrap">
-                            <div className="ed-course-name">{cat.name}</div>
-                            {a.active && a.frozen && (
-                              <span className="pill pill-warn shrink-0"><Icon.pause width="9" height="9" /> Muzlatilgan</span>
-                            )}
-                            {rowBlocked && !a.frozen && (
-                              <span className="pill pill-warn shrink-0"><Icon.lock width="9" height="9" /> Bloklangan</span>
-                            )}
-                          </div>
-                          <div className="ed-course-sub">{cat.subtitle}</div>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2 shrink-0">
-                        {a.active && canEdit && (
-                          <button className="stu-ib stu-ib-pay" title="To'lov qilish" onClick={() => openPayModal(cat)}>
-                            <Icon.card width="14" height="14" />
-                          </button>
-                        )}
-                        {a.active && canEdit && (
-                          <button className={`stu-ib stu-ib-freeze ${a.frozen ? 'stu-ib-on' : ''}`}
-                            title={a.frozen ? "Muzlatishni bekor qilish" : "Muzlatish"}
-                            onClick={() => (a.frozen ? setFreezeState(cat, false, true) : setFreezeConfirm(cat))}>
-                            {a.frozen ? <Icon.play width="14" height="14" /> : <Icon.pause width="14" height="14" />}
-                          </button>
-                        )}
-                        {a.active && canEdit && (
-                          <button className={`stu-ib stu-ib-block ${a.manualBlocked ? 'stu-ib-on' : ''}`}
-                            title={a.manualBlocked ? "Blokni ochish" : "Bloklash"}
-                            onClick={() => (a.manualBlocked ? setBlockState(cat, false, true) : setBlockConfirm(cat))}>
-                            <Icon.lock width="14" height="14" />
-                          </button>
-                        )}
-                        <Switch on={!!a.active} disabled={!canEdit} onToggle={(v) => { updateAccess(cat.id, { active: v }); if (v) setExpandedCourses((e) => ({ ...e, [cat.id]: true })); }} />
-                      </div>
-                    </div>
-                    {a.active && isOpen && (
-                      <div className="ed-course-body">
-                        <div>
-                          <label className="sd-label">To'lov sanasi (keyingi)</label>
-                          <input className="sd-input" type="date" disabled={!canEdit || a.isFullyPaid}
-                            value={a.nextPaymentDate}
-                            onChange={(e) => updateAccess(cat.id, { nextPaymentDate: e.target.value })} />
-                        </div>
-                        <div>
-                          <label className="sd-label">Dars kunlari jadvali</label>
-                          <select className="sd-select" disabled={!canEdit} value={a.schedule}
-                            onChange={(e) => updateAccess(cat.id, { schedule: e.target.value })}>
-                            <option value="odd">Toq kunlar (Du/Chor/Ju)</option>
-                            <option value="even">Juft kunlar (Se/Pay/Sha)</option>
-                            <option value="daily">Har kuni</option>
-                          </select>
-                        </div>
-                        <label className="ed-check">
-                          <input type="checkbox" disabled={!canEdit} checked={!!a.isFullyPaid}
-                            onChange={(e) => updateAccess(cat.id, { isFullyPaid: e.target.checked })} />
-                          Kurs to'liq to'langan (muddatsiz ochiq)
-                        </label>
-                        {a.schedule === 'even' && (
-                          <label className="ed-check">
-                            <input type="checkbox" disabled={!canEdit} checked={!!a.includeSunday}
-                              onChange={(e) => updateAccess(cat.id, { includeSunday: e.target.checked })} />
-                            Yakshanbani ham jadvalga qo'shish
-                          </label>
-                        )}
-                        {(() => {
-                          const { reasons, attn } = blockReasons(cat.id);
-                          if (!reasons.length) return null;
-                          return (
-                            <div className="ed-warn" style={{ display: 'flex', flexDirection: 'column', gap: '.6rem' }}>
-                              {reasons.includes('frozen') && (
-                                <div className="flex items-center justify-between gap-3 flex-wrap">
-                                  <span><Icon.pause width="13" height="13" style={{ verticalAlign: '-2px', marginRight: 6 }} />Bu kurs administratsiya tomonidan <b>vaqtincha muzlatilgan</b>.</span>
-                                  {canEdit && (
-                                    <button onClick={() => setFreezeState(cat, false, true)} className="text-xs font-semibold px-3 py-1.5 rounded-lg shrink-0" style={{ background: '#059669', color: '#fff' }}>
-                                      Muzlatishni bekor qilish
-                                    </button>
-                                  )}
-                                </div>
-                              )}
-                              {reasons.includes('manual') && (
-                                <div className="flex items-center justify-between gap-3 flex-wrap">
-                                  <span><Icon.warn width="13" height="13" style={{ verticalAlign: '-2px', marginRight: 6 }} />Bu kurs administratsiya tomonidan <b>qo'lda bloklangan</b>.</span>
-                                  {canEdit && (
-                                    <button onClick={() => setBlockState(cat, false, true)} className="text-xs font-semibold px-3 py-1.5 rounded-lg shrink-0" style={{ background: '#059669', color: '#fff' }}>
-                                      Blokni ochish
-                                    </button>
-                                  )}
-                                </div>
-                              )}
-                              {reasons.includes('payment') && (
-                                <div className="flex items-center justify-between gap-3 flex-wrap">
-                                  <span><Icon.warn width="13" height="13" style={{ verticalAlign: '-2px', marginRight: 6 }} />Bu kurs <b>to'lov muddati o'tgani</b> uchun bloklangan. Blok faqat to'lov qilingandan keyin avtomatik ochiladi.</span>
-                                  {canEdit && (
-                                    <button onClick={() => openPayModal(cat)} className="text-xs font-semibold px-3 py-1.5 rounded-lg shrink-0" style={{ background: '#059669', color: '#fff' }}>
-                                      To'lov qilish
-                                    </button>
-                                  )}
-                                </div>
-                              )}
-                              {reasons.includes('attendance') && (
-                                <div className="flex items-center justify-between gap-3 flex-wrap">
-                                  <span><Icon.warn width="13" height="13" style={{ verticalAlign: '-2px', marginRight: 6 }} />Bu kurs <b>darslik nazorati</b> tufayli bloklangan — oxirgi {ATTEND_WINDOW_DAYS} kunda {attn.penaltyPoints}/{attn.maxPenaltyPoints} dars kuni o'tkazib yuborilgan.</span>
-                                  {canEdit && (
-                                    <button onClick={() => setAttnUnblockConfirm(cat)} className="text-xs font-semibold px-3 py-1.5 rounded-lg shrink-0" style={{ background: '#059669', color: '#fff' }}>
-                                      Blokni ochish (nazorat)
-                                    </button>
-                                  )}
-                                </div>
-                              )}
-                            </div>
-                          );
-                        })()}
-                        {(() => {
-                          const attn = attendanceFor(cat.id);
-                          if (!attn || attn.isBlocked) return null;
-                          return (
-                            <div className="text-xs text-slate" style={{ gridColumn: 'span 2' }}>
-                              Darslik nazorati: <b className="text-ink">{attn.penaltyPoints}/{attn.maxPenaltyPoints}</b> jarima balli (oxirgi {ATTEND_WINDOW_DAYS} kun)
-                            </div>
-                          );
-                        })()}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-              {canEdit && (
-                <div className="sd-foot" style={{ maxWidth: '260px' }}>
-                  <button className="sd-btn sd-btn-primary" onClick={() => onSave(form)}><Icon.check width="14" height="14" /> Saqlash</button>
+          {tab === 'courses' && (() => {
+            const defAccess = () => ({ active: false, nextPaymentDate: todayISO(), isFullyPaid: false, schedule: 'daily', includeSunday: false, enrolledAt: todayISO() });
+            const fmtD = (iso) => (iso ? iso.split('-').reverse().join('.') : '—');
+            const plusDaysISO = (n) => new Date(Date.now() + n * 86400000).toISOString().slice(0, 10);
+            const nextMonthISO = firstOfNextMonthISO(curPeriod().m, curPeriod().y);
+            const qLow = courseQuery.toLowerCase();
+            const rows = categories
+              .filter((cat) => cat.name.toLowerCase().includes(qLow))
+              .map((cat) => {
+                const a = form.access[cat.id] || defAccess();
+                const br = a.active ? blockReasons(cat.id) : { reasons: [], attn: null };
+                const bc = bill.courses.find((x) => x.catId === cat.id);
+                return { cat, a, br, bc, blocked: br.reasons.length > 0 };
+              })
+              .filter((r) => (courseFilter === 'all' ? true : courseFilter === 'on' ? r.a.active : r.a.active && r.blocked))
+              .sort((x, y) => (y.a.active ? 1 : 0) - (x.a.active ? 1 : 0));
+            const dirty = JSON.stringify(form) !== JSON.stringify(student);
+            return (
+              <React.Fragment>
+                <div className="kc-stats">
+                  <div className="kc-stat"><span className="kc-stat-k">Biriktirilgan kurslar</span><b className="kc-stat-v">{actives.length}<small> / {categories.length}</small></b></div>
+                  <div className="kc-stat"><span className="kc-stat-k">Oylik jami</span><b className="kc-stat-v">{fmtMoney(bill.total)}</b></div>
+                  <div className="kc-stat"><span className="kc-stat-k">To'langan</span><b className="kc-stat-v kc-green">{fmtMoney(bill.paid)}</b></div>
+                  <div className={`kc-stat ${bill.debt > 0 ? 'kc-stat-bad' : ''}`}><span className="kc-stat-k">Qarz</span><b className={`kc-stat-v ${bill.debt > 0 ? 'kc-red' : ''}`}>{bill.debt > 0 ? fmtMoney(bill.debt) : "Yo'q"}</b></div>
                 </div>
-              )}
-            </React.Fragment>
-          )}
+
+                <div className="kc-toolbar">
+                  <div className="stu-search kc-search">
+                    <Icon.search width="14" height="14" />
+                    <input value={courseQuery} onChange={(e) => setCourseQuery(e.target.value)} placeholder="Kursni qidirish..." />
+                  </div>
+                  <div className="kc-seg">
+                    {[['all', 'Barchasi', categories.length], ['on', 'Biriktirilgan', actives.length], ['bad', 'Bloklangan', blockedCoursesList.length]].map(([id, label, n]) => (
+                      <button key={id} type="button" className={courseFilter === id ? 'is-on' : ''} onClick={() => setCourseFilter(id)}>
+                        {label}<span>{n}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {rows.length === 0 && <p className="kc-empty">Bu bo'limda kurs topilmadi.</p>}
+
+                <div className="kc-list">
+                  {rows.map(({ cat, a, br, bc, blocked }) => {
+                    const isOpen = !!expandedCourses[cat.id];
+                    const status = !a.active ? ['off', "Biriktirilmagan"] : a.frozen ? ['warn', 'Muzlatilgan'] : blocked ? ['bad', 'Bloklangan'] : ['ok', 'Faol'];
+                    return (
+                      <div key={cat.id} className={`kc ${a.active ? 'kc-on' : ''} ${a.active && blocked ? 'kc-bad' : ''}`}>
+                        <div className="kc-top">
+                          <div className="kc-ico"><Icon.book width="18" height="18" /></div>
+                          <div className="kc-title">
+                            <div className="kc-name">{cat.name}</div>
+                            {cat.subtitle ? <div className="kc-sub">{cat.subtitle}</div> : null}
+                          </div>
+                          <span className={`kc-pill kc-pill-${status[0]}`}>
+                            {status[0] === 'bad' && <Icon.lock width="10" height="10" />}
+                            {status[0] === 'warn' && <Icon.pause width="10" height="10" />}
+                            {status[0] === 'ok' && <Icon.check width="10" height="10" />}
+                            {status[1]}
+                          </span>
+                          <Switch on={!!a.active} disabled={!canEdit}
+                            onToggle={(v) => { updateAccess(cat.id, { active: v }); if (v) setExpandedCourses((e) => ({ ...e, [cat.id]: true })); }} />
+                        </div>
+
+                        {a.active && (
+                          <React.Fragment>
+                            <div className="kc-metrics">
+                              <div className="kc-m"><span>Oylik narx</span><b>{fmtMoney(feeOfCat(cat.id))}</b></div>
+                              {a.isFullyPaid ? (
+                                <div className="kc-m kc-m-wide"><span>To'lov holati</span><b className="kc-green">To'liq to'langan — muddatsiz ochiq</b></div>
+                              ) : (
+                                <React.Fragment>
+                                  <div className="kc-m"><span>To'langan</span><b className="kc-green">{fmtMoney(bc ? bc.paid : 0)}</b></div>
+                                  <div className="kc-m"><span>Qarz</span><b className={bc && bc.debt > 0 ? 'kc-red' : 'kc-green'}>{bc && bc.debt > 0 ? fmtMoney(bc.debt) : "Yo'q"}</b></div>
+                                  <div className="kc-m"><span>Keyingi to'lov</span><b>{fmtD(a.nextPaymentDate)}</b></div>
+                                </React.Fragment>
+                              )}
+                            </div>
+
+                            {blocked && (
+                              <div className="kc-alerts">
+                                {br.reasons.includes('frozen') && (
+                                  <div className="kc-alert kc-alert-warn">
+                                    <Icon.pause width="15" height="15" />
+                                    <div><b>Muzlatilgan</b><p>Kurs vaqtincha to'xtatilgan, to'lov muddati ham to'xtab turibdi.</p></div>
+                                  </div>
+                                )}
+                                {br.reasons.includes('manual') && (
+                                  <div className="kc-alert kc-alert-bad">
+                                    <Icon.lock width="15" height="15" />
+                                    <div><b>Qo'lda bloklangan</b><p>Kurs administratsiya qarori bilan yopilgan.</p></div>
+                                  </div>
+                                )}
+                                {br.reasons.includes('payment') && (
+                                  <div className="kc-alert kc-alert-bad">
+                                    <Icon.warn width="15" height="15" />
+                                    <div>
+                                      <b>To'lov kutilmoqda{bc ? ` — qarz ${fmtMoney(bc.debt)}` : ''}</b>
+                                      <p>To'lov sanasi kelgani uchun kurs yopilgan; to'lovdan keyin avtomatik ochiladi. Yangi biriktirilgan bo'lsa, «Sozlamalar»da sanani keyinga surishingiz mumkin.</p>
+                                    </div>
+                                    {canEdit && (
+                                      <div className="kc-alert-acts">
+                                        <button type="button" className="kc-btn kc-btn-pay" onClick={() => openPayModal(cat)}>To'lov qilish</button>
+                                        <button type="button" className="kc-btn" onClick={() => setExpandedCourses((e) => ({ ...e, [cat.id]: true }))}>Sanani o'zgartirish</button>
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
+                                {br.reasons.includes('attendance') && (
+                                  <div className="kc-alert kc-alert-warn">
+                                    <Icon.clock width="15" height="15" />
+                                    <div><b>Darslik nazorati</b><p>Oxirgi {ATTEND_WINDOW_DAYS} kunda {br.attn.penaltyPoints}/{br.attn.maxPenaltyPoints} dars kuni o'tkazib yuborilgan.</p></div>
+                                    {canEdit && (
+                                      <div className="kc-alert-acts">
+                                        <button type="button" className="kc-btn" onClick={() => setAttnUnblockConfirm(cat)}>Blokni ochish</button>
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
+                              </div>
+                            )}
+
+                            <div className="kc-actions">
+                              {canEdit && (
+                                <button type="button" className="kc-btn kc-btn-pay" onClick={() => openPayModal(cat)}>
+                                  <Icon.card width="14" height="14" /> To'lov qilish
+                                </button>
+                              )}
+                              {canEdit && (
+                                <button type="button" className={`kc-btn ${a.frozen ? 'kc-btn-on' : ''}`}
+                                  onClick={() => (a.frozen ? setFreezeState(cat, false, true) : setFreezeConfirm(cat))}>
+                                  {a.frozen ? <Icon.play width="13" height="13" /> : <Icon.pause width="13" height="13" />}
+                                  {a.frozen ? 'Muzlatishni bekor qilish' : 'Muzlatish'}
+                                </button>
+                              )}
+                              {canEdit && (
+                                <button type="button" className={`kc-btn ${a.manualBlocked ? 'kc-btn-on' : 'kc-btn-danger'}`}
+                                  onClick={() => (a.manualBlocked ? setBlockState(cat, false, true) : setBlockConfirm(cat))}>
+                                  <Icon.lock width="13" height="13" /> {a.manualBlocked ? 'Blokni ochish' : 'Bloklash'}
+                                </button>
+                              )}
+                              <button type="button" className="kc-btn kc-btn-ghost kc-push" onClick={() => toggleExpanded(cat.id)}>
+                                <Icon.gear width="13" height="13" /> Sozlamalar
+                                <Icon.chevron width="12" height="12" style={{ transform: isOpen ? 'rotate(180deg)' : 'none', transition: 'transform .15s ease' }} />
+                              </button>
+                            </div>
+
+                            {isOpen && (
+                              <div className="kc-settings">
+                                <div className="kc-field">
+                                  <label className="sd-label">Keyingi to'lov sanasi</label>
+                                  <input className="sd-input" type="date" disabled={!canEdit || a.isFullyPaid}
+                                    value={a.nextPaymentDate}
+                                    onChange={(e) => updateAccess(cat.id, { nextPaymentDate: e.target.value })} />
+                                  {canEdit && !a.isFullyPaid && (
+                                    <div className="kc-chips">
+                                      {[['Bugun', todayISO()], ['+7 kun', plusDaysISO(7)], ['Keyingi oy', nextMonthISO]].map(([l, v]) => (
+                                        <button key={l} type="button" className={a.nextPaymentDate === v ? 'is-on' : ''}
+                                          onClick={() => updateAccess(cat.id, { nextPaymentDate: v })}>{l}</button>
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
+                                <div className="kc-field">
+                                  <label className="sd-label">Dars kunlari jadvali</label>
+                                  <div className="kc-seg kc-seg-fill">
+                                    {[['daily', 'Har kuni'], ['odd', 'Toq kunlar'], ['even', 'Juft kunlar']].map(([v, l]) => (
+                                      <button key={v} type="button" disabled={!canEdit} className={a.schedule === v ? 'is-on' : ''}
+                                        onClick={() => updateAccess(cat.id, { schedule: v })}>{l}</button>
+                                    ))}
+                                  </div>
+                                  <div className="kc-hint">{a.schedule === 'odd' ? 'Dushanba, Chorshanba, Juma' : a.schedule === 'even' ? 'Seshanba, Payshanba, Shanba' : 'Yakshanbadan tashqari har kuni'}</div>
+                                </div>
+                                <label className="kc-opt">
+                                  <input type="checkbox" disabled={!canEdit} checked={!!a.isFullyPaid}
+                                    onChange={(e) => updateAccess(cat.id, { isFullyPaid: e.target.checked })} />
+                                  <span><b>Kurs to'liq to'langan</b><small>Muddatsiz ochiq, qarz hisoblanmaydi</small></span>
+                                </label>
+                                {a.schedule === 'even' && (
+                                  <label className="kc-opt">
+                                    <input type="checkbox" disabled={!canEdit} checked={!!a.includeSunday}
+                                      onChange={(e) => updateAccess(cat.id, { includeSunday: e.target.checked })} />
+                                    <span><b>Yakshanbani qo'shish</b><small>Jadvalga yakshanba ham kiradi</small></span>
+                                  </label>
+                                )}
+                                {(() => {
+                                  const attn = attendanceFor(cat.id);
+                                  if (!attn || attn.isBlocked) return null;
+                                  return <div className="kc-hint kc-span">Darslik nazorati: <b>{attn.penaltyPoints}/{attn.maxPenaltyPoints}</b> jarima balli (oxirgi {ATTEND_WINDOW_DAYS} kun)</div>;
+                                })()}
+                              </div>
+                            )}
+                          </React.Fragment>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {canEdit && (
+                  <div className="kc-save">
+                    <div className={`kc-save-note ${dirty ? 'is-dirty' : ''}`}>
+                      {dirty ? <React.Fragment><span className="kc-dot" /> Saqlanmagan o'zgarishlar bor</React.Fragment> : "Biriktirish va sozlamalar «Saqlash» bosilgach kuchga kiradi"}
+                    </div>
+                    <button className="sd-btn sd-btn-primary" onClick={() => onSave(form)}><Icon.check width="14" height="14" /> Saqlash</button>
+                  </div>
+                )}
+              </React.Fragment>
+            );
+          })()}
 
           {tab === 'blocks' && (
             <React.Fragment>
