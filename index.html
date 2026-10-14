@@ -4495,11 +4495,15 @@ html.theme-dark .chat-tab .chat-tab-n{color:#042b1c;}
 .chat-file span{display:flex;flex-direction:column;min-width:0;}
 .chat-file b{font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .chat-file small{font-size:11px;opacity:.7;}
-.chat-rmenu{position:fixed;z-index:1000;min-width:210px;padding:6px;border-radius:12px;background:var(--cc-side,#0e1b15);color:var(--cc-ink,#eef6f1);box-shadow:0 14px 34px -10px rgba(0,0,0,.45);border:1px solid var(--cc-line,rgba(255,255,255,.08));}
+.chat-rmenu-back{position:fixed;inset:0;z-index:999;background:transparent;}
+.chat-rmenu{--rm-bg:#ffffff;--rm-ink:#0d1f17;--rm-hover:rgba(16,185,129,.09);--rm-line:rgba(13,31,23,.10);position:fixed;z-index:1000;min-width:220px;padding:6px;border-radius:14px;background:var(--rm-bg);color:var(--rm-ink);box-shadow:0 14px 34px -10px rgba(0,0,0,.35);border:1px solid var(--rm-line);font-family:inherit;}
+html.theme-dark .chat-rmenu{--rm-bg:#0e1b15;--rm-ink:#eef6f1;--rm-hover:rgba(52,211,153,.12);--rm-line:rgba(255,255,255,.09);box-shadow:0 14px 34px -10px rgba(0,0,0,.7);}
+.chat-rmenu-item:disabled{opacity:.45;cursor:not-allowed;}
+.chat-rmenu-item:disabled:hover{background:transparent;}
 .chat-rmenu-item{display:flex;align-items:center;gap:10px;width:100%;padding:9px 10px;border:0;border-radius:9px;background:transparent;color:inherit;font:inherit;font-size:13.5px;cursor:pointer;text-align:left;}
-.chat-rmenu-item:hover{background:var(--cc-hover,rgba(52,211,153,.09));}
+.chat-rmenu-item:hover{background:var(--rm-hover);}
 .chat-rmenu-item.danger{color:#f87171;}
-.chat-rmenu-confirm{padding:8px 8px 4px;font-size:13px;display:flex;flex-direction:column;gap:8px;max-width:240px;}
+.chat-rmenu-confirm{padding:8px 8px 4px;font-size:13px;display:flex;flex-direction:column;gap:8px;max-width:260px;}
 .chat-rmenu-confirm div{display:flex;gap:6px;}
 .chat-picker-chips{overflow-x:auto;scrollbar-width:none;flex-wrap:nowrap;}
 .chat-picker-chips::-webkit-scrollbar{display:none;}
@@ -4510,6 +4514,43 @@ html.theme-dark .chat-tab .chat-tab-n{color:#042b1c;}
 .chat-picker .chat-picker-search input::placeholder{color:var(--cc-mut);opacity:.8;}
 .chat-picker .chat-modal-list{padding:0 10px 8px;}
 .chat-title{display:flex;align-items:center;gap:10px;}
+.chat-prow .chat-rmenu-btn{opacity:1!important;}
+.chat-icon-btn.off{opacity:.45;}
+.chat-modal-back .chat-picker-search input,
+.chat-modal-back .chat-picker-search input:focus,
+.chat-modal-back .chat-picker-search input:focus-visible{outline:none!important;box-shadow:none!important;border:0!important;background:transparent!important;}
+.chat-picker-plus{flex:none;width:34px;height:34px;border-radius:10px;border:0;background:#34d399;color:#052e1c;font-size:20px;font-weight:700;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.chat-picker-plus:disabled{opacity:.4;cursor:default;}
+.bs-chat-toast{display:flex;flex-direction:column;gap:6px;width:330px;max-width:calc(100vw - 24px);padding:10px 12px;border-radius:12px;background:#ffffff;color:#0d1f17;border:1px solid rgba(13,31,23,.12);box-shadow:0 12px 30px -12px rgba(0,0,0,.35);}
+html.theme-dark .bs-chat-toast{background:#1d2633;color:#e5ecf6;border-color:rgba(255,255,255,.1);box-shadow:0 12px 30px -12px rgba(0,0,0,.7);}
+.bs-chat-head{display:flex;align-items:center;gap:8px;}
+.bs-chat-av{width:26px;height:26px;border-radius:8px;flex:none;background:linear-gradient(135deg,#34d399,#0ea5e9);color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;}
+.bs-chat-title{flex:1;min-width:0;background:none;border:0;padding:0;text-align:left;font:inherit;font-size:14px;font-weight:700;color:inherit;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.bs-chat-ago{color:#8a94a6;font-size:12px;white-space:nowrap;}
+.bs-chat-x{flex:none;width:22px;height:22px;border-radius:6px;border:0;background:transparent;color:#8a94a6;font-size:18px;line-height:1;cursor:pointer;}
+.bs-chat-x:hover{background:rgba(127,127,127,.15);color:inherit;}
+.bs-chat-body{background:none;border:0;padding:0 0 0 34px;text-align:left;font:inherit;font-size:14px;line-height:1.4;color:inherit;cursor:pointer;word-break:break-word;}
+.bs-chat-toast .bs-reply{padding-left:0;margin-top:2px;}
+.bs-chat-toast{width:340px;}
+.bs-chat-who{flex:1;min-width:0;display:flex;flex-direction:column;}
+.bs-chat-sub{font-size:11px;color:#8a94a6;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.bs-chat-time{display:flex;flex-direction:column;align-items:flex-end;color:#8a94a6;line-height:1.2;white-space:nowrap;}
+.bs-chat-time b{color:inherit;font-weight:600;font-size:12px;}
+.bs-chat-time small{font-size:11px;}
+img.bs-chat-av{object-fit:cover;}
+.bs-chat-body{padding:0;}
+.nt-row{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.nt-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid rgba(2,44,34,.08);}
+.nt-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.nt-switch{position:relative;width:44px;height:24px;border-radius:999px;border:0;background:#cbd5d1;cursor:pointer;flex:none;transition:background .15s ease;}
+.nt-switch::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .15s ease;}
+.nt-switch.on{background:#34d399;}
+.nt-switch.on::after{transform:translateX(20px);}
+.bs-reply{display:flex;gap:6px;margin-top:8px;width:100%;}
+.bs-reply input{flex:1;min-width:0;height:34px;border-radius:10px;border:1px solid rgba(2,44,34,.18);background:#fff;color:#022c22;padding:0 10px;font:inherit;font-size:13px;outline:none;}
+.bs-reply input:focus{border-color:#34d399;box-shadow:0 0 0 3px rgba(52,211,153,.18);}
+.bs-reply button{height:34px;padding:0 12px;border-radius:10px;border:0;background:#34d399;color:#052e1c;font:inherit;font-size:13px;font-weight:700;cursor:pointer;}
+.bs-reply button:disabled{opacity:.45;cursor:default;}
 .chat-title .brand-lockup{min-width:0;}
 .chat-title .brand-tile{width:32px;height:32px;flex:none;overflow:hidden;}
 .chat-title .brand-tile.brand-tile-custom{background-image:none!important;background-color:var(--brand-bg)!important;color:var(--brand-fg)!important;box-shadow:0 4px 16px -4px var(--brand-glow)!important;}
@@ -5906,14 +5947,69 @@ function Switch({ on, onToggle, disabled }) {
 /* Bootstrap-alert-styled toast: stacks bottom-right, auto-dismisses, closeable by hand.
    Yopilishda (qo'lda yoki avtomatik) avval chiqish animatsiyasi ishlaydi, keyingina
    ro'yxatdan olib tashlanadi — shu bilan alert "sakrab" yo'qolib qolmaydi. */
+const chatUserKey = (base, username) => base + '_' + (username || 'anon');
+const chatAgo = (ts) => {
+  const m = Math.floor((Date.now() - ts) / 60000);
+  if (m < 1) return 'hozir';
+  if (m < 60) return m + ' daq oldin';
+  const h = Math.floor(m / 60);
+  if (h < 24) return h + ' soat oldin';
+  return Math.floor(h / 24) + ' kun oldin';
+};
+/* Yangi xabar toasti: sarlavha (avatar, ism, vaqt, yopish), matn (bosilsa chat ochiladi) va javob maydoni */
+function ChatToast({ toast, onDismiss }) {
+  const [, setTick] = useState(0);
+  useEffect(() => { const t = setInterval(() => setTick((n) => n + 1), 30000); return () => clearInterval(t); }, []);
+  const open = () => { if (toast.onOpen) toast.onOpen(); onDismiss(); };
+  const at = new Date(toast.at || Date.now());
+  const hm = String(at.getHours()).padStart(2, '0') + ':' + String(at.getMinutes()).padStart(2, '0');
+  return (
+    <div className="bs-chat-toast" role="alert">
+      <div className="bs-chat-head">
+        {toast.avatar
+          ? <img className="bs-chat-av" src={toast.avatar} alt="" />
+          : <span className="bs-chat-av">{chatInitials(toast.title)}</span>}
+        <div className="bs-chat-who">
+          <button type="button" className="bs-chat-title" onClick={open}>{toast.title}</button>
+          {toast.group && <small className="bs-chat-sub">{toast.group}</small>}
+        </div>
+        <div className="bs-chat-time"><b>{hm}</b><small>{chatAgo(toast.at || Date.now())}</small></div>
+        <button type="button" className="bs-chat-x" aria-label="Yopish" onClick={onDismiss}>×</button>
+      </div>
+      <button type="button" className="bs-chat-body" onClick={open}>{toast.body}</button>
+      {toast.onReply && <ToastReply onSend={(b) => { toast.onReply(b); onDismiss(); }} />}
+    </div>
+  );
+}
+
+/* Chatdan tashqarida ham chatni ochish: ChatPage pending suhbatni oladi */
+function chatOpenConv(cid) {
+  window.__chatPendingOpen = cid;
+  window.dispatchEvent(new Event('chat-open'));
+}
+
+function ToastReply({ onSend }) {
+  const [v, setV] = useState('');
+  const submit = (e) => { e.preventDefault(); const t = v.trim(); if (t) onSend(t); };
+  return (
+    <form className="bs-reply" onSubmit={submit}>
+      <input type="text" value={v} maxLength={4000} placeholder="Javob yozing…" autoComplete="off"
+        onChange={(e) => setV(e.target.value)} onKeyDown={(e) => e.stopPropagation()} />
+      <button type="submit" disabled={!v.trim()}>Yuborish</button>
+    </form>
+  );
+}
+
 function BsAlert({ toast, onDismiss }) {
   const [closing, setClosing] = useState(false);
   const close = () => setClosing(true);
   useEffect(() => {
     if (closing) { const t = setTimeout(onDismiss, 190); return () => clearTimeout(t); }
+    if (toast.chat) return undefined;
     const t = setTimeout(close, 4000);
     return () => clearTimeout(t);
   }, [closing]);
+  if (toast.chat) return <ChatToast toast={toast} onDismiss={onDismiss} />;
   const variant = toast.variant || 'success';
   /* Icon obyekti pastroqda e'lon qilingani uchun mosligini shu yerda, chaqirilganda hisoblaymiz
      (modul yuklanayotganda emas) — aks holda "Icon aniqlanmagan" xatoligi butun ilovani to'xtatib qo'yadi. */
@@ -5922,7 +6018,7 @@ function BsAlert({ toast, onDismiss }) {
   return (
     <div className={`bs-alert bs-alert-${variant} ${closing ? 'bs-alert-out' : ''}`} role="alert">
       <span className="bs-alert-icon-chip"><VariantIcon width="13" height="13" /></span>
-      <span className="bs-alert-text">{toast.text}</span>
+      <span className="bs-alert-text">{toast.text}{toast.onReply && <ToastReply onSend={(b) => { toast.onReply(b); onDismiss(); }} />}</span>
       <button type="button" className="bs-alert-close" aria-label="Yopish" onClick={close}>
         <Icon.close width="11" height="11" />
       </button>
@@ -7002,6 +7098,7 @@ const ChatIcon = {
   bubble: (p) => (<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" {...p}><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1.1-4.2A8 8 0 1 1 21 12z"/></svg>),
   plus: (p) => (<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" {...p}><path d="M12 5v14M5 12h14"/></svg>),
   more: (p) => (<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" {...p}><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>),
+  bell: (p) => (<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>),
   clip: (p) => (<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M21.44 11.05 12.25 20.2a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>),
   search: (p) => (<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" {...p}><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>),
   logout: (p) => (<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>),
@@ -7273,69 +7370,73 @@ function ChatRow({ conv, meId, active, onOpen, onHide }) {
 const ROLE_LABEL = { ceo: 'CEO', ceo_support: 'CEO Support', admin: 'Admin', admin_teacher: 'Admin o‘qituvchi', teacher: 'O‘qituvchi', support: 'Support', staff: 'Xodim', student: 'Talaba' };
 const chatRoleLabel = (r) => ROLE_LABEL[r] || r || 'Xodim';
 
-/* Har bir kontakt uchun amallar: yashirish va suhbatni o'chirish (tasdiq bilan) */
-function ChatRowMenu({ onHide, onDelete }) {
+/* Har bir kontakt uchun amallar: yashirish, bildirishnomani cheklash va suhbatni o'chirish (tasdiq bilan). */
+function ChatRowMenu({ onHide, onDelete, onMute, muted }) {
   const [open, setOpen] = useState(false);
   const [confirm, setConfirm] = useState(false);
   const [pos, setPos] = useState({ top: 0, left: 0 });
+  const close = () => { setOpen(false); setConfirm(false); };
   useEffect(() => {
     if (!open) return undefined;
-    const close = () => { setOpen(false); setConfirm(false); };
-    const onDown = (e) => { if (!e.target.closest || !e.target.closest('.chat-rmenu, .chat-rmenu-btn')) close(); };
     const onKey = (e) => { if (e.key === 'Escape') close(); };
-    document.addEventListener('mousedown', onDown);
-    document.addEventListener('keydown', onKey);
-    window.addEventListener('resize', close);
-    window.addEventListener('scroll', close, true);
-    return () => {
-      document.removeEventListener('mousedown', onDown);
-      document.removeEventListener('keydown', onKey);
-      window.removeEventListener('resize', close);
-      window.removeEventListener('scroll', close, true);
-    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
   }, [open]);
+  const stop = (e) => { e.stopPropagation(); };
   const toggle = (e) => {
     e.stopPropagation();
-    if (open) { setOpen(false); setConfirm(false); return; }
+    e.preventDefault();
+    if (open) { close(); return; }
     const r = e.currentTarget.getBoundingClientRect();
-    setPos({ top: r.bottom + 6, left: Math.max(8, Math.min(r.right - 220, window.innerWidth - 230)) });
+    const h = 180;
+    const below = r.bottom + 6;
+    const top = below + h > window.innerHeight ? Math.max(8, r.top - h - 6) : below;
+    setPos({ top: top, left: Math.max(8, Math.min(r.right - 230, window.innerWidth - 240)) });
     setOpen(true);
   };
   return (
     <React.Fragment>
       <button type="button" className="chat-row-act chat-rmenu-btn" title="Amallar" aria-label="Amallar"
-        aria-haspopup="menu" aria-expanded={open} onClick={toggle}><ChatIcon.more /></button>
+        aria-haspopup="menu" aria-expanded={open} onMouseDown={stop} onClick={toggle}><ChatIcon.more /></button>
       {open && ReactDOM.createPortal(
-        <div className="chat-rmenu" role="menu" style={{ top: pos.top, left: pos.left }} onClick={(e) => e.stopPropagation()}>
-          {!confirm && (
-            <React.Fragment>
-              <button type="button" role="menuitem" className="chat-rmenu-item" onClick={() => { setOpen(false); onHide(); }}>
-                <ChatIcon.eyeOff /> Yashirish
-              </button>
-              {onDelete && (
-                <button type="button" role="menuitem" className="chat-rmenu-item danger" onClick={() => setConfirm(true)}>
-                  <ChatIcon.trash /> Suhbatni o‘chirish
+        <React.Fragment>
+          <div className="chat-rmenu-back" onMouseDown={(e) => { e.stopPropagation(); close(); }} onClick={stop} />
+          <div className="chat-rmenu" role="menu" style={{ top: pos.top, left: pos.left }} onMouseDown={stop} onClick={stop}>
+            {!confirm && (
+              <React.Fragment>
+                <button type="button" role="menuitem" className="chat-rmenu-item" onClick={() => { close(); onHide(); }}>
+                  <ChatIcon.eyeOff /> Yashirish
                 </button>
-              )}
-            </React.Fragment>
-          )}
-          {confirm && (
-            <div className="chat-rmenu-confirm">
-              <span>Suhbat barcha xabarlari bilan ikkala tomonda ham o‘chadi. Davom etasizmi?</span>
-              <div>
-                <button type="button" className="chat-ok danger" onClick={() => { setOpen(false); setConfirm(false); onDelete(); }}>Ha, o‘chirish</button>
-                <button type="button" className="chat-ok" onClick={() => setConfirm(false)}>Bekor</button>
+                {onMute && (
+                  <button type="button" role="menuitem" className="chat-rmenu-item" onClick={() => { close(); onMute(); }}>
+                    <ChatIcon.bell /> {muted ? 'Bildirishnomani yoqish' : 'Bildirishnomani cheklash'}
+                  </button>
+                )}
+                <button type="button" role="menuitem" className="chat-rmenu-item danger"
+                  disabled={!onDelete} title={onDelete ? '' : 'Bu kontakt bilan hali suhbat yo‘q'}
+                  onClick={() => setConfirm(true)}>
+                  <ChatIcon.trash /> {onDelete ? 'Suhbatni o‘chirish' : 'Suhbat yo‘q'}
+                </button>
+              </React.Fragment>
+            )}
+            {confirm && onDelete && (
+              <div className="chat-rmenu-confirm">
+                <span>Suhbat barcha xabarlari bilan ikkala tomonda ham o‘chadi. Davom etasizmi?</span>
+                <div>
+                  <button type="button" className="chat-ok danger" onClick={() => { close(); onDelete(); }}>Ha, o‘chirish</button>
+                  <button type="button" className="chat-ok" onClick={() => setConfirm(false)}>Bekor</button>
+                </div>
               </div>
-            </div>
-          )}
-        </div>,
+            )}
+          </div>
+        </React.Fragment>,
         document.body
       )}
     </React.Fragment>
   );
 }
 
-function ChatPersonRow({ u, conv, active, onOpen, onHide, onDelete }) {
+function ChatPersonRow({ u, conv, active, onOpen, onHide, onDelete, onMute, muted }) {
   const last = conv ? conv.last_message : null;
   const time = last ? chatListTime(last.created_at) : '';
   return (
@@ -7349,7 +7450,7 @@ function ChatPersonRow({ u, conv, active, onOpen, onHide, onDelete }) {
       <span className="chat-prow-end">
         {time && <small className="chat-row-time">{time}</small>}
         {conv && conv.unread > 0 && <em className="chat-badge">{conv.unread > 99 ? '99+' : conv.unread}</em>}
-        {onHide && <ChatRowMenu onHide={onHide} onDelete={onDelete} />}
+        {onHide && <ChatRowMenu onHide={onHide} onDelete={onDelete} onMute={onMute} muted={muted} />}
       </span>
     </div>
   );
@@ -7425,9 +7526,12 @@ function ChatUserPicker({ users, directs, generalExists, onClose, onPick, onOpen
         </div>
         <div className="chat-picker-search">
           <ChatIcon.search width="18" height="18" />
-          <input autoFocus placeholder="Ism, login yoki lavozim bo‘yicha qidiring…" value={q}
-            onChange={(e) => { setQ(e.target.value); setCur(0); }} />
+          <input type="text" autoFocus autoComplete="off" spellCheck={false} placeholder="Qidirish…" value={q}
+            onChange={(e) => { setQ(e.target.value); setCur(0); }}
+            onKeyDown={(e) => { if (['ArrowDown', 'ArrowUp', 'Enter', 'Escape'].indexOf(e.key) === -1) e.stopPropagation(); }} />
           {q && <button type="button" className="chat-clear" onClick={() => { setQ(''); setCur(0); }} aria-label="Tozalash">×</button>}
+          <button type="button" className="chat-picker-plus" disabled={!items[cursor]} onClick={() => choose(items[cursor])}
+            title="Tanlangan xodim bilan suhbat" aria-label="Tanlangan xodim bilan suhbat">+</button>
         </div>
         <div className="chat-modal-list" role="listbox">
           {items.length === 0 && (
@@ -7453,7 +7557,7 @@ function ChatUserPicker({ users, directs, generalExists, onClose, onPick, onOpen
 const CHAT_MAX_FILE = 500 * 1024;
 const chatFmtSize = (n) => (n < 1024 ? n + ' B' : n < 1048576 ? Math.round(n / 1024) + ' KB' : (n / 1048576).toFixed(1) + ' MB');
 
-function ChatPage({ notify, appMe, onOpenProfile, isStudent, brand }) {
+function ChatPage({ notify, appMe, onOpenProfile, isStudent, brand, canMute }) {
   /* Ilova akkaunti bilan avtomatik kirish: appMe berilgan bo'lsa, token faqat shu akkaunt uchun olinadi */
   const [token, setToken] = useState(() => { if (appMe) return ''; try { return localStorage.getItem(CHAT_TOKEN_KEY) || ''; } catch (e) { return ''; } });
   const [autoFailed, setAutoFailed] = useState(false);
@@ -7474,6 +7578,20 @@ function ChatPage({ notify, appMe, onOpenProfile, isStudent, brand }) {
   const [showHidden, setShowHidden] = useState(false);
   const [chatTab, setChatTab] = useState('staff');
   useEffect(() => { window.__chatActiveId = activeId; }, [activeId]);
+  /* Toastdan bosilganda shu suhbat ochiladi (suhbat ro'yxati yuklangach ham) */
+  useEffect(() => {
+    const tryOpen = () => {
+      const p = window.__chatPendingOpen;
+      if (p && convsRef.current.some((c) => c.id === p)) { window.__chatPendingOpen = null; setActiveId(p); }
+    };
+    tryOpen();
+    window.addEventListener('chat-open', tryOpen);
+    return () => window.removeEventListener('chat-open', tryOpen);
+  }, []);
+  useEffect(() => {
+    const p = window.__chatPendingOpen;
+    if (p && convs.some((c) => c.id === p)) { window.__chatPendingOpen = null; setActiveId(p); }
+  }, [convs]);
   const [typingMap, setTypingMap] = useState({});
   const [replyTo, setReplyTo] = useState(null);
   const [emojiOpen, setEmojiOpen] = useState(false);
@@ -7481,8 +7599,8 @@ function ChatPage({ notify, appMe, onOpenProfile, isStudent, brand }) {
   const [newBelow, setNewBelow] = useState(0);
   const [flashId, setFlashId] = useState(null);
   const [copiedId, setCopiedId] = useState(null);
-  const [pendingFile, setPendingFile] = useState(null);
-  const fileRef = useRef(null);
+  const [muteTick, setMuteTick] = useState(0);
+  const [toastOn, setToastOn] = useState(() => loadLS(chatUserKey('chat_toast', appMe && appMe.username), true) !== false);
 
   /* Hodisa ishlovchilari (WebSocket) eski closure'da qolmasligi uchun holat ref'lar orqali o'qiladi */
   const tokenRef = useRef(token); tokenRef.current = token;
@@ -7773,6 +7891,20 @@ function ChatPage({ notify, appMe, onOpenProfile, isStudent, brand }) {
       .catch(() => { prependRef.current = null; });
   };
 
+  const muteStoreKey = chatUserKey('chat_muted', appMe && appMe.username);
+  const mutedList = loadLS(muteStoreKey, []);
+  const isMutedConv = (c) => mutedList.some((x) => x.key === (c.kind === 'group' ? 'g' : 'c') + c.id);
+  const toggleMute = (c) => {
+    const k = (c.kind === 'group' ? 'g' : 'c') + c.id;
+    const cur = loadLS(muteStoreKey, []);
+    const next = cur.some((x) => x.key === k)
+      ? cur.filter((x) => x.key !== k)
+      : cur.concat([{ key: k, name: chatConvName(c), avatar: c.kind === 'direct' && c.other ? c.other.avatar : null }]);
+    saveLS(muteStoreKey, next);
+    setMuteTick((t) => t + 1);
+    if (notify) notify(chatConvName(c) + (next.some((x) => x.key === k) ? ': bildirishnoma cheklandi' : ': bildirishnoma yoqildi'), 'info');
+  };
+
   const removeConvLocal = (id) => {
     setConvs((prev) => prev.filter((c) => c.id !== id));
     setMsgs((prev) => { const n = Object.assign({}, prev); delete n[id]; return n; });
@@ -7781,20 +7913,16 @@ function ChatPage({ notify, appMe, onOpenProfile, isStudent, brand }) {
 
   const deleteConv = (id) => {
     if (!id) return;
+    const list = convsRef.current.filter((c) => c.kind === 'direct');
+    const idx = list.findIndex((c) => c.id === id);
+    const next = idx === -1 ? null : (list[idx + 1] || list[idx - 1] || null);
     chatApi('/conversations/' + id, { method: 'DELETE', token: tokenRef.current })
-      .then(() => { removeConvLocal(id); if (notify) notify('Suhbat o‘chirildi'); })
+      .then(() => {
+        removeConvLocal(id);
+        if (next) setActiveId(next.id);
+        if (notify) notify('Suhbat o‘chirildi');
+      })
       .catch(() => { if (notify) notify('O‘chirib bo‘lmadi', 'danger'); });
-  };
-
-  const onPickFile = (e) => {
-    const f = e.target.files && e.target.files[0];
-    e.target.value = '';
-    if (!f) return;
-    if (f.size > CHAT_MAX_FILE) { if (notify) notify('Fayl 500 KB dan katta bo‘lmasin', 'danger'); return; }
-    const r = new FileReader();
-    r.onload = () => setPendingFile({ name: f.name, type: f.type || 'application/octet-stream', size: f.size, data: r.result });
-    r.onerror = () => { if (notify) notify('Faylni o‘qib bo‘lmadi', 'danger'); };
-    r.readAsDataURL(f);
   };
 
   /* Xabar yuborish: avval darhol ko'rsatiladi (optimistik), keyin server tasdiqlaydi */
@@ -7805,7 +7933,7 @@ function ChatPage({ notify, appMe, onOpenProfile, isStudent, brand }) {
     }));
     return chatApi('/conversations/' + convId + '/messages', {
       method: 'POST', token: tokenRef.current,
-      body: { body: tmp.body, client_id: tmp.client_id, reply_to: tmp.reply_to || undefined, attachment: tmp.attachment || undefined },
+      body: { body: tmp.body, client_id: tmp.client_id, reply_to: tmp.reply_to || undefined },
     }).then((real) => {
       patchMsgs(convId, (e) => ({ items: chatUpsert(e.items, real), hasMore: e.hasMore }));
       patchConv(convId, (c) => (c.last_message && c.last_message.client_id === tmp.client_id
@@ -7822,16 +7950,15 @@ function ChatPage({ notify, appMe, onOpenProfile, isStudent, brand }) {
   const send = () => {
     const convId = activeRef.current;
     const text = draft.trim();
-    const att = pendingFile;
-    if ((!text && !att) || !convId || !meRef.current) return;
+    if (!text || !convId || !meRef.current) return;
     const clientId = 'c-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8);
     const tmp = {
       id: clientId, client_id: clientId, conversation_id: convId,
-      sender_id: meRef.current.id, body: text, attachment: att || null, created_at: new Date().toISOString(),
+      sender_id: meRef.current.id, body: text, created_at: new Date().toISOString(),
       reply_to: replyTo ? replyTo.id : null,
       reply: replyTo ? { id: replyTo.id, sender_id: replyTo.sender_id, body: replyTo.deleted_at ? '' : String(replyTo.body).slice(0, 160), deleted: !!replyTo.deleted_at } : null,
     };
-    setDraft(''); setPendingFile(null); setReplyTo(null); setEmojiOpen(false);
+    setDraft(''); setReplyTo(null); setEmojiOpen(false);
     atBottomRef.current = true;
     patchConv(convId, (c) => Object.assign({}, c, { last_message: tmp, updated_at: tmp.created_at }));
     postTmp(convId, tmp);
@@ -7978,7 +8105,7 @@ function ChatPage({ notify, appMe, onOpenProfile, isStudent, brand }) {
       {rows.map(({ u, conv }) => (
         <ChatPersonRow key={'p' + u.id} u={u} conv={conv} active={!!conv && conv.id === activeId}
           onOpen={() => (conv ? setActiveId(conv.id) : openWith(u.id))}
-          onHide={() => setHidden(u.id, true)} onDelete={conv ? () => deleteConv(conv.id) : null} />
+          onHide={() => setHidden(u.id, true)} onDelete={conv ? () => deleteConv(conv.id) : null} onMute={conv && canMute ? () => toggleMute(conv) : null} muted={!!conv && isMutedConv(conv)} />
       ))}
       {hiddenList.length > 0 && (
         <React.Fragment>
@@ -8125,6 +8252,10 @@ function ChatPage({ notify, appMe, onOpenProfile, isStudent, brand }) {
             <span className={'chat-conn' + (wsOnline ? ' on' : '')} title={wsOnline ? 'Real vaqt: ulangan' : 'Ulanmoqda…'} />
           </div>
           <div className="chat-side-actions">
+            <button type="button" className={'chat-icon-btn' + (toastOn ? '' : ' off')}
+              onClick={() => { const v = !toastOn; setToastOn(v); saveLS(chatUserKey('chat_toast', appMe && appMe.username), v); if (notify) notify(v ? 'Chat bildirishnomalari yoqildi' : 'Chat bildirishnomalari o‘chirildi', 'info'); }}
+              title={toastOn ? 'Bildirishnomalar yoqilgan — bosib o‘chiring' : 'Bildirishnomalar o‘chirilgan — bosib yoqing'}
+              aria-label="Bildirishnomalar"><ChatIcon.bell /></button>
             <button type="button" className="chat-icon-btn" onClick={() => setPicker(true)} title="Yangi suhbat" aria-label="Yangi suhbat">
               <ChatIcon.plus />
             </button>
@@ -8228,24 +8359,10 @@ function ChatPage({ notify, appMe, onOpenProfile, isStudent, brand }) {
                 <button type="button" className="chat-icon-btn" onClick={() => setReplyTo(null)} aria-label="Javobni bekor qilish"><ChatIcon.x /></button>
               </div>
             )}
-            {pendingFile && (
-              <div className="chat-replybar">
-                <ChatIcon.clip />
-                <div className="chat-replybar-body">
-                  <b>{pendingFile.name}</b>
-                  <span>{chatFmtSize(pendingFile.size)}</span>
-                </div>
-                <button type="button" className="chat-icon-btn" onClick={() => setPendingFile(null)} aria-label="Faylni olib tashlash"><ChatIcon.x /></button>
-              </div>
-            )}
             <form className="chat-composer" onSubmit={(e) => { e.preventDefault(); send(); }}>
               <button type="button" className={'chat-emoji-btn' + (emojiOpen ? ' on' : '')} onClick={() => setEmojiOpen((v) => !v)} aria-label="Emoji" title="Emoji">
                 <ChatIcon.smile />
               </button>
-              <button type="button" className="chat-emoji-btn" onClick={() => fileRef.current && fileRef.current.click()} aria-label="Fayl biriktirish" title="Fayl biriktirish (500 KB gacha)">
-                <ChatIcon.clip />
-              </button>
-              <input ref={fileRef} type="file" style={{ display: 'none' }} onChange={onPickFile} />
               {emojiOpen && (
                 <div className="chat-emoji-pop" role="dialog" aria-label="Emoji tanlash">
                   {CHAT_EMOJIS.map((em) => <button type="button" key={em} onClick={() => insertEmoji(em)}>{em}</button>)}
@@ -8263,7 +8380,7 @@ function ChatPage({ notify, appMe, onOpenProfile, isStudent, brand }) {
                   else if (e.key === 'Escape' && replyTo) { setReplyTo(null); }
                 }}
               />
-              <button type="submit" className="chat-send" disabled={!draft.trim() && !pendingFile} aria-label="Yuborish">
+              <button type="submit" className="chat-send" disabled={!draft.trim()} aria-label="Yuborish">
                 <ChatIcon.send />
               </button>
             </form>
@@ -8303,16 +8420,30 @@ function useChatUnread(appMe, notify) {
     let closed = false;
     let tok = '';
     let myChatId = null;
+    const quickReply = (cid, body) => chatApi('/conversations/' + cid + '/messages', { method: 'POST', token: tok, body: { body: body, client_id: 'q-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7) } })
+      .catch(() => { if (notify) notify('Javob yuborib bo‘lmadi', 'danger'); });
     const refresh = (incoming) => {
       if (!tok) return;
       chatApi('/conversations', { token: tok }).then((list) => {
         if (!alive) return;
         setCount(list.reduce((a, c) => a + (c.unread || 0), 0));
-        if (incoming && notify && incoming.sender_id !== myChatId && window.__chatActiveId !== incoming.conversation_id) {
-          const c = list.find((x) => x.id === incoming.conversation_id);
-          const who = c && c.kind === 'direct' && c.other ? c.other.name : CHAT_GENERAL_TITLE;
-          notify(who + ': ' + String(incoming.body).slice(0, 90), 'info');
-        }
+        if (!incoming || !notify || incoming.sender_id === myChatId) return;
+        if (window.__chatActiveId === incoming.conversation_id) return;
+        const uname = appMe && appMe.username;
+        if (loadLS(chatUserKey('chat_toast', uname), true) === false) return;
+        const c = list.find((x) => x.id === incoming.conversation_id);
+        if (c && loadLS(chatUserKey('chat_muted', uname), []).some((x) => x.key === (c.kind === 'group' ? 'g' : 'c') + c.id)) return;
+        const body = incoming.body ? String(incoming.body).slice(0, 200) : 'Fayl yuborildi';
+        const show = (title, avatar, group) => notify('', 'info', {
+          chat: true, title: title, avatar: avatar || null, group: group || null, at: Date.now(), body: body,
+          onReply: (b) => quickReply(incoming.conversation_id, b),
+          onOpen: () => chatOpenConv(incoming.conversation_id),
+        });
+        if (c && c.kind === 'direct' && c.other) { show(c.other.name, c.other.avatar, null); return; }
+        chatApi('/users', { token: tok }).then((us) => {
+          const su = (us || []).find((u) => u.id === incoming.sender_id);
+          show(su ? su.name : 'Xodim', su ? su.avatar : null, CHAT_GENERAL_TITLE);
+        }).catch(() => show('Xodim', null, CHAT_GENERAL_TITLE));
       }).catch(() => {});
     };
     const connect = () => {
@@ -8376,6 +8507,7 @@ function syncStaffToChat(staff, students) {
 function StaffApp({ me, staff, setStaff, roleTpl, setRoleTpl, categories, setCategories, students, setStudents, onLogout, notify, brand }) {
   const [page, setPage] = useState('overview');
   const chatUnread = useChatUnread(me, notify);
+  useEffect(() => { const f = () => setPage('chat'); window.addEventListener('chat-open', f); return () => window.removeEventListener('chat-open', f); }, []);
   /* Ilovadagi xodim va talabalar chat ro'yxatiga sinxronlanadi */
   useEffect(() => { chatEnsureSession(me).then((t) => { if (t) syncStaffToChat(staff, students); }); }, [me.id, staff, students]);
   const [editingStudentId, setEditingStudentId] = useState(null);
@@ -8544,11 +8676,11 @@ function StaffApp({ me, staff, setStaff, roleTpl, setRoleTpl, categories, setCat
             onSave={(upd, opts) => { setStudents(students.map((s) => (s.id === upd.id ? upd : s))); notify((opts && opts.message) || 'O\'quvchi ma\'lumotlari saqlandi', opts && opts.variant); }} />
         )}
 
-        {curPage === 'chat' && <ChatPage notify={notify} appMe={me} brand={brand} onOpenProfile={() => setPage('profile')} />}
+        {curPage === 'chat' && <ChatPage notify={notify} appMe={me} brand={brand} canMute={can('chat.notify')} onOpenProfile={() => setPage('profile')} />}
 
         {curPage === 'staff' && <StaffPage me={me} staff={staff} setStaff={setStaff} roleTpl={roleTpl} notify={notify} onGoPerms={() => goTo('permissions')} />}
 
-        {curPage === 'profile' && <StaffProfile me={me} staff={staff} setStaff={setStaff} notify={notify} onLogout={onLogout} canBrand={canBrand} brand={brand} onSaveBrand={saveBrand} />}
+        {curPage === 'profile' && <StaffProfile me={me} staff={staff} setStaff={setStaff} notify={notify} onLogout={onLogout} canBrand={canBrand} brand={brand} onSaveBrand={saveBrand} canMute={can('chat.notify')} />}
           </div>
         </main>
       </div>
@@ -12226,6 +12358,7 @@ const PERM_GROUPS = [
   { id: 'payments', label: "To'lovlar", items: [['payments.view', "Ko'rish", "Moliya markazi, holat va tranzaksiyalar"], ['payments.edit', 'Boshqarish', "To'lov qabul qilish, bekor qilish va qarzdorlarga eslatma"]] },
   { id: 'blocked', label: 'Bloklanganlar', items: [['blocked.view', "Ko'rish", "Bloklangan o'quvchilar va sabablari"]] },
   { id: 'staff', label: 'Xodimlar', items: [['staff.view', "Ko'rish", "Jamoa ro'yxati"], ['staff.manage', 'Boshqarish', "Xodim qo'shish, tahrirlash, o'chirish (CEO'ni tahrirlab bo'lmaydi)"]] },
+  { id: 'chat', label: 'Chat', items: [['chat.notify', 'Bildirishnomalarni cheklash', 'Kontaktlar bo‘yicha chat bildirishnomalarini o‘chirish yoki cheklash']] },
   { id: 'branding', label: 'Brend', items: [['branding.edit', 'Boshqarish', "Sidebar logotipi, nomi va ikonka foni (Profil → Brend sozlamalari). Odatda faqat CEO"]] },
 ];
 const ALL_PERMS = PERM_GROUPS.flatMap((g) => g.items.map((i) => i[0]));
@@ -12597,7 +12730,42 @@ function BrandSettings({ brand, onSave, notify }) {
   );
 }
 
-function StaffProfile({ me, staff, setStaff, notify, onLogout, canBrand, brand, onSaveBrand }) {
+function ChatNotifyCard({ username, canMute }) {
+  const [on, setOn] = useState(() => loadLS(chatUserKey('chat_toast', username), true) !== false);
+  const [muted, setMuted] = useState(() => loadLS(chatUserKey('chat_muted', username), []));
+  const toggle = () => { const v = !on; setOn(v); saveLS(chatUserKey('chat_toast', username), v); };
+  const unmute = (key) => {
+    const next = muted.filter((x) => x.key !== key);
+    setMuted(next);
+    saveLS(chatUserKey('chat_muted', username), next);
+  };
+  return (
+    <div className="bg-card border border-line rounded-xl p-5 mt-4 space-y-3">
+      <h3 className="font-semibold text-ink text-sm">Bildirishnomalar</h3>
+      <div className="nt-row">
+        <div>
+          <div className="text-sm text-ink">Chat xabarlari haqida bildirishnoma</div>
+          <small className="text-slate">Yangi xabar kelganda ekranning pastki o‘ng burchagida chiqadi</small>
+        </div>
+        <button type="button" className={'nt-switch' + (on ? ' on' : '')} onClick={toggle} aria-pressed={on} aria-label="Chat bildirishnomalari" />
+      </div>
+      <div>
+        <div className="text-xs font-semibold text-slate uppercase tracking-wide">Cheklangan kontaktlar ({muted.length})</div>
+        {muted.length === 0 && <p className="text-sm text-slate mt-1">Hozircha cheklangan kontakt yo‘q. Chatda kontaktning ⋯ menyusidan cheklashingiz mumkin.</p>}
+        {muted.map((x) => (
+          <div key={x.key} className="nt-item">
+            <ChatAvatar name={x.name} src={x.avatar} general={x.key[0] === 'g'} />
+            <span className="text-sm text-ink nt-name">{x.name}</span>
+            <button type="button" className="text-xs px-3 py-1 rounded-lg border border-line" onClick={() => unmute(x.key)}>Yoqish</button>
+          </div>
+        ))}
+      </div>
+      {!canMute && <p className="text-xs text-slate">Kontaktlarni cheklash uchun “Chat · Bildirishnomalarni cheklash” ruxsati kerak.</p>}
+    </div>
+  );
+}
+
+function StaffProfile({ me, staff, setStaff, notify, onLogout, canBrand, brand, onSaveBrand, canMute }) {
   const stored = staff.find((u) => u.id === me.id) || me;
   const isCeo = me.role === 'ceo';
   const fileRef = useRef(null);
@@ -12884,6 +13052,7 @@ function StaffProfile({ me, staff, setStaff, notify, onLogout, canBrand, brand, 
 
         {/* ---------- BREND (12, faqat CEO / branding.edit) ---------- */}
         {canBrand && brand && <BrandSettings brand={brand} onSave={onSaveBrand} notify={notify} />}
+        <ChatNotifyCard username={me.username} canMute={canMute} />
 
         {/* ---------- RUXSATLAR (12) ---------- */}
         <section className="pb-card span-12">
@@ -12995,6 +13164,7 @@ function StudentApp({ me, staff, categories, students, setStudents, onLogout, no
   const [page, setPage] = useState('home');
   const chatMe = { ...me, role: 'student' };
   const chatUnread = useChatUnread(chatMe, notify);
+  useEffect(() => { const f = () => setPage('chat'); window.addEventListener('chat-open', f); return () => window.removeEventListener('chat-open', f); }, []);
   useEffect(() => { chatEnsureSession(chatMe).then((t) => { if (t) syncStaffToChat(staff || [], students); }); }, [me.id, staff, students]);
   const [catId, setCatId] = useState(null);
   const [subId, setSubId] = useState(null);
@@ -13133,7 +13303,7 @@ function StudentApp({ me, staff, categories, students, setStudents, onLogout, no
       <main className="max-w-6xl mx-auto px-6 py-8">
         <PaymentNotice bill={bill} />
         {page === 'profile' && <StudentProfile student={student} onSave={(u) => { setStudent(u); notify('Profil yangilandi'); }} />}
-        {page === 'chat' && <ChatPage notify={notify} appMe={chatMe} isStudent brand={brand} onOpenProfile={() => setPage('profile')} />}
+        {page === 'chat' && <ChatPage notify={notify} appMe={chatMe} isStudent brand={brand} canMute onOpenProfile={() => setPage('profile')} />}
 
         {page === 'home' && !catId && (
           <div>
@@ -14277,6 +14447,7 @@ function StudentProfile({ student, onSave }) {
         ))}
         <button onClick={() => onSave(form)} className="bg-forest text-white text-sm px-4 py-2 rounded-lg">Saqlash</button>
       </div>
+      <ChatNotifyCard username={student.username} canMute />
 
       <div className="bg-card border border-line rounded-xl p-5 mt-4 space-y-3">
         <h3 className="font-semibold text-ink text-sm">Parolni o'zgartirish</h3>
@@ -14801,7 +14972,7 @@ function App() {
   useEffect(() => { guardedSaveLS('students', students, "O'quvchilar"); }, [students]);
   useEffect(() => { saveLS('session', session); }, [session]);
 
-  const notify = (text, variant) => setToasts((list) => [...list, { id: uid('toast'), text, variant }]);
+  const notify = (text, variant, extra) => setToasts((list) => [...list, Object.assign({ id: uid('toast'), text, variant }, extra || {})]);
   const dismissToast = (id) => setToasts((list) => list.filter((t) => t.id !== id));
 
   const loginStudent = (username, password) => {
