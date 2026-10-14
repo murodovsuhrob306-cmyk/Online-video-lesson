@@ -4273,6 +4273,67 @@ html:not(.theme-dark) .chat-root{background:linear-gradient(180deg,#ffffff,#f7fb
   .chat-side{width:270px;flex-basis:270px;}
 }
 </style>
+<style id="edu-chat-v10">
+/* ===== Chat v10: yangi tuzilish (tab + PROFILLAR ro'yxati + markaziy bo'sh holat), qorong'i palitra ===== */
+html .chat-root.chat-root{--cc-side:#1b2433;--cc-chat:#1f2a3c;--cc-ink:#e6ecf5;--cc-mut:#8795aa;--cc-line:rgba(255,255,255,.08);--cc-hover:rgba(255,255,255,.05);--cc-active:rgba(26,115,232,.2);--cc-other:#2b3649;--cc-own-a:#2f86ff;--cc-own-b:#1a6ee0;--cc-own-ink:#ffffff;--cc-accent:#2f86ff;--cc-read:#7cc4ff;
+  background:#1b2433;color:var(--cc-ink);box-shadow:0 26px 50px -30px rgba(0,0,0,.7);border-color:rgba(255,255,255,.07);}
+html .chat-modal-back.chat-modal-back{--cc-side:#1b2433;--cc-chat:#1f2a3c;--cc-ink:#e6ecf5;--cc-mut:#8795aa;--cc-line:rgba(255,255,255,.08);--cc-hover:rgba(255,255,255,.05);--cc-active:rgba(26,115,232,.2);--cc-accent:#2f86ff;}
+.chat-root .chat-main::before{background:none;}
+.chat-root .chat-main{background:#1e2838;}
+.chat-root .chat-side{background:#1b2433;border-right:1px solid rgba(255,255,255,.07);width:300px;flex-basis:300px;}
+.chat-root .chat-side-head{padding:14px 16px 6px 16px;}
+.chat-root .chat-title{font-size:17px;font-weight:700;}
+.chat-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:8px 12px 10px;}
+.chat-tab{height:34px;border:0;border-radius:10px;background:#2a3547;color:#c8d2e0;font:inherit;font-size:12.5px;font-weight:600;cursor:pointer;transition:background .15s,box-shadow .15s;}
+.chat-tab:hover:not(.on){background:#334056;}
+.chat-tab.on{background:#1a73e8;color:#fff;box-shadow:0 8px 16px -10px rgba(26,115,232,.95);}
+.chat-root .chat-search{margin:0 12px 10px;height:38px;border-radius:10px;background:#2a3547;border:1px solid rgba(255,255,255,.06);}
+.chat-root .chat-search:focus-within{border-color:#2f86ff;box-shadow:0 0 0 3px rgba(47,134,255,.18);}
+.chat-root .chat-search input{color:#e6ecf5;}
+.chat-root .chat-me{background:#243044;margin:0 12px 10px;}
+.chat-root .chat-sec{padding:14px 12px 6px;color:#7c8aa0;font-size:11px;letter-spacing:.08em;font-weight:700;position:static;background:none;backdrop-filter:none;}
+.chat-root .chat-list{padding:0 8px 12px;}
+.chat-prow{position:relative;display:flex;align-items:center;gap:12px;padding:9px 10px;border-radius:12px;cursor:pointer;margin:0 0 2px;transition:background .15s;}
+.chat-prow:hover{background:var(--cc-hover);}
+.chat-prow.on{background:var(--cc-active);}
+.chat-prow .chat-av{width:42px;height:42px;font-size:13px;}
+.chat-prow-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;}
+.chat-prow-name{font-size:14px;font-weight:700;color:#eef3fa;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.chat-prow-role{font-size:12px;color:#8795aa;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.chat-prow-end{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex:0 0 auto;}
+.chat-prow .chat-row-act{position:static;transform:none;opacity:0;width:26px;height:26px;background:#2a3547;}
+.chat-prow:hover .chat-row-act,.chat-prow .chat-row-act:focus-visible{opacity:1;}
+@media (hover:none){.chat-prow .chat-row-act{opacity:.9;}}
+.chat-root .chat-row{padding:9px 10px;border-radius:12px;}
+.chat-root .chat-row.on{background:var(--cc-active);box-shadow:none;}
+.chat-empty-tab{display:flex;flex-direction:column;align-items:center;gap:6px;padding:34px 16px;text-align:center;color:#8795aa;font-size:12.5px;}
+.chat-empty-tab b{color:#e6ecf5;font-size:14px;}
+.chat-root .chat-placeholder{gap:0;}
+.chat-ph-card{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;padding:24px;}
+.chat-ph-logo{width:96px;height:96px;border-radius:22px;background:#fff;color:#2f86ff;display:flex;align-items:center;justify-content:center;object-fit:cover;box-shadow:0 22px 40px -22px rgba(0,0,0,.7);font-size:34px;font-weight:800;}
+.chat-ph-logo.brand{background:linear-gradient(135deg,#38bdf8,#2563eb);color:#fff;}
+.chat-ph-name{font-size:19px;font-weight:700;color:#eef3fa;margin-top:12px;}
+.chat-ph-role{font-size:13px;color:#8795aa;}
+.chat-ph-icon{width:50px;height:50px;border-radius:50%;background:rgba(26,115,232,.16);color:#4da3ff;display:flex;align-items:center;justify-content:center;margin-top:18px;}
+.chat-ph-title{font-size:15px;font-weight:700;color:#e6ecf5;margin-top:8px;}
+.chat-ph-sub{font-size:12.5px;color:#7c8aa0;max-width:280px;line-height:1.5;}
+.chat-root .chat-msg.mine .chat-bubble{background:linear-gradient(135deg,#2f86ff,#1a6ee0) !important;color:#fff !important;box-shadow:0 10px 22px -14px rgba(26,115,232,.9) !important;}
+.chat-root .chat-msg.mine .chat-meta{color:rgba(255,255,255,.8);}
+.chat-root .chat-msg.mine .chat-sender{color:#fff;}
+.chat-root .chat-edit-save{background:#1a73e8 !important;color:#fff !important;box-shadow:0 8px 16px -10px rgba(26,115,232,.95) !important;}
+.chat-root .chat-send{background:linear-gradient(135deg,#2f86ff,#1a6ee0);box-shadow:0 10px 18px -10px rgba(26,115,232,.95);}
+.chat-root .chat-composer{background:#1b2433;border-top:1px solid rgba(255,255,255,.07);}
+.chat-root .chat-composer textarea{background:#243044;border:1px solid rgba(255,255,255,.06);color:#e6ecf5;}
+.chat-root .chat-composer textarea:focus{border-color:#2f86ff;box-shadow:0 0 0 3px rgba(47,134,255,.18) !important;}
+.chat-root .chat-head{background:#1b2433;border-bottom:1px solid rgba(255,255,255,.07);}
+@media (max-width:640px){
+  .chat-root .chat-side{width:100%;flex-basis:auto;}
+  .chat-tabs{padding:6px 10px 8px;}
+  .chat-prow{padding:10px 8px;}
+}
+.chat-root .chat-search .chat-q,html body .chat-root .chat-search input.chat-q{background:transparent !important;background-color:transparent !important;color:#e6ecf5 !important;box-shadow:none !important;border:0 !important;padding:0 !important;}
+html body .chat-root form.chat-composer textarea{background:#243044 !important;border:1px solid rgba(255,255,255,.07) !important;color:#e6ecf5 !important;}
+</style>
 </head>
 <body>
 <div id="root"></div>
@@ -6856,6 +6917,32 @@ function ChatRow({ conv, meId, active, onOpen, onHide }) {
   );
 }
 
+const ROLE_LABEL = { ceo: 'CEO', ceo_support: 'CEO Support', admin: 'Admin', admin_teacher: 'Admin o‘qituvchi', teacher: 'O‘qituvchi', support: 'Support', staff: 'Xodim' };
+const chatRoleLabel = (r) => ROLE_LABEL[r] || r || 'Xodim';
+
+function ChatPersonRow({ u, conv, active, onOpen, onHide }) {
+  const last = conv ? conv.last_message : null;
+  const time = last ? chatListTime(last.created_at) : '';
+  return (
+    <div role="button" tabIndex={0} className={'chat-prow' + (active ? ' on' : '')} onClick={onOpen}
+      onKeyDown={(e) => { if (e.key === 'Enter') onOpen(); }}>
+      <ChatAvatar name={u.name} online={u.online} src={u.avatar} />
+      <span className="chat-prow-body">
+        <b className="chat-prow-name">{u.name}</b>
+        <span className="chat-prow-role">{chatRoleLabel(u.role)}</span>
+      </span>
+      <span className="chat-prow-end">
+        {time && <small className="chat-row-time">{time}</small>}
+        {conv && conv.unread > 0 && <em className="chat-badge">{conv.unread > 99 ? '99+' : conv.unread}</em>}
+        {onHide && (
+          <button type="button" className="chat-row-act" title="Yashirish" aria-label="Yashirish"
+            onClick={(e) => { e.stopPropagation(); onHide(); }}><ChatIcon.eyeOff /></button>
+        )}
+      </span>
+    </div>
+  );
+}
+
 function ChatUserPicker({ users, directIds, generalExists, onClose, onPick, onOpenGeneral }) {
   const [q, setQ] = useState('');
   const [onlyOnline, setOnlyOnline] = useState(false);
@@ -6950,7 +7037,7 @@ function ChatUserPicker({ users, directIds, generalExists, onClose, onPick, onOp
   );
 }
 
-function ChatPage({ notify }) {
+function ChatPage({ notify, appMe, onOpenProfile }) {
   const [token, setToken] = useState(() => { try { return localStorage.getItem(CHAT_TOKEN_KEY) || ''; } catch (e) { return ''; } });
   const [me, setMe] = useState(null);
   const [users, setUsers] = useState([]);
@@ -6966,32 +7053,7 @@ function ChatPage({ notify }) {
   const [editing, setEditing] = useState(null);
   const [confirmId, setConfirmId] = useState(null);
   const [showHidden, setShowHidden] = useState(false);
-  const avatarInput = useRef(null);
-
-  /* O'z profil rasmini tanlash: kvadratga kesiladi, 160px JPEG qilib serverga yuboriladi */
-  const onPickAvatar = (e) => {
-    const file = e.target.files && e.target.files[0];
-    e.target.value = '';
-    if (!file || !/^image\/(png|jpeg|webp)$/.test(file.type)) {
-      if (notify) notify('Faqat PNG, JPEG yoki WEBP rasm tanlang', 'danger');
-      return;
-    }
-    const url = URL.createObjectURL(file);
-    const img = new Image();
-    img.onload = () => {
-      const S = 160;
-      const c = document.createElement('canvas');
-      c.width = S; c.height = S;
-      const side = Math.min(img.width, img.height);
-      c.getContext('2d').drawImage(img, (img.width - side) / 2, (img.height - side) / 2, side, side, 0, 0, S, S);
-      URL.revokeObjectURL(url);
-      chatApi('/auth/avatar', { method: 'PUT', token: tokenRef.current, body: { avatar: c.toDataURL('image/jpeg', 0.86) } })
-        .then((r) => { setMe(r.user); loadUsers().catch(() => {}); if (notify) notify('Profil rasmi yangilandi', 'success'); })
-        .catch(() => { if (notify) notify('Rasmni saqlab bo‘lmadi', 'danger'); });
-    };
-    img.onerror = () => { URL.revokeObjectURL(url); if (notify) notify('Rasmni o‘qib bo‘lmadi', 'danger'); };
-    img.src = url;
-  };
+  const [chatTab, setChatTab] = useState('staff');
 
   /* Hodisa ishlovchilari (WebSocket) eski closure'da qolmasligi uchun holat ref'lar orqali o'qiladi */
   const tokenRef = useRef(token); tokenRef.current = token;
@@ -7159,6 +7221,16 @@ function ChatPage({ notify }) {
     return () => window.removeEventListener('chat-people', f);
   }, []);
 
+  /* Ilova profili (ism, rasm) o'zgarsa, chat hisobiga ham yoziladi */
+  useEffect(() => {
+    if (!appMe || !me || appMe.username !== me.username) return;
+    const av = appMe.avatar || null;
+    if (appMe.name === me.name && av === (me.avatar || null)) return;
+    chatApi('/auth/profile', { method: 'PUT', token: tokenRef.current, body: { name: appMe.name, avatar: av } })
+      .then((r) => setMe(r.user))
+      .catch(() => {});
+  }, [appMe && appMe.name, appMe && appMe.avatar, me && me.id, me && me.name, me && me.avatar]);
+
   /* Sahifadan chiqilganda ulanishni yopish */
   useEffect(() => () => {
     retryRef.current.closed = true;
@@ -7299,6 +7371,9 @@ function ChatPage({ notify }) {
     );
   }
 
+  const dispName = appMe && appMe.name ? appMe.name : me.name;
+  const dispAvatar = appMe ? (appMe.avatar || null) : (me.avatar || null);
+  const dispRole = appMe ? appMe.role : me.role;
   const active = activeId ? convs.find((c) => c.id === activeId) || null : null;
   const isGroup = !!active && active.kind === 'group';
   const usersById = {};
@@ -7415,57 +7490,66 @@ function ChatPage({ notify }) {
             </button>
           </div>
         </div>
-        <button type="button" className="chat-me" onClick={() => avatarInput.current && avatarInput.current.click()} title="Profil rasmini o‘zgartirish">
-          <ChatAvatar name={me.name} src={me.avatar} online={wsOnline} />
-          <span className="chat-me-body"><b>{me.name}</b><small>@{me.username} · rasmni o‘zgartirish</small></span>
-          <ChatIcon.pencil width="14" height="14" />
+        <div className="chat-tabs" role="tablist">
+          {[['staff', 'Xodimlar'], ['groups', 'Guruhlar'], ['students', 'Talabalar']].map(([k, l]) => (
+            <button key={k} type="button" role="tab" aria-selected={chatTab === k}
+              className={'chat-tab' + (chatTab === k ? ' on' : '')} onClick={() => setChatTab(k)}>{l}</button>
+          ))}
+        </div>
+        <button type="button" className="chat-me" onClick={() => onOpenProfile && onOpenProfile()} title="Profilni ochish">
+          <ChatAvatar name={dispName} src={dispAvatar} online={wsOnline} />
+          <span className="chat-me-body"><b>{dispName}</b><small>@{me.username} · ilova profili</small></span>
         </button>
-        <input ref={avatarInput} type="file" accept="image/png,image/jpeg,image/webp" hidden onChange={onPickAvatar} />
         <div className="chat-search">
           <ChatIcon.search />
-          <input placeholder="Qidirish" value={query} onChange={(e) => setQuery(e.target.value)} />
+          <input className="chat-q" placeholder="Qidirish" value={query} onChange={(e) => setQuery(e.target.value)} />
         </div>
         <div className="chat-list">
-          <div className="chat-sec">Suhbatlar</div>
-          {shownGeneral && (
-            <ChatRow conv={shownGeneral} meId={me.id} active={shownGeneral.id === activeId} onOpen={openGeneral} />
-          )}
-          {peerRows.length === 0 && <div className="chat-hint pad small">Xodim topilmadi</div>}
-          {peerRows.map(({ u, conv }) => (conv ? (
-            <ChatRow key={'c' + conv.id} conv={conv} meId={me.id} active={conv.id === activeId}
-              onOpen={() => setActiveId(conv.id)} onHide={() => setHidden(u.id, true)} />
-          ) : (
-            <div key={'p' + u.id} role="button" tabIndex={0} className="chat-row staff"
-              onClick={() => openWith(u.id)} onKeyDown={(e) => { if (e.key === 'Enter') openWith(u.id); }}>
-              <ChatAvatar name={u.name} online={u.online} src={u.avatar} />
-              <span className="chat-row-body">
-                <span className="chat-row-top"><b className="chat-row-name">{u.name}</b></span>
-                <span className="chat-row-bottom"><span className="chat-row-preview">@{u.username} · {u.online ? 'onlayn' : 'oflayn'}</span></span>
-              </span>
-              <button type="button" className="chat-row-act" title="Yashirish" aria-label="Yashirish"
-                onClick={(e) => { e.stopPropagation(); setHidden(u.id, true); }}><ChatIcon.eyeOff /></button>
-            </div>
-          )))}
-
-          {hiddenStaff.length > 0 && (
+          {chatTab === 'staff' && (
             <React.Fragment>
-              <button type="button" className="chat-sec chat-sec-btn" onClick={() => setShowHidden((v) => !v)} aria-expanded={showHidden}>
-                <span>{showHidden ? '▾' : '▸'} Yashirilganlar</span>
-                <span className="chat-sec-count">{hiddenStaff.length}</span>
-              </button>
-              {showHidden && hiddenStaff.map((u) => (
-                <div key={'hd-' + u.id} className="chat-row staff hidden-row">
-                  <ChatAvatar name={u.name} src={u.avatar} />
-                  <span className="chat-row-body">
-                    <span className="chat-row-top"><b className="chat-row-name">{u.name}</b></span>
-                    <span className="chat-row-bottom"><span className="chat-row-preview">@{u.username} · yashirilgan</span></span>
-                  </span>
-                  <button type="button" className="chat-pill-btn" onClick={() => setHidden(u.id, false)}>
-                    <ChatIcon.eye /> Ko‘rsatish
-                  </button>
-                </div>
+              <div className="chat-sec">Profillar</div>
+              {peerRows.length === 0 && <div className="chat-hint pad small">Xodim topilmadi</div>}
+              {peerRows.map(({ u, conv }) => (
+                <ChatPersonRow key={'p' + u.id} u={u} conv={conv} active={!!conv && conv.id === activeId}
+                  onOpen={() => (conv ? setActiveId(conv.id) : openWith(u.id))}
+                  onHide={() => setHidden(u.id, true)} />
               ))}
+          {hiddenStaff.length > 0 && (
+              <React.Fragment>
+                <button type="button" className="chat-sec chat-sec-btn" onClick={() => setShowHidden((v) => !v)} aria-expanded={showHidden}>
+                  <span>{showHidden ? '▾' : '▸'} Yashirilganlar</span>
+                  <span className="chat-sec-count">{hiddenStaff.length}</span>
+                </button>
+                {showHidden && hiddenStaff.map((u) => (
+                  <div key={'hd-' + u.id} className="chat-row staff hidden-row">
+                    <ChatAvatar name={u.name} src={u.avatar} />
+                    <span className="chat-row-body">
+                      <span className="chat-row-top"><b className="chat-row-name">{u.name}</b></span>
+                      <span className="chat-row-bottom"><span className="chat-row-preview">@{u.username} · yashirilgan</span></span>
+                    </span>
+                    <button type="button" className="chat-pill-btn" onClick={() => setHidden(u.id, false)}>
+                      <ChatIcon.eye /> Ko‘rsatish
+                    </button>
+                  </div>
+                ))}
+              </React.Fragment>
+            )}
             </React.Fragment>
+          )}
+          {chatTab === 'groups' && (
+            <React.Fragment>
+              <div className="chat-sec">Guruhlar</div>
+              {shownGeneral
+                ? <ChatRow conv={shownGeneral} meId={me.id} active={shownGeneral.id === activeId} onOpen={openGeneral} />
+                : <div className="chat-hint pad small">Guruh topilmadi</div>}
+            </React.Fragment>
+          )}
+          {chatTab === 'students' && (
+            <div className="chat-empty-tab">
+              <span className="chat-ph-icon"><ChatIcon.users width="22" height="22" /></span>
+              <b>Talabalar hali ulanmagan</b>
+              <span>Talabalar uchun chat keyingi bosqichda qo‘shiladi</span>
+            </div>
           )}
         </div>
       </aside>
@@ -7473,9 +7557,16 @@ function ChatPage({ notify }) {
       <section className="chat-main">
         {!active && (
           <div className="chat-placeholder">
-            <div className="chat-ph-mark"><ChatIcon.bubble width="28" height="28" /></div>
-            <b>Suhbatni tanlang</b>
-            <span>umumiy chatga yoki xodimlardan birortasiga yozing</span>
+            <div className="chat-ph-card">
+              {dispAvatar
+                ? <img className="chat-ph-logo" src={dispAvatar} alt="" />
+                : <span className="chat-ph-logo brand">{chatInitials(dispName)}</span>}
+              <b className="chat-ph-name">{dispName}</b>
+              <span className="chat-ph-role">{chatRoleLabel(dispRole)}</span>
+              <span className="chat-ph-icon"><ChatIcon.bubble width="22" height="22" /></span>
+              <b className="chat-ph-title">Suhbatni tanlang</b>
+              <span className="chat-ph-sub">Yozishish uchun chap tomondagi ro‘yxatdan tanlang</span>
+            </div>
           </div>
         )}
         {active && (
@@ -7594,7 +7685,7 @@ function syncStaffToChat(staff) {
   chatSyncTimer = setTimeout(() => {
     const people = staff
       .filter((u) => u && u.username)
-      .map((u) => ({ username: u.username, name: u.name, role: u.role, password: u.password || undefined }));
+      .map((u) => ({ username: u.username, name: u.name, role: u.role, password: u.password || undefined, avatar: u.avatar || null }));
     chatApi('/people', { method: 'PUT', token: tok, body: { people: people } })
       .then(() => window.dispatchEvent(new Event('chat-people')))
       .catch(() => {});
@@ -7771,7 +7862,7 @@ function StaffApp({ me, staff, setStaff, roleTpl, setRoleTpl, categories, setCat
             onSave={(upd, opts) => { setStudents(students.map((s) => (s.id === upd.id ? upd : s))); notify((opts && opts.message) || 'O\'quvchi ma\'lumotlari saqlandi', opts && opts.variant); }} />
         )}
 
-        {curPage === 'chat' && <ChatPage notify={notify} />}
+        {curPage === 'chat' && <ChatPage notify={notify} appMe={me} onOpenProfile={() => setPage('profile')} />}
 
         {curPage === 'staff' && <StaffPage me={me} staff={staff} setStaff={setStaff} roleTpl={roleTpl} notify={notify} onGoPerms={() => goTo('permissions')} />}
 
