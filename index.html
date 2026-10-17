@@ -5742,6 +5742,241 @@ img,video,canvas,svg{max-width:100%}
 @media (min-width:1600px){.st-page,.cs-main{max-width:1500px;margin-inline:auto}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
 </style>
+<style id="edu-redesign-v3">
+/* =============== NSelect — chiroyli dropdown =============== */
+.ns{ position:relative; width:100%; font-family:inherit; }
+.ns-btn{ width:100%; display:flex; align-items:center; justify-content:space-between; gap:10px; text-align:left; cursor:pointer;
+  padding:.72rem .9rem; border-radius:.85rem; border:1px solid var(--sd-line); background:var(--sd-card, #fff); color:var(--sd-text);
+  font:inherit; font-weight:600; font-size:.92rem; min-height:44px; transition:border-color .18s, box-shadow .18s, background .18s; }
+.ns-btn:hover{ border-color:rgba(52,211,153,.5); }
+.ns.open .ns-btn, .ns-btn:focus-visible{ outline:0; border-color:#34d399; box-shadow:0 0 0 4px rgba(52,211,153,.16); }
+.ns-val{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.ns-val.ph{ color:var(--sd-muted); font-weight:500; }
+.ns-chev{ flex:none; color:var(--sd-muted); transition:transform .22s cubic-bezier(.3,.8,.3,1); }
+.ns.open .ns-chev{ transform:rotate(180deg); color:#34d399; }
+.ns.dis{ opacity:.55; } .ns.dis .ns-btn{ cursor:not-allowed; }
+.ns-list{ position:absolute; z-index:9500; left:0; right:0; top:calc(100% + 8px); max-height:272px; overflow:auto; padding:6px;
+  border-radius:1rem; border:1px solid var(--sd-line); background:var(--sd-modal, var(--sd-card, #fff));
+  backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+  box-shadow:0 24px 48px -16px rgba(0,0,0,.45), 0 0 0 1px rgba(52,211,153,.08);
+  animation:nsIn .16s ease-out; scrollbar-width:thin; }
+.ns-list.up{ top:auto; bottom:calc(100% + 8px); animation-name:nsInUp; }
+@keyframes nsIn{ from{ opacity:0; transform:translateY(-6px) scale(.98);} to{ opacity:1; transform:none;} }
+@keyframes nsInUp{ from{ opacity:0; transform:translateY(6px) scale(.98);} to{ opacity:1; transform:none;} }
+.ns-opt{ width:100%; display:flex; align-items:center; justify-content:space-between; gap:10px; padding:.6rem .75rem; border:0; background:transparent;
+  color:var(--sd-text); font:inherit; font-size:.9rem; font-weight:600; text-align:left; border-radius:.7rem; cursor:pointer; }
+.ns-opt.act{ background:rgba(52,211,153,.12); }
+.ns-opt.sel{ color:#10b981; background:rgba(52,211,153,.16); }
+html.theme-dark .ns-opt.sel{ color:#6ee7b7; }
+.ns-opt:disabled{ opacity:.4; cursor:not-allowed; }
+.ns-empty{ padding:14px; text-align:center; color:var(--sd-muted); font-size:.85rem; }
+/* eski select dizaynlarida NSelect o'z holicha ko'rinsin */
+.sd-select.ns, .pb-mrole.ns, .nx-cp .ns{ padding:0 !important; border:0 !important; background:none !important; }
+.nx-cp .ns-btn, .pb-mrole .ns-btn{ min-height:38px; font-size:.84rem; }
+.v2-hd .ns, .sx-top .ns{ min-width:150px; }
+
+/* =============== Izohlar (comments) =============== */
+.cm-box{ position:relative; margin:1.4rem 0 2.2rem !important; padding:1.4rem !important; border-radius:1.4rem !important;
+  background:linear-gradient(180deg, rgba(52,211,153,.06), transparent 140px), var(--sd-card, #fff) !important;
+  border:1px solid var(--sd-line) !important; box-shadow:0 18px 40px -28px rgba(0,0,0,.45); }
+html.theme-dark .cm-box{ background:linear-gradient(180deg, rgba(52,211,153,.08), transparent 160px), #0f1a15 !important; }
+.cm-head{ display:flex; align-items:center; gap:.7rem; margin-bottom:1.1rem; }
+.cm-head h3{ font-size:1.1rem; font-weight:800; margin:0; letter-spacing:-.01em; }
+.cm-head-ic{ width:38px; height:38px; border-radius:12px; display:grid; place-items:center; color:#10b981; background:rgba(52,211,153,.14); }
+.cm-count{ padding:.12rem .6rem; border-radius:99px; background:rgba(127,127,127,.14); font-size:.78rem; font-weight:800; }
+.cm-new{ display:flex; gap:.8rem; align-items:flex-start; padding-bottom:1.1rem; margin-bottom:.4rem; border-bottom:1px dashed var(--sd-line); }
+.cm-av{ flex:none; width:40px; height:40px; border-radius:50%; display:grid; place-items:center; font-weight:800; font-size:.85rem; color:#06281c;
+  background:linear-gradient(135deg,#6ee7b7,#34d399); box-shadow:0 6px 14px -6px rgba(52,211,153,.7); text-transform:uppercase; }
+.cm-composer{ flex:1; min-width:0; border:1.5px solid var(--sd-line); border-radius:1.1rem; padding:.7rem .8rem .6rem; background:rgba(127,127,127,.05); transition:border-color .2s, box-shadow .2s, background .2s; }
+.cm-composer:focus-within{ border-color:#34d399; box-shadow:0 0 0 4px rgba(52,211,153,.14); background:transparent; }
+.cm-area{ width:100%; min-height:54px; max-height:260px; resize:none; border:0 !important; outline:0 !important; background:transparent !important; box-shadow:none !important; color:var(--sd-text); font:inherit; font-size:.95rem; line-height:1.5; padding:.15rem .1rem; }
+.cm-row{ display:flex; align-items:center; justify-content:space-between; gap:.6rem; flex-wrap:wrap; margin-top:.35rem; }
+.cm-hint{ font-size:.74rem; color:var(--sd-muted); display:inline-flex; align-items:center; gap:.3rem; }
+.cm-kbd{ padding:.08rem .38rem; border-radius:6px; border:1px solid var(--sd-line); background:rgba(127,127,127,.1); font-size:.7rem; font-weight:700; }
+.cm-btns{ display:flex; gap:.4rem; margin-left:auto; }
+.cm-btn{ display:inline-flex; align-items:center; gap:.4rem; padding:.5rem .9rem; border-radius:.75rem; border:1px solid var(--sd-line); background:transparent; color:var(--sd-text); font:inherit; font-weight:700; font-size:.82rem; cursor:pointer; transition:transform .12s, filter .15s; }
+.cm-btn.pri{ border:0; color:#05261a; background:linear-gradient(135deg,#6ee7b7,#34d399 55%,#10b981); box-shadow:0 10px 20px -10px rgba(16,185,129,.8); }
+.cm-btn.pri:disabled{ opacity:.4; box-shadow:none; cursor:not-allowed; filter:grayscale(.4); }
+.cm-btn:not(:disabled):active{ transform:scale(.96); }
+.cm-list{ display:flex; flex-direction:column; gap:.2rem; margin-top:.6rem; }
+.cm-item{ gap:.8rem !important; padding:.85rem .6rem !important; border-radius:1rem !important; position:relative; }
+.cm-item:hover{ background:rgba(127,127,127,.07) !important; }
+.cm-item + .cm-item::before{ content:""; position:absolute; left:calc(.6rem + 56px); right:.6rem; top:0; height:1px; background:var(--sd-line); }
+.cm-body{ flex:1; min-width:0; }
+.cm-meta{ display:flex; align-items:center; flex-wrap:wrap; gap:.45rem; margin-bottom:.25rem; }
+.cm-name{ font-weight:800; font-size:.93rem; }
+.cm-role{ padding:.08rem .5rem; border-radius:99px; font-size:.66rem; font-weight:800; letter-spacing:.05em; text-transform:uppercase; color:#059669; background:rgba(52,211,153,.16); }
+html.theme-dark .cm-role{ color:#6ee7b7; }
+.cm-empty{ display:flex; flex-direction:column; align-items:center; gap:.6rem; padding:2rem 1rem; color:var(--sd-muted); font-weight:600; text-align:center; border:1.5px dashed var(--sd-line); border-radius:1.1rem; }
+.cm-empty-ic{ width:52px; height:52px; border-radius:16px; display:grid; place-items:center; color:#10b981; background:rgba(52,211,153,.12); }
+
+/* =============== Modal umumiy (sd-modal) =============== */
+.sd-backdrop{ background:rgba(4,12,9,.62) !important; backdrop-filter:blur(10px) saturate(120%); -webkit-backdrop-filter:blur(10px) saturate(120%); }
+.sd-modal{ border-radius:1.6rem !important; border:1px solid rgba(52,211,153,.18) !important; padding:0 !important; overflow:hidden auto !important;
+  box-shadow:0 40px 90px -30px rgba(0,0,0,.7), 0 0 0 1px rgba(255,255,255,.03) inset !important; animation:mdIn .26s cubic-bezier(.2,.8,.2,1); }
+@keyframes mdIn{ from{ opacity:0; transform:translateY(18px) scale(.97);} to{ opacity:1; transform:none;} }
+.sd-title{ display:flex; align-items:center; gap:.8rem; padding:1.25rem 3.6rem 1.1rem 1.5rem; font-size:1.12rem; font-weight:800; letter-spacing:-.01em;
+  background:linear-gradient(135deg, rgba(52,211,153,.16), rgba(56,189,248,.06) 70%, transparent); border-bottom:1px solid var(--sd-line); margin:0 !important; }
+.sd-title-icon{ width:40px; height:40px; border-radius:13px; display:grid; place-items:center; color:#05261a; background:linear-gradient(135deg,#6ee7b7,#34d399); box-shadow:0 10px 20px -10px rgba(16,185,129,.9); }
+.sd-title-icon.is-danger{ color:#fff; background:linear-gradient(135deg,#fb7185,#ef4444); }
+.sd-x{ top:.95rem !important; right:.95rem !important; width:36px !important; height:36px !important; border-radius:12px !important; display:grid !important; place-items:center; transition:transform .2s, background .2s; }
+.sd-x:hover{ transform:rotate(90deg); }
+.sd-modal > :not(.sd-title):not(.sd-x){ margin-left:1.5rem; margin-right:1.5rem; }
+.sd-modal > .sd-title + *{ margin-top:1.1rem; }
+.sd-modal > :last-child{ margin-bottom:1.5rem; }
+.sd-label{ display:block; font-size:.7rem !important; font-weight:800 !important; letter-spacing:.09em; text-transform:uppercase; color:var(--sd-muted) !important; margin-bottom:.45rem !important; }
+.sd-input{ width:100%; min-height:46px; padding:.72rem .95rem !important; border-radius:.9rem !important; border:1.5px solid var(--sd-line) !important; background:rgba(127,127,127,.06) !important; color:var(--sd-text); font:inherit; font-weight:600; transition:border-color .2s, box-shadow .2s, background .2s; }
+.sd-input:focus{ outline:0; border-color:#34d399 !important; background:transparent !important; box-shadow:0 0 0 4px rgba(52,211,153,.14); }
+.sd-field{ margin-bottom:.95rem; }
+.sd-btn-primary, .sd-modal .sd-btn.sd-btn-primary{ background:linear-gradient(135deg,#6ee7b7,#34d399 55%,#10b981) !important; color:#05261a !important; border:0 !important; font-weight:800 !important; border-radius:.95rem !important; box-shadow:0 14px 28px -14px rgba(16,185,129,.9); }
+
+/* =============== Yangi video darslik joylash =============== */
+.vu-lead{ display:flex; align-items:center; gap:.5rem; padding:.7rem .95rem; border-radius:.95rem; background:rgba(52,211,153,.1); border:1px solid rgba(52,211,153,.2); font-size:.88rem; color:var(--sd-text); }
+.vu-lead b{ color:#10b981; font-weight:800; }
+.vu-grid{ display:grid; grid-template-columns:1fr 1fr; gap:.2rem 1rem; margin-top:1.1rem; }
+.vu-grid .vu-span2{ grid-column:1 / -1; }
+.vu-info{ display:flex; align-items:center; gap:.5rem; padding:.6rem .85rem; border-radius:.8rem; background:rgba(56,189,248,.1); color:#0ea5e9; font-size:.8rem; font-weight:600; margin:0 0 .9rem !important; }
+.vu-range{ text-transform:none; letter-spacing:0; font-weight:600; color:#10b981; }
+.vu-seg{ display:grid; grid-template-columns:1fr 1fr; gap:6px; padding:5px; border-radius:1rem; background:rgba(127,127,127,.1); border:1px solid var(--sd-line); margin:.2rem 0 1rem; }
+.vu-seg button{ display:flex; align-items:center; justify-content:center; gap:.5rem; padding:.72rem .6rem; border:0; border-radius:.75rem; background:transparent; color:var(--sd-muted); font:inherit; font-weight:700; font-size:.86rem; cursor:pointer; transition:all .2s; }
+.vu-seg button.on{ color:#05261a; background:linear-gradient(135deg,#6ee7b7,#34d399); box-shadow:0 10px 18px -10px rgba(16,185,129,.9); }
+.vu-urlwrap{ position:relative; display:flex; align-items:center; }
+.vu-urlwrap > svg{ position:absolute; left:14px; color:#34d399; pointer-events:none; }
+.vu-urlwrap .sd-input{ padding-left:2.5rem !important; }
+.vu-preview{ display:flex; gap:.8rem; align-items:center; margin-top:.8rem; padding:.6rem; border-radius:1rem; border:1px solid var(--sd-line); background:rgba(127,127,127,.06); }
+.vu-preview img{ width:112px; border-radius:.7rem; flex:none; }
+
+/* =============== To'lov qabul qilish =============== */
+.pay-sec{ font-size:.68rem; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:var(--sd-muted); margin:0 0 .35rem; }
+.pay-name{ display:flex; align-items:center; gap:.75rem; padding:.85rem 1rem; border-radius:1.05rem; font-size:1.05rem; font-weight:800; background:linear-gradient(135deg, rgba(52,211,153,.16), rgba(56,189,248,.08)); border:1px solid rgba(52,211,153,.22); margin-bottom:1rem; }
+.pay-name::before{ content:""; width:38px; height:38px; flex:none; border-radius:12px; background:linear-gradient(135deg,#6ee7b7,#34d399) center/20px no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2305261a' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='8' r='3.6'/%3E%3Cpath d='M4.5 20c.9-4 3.6-6.2 7.5-6.2s6.6 2.2 7 6.2'/%3E%3C/svg%3E"); }
+.pay-info{ display:grid; grid-template-columns:1fr 1fr; gap:.6rem; margin-bottom:1.1rem; }
+.pay-info .pay-sec{ grid-column:1 / -1; margin:0; }
+.pay-line{ display:flex; flex-direction:column; gap:.2rem; padding:.8rem .9rem; border-radius:1rem; border:1px solid var(--sd-line); background:rgba(127,127,127,.06); font-size:.74rem; font-weight:700; color:var(--sd-muted); }
+.pay-line b{ font-size:1.02rem; font-weight:800; }
+.pay-line b.g{ color:#10b981; } .pay-line b.r{ color:#f43f5e; }
+.pay-extra-tag{ font-size:.68rem; color:#0ea5e9; font-weight:700; }
+.pay-row{ display:flex; gap:.6rem; align-items:stretch; }
+.pay-row .sd-input{ flex:1; font-size:1.25rem; font-weight:800; letter-spacing:.01em; }
+.pay-plus{ flex:none; width:48px; border-radius:.95rem; border:1.5px dashed rgba(52,211,153,.6); background:rgba(52,211,153,.1); color:#10b981; font-size:1.5rem; font-weight:700; cursor:pointer; transition:all .2s; }
+.pay-plus.on{ border-style:solid; color:#f43f5e; border-color:rgba(244,63,94,.5); background:rgba(244,63,94,.1); }
+.pay-warn{ padding:.7rem .9rem; border-radius:.9rem; font-size:.82rem; font-weight:600; line-height:1.45; color:#d97706; background:rgba(251,191,36,.12); border:1px solid rgba(251,191,36,.28); margin-bottom:.9rem; }
+
+/* =============== Statistika: emoji o'rniga ikonlar =============== */
+.sx-insg > div{ display:flex; align-items:flex-start; gap:.8rem; }
+.ins-ic{ flex:none; width:38px; height:38px; border-radius:12px; display:grid; place-items:center; color:var(--c,#34d399);
+  background:color-mix(in srgb, var(--c,#34d399) 16%, transparent); border:1px solid color-mix(in srgb, var(--c,#34d399) 30%, transparent); }
+.sx-rk{ display:inline-flex; align-items:center; gap:.6rem; font-weight:700; }
+.rk{ width:28px; height:28px; border-radius:9px; display:grid; place-items:center; font-size:.78rem; font-weight:800; background:rgba(127,127,127,.16); color:var(--sd-muted); }
+.rk0{ color:#5b3a00; background:linear-gradient(135deg,#fde68a,#f59e0b); }
+.rk1{ color:#2b3440; background:linear-gradient(135deg,#f1f5f9,#94a3b8); }
+.rk2{ color:#4a2208; background:linear-gradient(135deg,#fdba74,#c2763a); }
+.lt-postbtn svg{ vertical-align:-2px; margin-right:4px; }
+
+/* =============== Yangi xodim: Rol / Custom lavozim =============== */
+.nx-custom-pos{ display:block; margin-top:.8rem; padding:.85rem; border-radius:1rem; border:1.5px dashed rgba(52,211,153,.5); background:rgba(52,211,153,.07); animation:mdIn .22s ease-out; }
+.nx-custom-pos em{ font-style:normal; font-weight:600; opacity:.65; font-size:.8em; }
+.nx-f .ns-btn{ min-height:46px; }
+
+/* =============== MOBIL =============== */
+@media (max-width:720px){
+  .cs-sheet-fab{ bottom:calc(88px + env(safe-area-inset-bottom,0px)) !important; right:12px !important; left:auto !important; transform:none !important;
+    padding:.55rem .85rem !important; font-size:.8rem !important; box-shadow:0 12px 26px -10px rgba(16,185,129,.8) !important; z-index:40 !important; }
+  .cm-box{ padding:1rem !important; margin-bottom:1rem !important; border-radius:1.2rem !important; }
+  .cm-new{ flex-direction:column; gap:.6rem; } .cm-new > .cm-av{ display:none; }
+  .cm-hint{ display:none; } .cm-btns{ width:100%; } .cm-btns .cm-btn{ flex:1; justify-content:center; padding:.65rem; }
+  .cm-item + .cm-item::before{ left:.6rem; }
+  .cm-item{ padding:.8rem .2rem !important; }
+  /* modallar — pastdan chiquvchi sheet */
+  .sd-backdrop{ align-items:flex-end !important; padding:0 !important; }
+  .sd-modal, .sd-modal-xl, .sd-modal-lg{ max-width:100% !important; width:100% !important; max-height:92dvh !important; border-radius:1.6rem 1.6rem 0 0 !important; animation:sheetUp .3s cubic-bezier(.2,.8,.2,1); padding-bottom:env(safe-area-inset-bottom,0px) !important; }
+  @keyframes sheetUp{ from{ transform:translateY(100%);} to{ transform:none;} }
+  .sd-modal::before{ content:""; display:block; width:42px; height:4px; border-radius:4px; background:var(--sd-line); margin:.55rem auto 0; position:sticky; top:0; }
+  .sd-title{ padding:.9rem 3.4rem .9rem 1.1rem; font-size:1rem; }
+  .sd-modal > :not(.sd-title):not(.sd-x){ margin-left:1.1rem; margin-right:1.1rem; }
+  .vu-grid{ grid-template-columns:1fr; }
+  .vu-seg button{ font-size:.78rem; padding:.7rem .3rem; }
+  .vu-preview img{ width:88px; }
+  .pay-info{ grid-template-columns:1fr 1fr; }
+  
+  .sx-insg > div{ gap:.65rem; }
+}
+</style>
+<style id="edu-redesign-v4">
+/* ===== NSelect: o'z ranglari (har qanday sahifada oq bo'lib qolmasin) ===== */
+.ns,.ns-list{ --ns-bg:#ffffff; --ns-ink:#0d1f17; --ns-mut:#5f776b; --ns-line:rgba(13,31,23,.14); --ns-pop:#ffffff; --ns-hov:rgba(16,185,129,.1); }
+html.theme-dark .ns, html.theme-dark .ns-list{ --ns-bg:#12211a; --ns-ink:#eef6f1; --ns-mut:#8aa398; --ns-line:rgba(255,255,255,.12); --ns-pop:#14251d; --ns-hov:rgba(52,211,153,.14); }
+.ns-btn{ background:var(--ns-bg) !important; color:var(--ns-ink) !important; border-color:var(--ns-line) !important; }
+.ns-val.ph, .ns-chev{ color:var(--ns-mut) !important; }
+.ns.open .ns-chev{ color:#34d399 !important; }
+.ns-list{ position:fixed; z-index:2147483000 !important; background:var(--ns-pop) !important; border-color:var(--ns-line) !important; color:var(--ns-ink); overscroll-behavior:contain; }
+.ns-opt{ color:var(--ns-ink) !important; }
+.ns-opt.act{ background:var(--ns-hov) !important; }
+.ns-opt.sel{ color:#10b981 !important; }
+html.theme-dark .ns-opt.sel{ color:#6ee7b7 !important; }
+.ns-empty{ color:var(--ns-mut); }
+.sx .ns, .pv-tools .ns, .v2-hd .ns{ min-width:150px; width:auto; }
+.sx .ns-btn, .pv-tools .ns-btn{ min-height:40px; border-radius:12px; font-size:.84rem; }
+.nx-drawer .ns-btn, .nx-f .ns-btn{ min-height:46px; }
+
+/* ===== Qidiruv inputlari: dark/light matn rangi ===== */
+.blk-searchbox input, .sx-in, .nx-search input, .pb-search input, .pv-tools input{ color:#0d1f17 !important; caret-color:#10b981; }
+html.theme-dark .blk-searchbox input, html.theme-dark .sx-in, html.theme-dark .nx-search input, html.theme-dark .pb-search input, html.theme-dark .pv-tools input{ color:#eef6f1 !important; }
+.blk-searchbox input::placeholder, .sx-in::placeholder, .nx-search input::placeholder, .pb-search input::placeholder{ color:#6b8176 !important; opacity:1; }
+html.theme-dark .blk-searchbox input::placeholder, html.theme-dark .sx-in::placeholder, html.theme-dark .nx-search input::placeholder{ color:#8aa398 !important; }
+.blk-searchbox input:-webkit-autofill, .sx-in:-webkit-autofill{ -webkit-text-fill-color:currentColor; transition:background-color 9999s; }
+
+/* ===== Chat: xabar amallari ===== */
+.chat-slide{ position:relative; width:100%; touch-action:pan-y; }
+.chat-slide-track{ width:100%; will-change:transform; }
+.chat-slide-ic{ position:absolute; left:8px; top:50%; width:34px; height:34px; border-radius:50%; display:grid; place-items:center; background:rgba(52,211,153,.22); color:#10b981; pointer-events:none; opacity:0; }
+@media (hover:none){ .chat-slide{ -webkit-touch-callout:none; -webkit-user-select:none; user-select:none; } .chat-more{ display:none !important; } }
+.chat-more{ position:absolute; top:5px; right:5px; width:24px; height:24px; border-radius:50%; border:0; display:grid; place-items:center; background:rgba(0,0,0,.16); color:inherit; cursor:pointer; opacity:0; transition:opacity .15s, background .15s; z-index:2; }
+.chat-more:hover{ background:rgba(0,0,0,.3); }
+.chat-msg:hover .chat-more, .chat-more:focus-visible{ opacity:1; }
+.chat-msg .chat-bubble:has(.chat-more) .chat-text{ padding-right:2px; }
+.chat-fwd-tag{ display:flex; align-items:center; gap:6px; font-size:12px; line-height:1.3; opacity:.9; margin:0 0 4px; font-style:italic; }
+.chat-fwd-tag b{ font-style:normal; font-weight:800; }
+.chat-fwd-tag svg{ flex:none; }
+.chat-thread.selmode .chat-msg{ position:relative; padding-left:38px; border-radius:12px; }
+.chat-pick{ position:absolute; left:8px; top:50%; transform:translateY(-50%); width:22px; height:22px; border-radius:50%; border:2px solid rgba(127,127,127,.6); display:grid; place-items:center; color:#05261a; transition:all .15s; }
+.chat-pick.on{ background:linear-gradient(135deg,#6ee7b7,#10b981); border-color:transparent; }
+.chat-pick svg{ width:13px; height:13px; }
+.chat-msg.picked{ background:rgba(52,211,153,.18); }
+.chat-selbar{ display:flex !important; align-items:center; gap:10px; }
+.chat-sel-n{ font-size:16px; font-weight:800; flex:1; }
+.chat-sel-acts{ display:flex; align-items:center; gap:4px; }
+.chat-pop-back{ position:fixed; inset:0; z-index:2147483100; }
+.chat-pop{ position:fixed; min-width:200px; padding:6px; border-radius:16px; background:#fff; color:#0d1f17; border:1px solid rgba(13,31,23,.12); box-shadow:0 24px 48px -16px rgba(0,0,0,.45); animation:nsIn .14s ease-out; }
+html.theme-dark .chat-pop{ background:#14251d; color:#eef6f1; border-color:rgba(255,255,255,.1); }
+.chat-pop-it{ width:100%; display:flex; align-items:center; gap:12px; padding:.62rem .8rem; border:0; background:transparent; color:inherit; font:inherit; font-size:14px; font-weight:600; border-radius:11px; cursor:pointer; text-align:left; }
+.chat-pop-it:hover{ background:rgba(52,211,153,.14); }
+.chat-pop-it.danger{ color:#ef4444; } .chat-pop-it.danger:hover{ background:rgba(239,68,68,.12); }
+.chat-pop-it svg{ flex:none; width:17px; height:17px; }
+.chat-del-card{ text-align:center; padding:1.4rem; display:flex; flex-direction:column; align-items:center; gap:.5rem; }
+.chat-del-ic{ width:52px; height:52px; border-radius:16px; display:grid; place-items:center; color:#ef4444; background:rgba(239,68,68,.14); }
+.chat-del-card span{ font-size:13px; opacity:.7; }
+.chat-del-btns{ display:flex; gap:8px; margin-top:.6rem; width:100%; } .chat-del-btns .chat-ok{ flex:1; justify-content:center; }
+
+/* ===== Mobil: sahifa scroll bo'lmasin (chat), pastdagi ortiqcha bo'shliq yo'q ===== */
+@media (max-width:860px){
+  html body .app-main{ padding-bottom:0 !important; }
+  html body .app-main > main{ padding-bottom:calc(84px + env(safe-area-inset-bottom,0px)) !important; }
+  html body .cs-main{ padding-bottom:4.8rem; }
+  html.chat-page, html.chat-page body{ overflow:hidden !important; height:100dvh; overscroll-behavior:none; position:relative; }
+  html.chat-page .app-shell, html.chat-page .app-main{ height:100dvh; max-height:100dvh; overflow:hidden !important; }
+  html.chat-page .app-main > main{ overflow:hidden !important; max-height:none !important; padding-bottom:0 !important; }
+  html body.chat-x .chat-root, html.chat-page body .chat-root{ height:calc(100dvh - 162px - env(safe-area-inset-bottom,0px)) !important; min-height:0 !important; }
+  .chat-thread, .chat-list{ overscroll-behavior:contain; }
+  .chat-selbar{ padding:.5rem .6rem; }
+}
+/* ===== Profil: pastdagi ortiqcha bo'shliq olib tashlandi ===== */
+.pb{ padding-bottom:24px !important; }
+@media (max-width:860px){
+  html body .pb{ padding-bottom:0 !important; }
+  html body .app-main > main:has(.pb){ padding-bottom:calc(84px + env(safe-area-inset-bottom,0px)) !important; }
+}
+</style>
 <script type="text/plain" id="app-source">
 const { useState, useMemo, useRef, useEffect, useLayoutEffect } = React;
 
@@ -7207,10 +7442,10 @@ function Topbar({ me, roleLabel, initials, theme, onToggleTheme, notifications, 
             <Icon.menu width="18" height="18" />
           </button>
         )}
+        {brand && <span className="topbar-logo-mob" aria-label={brand.name} title={brand.name}><Logo brand={brand} iconOnly /></span>}
       </div>
 
       <div className="topbar-right">
-        {brand && <span className="topbar-logo-mob" aria-label={brand.name} title={brand.name}><Logo brand={brand} iconOnly /></span>}
         <button className="topbar-icon-btn" onClick={onToggleTheme} aria-label="Mavzuni almashtirish" title={theme === 'dark' ? 'Yorug\' rejim' : "Qorong'i rejim"}>
           {theme === 'dark' ? <Icon.sun width="17" height="17" /> : <Icon.moon width="17" height="17" />}
         </button>
@@ -7566,7 +7801,7 @@ function ChatLogin({ onLoggedIn }) {
 function chatPreviewOf(last) {
   if (!last) return null;
   if (last.deleted_at) return 'Xabar o‘chirildi';
-  return String(last.body).replace(/\s+/g, ' ');
+  return chatPlain(last.body).replace(/\s+/g, ' ');
 }
 
 function ChatRow({ conv, meId, active, onOpen, onHide }) {
@@ -7878,6 +8113,98 @@ function ChatUserPicker({ users, allUsers, scope, directs, generalExists, onClos
 const CHAT_MAX_FILE = 500 * 1024;
 const chatFmtSize = (n) => (n < 1024 ? n + ' B' : n < 1048576 ? Math.round(n / 1024) + ' KB' : (n / 1048576).toFixed(1) + ' MB');
 
+
+/* ---------- Chat: uzatilgan xabar belgisi (backend o'zgarmaydi — matn ichiga yashirin yorliq) ---------- */
+const FWD_MARK = '\u2060\u2060\u2060';
+const chatMakeFwd = (from, text) => FWD_MARK + String(from || '').replace(/[\n\u2060]/g, ' ') + FWD_MARK + '\n' + text;
+const chatSplitFwd = (body) => {
+  if (typeof body !== 'string' || body.indexOf(FWD_MARK) !== 0) return null;
+  const e = body.indexOf(FWD_MARK + '\n', FWD_MARK.length);
+  if (e < 0) return null;
+  return { from: body.slice(FWD_MARK.length, e), text: body.slice(e + FWD_MARK.length + 1) };
+};
+const chatPlain = (body) => { const f = chatSplitFwd(body); return f ? f.text : (body == null ? '' : String(body)); };
+const CHAT_MI = {
+  dots: (p) => (<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" {...p}><circle cx="12" cy="5" r="1.7" /><circle cx="12" cy="12" r="1.7" /><circle cx="12" cy="19" r="1.7" /></svg>),
+  fwd: (p) => (<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><path d="m15 5 6 6-6 6" /><path d="M21 11H9a6 6 0 0 0-6 6v1" /></svg>),
+  sel: (p) => (<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...p}><circle cx="12" cy="12" r="9" /><path d="m8 12.5 2.8 2.8L16.5 9.5" /></svg>),
+};
+
+/* Xabar ustida: o'ngga surish = javob, uzoq bosish = belgilash (telefondagidek), belgilash rejimida bosish = tanlash */
+function MsgSlide({ canReply, selMode, onReply, onHold, onToggle, children }) {
+  const [dx, setDx] = useState(0);
+  const [drag, setDrag] = useState(false);
+  const st = useRef(null);
+  const timer = useRef(null);
+  const fired = useRef(false);
+  const moved = useRef(false);
+  const clear = () => { if (timer.current) { clearTimeout(timer.current); timer.current = null; } };
+  const buzz = (n) => { try { if (navigator.vibrate) navigator.vibrate(n); } catch (x) {} };
+  const down = (e) => {
+    if (e.pointerType === 'mouse' || (e.target.closest && e.target.closest('a,button,textarea,input'))) return;
+    st.current = { x: e.clientX, y: e.clientY, dir: null, v: 0, hit: false };
+    fired.current = false; moved.current = false;
+    clear();
+    if (!selMode) timer.current = setTimeout(() => { if (st.current && !st.current.dir) { fired.current = true; buzz(14); onHold && onHold(); } }, 420);
+  };
+  const move = (e) => {
+    const s = st.current; if (!s || fired.current) return;
+    const ddx = e.clientX - s.x, ddy = e.clientY - s.y;
+    if (!s.dir) {
+      if (Math.abs(ddx) < 8 && Math.abs(ddy) < 8) return;
+      clear();
+      s.dir = Math.abs(ddx) > Math.abs(ddy) ? 'x' : 'y';
+      if (s.dir === 'x' && canReply && !selMode) setDrag(true);
+    }
+    if (s.dir !== 'x' || !canReply || selMode) return;
+    moved.current = true;
+    const v = Math.max(0, Math.min(88, ddx * 0.7));
+    s.v = v; setDx(v);
+    if (v >= 56 && !s.hit) { s.hit = true; buzz(8); } else if (v < 56) s.hit = false;
+  };
+  const up = () => {
+    clear();
+    const s = st.current; st.current = null; setDrag(false);
+    if (s && s.dir === 'x' && s.v >= 56 && canReply && !selMode) onReply && onReply();
+    setDx(0);
+  };
+  const click = (e) => {
+    if (fired.current || moved.current) { e.preventDefault(); e.stopPropagation(); fired.current = false; moved.current = false; return; }
+    if (selMode && onToggle) { e.preventDefault(); e.stopPropagation(); onToggle(); }
+  };
+  const p = Math.min(1, dx / 56);
+  return (
+    <div className="chat-slide" onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up} onClickCapture={click}
+      onContextMenu={(e) => { if (TOUCH_UI) e.preventDefault(); }}>
+      <span className="chat-slide-ic" style={{ opacity: p, transform: 'translateY(-50%) scale(' + (0.6 + 0.4 * p) + ')' }}><ChatIcon.reply /></span>
+      <div className="chat-slide-track" style={{ transform: 'translateX(' + dx + 'px)', transition: drag ? 'none' : 'transform .2s ease' }}>{children}</div>
+    </div>
+  );
+}
+
+/* Menyu (⋮): ekranda aniq joylashadi, chetga chiqib ketmaydi */
+function ChatPop({ x, y, onClose, items }) {
+  const ref = useRef(null);
+  const [pos, setPos] = useState({ left: x, top: y, vis: false });
+  useLayoutEffect(() => {
+    const el = ref.current; if (!el) return;
+    const w = el.offsetWidth, h = el.offsetHeight, W = window.innerWidth, H = window.innerHeight;
+    let left = Math.min(Math.max(8, x - w), W - w - 8);
+    let top = y + 6; if (top + h > H - 8) top = Math.max(8, y - h - 38);
+    setPos({ left, top, vis: true });
+  }, []);
+  return ReactDOM.createPortal(
+    <div className="chat-pop-back" onClick={onClose} onContextMenu={(e) => { e.preventDefault(); onClose(); }}>
+      <div ref={ref} className="chat-pop" style={{ left: pos.left, top: pos.top, visibility: pos.vis ? 'visible' : 'hidden' }} onClick={(e) => e.stopPropagation()} role="menu">
+        {items.filter(Boolean).map((it) => (
+          <button key={it.label} type="button" role="menuitem" className={'chat-pop-it' + (it.danger ? ' danger' : '')} onClick={() => { onClose(); it.onClick(); }}>
+            {it.icon}<span>{it.label}</span>
+          </button>
+        ))}
+      </div>
+    </div>, document.body);
+}
+
 function ChatPage({ notify, appMe, onOpenProfile, isStudent, brand, canMute }) {
   /* Ilova akkaunti bilan avtomatik kirish: appMe berilgan bo'lsa, token faqat shu akkaunt uchun olinadi */
   const [token, setToken] = useState(() => (appMe ? '' : chatGetTok()));
@@ -7897,6 +8224,11 @@ function ChatPage({ notify, appMe, onOpenProfile, isStudent, brand, canMute }) {
   const [editing, setEditing] = useState(null);
   const [confirmId, setConfirmId] = useState(null);
   const [fwdMsg, setFwdMsg] = useState(null);
+  const [sel, setSel] = useState([]);
+  const [menu, setMenu] = useState(null);
+  const [delAsk, setDelAsk] = useState(false);
+  const selMode = sel.length > 0;
+  useEffect(() => { document.documentElement.classList.add('chat-page'); return () => document.documentElement.classList.remove('chat-page'); }, []);
   const [showHidden, setShowHidden] = useState(false);
   const [chatTab, setChatTab] = useState('staff');
   /* Ro'yxatdan «olib tashlangan» kontaktlar (faqat shu foydalanuvchi uchun, login bo'yicha). «+» orqali qaytariladi */
@@ -8174,6 +8506,7 @@ function ChatPage({ notify, appMe, onOpenProfile, isStudent, brand, canMute }) {
 
   const activeEntry = activeId ? msgs[activeId] : null;
   const activeItems = activeEntry ? activeEntry.items : [];
+  useEffect(() => { setSel([]); setMenu(null); }, [activeId]);
   const lastItem = activeItems.length ? activeItems[activeItems.length - 1] : null;
   const lastKey = lastItem ? String(lastItem.id) : '';
 
@@ -8307,7 +8640,7 @@ function ChatPage({ notify, appMe, onOpenProfile, isStudent, brand, canMute }) {
       id: clientId, client_id: clientId, conversation_id: convId,
       sender_id: meRef.current.id, body: text, created_at: new Date().toISOString(),
       reply_to: replyTo ? replyTo.id : null,
-      reply: replyTo ? { id: replyTo.id, sender_id: replyTo.sender_id, body: replyTo.deleted_at ? '' : String(replyTo.body).slice(0, 160), deleted: !!replyTo.deleted_at } : null,
+      reply: replyTo ? { id: replyTo.id, sender_id: replyTo.sender_id, body: replyTo.deleted_at ? '' : chatPlain(replyTo.body).slice(0, 160), deleted: !!replyTo.deleted_at } : null,
     };
     setDraft(''); setReplyTo(null); setEmojiOpen(false);
     atBottomRef.current = true;
@@ -8342,18 +8675,18 @@ function ChatPage({ notify, appMe, onOpenProfile, isStudent, brand, canMute }) {
     const fallback = () => {
       try {
         const t = document.createElement('textarea');
-        t.value = m.body; t.style.position = 'fixed'; t.style.opacity = '0';
+        t.value = chatPlain(m.body); t.style.position = 'fixed'; t.style.opacity = '0';
         document.body.appendChild(t); t.select(); document.execCommand('copy'); document.body.removeChild(t); ok();
       } catch (e) { if (notify) notify('Nusxalab bo‘lmadi', 'danger'); }
     };
-    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(m.body).then(ok).catch(fallback);
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(chatPlain(m.body)).then(ok).catch(fallback);
     else fallback();
   };
 
   const jumpToMsg = (id) => {
     const el = threadRef.current && threadRef.current.querySelector('[data-mid="' + id + '"]');
     if (!el) { if (notify) notify('Asl xabar yuklanmagan. “Eski xabarlar”ni bosing'); return; }
-    el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    { const T = threadRef.current; T.scrollTo({ top: Math.max(0, el.offsetTop - T.clientHeight / 2 + el.offsetHeight / 2), behavior: 'smooth' }); }
     setFlashId(id);
     setTimeout(() => setFlashId(null), 1400);
   };
@@ -8391,13 +8724,20 @@ function ChatPage({ notify, appMe, onOpenProfile, isStudent, brand, canMute }) {
     if (window.confirm('«' + u.name + '» bilan yozishma ro‘yxatdan o‘chirilsinmi?')) removeContact(u, conv);
   };
   const forwardTo = (conv) => {
-    const m = fwdMsg;
+    const src = fwdMsg;
     setFwdMsg(null);
-    if (!m || !conv) return;
-    if (!m.body) { if (notify) notify('Faqat matnli xabarni uzatish mumkin', 'danger'); return; }
-    chatApi('/conversations/' + conv.id + '/messages', { method: 'POST', token: tokenRef.current,
-      body: { body: m.body, client_id: 'fwd-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7) } })
-      .then((r) => { applyServerMessage(conv.id, r); if (notify) notify('Xabar uzatildi'); })
+    const list = (Array.isArray(src) ? src : [src]).filter((x) => x && x.body).sort((a, b) => (a.id > b.id ? 1 : -1));
+    if (!conv || !list.length) { if (src && notify) notify('Faqat matnli xabarni uzatish mumkin', 'danger'); return; }
+    setSel([]);
+    list.reduce((pr, m, k) => pr.then(() => {
+      const f = chatSplitFwd(m.body);
+      const from = f ? f.from : (m.sender_id === me.id ? dispName : (usersById[m.sender_id] ? usersById[m.sender_id].name : 'Foydalanuvchi'));
+      const text = f ? f.text : m.body;
+      return chatApi('/conversations/' + conv.id + '/messages', { method: 'POST', token: tokenRef.current,
+        body: { body: chatMakeFwd(from, text), client_id: 'fwd-' + Date.now() + '-' + k + '-' + Math.random().toString(36).slice(2, 7) } })
+        .then((r) => applyServerMessage(conv.id, r));
+    }), Promise.resolve())
+      .then(() => { if (notify) notify(list.length > 1 ? list.length + ' ta xabar uzatildi' : 'Xabar uzatildi'); })
       .catch(() => { if (notify) notify('Uzatib bo‘lmadi', 'danger'); });
   };
 
@@ -8533,7 +8873,7 @@ function ChatPage({ notify, appMe, onOpenProfile, isStudent, brand, canMute }) {
     if (m.reply && !deleted) {
       const orig = itemById[m.reply.id];
       const gone = orig ? !!orig.deleted_at : !!m.reply.deleted;
-      const qtext = gone ? 'Xabar o‘chirildi' : (orig ? orig.body : m.reply.body);
+      const qtext = gone ? 'Xabar o‘chirildi' : chatPlain(orig ? orig.body : m.reply.body);
       quote = (
         <button type="button" className="chat-quote" onClick={() => jumpToMsg(m.reply.id)}>
           <b>{nameOfUser(m.reply.sender_id)}</b>
@@ -8541,32 +8881,22 @@ function ChatPage({ notify, appMe, onOpenProfile, isStudent, brand, canMute }) {
         </button>
       );
     }
-    const msgActs = [
-      { label: 'Javob', tone: 'green', icon: <ChatIcon.reply />, onClick: () => { setReplyTo(m); if (taRef.current) taRef.current.focus(); } },
-      { label: 'Uzatish', tone: 'blue', icon: SWIPE_ICON.fwd, onClick: () => setFwdMsg(m) },
-    ];
-    if (mine && !deleted) msgActs.push({ label: "O'chirish", tone: 'red', icon: <ChatIcon.trash />, onClick: () => setConfirmId(m.id) });
+    const picked = sel.indexOf(m.id) >= 0;
+    const fw = deleted ? null : chatSplitFwd(m.body);
+    const bodyText = fw ? fw.text : m.body;
+    const toggleSel = () => setSel((a) => (a.indexOf(m.id) >= 0 ? a.filter((x) => x !== m.id) : a.concat(m.id)));
+    const openMenu = (e) => { e.stopPropagation(); const r = e.currentTarget.getBoundingClientRect(); setMenu({ id: m.id, x: r.right, y: r.bottom }); };
     const msgEl = (
       <div key={String(m.client_id || m.id)} data-mid={m.id} tabIndex={-1}
-        className={'chat-msg' + (mine ? ' mine' : '') + (m.failed ? ' failed' : '') + (deleted ? ' deleted' : '') + (flashId === m.id ? ' flash' : '')}>
-        {real && !isEditing && !confirming && (
-          <div className="chat-actions" role="toolbar" aria-label="Xabar amallari">
-            <button type="button" className="chat-act" title="Javob berish" aria-label="Javob berish"
-              onClick={() => { setReplyTo(m); if (taRef.current) taRef.current.focus(); }}><ChatIcon.reply /></button>
-            <button type="button" className={'chat-act' + (copiedId === m.id ? ' ok' : '')} title={copiedId === m.id ? 'Nusxalandi' : 'Nusxalash'} aria-label="Nusxalash"
-              onClick={() => copyMsg(m)}>{copiedId === m.id ? <ChatIcon.check /> : <ChatIcon.copy />}</button>
-            {mine && (
-              <React.Fragment>
-                <button type="button" className="chat-act" title="Tahrirlash" aria-label="Tahrirlash"
-                  onClick={() => setEditing({ id: m.id, text: m.body })}><ChatIcon.pencil /></button>
-                <button type="button" className="chat-act danger" title="O‘chirish" aria-label="O‘chirish"
-                  onClick={() => setConfirmId(m.id)}><ChatIcon.trash /></button>
-              </React.Fragment>
-            )}
-          </div>
-        )}
+        onContextMenu={(e) => { if (!TOUCH_UI && real && !isEditing && !confirming && !selMode) { e.preventDefault(); setMenu({ id: m.id, x: e.clientX, y: e.clientY }); } }}
+        className={'chat-msg' + (mine ? ' mine' : '') + (m.failed ? ' failed' : '') + (deleted ? ' deleted' : '') + (flashId === m.id ? ' flash' : '') + (picked ? ' picked' : '')}>
+        {selMode && real && <span className={'chat-pick' + (picked ? ' on' : '')}>{picked && <ChatIcon.check />}</span>}
         <div className="chat-bubble">
+          {real && !isEditing && !confirming && !selMode && (
+            <button type="button" className="chat-more" aria-label="Xabar amallari" title="Amallar" onClick={openMenu}><CHAT_MI.dots width="16" height="16" /></button>
+          )}
           {senderName && <div className="chat-sender">{senderName}</div>}
+          {fw && <div className="chat-fwd-tag"><CHAT_MI.fwd width="12" height="12" /><span>Uzatilgan: <b>{fw.from}</b></span></div>}
           {quote}
           {isEditing ? (
             <div className="chat-edit">
@@ -8598,7 +8928,7 @@ function ChatPage({ notify, appMe, onOpenProfile, isStudent, brand, canMute }) {
                   <span><b>{m.attachment.name}</b><small>{chatFmtSize(m.attachment.size || 0)} · yuklab olish</small></span>
                 </a>
               )}
-              {(m.body || !m.attachment) && <div className="chat-text">{chatLinkify(m.body)}</div>}
+              {(bodyText || !m.attachment) && <div className="chat-text">{chatLinkify(bodyText)}</div>}
             </React.Fragment>
           )}
           {confirming && (
@@ -8622,8 +8952,10 @@ function ChatPage({ notify, appMe, onOpenProfile, isStudent, brand, canMute }) {
         </div>
       </div>
     );
-    thread.push(TOUCH_UI && real && !isEditing && !confirming
-      ? <SwipeRow key={String(m.client_id || m.id)} bg="transparent" actions={msgActs}>{msgEl}</SwipeRow>
+    thread.push(real && !isEditing && !confirming
+      ? <MsgSlide key={String(m.client_id || m.id)} canReply selMode={selMode}
+          onReply={() => { setReplyTo(m); if (taRef.current) taRef.current.focus({ preventScroll: true }); }}
+          onHold={() => setSel([m.id])} onToggle={toggleSel}>{msgEl}</MsgSlide>
       : msgEl);
   });
 
@@ -8638,7 +8970,7 @@ function ChatPage({ notify, appMe, onOpenProfile, isStudent, brand, canMute }) {
           <div className="chat-fwd-card" onClick={(e) => e.stopPropagation()}>
             <div className="chat-fwd-head"><b>Xabarni uzatish</b>
               <button type="button" className="chat-icon-btn" onClick={() => setFwdMsg(null)} aria-label="Yopish"><ChatIcon.x /></button></div>
-            <div className="chat-fwd-preview">{fwdMsg.body || 'Fayl'}</div>
+            <div className="chat-fwd-preview">{Array.isArray(fwdMsg) ? fwdMsg.length + ' ta xabar' : (chatPlain(fwdMsg.body) || 'Fayl')}</div>
             <div className="chat-fwd-list">
               {convs.map((c) => {
                 const nm = c.kind === 'group' ? CHAT_GENERAL_TITLE : (c.other ? c.other.name : 'Suhbat');
@@ -8730,7 +9062,33 @@ function ChatPage({ notify, appMe, onOpenProfile, isStudent, brand, canMute }) {
         )}
         {active && (
           <React.Fragment>
-            <header className="chat-head">
+            {selMode ? (
+              <header className="chat-head chat-selbar">
+                <button type="button" className="chat-icon-btn" onClick={() => setSel([])} aria-label="Bekor qilish"><ChatIcon.x /></button>
+                <b className="chat-sel-n">{sel.length} ta tanlandi</b>
+                {(() => {
+                  const chosen = activeItems.filter((x) => sel.indexOf(x.id) >= 0 && !x.deleted_at);
+                  const allMine = chosen.length > 0 && chosen.every((x) => x.sender_id === me.id);
+                  const one = chosen.length === 1 ? chosen[0] : null;
+                  const copySel = () => {
+                    const txt = chosen.map((x) => chatPlain(x.body)).join('\n');
+                    const done = () => { if (notify) notify('Nusxalandi'); setSel([]); };
+                    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(done).catch(done); else done();
+                  };
+                  return (
+                    <div className="chat-sel-acts">
+                      <button type="button" className="chat-icon-btn" onClick={copySel} title="Nusxalash" aria-label="Nusxalash"><ChatIcon.copy /></button>
+                      <button type="button" className="chat-icon-btn" onClick={() => setFwdMsg(chosen.length === 1 ? chosen[0] : chosen)} title="Uzatish" aria-label="Uzatish"><CHAT_MI.fwd /></button>
+                      {(one && one.sender_id === me.id) || allMine ? (
+                        <button type="button" className="chat-icon-btn" aria-label="Boshqa amallar" title="Boshqa amallar"
+                          onClick={(e) => { const r = e.currentTarget.getBoundingClientRect(); setMenu({ bar: true, x: r.right, y: r.bottom }); }}><CHAT_MI.dots /></button>
+                      ) : null}
+                    </div>
+                  );
+                })()}
+              </header>
+            ) : null}
+            <header className="chat-head" style={selMode ? { display: 'none' } : undefined}>
               <button type="button" className="chat-back" onClick={() => setActiveId(null)} aria-label="Orqaga">
                 <ChatIcon.back />
               </button>
@@ -8746,7 +9104,7 @@ function ChatPage({ notify, appMe, onOpenProfile, isStudent, brand, canMute }) {
                 </small>
               </div>
             </header>
-            <div className="chat-thread" ref={threadRef} onScroll={onThreadScroll}>
+            <div className={'chat-thread' + (selMode ? ' selmode' : '')} ref={threadRef} onScroll={onThreadScroll}>
               {activeEntry && activeEntry.hasMore && (
                 <button type="button" className="chat-older" onClick={loadOlder}>Eski xabarlar</button>
               )}
@@ -8763,7 +9121,7 @@ function ChatPage({ notify, appMe, onOpenProfile, isStudent, brand, canMute }) {
                 <ChatIcon.reply />
                 <div className="chat-replybar-body">
                   <b>{nameOfUser(replyTo.sender_id)}</b>
-                  <span>{replyTo.body}</span>
+                  <span>{chatPlain(replyTo.body)}</span>
                 </div>
                 <button type="button" className="chat-icon-btn" onClick={() => setReplyTo(null)} aria-label="Javobni bekor qilish"><ChatIcon.x /></button>
               </div>
@@ -8796,6 +9154,40 @@ function ChatPage({ notify, appMe, onOpenProfile, isStudent, brand, canMute }) {
           </React.Fragment>
         )}
       </section>
+
+      {menu && (() => {
+        if (menu.bar) {
+          const chosen = activeItems.filter((x) => sel.indexOf(x.id) >= 0 && !x.deleted_at);
+          const one = chosen.length === 1 ? chosen[0] : null;
+          return <ChatPop x={menu.x} y={menu.y} onClose={() => setMenu(null)} items={[
+            one && one.sender_id === me.id ? { label: 'Tahrirlash', icon: <ChatIcon.pencil />, onClick: () => { setEditing({ id: one.id, text: chatPlain(one.body) }); setSel([]); } } : null,
+            { label: 'O‘chirish', icon: <ChatIcon.trash />, danger: true, onClick: () => setDelAsk(true) },
+          ]} />;
+        }
+        const m = activeItems.find((x) => x.id === menu.id);
+        if (!m) return null;
+        const mineM = m.sender_id === me.id;
+        return <ChatPop x={menu.x} y={menu.y} onClose={() => setMenu(null)} items={[
+          { label: 'Javob', icon: <ChatIcon.reply />, onClick: () => { setReplyTo(m); if (taRef.current) taRef.current.focus({ preventScroll: true }); } },
+          { label: 'Nusxalash', icon: <ChatIcon.copy />, onClick: () => copyMsg(m) },
+          m.body ? { label: 'Uzatish', icon: <CHAT_MI.fwd />, onClick: () => setFwdMsg(m) } : null,
+          { label: 'Belgilash', icon: <CHAT_MI.sel />, onClick: () => setSel([m.id]) },
+          mineM ? { label: 'Tahrirlash', icon: <ChatIcon.pencil />, onClick: () => setEditing({ id: m.id, text: chatPlain(m.body) }) } : null,
+          mineM ? { label: 'O‘chirish', icon: <ChatIcon.trash />, danger: true, onClick: () => setConfirmId(m.id) } : null,
+        ]} />;
+      })()}
+      {delAsk && ReactDOM.createPortal(
+        <div className="chat-fwd-backdrop" onClick={() => setDelAsk(false)}>
+          <div className="chat-fwd-card chat-del-card" onClick={(e) => e.stopPropagation()}>
+            <div className="chat-del-ic"><ChatIcon.trash width="22" height="22" /></div>
+            <b>{sel.length} ta xabar o‘chirilsinmi?</b>
+            <span>Bu amalni qaytarib bo‘lmaydi.</span>
+            <div className="chat-del-btns">
+              <button type="button" className="chat-ok" onClick={() => setDelAsk(false)}>Bekor</button>
+              <button type="button" className="chat-ok danger" onClick={() => { const ids = sel.slice(); setDelAsk(false); setSel([]); activeItems.filter((x) => ids.indexOf(x.id) >= 0 && x.sender_id === me.id).forEach(removeMsg); }}>Ha, o‘chirish</button>
+            </div>
+          </div>
+        </div>, document.body)}
 
       {picker && (
         <ChatUserPicker
@@ -9357,7 +9749,7 @@ function StatisticsPage({ stats, revenue, students, categories }) {
           <h1>Statistika</h1>
           <p>{cid === 'all' ? 'Barcha kurslar' : (categories.find((c) => c.id === cid) || {}).name} bo'yicha moliya, kurslar va o'quvchilar ko'rsatkichlari</p>
           <div className="sx-ctl">
-            <select value={cid} onChange={(e) => pick(e.target.value)} aria-label="Kurs"><option value="all">Barcha kurslar</option>{categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</select>
+            <NSelect value={cid} onChange={(e) => pick(e.target.value)} aria-label="Kurs"><option value="all">Barcha kurslar</option>{categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}</NSelect>
             <div className="sx-seg">{rangeOpts.map(([v, l]) => <button key={v} type="button" className={range === v ? 'on' : ''} onClick={() => setRange(v)}>{l}</button>)}</div>
           </div>
         </div>
@@ -9376,7 +9768,7 @@ function StatisticsPage({ stats, revenue, students, categories }) {
         ))}</div>
 
         <section className="v2-c sx-box sx-ins"><h2>Aqlli xulosalar <small>avtomatik tahlil</small></h2>
-          <div className="sx-insg">{insights.map(([e, t], i) => <div key={i}><span>{e}</span><p>{t}</p></div>)}</div></section>
+          <div className="sx-insg">{insights.map(([e, t], i) => <div key={i}><InsIcon e={e} /><p>{t}</p></div>)}</div></section>
         <div className="sx-row r83">
           <section className="v2-c sx-box">
             <div className="sx-bh"><h2>Tushum <small>{range} oy</small></h2><div className="sx-seg s"><button type="button" className={kind === 'bar' ? 'on' : ''} onClick={() => setKind('bar')}>Ustun</button><button type="button" className={kind === 'line' ? 'on' : ''} onClick={() => setKind('line')}>Chiziq</button></div></div>
@@ -9401,7 +9793,7 @@ function StatisticsPage({ stats, revenue, students, categories }) {
           </section>
         </div>
         <div className="sx-row r2">
-          <section className="v2-c sx-box"><h2>Eng faol o'quvchilar</h2>{top.length ? top.map((r, i) => <div key={r.id} className="sx-li"><span>{['🥇', '🥈', '🥉', '4.', '5.'][i]} {r.name}</span><b>{r.done} dars</b></div>) : <p className="sx-em">Hali dars tugatilmagan.</p>}</section>
+          <section className="v2-c sx-box"><h2>Eng faol o'quvchilar</h2>{top.length ? top.map((r, i) => <div key={r.id} className="sx-li"><span className="sx-rk"><RankBadge i={i} /> {r.name}</span><b>{r.done} dars</b></div>) : <p className="sx-em">Hali dars tugatilmagan.</p>}</section>
           <section className="v2-c sx-box"><h2>Kurslar bo'yicha tushum <small>{range} oy</small></h2><SxHB rows={D.courses.filter((c) => c.rev > 0).sort((a, b) => b.rev - a.rev).map((c) => ({ l: c.name, v: c.rev, t: fmtMoney(c.rev) }))} empty="Tanlangan davrda tushum yo'q." /></section>
         </div>
       </>)}
@@ -9724,9 +10116,9 @@ function PvPayModal({ students, setStudents, categories, notify, initialSid, ini
           <div className="pv-grid2">
             <div className="sd-field">
               <label className="sd-label">Oy</label>
-              <select className="sd-select" value={m} onChange={(e) => setM(e.target.value)}>
+              <NSelect className="sd-select" value={m} onChange={(e) => setM(e.target.value)}>
                 {MONTH_NAMES.map((x) => <option key={x} value={x}>{x}</option>)}
-              </select>
+              </NSelect>
             </div>
             <div className="sd-field">
               <label className="sd-label">Yil</label>
@@ -10050,18 +10442,18 @@ function PaymentsPage({ students, categories, setStudents, notify, canEdit }) {
           <div className="sx-ctl">
             <div className="pv-period">
               <button type="button" aria-label="Oldingi oy" onClick={() => setPer(pvShift(per.m, per.y, -1))}>‹</button>
-              <select value={per.m} onChange={(e) => setPer({ m: e.target.value, y: per.y })} aria-label="Oy">
+              <NSelect value={per.m} onChange={(e) => setPer({ m: e.target.value, y: per.y })} aria-label="Oy">
                 {MONTH_NAMES.map((x) => <option key={x} value={x}>{x}</option>)}
-              </select>
-              <select value={per.y} onChange={(e) => setPer({ m: per.m, y: e.target.value })} aria-label="Yil">
+              </NSelect>
+              <NSelect value={per.y} onChange={(e) => setPer({ m: per.m, y: e.target.value })} aria-label="Yil">
                 {yearOpts.map((x) => <option key={x} value={x}>{x}</option>)}
-              </select>
+              </NSelect>
               <button type="button" aria-label="Keyingi oy" onClick={() => setPer(pvShift(per.m, per.y, 1))}>›</button>
             </div>
-            <select value={cid} onChange={(e) => { setCid(e.target.value); setHpg(1); }} aria-label="Kurs">
+            <NSelect value={cid} onChange={(e) => { setCid(e.target.value); setHpg(1); }} aria-label="Kurs">
               <option value="all">Barcha kurslar</option>
               {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-            </select>
+            </NSelect>
             {!isCur && <button type="button" className="pv-act" onClick={() => setPer({ m: cur.m, y: cur.y })}>Joriy oy</button>}
             {canEdit && <button type="button" className="pv-act pri" onClick={() => setModal({ type: 'pay', sid: null })}>+ To'lov qabul qilish</button>}
           </div>
@@ -10466,7 +10858,7 @@ function PermissionsPage({ me, staff, setStaff, roleTpl, setRoleTpl, notify }) {
               {(can2 || (sel.kind === 'user' && !sel.locked)) && (
                 <div className="nx-panel"><div className="nx-ph sm"><div><h2>Tayyor andozalar</h2><p>Bir bosishda qo'llanadi</p></div></div>
                   <div className="nx-pre">{PERM_PRESETS.map((p) => <button key={p.id} type="button" onClick={() => preset(sel, p)} title={p.d}><span>{(Icon[p.ic] || Icon.lock)({ width: 20, height: 20 })}</span><b>{p.l}</b><small>{p.d}</small></button>)}</div>
-                  <label className="nx-cp">Huquqlarni nusxalash<select value="" onChange={(e) => e.target.value && copyFrom(sel, e.target.value)}><option value="">Kimdan nusxalash…</option>{ents.filter((x) => x.id !== sel.id).map((x) => <option key={x.id} value={x.id}>{x.name} ({R(x).l})</option>)}</select></label>
+                  <label className="nx-cp">Huquqlarni nusxalash<NSelect value="" onChange={(e) => e.target.value && copyFrom(sel, e.target.value)}><option value="">Kimdan nusxalash…</option>{ents.filter((x) => x.id !== sel.id).map((x) => <option key={x.id} value={x.id}>{x.name} ({R(x).l})</option>)}</NSelect></label>
                   {sel.kind === 'user' && sel.role !== 'custom' && <p className="nx-hint">Andoza qo'llansa, xodim avtomatik Custom rolga o'tadi.</p>}
                 </div>)}
             </aside>
@@ -10869,7 +11261,7 @@ function CoursesManager({ categories, setCategories, canEdit, notify, students, 
                     <div className="topic-row-name truncate">{sub.name}</div>
                     <div className="topic-row-meta"><Icon.video width="12" height="12" />{sub.lessons.length} ta video dars</div>
                   </div>
-                  {canEdit && <span role="button" className="lt-postbtn" onClick={(e) => { e.stopPropagation(); setPosterFor({ catId: activeCat.id, subId: sub.id }); }}>🖼 Posterlar ({(sub.posters || []).length})</span>}
+                  {canEdit && <span role="button" className="lt-postbtn" onClick={(e) => { e.stopPropagation(); setPosterFor({ catId: activeCat.id, subId: sub.id }); }}><Icon.image width="12" height="12" /> Posterlar ({(sub.posters || []).length})</span>}
                   {canEdit && (
                     <span className="sec-acts">
                       <span role="button" className="sec-act" title="Bo'limni tahrirlash" onClick={(e) => { e.stopPropagation(); openEditSub(activeCat, sub); }}><Icon.edit width="13" height="13" /></span>
@@ -10894,10 +11286,10 @@ function CoursesManager({ categories, setCategories, canEdit, notify, students, 
               <div className="vu-grid">
                 <div className="sd-field">
                   <label className="sd-label">Bo'lim</label>
-                  <select value={upl.subId} onChange={(e) => setUpl({ ...upl, subId: e.target.value })} className="sd-select">
+                  <NSelect value={upl.subId} onChange={(e) => setUpl({ ...upl, subId: e.target.value })} className="sd-select">
                     <option value="">Bo'limni tanlang…</option>
                     {activeCat.subtopics.map((s) => <option key={s.id} value={s.id}>{s.name} ({s.lessons.length} ta dars)</option>)}
-                  </select>
+                  </NSelect>
                 </div>
                 <div className="sd-field">
                   <label className="sd-label">Nechanchi dars {uplSub ? <span className="vu-range">(1–{uplSub.lessons.length + 1})</span> : null}</label>
@@ -11356,12 +11748,12 @@ function StudentAccessFields({ categories, access, canEdit = true, onChange }) {
                 </div>
                 <div>
                   <label className="text-xs font-semibold text-slate uppercase tracking-wide">Dars kunlari jadvali</label>
-                  <select disabled={!canEdit} value={a.schedule} onChange={(e) => updateAccess(cat.id, { schedule: e.target.value })}
+                  <NSelect disabled={!canEdit} value={a.schedule} onChange={(e) => updateAccess(cat.id, { schedule: e.target.value })}
                     className="mt-1 w-full border border-line rounded-lg px-3 py-2 text-sm bg-white outline-none focus:border-gold disabled:opacity-50">
                     <option value="odd">Toq kunlar (Du/Chor/Ju)</option>
                     <option value="even">Juft kunlar (Se/Pay/Sha)</option>
                     <option value="daily">Har kuni</option>
-                  </select>
+                  </NSelect>
                 </div>
                 <label className="flex items-center gap-2 text-sm text-ink">
                   <input disabled={!canEdit} type="checkbox" checked={!!a.isFullyPaid} onChange={(e) => updateAccess(cat.id, { isFullyPaid: e.target.checked })} />
@@ -11414,6 +11806,91 @@ const formatPhone = (v) => {
   const parts = [d.slice(0, 2), d.slice(2, 5), d.slice(5, 7), d.slice(7, 9)].filter(Boolean);
   return '+998-' + parts.join('-');
 };
+
+
+/* ---------- NSelect: chiroyli custom dropdown (native <NSelect> o'rniga) ---------- */
+function NSelect({ value, onChange, children, className, disabled, placeholder, ...rest }) {
+  const [open, setOpen] = useState(false);
+  const [act, setAct] = useState(-1);
+  const [rc, setRc] = useState(null);
+  const box = useRef(null);
+  const btn = useRef(null);
+  const list = useRef(null);
+  const opts = React.Children.toArray(children).filter((c) => c && c.props && c.type === 'option').map((c) => ({ v: String(c.props.value != null ? c.props.value : (typeof c.props.children === 'string' ? c.props.children : '')), l: React.Children.toArray(c.props.children).join(''), dis: !!c.props.disabled }));
+  const cur = opts.find((o) => o.v === String(value == null ? '' : value));
+  const measure = () => {
+    if (!btn.current) return;
+    const r = btn.current.getBoundingClientRect();
+    const below = window.innerHeight - r.bottom, above = r.top;
+    const up = below < 220 && above > below;
+    setRc({ left: r.left, width: r.width, top: r.bottom + 8, bottom: window.innerHeight - r.top + 8, up, max: Math.max(120, Math.min(280, (up ? above : below) - 18)) });
+  };
+  useLayoutEffect(() => {
+    if (!open) return;
+    measure();
+    setAct(opts.findIndex((o) => o.v === String(value == null ? '' : value)));
+    const on = () => measure();
+    window.addEventListener('resize', on); window.addEventListener('scroll', on, true);
+    const off = (e) => { if ((box.current && box.current.contains(e.target)) || (list.current && list.current.contains(e.target))) return; setOpen(false); };
+    document.addEventListener('mousedown', off); document.addEventListener('touchstart', off);
+    return () => { window.removeEventListener('resize', on); window.removeEventListener('scroll', on, true); document.removeEventListener('mousedown', off); document.removeEventListener('touchstart', off); };
+  }, [open]);
+  useEffect(() => {
+    if (open && list.current && act >= 0) { const L = list.current, el = L.children[act]; if (el) { if (el.offsetTop < L.scrollTop) L.scrollTop = el.offsetTop - 6; else if (el.offsetTop + el.offsetHeight > L.scrollTop + L.clientHeight) L.scrollTop = el.offsetTop + el.offsetHeight - L.clientHeight + 6; } }
+  }, [act, open, rc]);
+  const pick = (o) => { if (o.dis) return; setOpen(false); onChange && onChange({ target: { value: o.v }, currentTarget: { value: o.v } }); };
+  const onKey = (e) => {
+    if (disabled) return;
+    if (e.key === 'Escape') { setOpen(false); return; }
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); if (!open) { setOpen(true); return; } setAct((a) => Math.max(0, Math.min(opts.length - 1, a + (e.key === 'ArrowDown' ? 1 : -1)))); }
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if (!open) setOpen(true); else if (opts[act]) pick(opts[act]); }
+  };
+  return (
+    <div ref={box} className={'ns ' + (open ? 'open ' : '') + (disabled ? 'dis ' : '') + (className || '')}>
+      <button ref={btn} type="button" className="ns-btn" disabled={disabled} onClick={() => setOpen(!open)} onKeyDown={onKey} aria-haspopup="listbox" aria-expanded={open} aria-label={rest['aria-label']}>
+        <span className={'ns-val' + (cur && cur.v !== '' ? '' : ' ph')}>{cur ? cur.l : (placeholder || 'Tanlang…')}</span>
+        <svg className="ns-chev" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6" /></svg>
+      </button>
+      {open && rc && ReactDOM.createPortal(
+        <div ref={list} className={'ns-list' + (rc.up ? ' up' : '')} role="listbox"
+          style={{ position: 'fixed', left: rc.left, width: rc.width, top: rc.up ? 'auto' : rc.top, bottom: rc.up ? rc.bottom : 'auto', maxHeight: rc.max }}>
+          {opts.map((o, i) => (
+            <button type="button" key={o.v + i} role="option" aria-selected={!!cur && cur.v === o.v} disabled={o.dis}
+              className={'ns-opt' + (cur && cur.v === o.v ? ' sel' : '') + (i === act ? ' act' : '')}
+              onMouseEnter={() => setAct(i)} onClick={() => pick(o)}>
+              <span>{o.l}</span>
+              {cur && cur.v === o.v && <Icon.check width="14" height="14" />}
+            </button>
+          ))}
+          {!opts.length && <div className="ns-empty">Ma'lumot yo'q</div>}
+        </div>, document.body)}
+    </div>
+  );
+}
+
+/* ---------- Emoji o'rniga SVG ikonlar (statistika xulosalari, reytinglar) ---------- */
+const INS_MAP = { '🚀': ['up', '#34d399'], '📈': ['up', '#34d399'], '📉': ['down', '#f87171'], '🏆': ['medal', '#fbbf24'], '💸': ['cash', '#f87171'], '😴': ['clock', '#a78bfa'], '🎯': ['target', '#38bdf8'], '✨': ['spark', '#34d399'], '⚠️': ['warn', '#fb923c'], '🗓️': ['cal', '#38bdf8'], '➕': ['plus', '#34d399'], '📌': ['pin', '#38bdf8'] };
+function InsIcon({ e }) {
+  const m = INS_MAP[e] || ['spark', '#34d399'];
+  const P = { viewBox: '0 0 24 24', width: 18, height: 18, fill: 'none', stroke: 'currentColor', strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round' };
+  const paths = {
+    up: <><path d="M3 17l6-6 4 4 8-8" /><path d="M15 7h6v6" /></>,
+    down: <><path d="M3 7l6 6 4-4 8 8" /><path d="M15 17h6v-6" /></>,
+    medal: <><circle cx="12" cy="9" r="6" /><path d="M8.5 14 7 22l5-3 5 3-1.5-8" /></>,
+    cash: <><rect x="2.5" y="6" width="19" height="12" rx="2.5" /><circle cx="12" cy="12" r="2.6" /><path d="M6 9.5v.01M18 14.5v.01" /></>,
+    clock: <><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></>,
+    target: <><circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="5" /><circle cx="12" cy="12" r="1.2" /></>,
+    spark: <><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z" /><path d="M19 16l.7 1.8L21.5 18.5l-1.8.7L19 21l-.7-1.8-1.8-.7 1.8-.7z" /></>,
+    warn: <><path d="M12 3 2.5 20h19z" /><path d="M12 10v4M12 17.2v.01" /></>,
+    cal: <><rect x="3" y="5" width="18" height="16" rx="2.5" /><path d="M3 10h18M8 3v4M16 3v4" /></>,
+    plus: <><circle cx="12" cy="12" r="9" /><path d="M12 8v8M8 12h8" /></>,
+    pin: <><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z" /><circle cx="12" cy="9.5" r="2.5" /></>
+  };
+  return <span className="ins-ic" style={{ '--c': m[1] }}><svg {...P}>{paths[m[0]]}</svg></span>;
+}
+function RankBadge({ i }) {
+  return <span className={'rk rk' + i}>{i < 3 ? <Icon.medal width="14" height="14" /> : i + 1}</span>;
+}
 
 function SdModal({ title, icon, onClose, children, size }) {
   /* Static modal: faqat × yoki ichidagi tugmalar bilan yopiladi. */
@@ -11851,9 +12328,9 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
           )}
           <div className="sd-field">
             <label className="sd-label">Oy</label>
-            <select className="sd-select" value={payMonth} onChange={(e) => changePayPeriod(e.target.value, payYear)}>
+            <NSelect className="sd-select" value={payMonth} onChange={(e) => changePayPeriod(e.target.value, payYear)}>
               {MONTH_NAMES.map((m) => <option key={m} value={m}>{m}</option>)}
-            </select>
+            </NSelect>
           </div>
           <div className="sd-field">
             <label className="sd-label">Yil</label>
@@ -12676,9 +13153,9 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff, in
           </div>
           <div className="sd-field">
             <label className="sd-label">Oy</label>
-            <select className="sd-select" value={editPay.month} onChange={(e) => setEditPay({ ...editPay, month: e.target.value })}>
+            <NSelect className="sd-select" value={editPay.month} onChange={(e) => setEditPay({ ...editPay, month: e.target.value })}>
               {MONTH_NAMES.map((m) => <option key={m} value={m}>{m}</option>)}
-            </select>
+            </NSelect>
           </div>
           <div className="sd-field">
             <label className="sd-label">Yil</label>
@@ -12745,9 +13222,9 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff, in
           )}
           <div className="sd-field">
             <label className="sd-label">Oy</label>
-            <select className="sd-select" value={gMonth} onChange={(e) => changeGPeriod(e.target.value, gYear)}>
+            <NSelect className="sd-select" value={gMonth} onChange={(e) => changeGPeriod(e.target.value, gYear)}>
               {MONTH_NAMES.map((m) => <option key={m} value={m}>{m}</option>)}
-            </select>
+            </NSelect>
           </div>
           <div className="sd-field">
             <label className="sd-label">Yil</label>
@@ -12794,9 +13271,9 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff, in
           </div>
           <div className="sd-field">
             <label className="sd-label">Oy</label>
-            <select className="sd-select" value={payMonth} onChange={(e) => setPayMonth(e.target.value)}>
+            <NSelect className="sd-select" value={payMonth} onChange={(e) => setPayMonth(e.target.value)}>
               {MONTH_NAMES.map((m) => <option key={m} value={m}>{m}</option>)}
-            </select>
+            </NSelect>
           </div>
           <div className="sd-field">
             <label className="sd-label">Yil</label>
@@ -13015,7 +13492,11 @@ function StaffPage({ me, staff, setStaff, roleTpl, notify, onGoPerms }) {
           <div className="nx-f">
             <div className="nx-sec"><span className="nx-n">1</span>Profil</div>
             <div className="nx-2"><label>To'liq ism<input value={form.name} onChange={(e) => setName(e.target.value)} placeholder="Aziz Karimov" autoFocus /></label>
-              <label>Lavozim<input value={form.position || ''} onChange={(e) => setForm({ ...form, position: e.target.value })} placeholder="Matematika o'qituvchisi" /></label></div>
+              <label>Rol
+                <NSelect value={form.role} onChange={(e) => { const r = e.target.value; pickRole(r); setForm((f) => ({ ...f, role: r, position: r === 'custom' ? (ROLE_CARDS.some(([k, l]) => l === f.position) ? '' : (f.position || '')) : (ROLE_CARDS.find(([k]) => k === r) || [])[1] || '' })); }}>
+                  {ROLE_CARDS.filter(([r]) => !isTopRole(r) || isCeo).map(([r, l]) => <option key={r} value={r} disabled={!form.isNew && (form.id === me.id || lastCeo(form)) && form.role !== r}>{l}</option>)}
+                </NSelect></label></div>
+            {form.role === 'custom' && <label className="nx-custom-pos">Lavozim nomi <em>(Custom rol uchun)</em><input value={form.position || ''} onChange={(e) => setForm({ ...form, position: e.target.value })} placeholder="Masalan: Matematika o'qituvchisi" autoFocus /></label>}
             <label>Telefon<input value={form.phone || ''} onChange={(e) => setForm({ ...form, phone: formatPhone(e.target.value) })} placeholder="+998-90-123-45-67" /></label>
 
             <div className="nx-sec"><span className="nx-n">2</span>Kirish ma'lumotlari {form.isNew && <em className="nx-auto">avtomatik</em>}</div>
@@ -13569,7 +14050,7 @@ function StaffProfile({ me, staff, setStaff, notify, onLogout, canBrand, brand, 
                     <div className="pb-input"><Icon.user width="15" height="15" /><input value={newUser.name} placeholder="Ism familiya" onChange={(e) => setNewUser({ ...newUser, name: e.target.value, username: newUser.uAuto === false ? newUser.username : nxLogin(e.target.value, staff) })} /></div>
                   </label>
                   <label className="pb-field"><span>Rol</span>
-                    <div className="pb-input"><Icon.medal width="15" height="15" /><select value={newUser.role} onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}><option value="admin_teacher">Teacher</option><option value="support">Support</option></select></div>
+                    <div className="pb-input"><Icon.medal width="15" height="15" /><NSelect value={newUser.role} onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}><option value="admin_teacher">Teacher</option><option value="support">Support</option></NSelect></div>
                   </label>
                   <label className="pb-field"><span>Login</span>
                     <div className="pb-input"><Icon.card width="15" height="15" /><input value={newUser.username} placeholder="login" onChange={(e) => setNewUser({ ...newUser, username: e.target.value.replace(/\s+/g, ''), uAuto: false })} /></div>
@@ -13598,7 +14079,7 @@ function StaffProfile({ me, staff, setStaff, notify, onLogout, canBrand, brand, 
                     </div>
                     <div className="pb-member-act">
                       {!self && !isTopRole(u.role)
-                        ? <select className="pb-mrole" value={u.role} onChange={(e) => setRole(u.id, e.target.value)} aria-label="Rol"><option value="admin_teacher">Teacher</option><option value="support">Support</option></select>
+                        ? <NSelect className="pb-mrole" value={u.role} onChange={(e) => setRole(u.id, e.target.value)} aria-label="Rol"><option value="admin_teacher">Teacher</option><option value="support">Support</option></NSelect>
                         : <span className="pb-tag sm" style={{ '--c': rm.c }}>{rm.l}</span>}
                       {!self && (confirmDel === u.id
                         ? <button type="button" className="pb-btn solid danger sm" onClick={() => removeUser(u.id)}>Tasdiqlash</button>
@@ -14382,9 +14863,9 @@ function LessonTools({ uid, category, cur, flat, pick }) {
   return (
     <div className="lt-box">
       <div className="lt-tabs">
-        <button className={tab === 'notes' ? 'on' : ''} onClick={() => setTab('notes')}>📝 Konspekt</button>
-        <button className={tab === 'rate' ? 'on' : ''} onClick={() => setTab('rate')}>⭐ Baholash</button>
-        <button className={tab === 'saved' ? 'on' : ''} onClick={() => setTab('saved')}>🔖 Saralanganlar ({items.length})</button>
+        <button className={tab === 'notes' ? 'on' : ''} onClick={() => setTab('notes')}><Icon.edit width="13" height="13" /> Konspekt</button>
+        <button className={tab === 'rate' ? 'on' : ''} onClick={() => setTab('rate')}><Icon.medal width="13" height="13" /> Baholash</button>
+        <button className={tab === 'saved' ? 'on' : ''} onClick={() => setTab('saved')}><Icon.pin width="13" height="13" /> Saralanganlar ({items.length})</button>
         <button className={`lt-save ${isSaved ? 'on' : ''}`} onClick={toggleSave}>{isSaved ? '★ Saralangan' : '☆ Saralash'}</button>
       </div>
       {tab === 'notes' && (
@@ -15282,7 +15763,7 @@ function PartnerApp() {
             <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, flexWrap: 'wrap', marginBottom: 6 }}>
               <b>Qarzdorlar</b>
               <div className="pt-acts">
-                <button className="pt-btn" disabled={!debtors.length} onClick={() => setNoticeOpen(true)}>📢 Qarzdorlarga xabar berish</button>
+                <button className="pt-btn" disabled={!debtors.length} onClick={() => setNoticeOpen(true)}><Icon.bell width="14" height="14" /> Qarzdorlarga xabar berish</button>
                 <button className="pt-btn g" onClick={clearNotice}>Xabarlarni olib tashlash</button>
               </div>
             </div>
@@ -15343,7 +15824,7 @@ function NewBossModal({ onClose, onCreate }) {
       <label className="pt-lbl">Parol</label><input value={v.password} onChange={(e) => upd('password', e.target.value)} />
       <label className="pt-lbl">Oylik to'lov (so'm)</label><input type="number" min="0" value={v.fee} onChange={(e) => upd('fee', e.target.value)} />
       <label className="pt-lbl">To'lov hisobi qachondan boshlanadi</label>
-      <select value={v.start} onChange={(e) => upd('start', e.target.value)}><option value="next">Keyingi oydan (shu oy bepul)</option><option value="now">Shu oydan</option></select>
+      <NSelect value={v.start} onChange={(e) => upd('start', e.target.value)}><option value="next">Keyingi oydan (shu oy bepul)</option><option value="now">Shu oydan</option></NSelect>
       {err && <p style={{ color: '#fb7185' }}>{err}</p>}
       <div className="ft"><button className="pt-btn g" onClick={onClose}>Bekor</button><button className="pt-btn" onClick={save}>Yaratish</button></div>
     </div></div>
@@ -15361,7 +15842,7 @@ function PayModal({ t, onClose, onSave }) {
     <div className="pt-ov"><div className="pt-modal">
       <h3>To'lov qabul qilish</h3><p>{t.name}</p>
       <label className="pt-lbl">Oy</label>
-      <select value={month} onChange={(e) => setMonth(e.target.value)}>{opts.map((k) => <option key={k} value={k}>{monthLabel(k)}</option>)}</select>
+      <NSelect value={month} onChange={(e) => setMonth(e.target.value)}>{opts.map((k) => <option key={k} value={k}>{monthLabel(k)}</option>)}</NSelect>
       <label className="pt-lbl">Summa (so'm)</label><input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} />
       <label className="pt-lbl">Izoh (ixtiyoriy)</label><input value={note} onChange={(e) => setNote(e.target.value)} />
       <div className="ft"><button className="pt-btn g" onClick={onClose}>Bekor</button><button className="pt-btn" onClick={() => onSave({ id: uid('pay'), month, amount: Number(amount) || 0, date: todayISO(), note: note.trim() })}>Saqlash</button></div>
