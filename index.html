@@ -13579,7 +13579,7 @@ function StaffPage({ me, staff, setStaff, roleTpl, notify, onGoPerms }) {
           <div className="nx-f">
             <div className="nx-sec"><span className="nx-n">1</span>Profil</div>
             <div className="nx-2"><label>To'liq ism<input value={form.name} onChange={(e) => setName(e.target.value)} placeholder="Aziz Karimov" autoFocus /></label>
-              <label className="nx-rolesel">Rol <em>ro'yxatdan tanlang ▾</em>
+              <label className="nx-rolesel"><span className="nx-lbl">Rol <em>ro'yxatdan tanlang ▾</em></span>
                 <NSelect value={form.role} onChange={(e) => { const r = e.target.value; pickRole(r); setForm((f) => ({ ...f, role: r, position: r === 'custom' ? (ROLE_CARDS.some(([k, l]) => l === f.position) ? '' : (f.position || '')) : (ROLE_CARDS.find(([k]) => k === r) || [])[1] || '' })); }}>
                   {ROLE_CARDS.filter(([r]) => !isTopRole(r) || isCeo).map(([r, l]) => <option key={r} value={r} disabled={!form.isNew && (form.id === me.id || lastCeo(form)) && form.role !== r}>{l}</option>)}
                 </NSelect></label></div>
@@ -16371,6 +16371,165 @@ ReactDOM.createRoot(document.getElementById('root')).render(<Root />);
     new MutationObserver(onMut).observe(document.documentElement, { childList: true, subtree: true });
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+})();
+</script>
+
+
+<style id="edu-fix-v9">
+/* ===== 1) Yangi xodim: "Rol" tanlagichi pastga tushib ketmasin — Ism bilan bir tekis ===== */
+.nx-2{ align-items:end; }
+.nx-2 > label{ min-width:0; }
+.nx-lbl{ display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.nx-lbl em{ font-style:normal; font-weight:600; opacity:.6; font-size:11px; margin-left:4px; }
+.nx-2 input, .nx-2 .ns-btn{ min-height:46px; box-sizing:border-box; }
+.nx-f .nx-rolesel{ gap:7px; }
+
+/* ===== 2) Xabar amallari (⋯) tugmasi matn ustiga chiqmasin — matndan OLDIN, chap tomonda ===== */
+@media (hover:hover){
+  html body .chat-msg .chat-bubble:has(.chat-more){ padding-left:36px !important; }
+  html body .chat-msg .chat-bubble .chat-more{
+    left:7px !important; right:auto !important; top:50% !important;
+    transform:translateY(-50%); width:22px; height:22px;
+  }
+  html body .chat-msg .chat-bubble:has(.chat-more) .chat-text{ padding-right:0 !important; }
+}
+
+/* ===== 3) Mobil klaviatura (Telegramdagidek) =====
+   JS (edu-kb-js) klaviatura chiqqanda <html> ga .kb-open qo'shadi va
+   --vv-h (ko'rinadigan balandlik), --vv-top (siljish), --kb-h (klaviatura balandligi) beradi.
+   - ilova ko'rinadigan oynaga "yopishadi": input klaviatura ustida qoladi
+   - chat xabarlari qisqargan joyga moslashib yuqoriga suriladi
+   - pastki footer (dock) JOYIDA qoladi — tepaga ko'tarilmaydi, klaviatura ortida yashirinadi */
+@media (max-width:860px){
+  html.chat-page.kb-open, html.chat-page.kb-open body{ height:var(--vv-h) !important; max-height:var(--vv-h) !important; overflow:hidden !important; overscroll-behavior:none !important; }
+  html.chat-page.kb-open .app-shell{
+    position:fixed !important; left:0 !important; right:0 !important; top:var(--vv-top,0px) !important;
+    height:var(--vv-h) !important; max-height:var(--vv-h) !important; min-height:0 !important; overflow:hidden !important;
+  }
+  html.chat-page.kb-open .app-main{ height:var(--vv-h) !important; max-height:var(--vv-h) !important; min-height:0 !important; }
+  html.chat-page.kb-open .topbar{ display:none !important; }
+  html.chat-page.kb-open .app-main > main{
+    flex:1 1 auto !important; min-height:0 !important; max-height:none !important; overflow:hidden !important;
+    padding:calc(env(safe-area-inset-top,0px) + 6px) 8px 8px !important;
+  }
+  html.chat-page.kb-open body .chat-root{
+    height:calc(var(--vv-h) - env(safe-area-inset-top,0px) - 14px) !important;
+    min-height:0 !important; max-height:none !important;
+  }
+  html.chat-page.kb-open .chat-composer{ padding-bottom:8px !important; }
+  /* footer joyida qotadi (klaviatura ortida), lekin hech qachon tepaga ko'tarilib input ustini yopmaydi */
+  html.chat-page.kb-open body .mobile-bottom-nav{
+    visibility:hidden !important; pointer-events:none !important; transition:none !important;
+  }
+}
+
+/* ===== 4) Barcha modal / drawer / sheet oynalar: klaviatura chiqqanda joyidan siljimasin ===== */
+@media (max-width:860px), (hover:none) and (pointer:coarse){
+  html.kb-modal .sd-backdrop, html.kb-modal .modal-backdrop, html.kb-modal .nx-dw-back,
+  html.kb-modal .chat-modal-back, html.kb-modal .chat-fwd-backdrop, html.kb-modal .bi-backdrop{
+    inset:auto !important; left:0 !important; right:0 !important; bottom:auto !important;
+    top:var(--vv-top,0px) !important; height:var(--vv-h,100dvh) !important;
+  }
+  html.kb-modal .sd-modal, html.kb-modal .modal-card, html.kb-modal .chat-modal, html.kb-modal .bi-card{
+    max-height:calc(var(--vv-h,100dvh) - 12px) !important;
+  }
+  html.kb-modal .sd-modal{ padding-bottom:0 !important; }
+  html.kb-modal .nx-dw{ height:100% !important; }
+}
+/* modal ochiq bo'lganda orqa sahifa surilib/siljib ketmasin */
+html:has(.sd-backdrop), html:has(.modal-backdrop), html:has(.nx-dw-back){ overflow:hidden !important; }
+body:has(.sd-backdrop), body:has(.modal-backdrop), body:has(.nx-dw-back){ overflow:hidden !important; overscroll-behavior:none; }
+/* iOS'da vh manzil satrini hisobga olmaydi -> dvh; modal doim ko'rinadigan oynaga sig'sin */
+@media (min-width:861px){ .modal-card, .sd-modal{ max-height:calc(100dvh - 24px) !important; } }
+@media (max-width:860px){ .modal-card{ max-height:calc(100dvh - 24px) !important; } }
+.modal-backdrop, .sd-backdrop, .chat-modal-back{ height:100dvh; }
+.modal-backdrop, .sd-backdrop, .chat-modal-back, .chat-fwd-backdrop, .nx-dw-back{ overscroll-behavior:contain; }
+</style>
+<script id="edu-kb-js">
+(function () {
+  'use strict';
+  var vv = window.visualViewport;
+  var root = document.documentElement;
+  var mqChat = window.matchMedia('(max-width: 860px)');
+  var mqTouch = window.matchMedia('(max-width: 860px), (hover: none) and (pointer: coarse)');
+  var MODAL_SEL = '.sd-backdrop, .modal-backdrop, .nx-dw-back, .chat-modal-back, .chat-fwd-backdrop, .bi-backdrop';
+  var mode = '';                       // '' | 'chat' | 'modal'
+  var last = { h: -1, t: -1 };
+  var raf = 0, closeTimer = 0;
+
+  function isField(a) { return !!(a && /^(TEXTAREA|INPUT|SELECT)$/.test(a.tagName) && a.type !== 'checkbox' && a.type !== 'radio' && a.type !== 'button' && a.type !== 'submit'); }
+  function wanted() {
+    var a = document.activeElement;
+    if (!isField(a) || !a.closest) return '';
+    if (a.closest(MODAL_SEL)) return mqTouch.matches ? 'modal' : '';
+    if (a.closest('.chat-root') && root.classList.contains('chat-page') && mqChat.matches) return 'chat';
+    return '';
+  }
+  function vvH() { return Math.round(vv ? vv.height : window.innerHeight); }
+  function vvTop() { return Math.max(0, Math.round(vv ? vv.offsetTop : 0)); }
+
+  /* xabarlar pastdan masofasi saqlanadi (faqat o'lcham HAQIQATAN o'zgarganda) */
+  function keepDist(fn) {
+    var t = document.querySelector('.chat-root .chat-thread');
+    if (!t) { fn(); return; }
+    var dist = t.scrollHeight - t.scrollTop - t.clientHeight;
+    fn();
+    t.scrollTop = t.scrollHeight - t.clientHeight - dist;
+    requestAnimationFrame(function () { t.scrollTop = t.scrollHeight - t.clientHeight - dist; });
+  }
+  function setMode(m) {
+    if (m === mode) return;
+    root.classList.remove('kb-open', 'kb-modal');
+    if (m === 'chat') root.classList.add('kb-open');
+    if (m === 'modal') root.classList.add('kb-modal');
+    mode = m;
+  }
+  function apply(m) {
+    var h = vvH(), t = vvTop();
+    var changed = h !== last.h || t !== last.t || m !== mode;
+    if (!changed) return;                         // hech narsa o'zgarmasa — tegmaymiz (titrash yo'q)
+    var run = function () {
+      var s = root.style;
+      s.setProperty('--vv-h', h + 'px');
+      s.setProperty('--vv-top', t + 'px');
+      s.setProperty('--kb-h', Math.max(0, Math.round(window.innerHeight - h - t)) + 'px');
+      setMode(m);
+    };
+    if (m === 'chat' && (h !== last.h || mode !== 'chat')) keepDist(run); else run();
+    last.h = h; last.t = t;
+  }
+  function release() {
+    if (!mode) return;
+    var wasChat = mode === 'chat';
+    var run = function () {
+      setMode('');
+      root.style.removeProperty('--vv-h'); root.style.removeProperty('--vv-top'); root.style.removeProperty('--kb-h');
+    };
+    if (wasChat) keepDist(run); else run();
+    last.h = -1; last.t = -1;
+  }
+  function update() {
+    raf = 0;
+    var m = wanted();
+    if (m) apply(m); else if (mode && !closeTimer) release();
+  }
+  function schedule() { if (!raf) raf = requestAnimationFrame(update); }
+
+  if (vv) { vv.addEventListener('resize', schedule); vv.addEventListener('scroll', schedule); }
+  window.addEventListener('orientationchange', function () { last.h = -1; setTimeout(schedule, 300); });
+  document.addEventListener('focusin', function (e) {
+    clearTimeout(closeTimer); closeTimer = 0; schedule();
+    [80, 250, 500].forEach(function (ms) { setTimeout(schedule, ms); });
+    // modal ichidagi maydon klaviatura ostida qolmasin
+    var el = e.target;
+    if (isField(el) && el.closest && el.closest(MODAL_SEL)) {
+      setTimeout(function () { try { el.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (x) {} }, 350);
+    }
+  });
+  document.addEventListener('focusout', function () {
+    clearTimeout(closeTimer);
+    closeTimer = setTimeout(function () { closeTimer = 0; if (!wanted()) release(); else schedule(); }, 250);
+  });
 })();
 </script>
 
