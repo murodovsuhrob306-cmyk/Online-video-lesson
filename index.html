@@ -23,25 +23,72 @@
   var db = null;
   var SEEN = {};
   var dirty = false;
+  /* Brauzer xotirasi (localStorage ~5MB) to'lib, baza yozilmay qolsa, eng so'nggi holat shu yerda (RAM) turadi.
+     Shunda yangi xodim, sessiya va Umumiy chat a'zoligi hech qachon yo'qolmaydi. */
+  var mem = {};
+  var warned = {};
+
+  function warnStorage(level) {
+    if (warned[level]) return;
+    warned[level] = 1;
+    try { window.dispatchEvent(new CustomEvent('chat-storage', { detail: { level: level } })); } catch (e) {}
+  }
 
   function load() {
     var d = null;
-    try { d = JSON.parse(localStorage.getItem(dbKey())); } catch (e) { d = null; }
+    var k = dbKey();
+    try { d = JSON.parse(localStorage.getItem(k)); } catch (e) { d = null; }
+    if (mem[k] && (!d || !d.users || (d.rev || 0) < mem[k].rev)) {
+      try { d = JSON.parse(mem[k].json); } catch (e2) { /* RAM nusxa buzilgan bo'lsa, saqlangani ishlatiladi */ }
+    }
     if (!d || !d.users) d = { users: [], convs: [], msgs: [], reads: {}, sessions: {}, hidden: {}, nextId: 1 };
     d.convs = d.convs || []; d.msgs = d.msgs || []; d.reads = d.reads || {};
     d.sessions = d.sessions || {}; d.hidden = d.hidden || {}; d.nextId = d.nextId || 1;
     return d;
   }
-  function save() {
-    for (var i = 0; i < 4; i++) {
-      try { localStorage.setItem(dbKey(), JSON.stringify(db)); return; }
-      catch (e) {
-        /* xotira to'lsa, eng eski xabarlarning 25% ini o'chirib qayta urinamiz */
-        var cut = Math.ceil(db.msgs.length * 0.25);
-        if (!cut) return;
-        db.msgs = db.msgs.slice(cut);
-      }
+  /* Chat bazasi brauzer xotirasining (~5MB) katta qismini egallab, ilovaning o'z ma'lumotlariga (xodim, kurs...)
+     joy qoldirmay qo'ymasligi uchun chegara. Oshsa — eng eski fayllardan boshlab tozalanadi. */
+  var CAP = window.EDU_CHAT_CAP || 2500000;
+  function stripAttachments(list, size, limit) {
+    for (var i = 0; i < list.length; i++) {
+      var m = list[i];
+      if (!m.attachment) continue;
+      if (limit && size <= limit) break;
+      size -= String(m.attachment.data || '').length;
+      if (!m.body) m.body = '\uD83D\uDCCE ' + (m.attachment.name || 'fayl') + ' (xotira to\u2018lgani uchun o\u2018chirildi)';
+      m.attachment = null;
     }
+    return size;
+  }
+  function save() {
+    var k = dbKey();
+    db.rev = (db.rev || 0) + 1;
+    var full = null;
+    try { full = JSON.stringify(db); } catch (e) { return; }
+    var over = full.length > CAP;
+    /* Xotira yetmasa (yoki chegaradan oshsa), eng kam kerakli narsadan boshlab bosqichma-bosqich tozalaymiz:
+       fayllar -> eski xabarlar -> rasmlar. Foydalanuvchilar, sessiyalar va suhbatlar HECH QACHON o'chirilmaydi. */
+    var stages = [
+      function () {},
+      function () { stripAttachments(db.msgs, full.length, over ? CAP : 0); },
+      function () { db.msgs = db.msgs.slice(Math.ceil(db.msgs.length * 0.25)); },
+      function () { db.msgs = db.msgs.slice(Math.ceil(db.msgs.length * 0.5)); },
+      function () { db.users.forEach(function (u) { u.avatar = null; }); },
+      function () { db.msgs = []; db.reads = {}; }
+    ];
+    for (var i = 0; i < stages.length; i++) {
+      stages[i]();
+      var str = i ? JSON.stringify(db) : full;
+      if (over && str.length > CAP && i < stages.length - 1) continue;
+      try {
+        localStorage.setItem(k, str);
+        delete mem[k];
+        if (i) warnStorage('trimmed');
+        return;
+      } catch (e) { /* keyingi bosqich */ }
+    }
+    mem[k] = { json: full, rev: db.rev };
+    warnStorage('memory');
   }
   function readSeen() { try { return JSON.parse(localStorage.getItem(seenKey())) || {}; } catch (e) { return {}; } }
   function touch(uid) {
@@ -358,7 +405,7 @@
 </script>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-<title>EduStream — Video ta'lim platformasi</title>
+<title>Ferdinant — Video ta'lim platformasi</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script>/* React 18 (UMD, inlined — ishlash uchun internet shart emas) */
@@ -4633,6 +4680,165 @@ html .chat-modal-back{background:rgba(3,10,7,.55);}
   .chat-quote span{max-width:200px;}
 }
 </style>
+<style id="edu-notif-v1">
+/* Chat toast: 10 soniya ekranda turadi, pastki chiziq shu muddat davomida kamayadi */
+.bs-chat-toast{position:relative;overflow:hidden;}
+.bs-chat-progress{position:absolute;left:0;bottom:0;height:3px;width:100%;background:#34d399;transform-origin:left;animation:bsProgress 10s linear forwards;pointer-events:none;}
+/* Bildirishnomadagi chat qatori: o'qilmagan xabarlar soni */
+.notif-chat-count{flex:none;min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:#10b981;color:#fff;font-size:11px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;}
+</style>
+<style id="edu-mobile-v2">
+/* ===== MOBIL (≤640px): bildirishnoma oynasi ekran kengligida, chetga chiqmasin ===== */
+@media (max-width: 640px) {
+  html body .topbar .notif-dropdown.notif-dropdown {
+    position: fixed !important;
+    top: calc(env(safe-area-inset-top, 0px) + 72px) !important;
+    left: 10px !important; right: 10px !important;
+    width: auto !important; max-width: none !important;
+    max-height: 70vh !important;
+    border-radius: 18px !important;
+  }
+}
+/* ===== Talaba ilovasi header (mobil) ===== */
+@media (max-width: 640px) {
+  html body header.sticky > div.max-w-6xl { padding-left: .75rem !important; padding-right: .75rem !important; height: auto !important; min-height: 3.5rem; gap: .5rem; flex-wrap: nowrap; }
+  html body header.sticky nav.flex { gap: .8rem !important; min-width: 0; overflow-x: auto; white-space: nowrap; scrollbar-width: none; -webkit-overflow-scrolling: touch; justify-content: flex-end; }
+  html body header.sticky nav.flex::-webkit-scrollbar { display: none; }
+  html body header.sticky nav.flex > span.text-slate:nth-last-child(2) { display: none !important; }
+  html body header.sticky nav.flex button { flex-shrink: 0; }
+}
+/* ===== Talaba tafsiloti (ed-*) mobil ===== */
+@media (max-width: 640px) {
+  html body .ed-grid { grid-template-columns: minmax(0,1fr) !important; }
+  html body .ed-grid > * { min-width: 0; max-width: 100%; }
+  html body .ed-row { min-width: 0; gap: .5rem; }
+  html body .ed-row-v { min-width: 0; text-align: right; overflow-wrap: anywhere; }
+}
+/* ===== MOBIL v3: to'liq kenglikdagi topbar, katta liquid-glass dock, to'liq balandlikdagi chat ===== */
+@media (max-width: 860px) {
+  /* Topbar ekran chetidan-chetiga */
+  html body .app-main { padding-left: 0 !important; padding-right: 0 !important; }
+  html body .app-main > main { padding-left: .75rem !important; padding-right: .75rem !important; padding-bottom: calc(124px + env(safe-area-inset-bottom, 0px)) !important; }
+  html body .topbar { width: 100%; margin: 0; border-radius: 0; }
+
+  /* Pastki dock: balandroq, kattaroq, iOS liquid glass uslubida */
+  html body .mobile-bottom-nav {
+    left: 10px !important; right: 10px !important;
+    bottom: calc(10px + env(safe-area-inset-bottom, 0px)) !important;
+    min-height: 74px; padding: .45rem .5rem !important;
+    border-radius: 32px !important; gap: .3rem !important;
+    background-color: color-mix(in srgb, var(--lg-bg) 58%, transparent) !important;
+    -webkit-backdrop-filter: blur(32px) saturate(200%) !important; backdrop-filter: blur(32px) saturate(200%) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.6), inset 0 0 0 1px rgba(255,255,255,.12), 0 20px 44px -16px rgba(2,20,14,.38) !important;
+  }
+  html body .mobile-bottom-nav-item {
+    font-size: .74rem !important; font-weight: 700 !important; padding: .55rem .2rem !important; gap: .3rem !important; border-radius: 22px !important;
+  }
+  html body .mbn-icon svg { width: 25px !important; height: 25px !important; }
+  html body .mbn-badge { min-width: 17px; height: 17px; line-height: 17px; font-size: .62rem; top: -6px; right: -10px; }
+
+  /* Chat: to'liq balandlik, blok va ro'yxatlar kengroq */
+  html body .chat-root { height: calc(100dvh - 128px - env(safe-area-inset-bottom, 0px)) !important; min-height: 420px; border-radius: 22px; }
+  html body .chat-root .chat-side { padding-left: .6rem; padding-right: .6rem; }
+}
+/* ===== MOBIL v4 ===== */
+@media (max-width: 860px) {
+  /* Topbar: qulayroq, tugmalar kattaroq (ko'rinishi o'zgarmaydi) */
+  html body .topbar { padding-top: .45rem; padding-bottom: .45rem; }
+  html body .topbar .topbar-icon-btn, html body .topbar .topbar-profile-btn, html body .topbar .mobile-menu-btn { min-width: 40px; min-height: 40px; }
+
+  /* Pastki dock: biroz kichikroq, lekin juda kichik emas */
+  html body .mobile-bottom-nav { min-height: 64px; border-radius: 28px !important; bottom: calc(8px + env(safe-area-inset-bottom, 0px)) !important; left: 12px !important; right: 12px !important; padding: .35rem .4rem !important; }
+  html body .mobile-bottom-nav-item { font-size: .68rem !important; padding: .35rem .15rem !important; gap: .2rem !important; }
+  html body .mbn-icon svg { width: 22px !important; height: 22px !important; }
+  html body .app-main > main { padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px)) !important; }
+
+  /* Chat: dock ostida qolmasin */
+  html body .chat-root { height: calc(100dvh - 156px - env(safe-area-inset-bottom, 0px)) !important; min-height: 360px; }
+
+  /* 12 ustunli gridlar (profil va boshqalar) mobilda bir ustunli */
+  html body .pb-grid, html body [class*="grid-cols-12"] { grid-template-columns: minmax(0, 1fr) !important; }
+  html body .pb-grid > *, html body [class*="col-span-"] { grid-column: 1 / -1 !important; min-width: 0; }
+
+  /* Profil: bildirishnoma qatori to'liq kenglikda */
+  html body .nt-row { align-items: center; }
+  html body .nt-row > div:first-child { flex: 1 1 auto; min-width: 0; }
+  html body .nt-row > .nt-switch { flex: none; }
+
+  /* Statistika / To'lovlar tablari: scroll emas, 2 qatorda to'liq ko'rinadi */
+  html body .sx-tabs { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)) !important; width: 100% !important; overflow: visible !important; gap: 4px; }
+  html body .sx-tabs button { justify-content: center; padding: .6rem .5rem !important; font-size: .8rem; white-space: normal; text-align: center; min-width: 0; }
+}
+/* ===== MOBIL v5: swipe amallari, uzatish oynasi, chat balandligi ===== */
+.swipe-wrap{position:relative;overflow:hidden;}
+.swipe-acts{position:absolute;top:2px;bottom:2px;right:0;display:flex;opacity:0;pointer-events:none;transition:opacity .18s ease;}
+.swipe-wrap.show .swipe-acts{opacity:1;pointer-events:auto;}
+.swipe-act{width:78px;border:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#fff;font-size:.72rem;font-weight:700;font-family:inherit;background:#64748b;cursor:pointer;}
+.swipe-act.blue{background:#3b82f6;} .swipe-act.red{background:#ef4444;} .swipe-act.green{background:#10b981;}
+.swipe-track{position:relative;z-index:1;touch-action:pan-y;will-change:transform;}
+.chat-fwd-backdrop{--cc-side:#ffffff;--cc-ink:#0d1f17;--cc-mut:#6b7f74;--cc-hover:rgba(16,185,129,.08);position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;justify-content:center;}
+html.theme-dark .chat-fwd-backdrop{--cc-side:#0e1b15;--cc-ink:#eef6f1;--cc-mut:#8aa398;--cc-hover:rgba(52,211,153,.09);}
+.chat-fwd-card{width:100%;max-width:480px;max-height:72vh;background:var(--cc-side);color:var(--cc-ink);border-radius:22px 22px 0 0;padding:14px 14px calc(14px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:10px;}
+.chat-fwd-head{display:flex;align-items:center;justify-content:space-between;font-size:1rem;}
+.chat-fwd-preview{font-size:.8rem;color:var(--cc-mut);background:var(--cc-hover);border-radius:12px;padding:8px 10px;max-height:4.2em;overflow:hidden;}
+.chat-fwd-list{overflow-y:auto;display:flex;flex-direction:column;gap:4px;}
+.chat-fwd-item{display:flex;align-items:center;gap:10px;padding:10px;border:0;border-radius:14px;background:transparent;color:var(--cc-ink);font:inherit;text-align:left;cursor:pointer;}
+.chat-fwd-item:hover,.chat-fwd-item:active{background:var(--cc-hover);}
+/* ===== MOBIL v7: Profil -> Jamoa ro'yxati ixcham (bir qatorli) ===== */
+@media (max-width: 560px) {
+  html body .pb-team { gap: 6px; }
+  html body .pb-member { flex-wrap: nowrap; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 16px; row-gap: 0; }
+  html body .pb-member .pb-mav { width: 36px !important; height: 36px !important; min-width: 36px; font-size: .72rem; border-radius: 12px; }
+  html body .pb-member .pb-mt { flex: 1 1 auto; min-width: 0; }
+  html body .pb-member .pb-mt b { display: block; font-size: .86rem; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  html body .pb-member .pb-mt small { display: block; font-size: .72rem; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  html body .pb-member .pb-member-act { width: auto; margin-left: 0; gap: 6px; flex: none; justify-content: flex-end; }
+  html body .pb .pb-member .pb-mrole { flex: none; width: 112px; height: 32px; padding: 0 26px 0 8px; font-size: .74rem; border-radius: 10px; }
+  html body .pb-member .pb-iconbtn { width: 32px; height: 32px; }
+  html body .pb-member .pb-tag.sm { font-size: .68rem; }
+  html body .pb-ch-act { width: 100%; flex-wrap: nowrap; align-items: center; gap: 8px; }
+  html body .pb-ch-act .pb-search { flex: 1 1 auto; min-width: 0; width: auto; }
+  html body .pb-ch-act .pb-btn { flex: none; white-space: nowrap; }
+}
+/* ===== MOBIL v8 ===== */
+/* Brend: mobilda faqat logo, nomi yashirin */
+@media (max-width: 860px) {
+  html body .brand-text { display: none !important; }
+}
+.topbar-logo-mob { display: none; }
+@media (max-width: 860px) {
+  html body .topbar-logo-mob { display: inline-flex; align-items: center; justify-content: center; height: 40px; padding: 0 2px; }
+  html body .topbar-logo-mob .brand-lockup { gap: 0; }
+  html body .topbar-logo-mob .brand-tile { width: 36px; height: 36px; border-radius: 12px; }
+}
+/* Dashboard: to'lovi o'tganlar ro'yxati — ixcham, ichki scroll, scrollbar yashirin */
+@media (max-width: 860px) {
+  html body .v2-scroll { max-height: 250px; overflow-y: auto; scrollbar-width: none; -ms-overflow-style: none; margin: 0 -2px; padding: 0 2px; }
+  html body .v2-scroll::-webkit-scrollbar { display: none; }
+  html body .v2-scroll .v2-it { padding: 8px 4px; gap: 10px; }
+  html body .v2-scroll .v2-it b { font-size: .86rem; }
+  html body .v2-scroll .v2-it small { font-size: .72rem; }
+  html body .v2-scroll .v2-av { width: 32px; height: 32px; font-size: .7rem; }
+}
+/* O'quvchilar: filtr chiplari scrollsiz, 2x2 ixcham */
+@media (max-width: 860px) {
+  html body .stu-chips { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 6px !important; overflow: visible !important; }
+  html body .stu-chip { justify-content: center; padding: .45rem .5rem !important; font-size: .76rem !important; white-space: nowrap; min-width: 0; }
+}
+/* Tolovlar: select'lar dark rejimda ko'rinsin */
+html.theme-dark .pv-period select,
+html.theme-dark .sx-ctl select,
+html.theme-dark select {
+  color-scheme: dark;
+  color: #eef6f1 !important;
+  background-color: #13241d !important;
+  border-color: rgba(255,255,255,.14) !important;
+}
+html.theme-dark select option { background-color: #13241d; color: #eef6f1; }
+html.theme-dark .pv-period { background: rgba(255,255,255,.04); }
+html.theme-dark .pv-period select { background-color: transparent !important; border: 0 !important; }
+html.theme-dark .pv-period button { color: #eef6f1; }
+</style>
 </head>
 <body>
 <div id="root"></div>
@@ -5869,7 +6075,7 @@ const seedStudents = () => ([]);
 /* ---------------------------- BREND (sidebar logotipi) ----------------------------
    Nom, ikonka rasmi va ikonka foni. Faqat 'branding.edit' ruxsati bor xodimlar o'zgartira oladi
    (Profil → Brend sozlamalari). Saqlash joyi: localStorage 'edustream_branding_v1'. */
-const DEFAULT_BRAND = { name: 'EduStream', image: '', useDefaultBg: true, bgColor: '#34d399' };
+const DEFAULT_BRAND = { name: 'Ferdinant', image: '', useDefaultBg: true, bgColor: '#34d399' };
 const BRAND_NAME_MAX = 24;
 const BRAND_SWATCHES = ['#34d399', '#38bdf8', '#a78bfa', '#f472b6', '#fb7185', '#fbbf24', '#f97316', '#14b8a6', '#1e293b'];
 const isHex6 = (c) => /^#[0-9a-fA-F]{6}$/.test(c || '');
@@ -5911,7 +6117,7 @@ const readBrandImage = (file) => new Promise((resolve, reject) => {
   reader.readAsDataURL(file);
 });
 
-function Logo({ dark, brand }) {
+function Logo({ dark, brand, iconOnly }) {
   if (brand) {
     const custom = !brand.useDefaultBg;
     return (
@@ -5921,14 +6127,14 @@ function Logo({ dark, brand }) {
             ? <img src={brand.image} alt="" className="brand-tile-img" draggable="false" />
             : <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M7 4l13 8-13 8z" /></svg>}
         </div>
-        <span title={brand.name} className={`font-display text-lg tracking-tight brand-text ${dark ? 'text-white' : 'text-ink'}`}>{brand.name}</span>
+        {!iconOnly && <span title={brand.name} className={`font-display text-lg tracking-tight brand-text ${dark ? 'text-white' : 'text-ink'}`}>{brand.name}</span>}
       </div>
     );
   }
   return (
     <div className="flex items-center gap-2 select-none">
       <div className="w-8 h-8 rounded-md bg-gold flex items-center justify-center font-display text-ink font-semibold">{dark ? <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M7 4l13 8-13 8z" /></svg> : 'E'}</div>
-      <span className={`font-display text-lg tracking-tight brand-text ${dark ? 'text-white' : 'text-ink'}`}>EduStream</span>
+      <span className={`font-display text-lg tracking-tight brand-text ${dark ? 'text-white' : 'text-ink'}`}>{DEFAULT_BRAND.name}</span>
     </div>
   );
 }
@@ -5960,6 +6166,8 @@ const chatAgo = (ts) => {
 function ChatToast({ toast, onDismiss }) {
   const [, setTick] = useState(0);
   useEffect(() => { const t = setInterval(() => setTick((n) => n + 1), 30000); return () => clearInterval(t); }, []);
+  /* Chat xabari 10 soniya ekranda turadi, so'ng o'zi yopiladi */
+  useEffect(() => { const t = setTimeout(onDismiss, 10000); return () => clearTimeout(t); }, []);
   const open = () => { if (toast.onOpen) toast.onOpen(); onDismiss(); };
   const at = new Date(toast.at || Date.now());
   const hm = String(at.getHours()).padStart(2, '0') + ':' + String(at.getMinutes()).padStart(2, '0');
@@ -5978,6 +6186,7 @@ function ChatToast({ toast, onDismiss }) {
       </div>
       <button type="button" className="bs-chat-body" onClick={open}>{toast.body}</button>
       {toast.onReply && <ToastReply onSend={(b) => { toast.onReply(b); onDismiss(); }} />}
+      <span className="bs-chat-progress" />
     </div>
   );
 }
@@ -6664,9 +6873,9 @@ function DashV2({ me, canEdit, stats, revenue, students, categories, overdueStud
         <section className="v2-c v2-w3">
           <div className="v2-ch"><div className="v2-ct">To'lovi o'tganlar</div>{overdueStudents.length > 0 && <span className="v2-cs">Jami: {overdueStudents.length} ta</span>}</div>
           {overdueStudents.length === 0 && <p className="v2-cs">Hozircha muddati o'tgan to'lovlar yo'q</p>}
-          {overdueShown.map((s) => (
+          <div className="v2-scroll">{overdueShown.map((s) => (
             <div key={s.id} className="v2-it"><div className="v2-av">{ini(s.name)}</div><div><b>{s.name}</b><small>To'lov muddati o'tgan</small></div></div>
-          ))}
+          ))}</div>
           <Pagination page={overdueCurPage} pageCount={overduePageCount} onChange={setOverduePage} />
           {overdueStudents.length > 0 && <button className="v2-btn v2-p" style={{ width: '100%', justifyContent: 'center', marginTop: 12 }} onClick={() => goTo('payments')}>To'lovlarni ko'rish</button>}
         </section>
@@ -6946,7 +7155,26 @@ function BlockedIntroModal({ items, onFinish }) {
 /* =========================================================================
    TOPBAR (dark/light, bildirishnomalar modal, profil paneli)
    ========================================================================= */
-function Topbar({ me, roleLabel, initials, theme, onToggleTheme, notifications, onMarkAllRead, onMarkRead, onGoProfile, onLogout, onOpenMenu, badgeHidden, onOpenBlocked }) {
+/* Bildirishnomadagi chat qatori: bosilsa suhbat ochiladi, o'qildi tugmasi esa serverga o'qilgan deb yuboradi */
+function ChatNotifRow({ n, onOpen, onRead }) {
+  return (
+    <div className="notif-row">
+      <button type="button" className="notif-item notif-item-link" onClick={onOpen}>
+        <AvatarBubble src={n.avatarSrc} text={n.initials} className="avatar w-8 h-8 bg-paper text-ink text-xs border border-line" />
+        <div className="notif-item-body">
+          <div className="notif-item-title">{n.name}</div>
+          <div className="notif-item-sub">{(n.count > 1 ? n.count + ' ta xabar · ' : '') + n.preview}</div>
+        </div>
+        <span className="notif-chat-count">{n.count > 99 ? '99+' : n.count}</span>
+      </button>
+      <button type="button" className="notif-read-btn" onClick={onRead} aria-label="O'qilgan deb belgilash" title="O'qilgan deb belgilash">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 12.5L10 17.5L19 7" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
+      </button>
+    </div>
+  );
+}
+
+function Topbar({ me, roleLabel, initials, theme, onToggleTheme, notifications, onMarkAllRead, onMarkRead, onGoProfile, onLogout, onOpenMenu, badgeHidden, onOpenBlocked, onOpenChat, brand }) {
   const [notifOpen, setNotifOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const unread = notifications.filter((n) => !n.read).length;
@@ -6982,6 +7210,7 @@ function Topbar({ me, roleLabel, initials, theme, onToggleTheme, notifications, 
       </div>
 
       <div className="topbar-right">
+        {brand && <span className="topbar-logo-mob" aria-label={brand.name} title={brand.name}><Logo brand={brand} iconOnly /></span>}
         <button className="topbar-icon-btn" onClick={onToggleTheme} aria-label="Mavzuni almashtirish" title={theme === 'dark' ? 'Yorug\' rejim' : "Qorong'i rejim"}>
           {theme === 'dark' ? <Icon.sun width="17" height="17" /> : <Icon.moon width="17" height="17" />}
         </button>
@@ -7020,7 +7249,7 @@ function Topbar({ me, roleLabel, initials, theme, onToggleTheme, notifications, 
                 </div>
                 <div className="notif-dropdown-body">
                   {notifications.length === 0 && <p className="text-sm text-slate p-3">Hozircha bildirishnoma yo'q.</p>}
-                  {notifications.map((n) => (
+                  {notifications.map((n) => n.kind === 'chat' ? (<ChatNotifRow key={n.id} n={n} onOpen={() => { setNotifOpen(false); if (onOpenChat) onOpenChat(n.convId); }} onRead={() => { if (onMarkRead) onMarkRead(n.id); }} />) : (
                     <div key={n.id} className={`notif-row ${n.read ? 'is-read' : ''}`}>
                       <button type="button" className="notif-item notif-item-link"
                         onClick={() => { if (onMarkRead) onMarkRead(n.id); setNotifOpen(false); if (onOpenBlocked) onOpenBlocked(); }}>
@@ -7088,6 +7317,10 @@ function Topbar({ me, roleLabel, initials, theme, onToggleTheme, notifications, 
    ========================================================================= */
 const CHAT_BASE = String(window.EDU_API_BASE || '').replace(/\/+$/, '');
 const CHAT_TOKEN_KEY = 'edustream_chat_token';
+/* Token localStorage'ga yozilmay qolsa (xotira to'lgan), RAMda ham saqlanadi — chat uzilib qolmasin */
+let chatTokMem = '';
+const chatGetTok = () => { let t = ''; try { t = localStorage.getItem(CHAT_TOKEN_KEY) || ''; } catch (e) { t = ''; } return t || chatTokMem; };
+const chatSetTok = (t) => { chatTokMem = t || ''; try { if (t) localStorage.setItem(CHAT_TOKEN_KEY, t); else localStorage.removeItem(CHAT_TOKEN_KEY); } catch (e) {} };
 const CHAT_GENERAL_TITLE = 'Umumiy chat';
 
 const ChatIcon = {
@@ -7247,8 +7480,7 @@ function chatEnsureSession(appMe) {
   const key = appMe.username;
   if (chatEnsureInflight[key]) return chatEnsureInflight[key];
   const p = (async () => {
-    let tok = '';
-    try { tok = localStorage.getItem(CHAT_TOKEN_KEY) || ''; } catch (e) { tok = ''; }
+    let tok = chatGetTok();
     if (tok) {
       try {
         const r = await chatApi('/auth/me', { token: tok });
@@ -7267,7 +7499,7 @@ function chatEnsureSession(appMe) {
       try { r = await chatApi('/auth/login', { method: 'POST', body: { username: appMe.username, password: appMe.password } }); } catch (e2) { r = null; }
     }
     if (!r || !r.token) return '';
-    try { localStorage.setItem(CHAT_TOKEN_KEY, r.token); } catch (e) {}
+    chatSetTok(r.token);
     window.dispatchEvent(new Event('chat-auth'));
     return r.token;
   })();
@@ -7301,7 +7533,7 @@ function ChatLogin({ onLoggedIn }) {
     setErr('');
     try {
       const r = await chatApi('/auth/login', { method: 'POST', body: { username: username.trim(), password: password } });
-      try { localStorage.setItem(CHAT_TOKEN_KEY, r.token); } catch (x) {}
+      chatSetTok(r.token);
       window.dispatchEvent(new Event('chat-auth'));
       onLoggedIn(r.token);
     } catch (x) {
@@ -7371,11 +7603,11 @@ const ROLE_LABEL = { ceo: 'CEO', ceo_support: 'CEO Support', admin: 'Admin', adm
 const chatRoleLabel = (r) => ROLE_LABEL[r] || r || 'Xodim';
 
 /* Har bir kontakt uchun amallar: yashirish, bildirishnomani cheklash va suhbatni o'chirish (tasdiq bilan). */
-function ChatRowMenu({ onHide, onDelete, onMute, muted }) {
+function ChatRowMenu({ name, onHide, onClear, onRemove, onMute, muted }) {
   const [open, setOpen] = useState(false);
-  const [confirm, setConfirm] = useState(false);
+  const [confirm, setConfirm] = useState(null);   // null | 'clear' | 'remove'
   const [pos, setPos] = useState({ top: 0, left: 0 });
-  const close = () => { setOpen(false); setConfirm(false); };
+  const close = () => { setOpen(false); setConfirm(null); };
   useEffect(() => {
     if (!open) return undefined;
     const onKey = (e) => { if (e.key === 'Escape') close(); };
@@ -7388,7 +7620,7 @@ function ChatRowMenu({ onHide, onDelete, onMute, muted }) {
     e.preventDefault();
     if (open) { close(); return; }
     const r = e.currentTarget.getBoundingClientRect();
-    const h = 180;
+    const h = 230;
     const below = r.bottom + 6;
     const top = below + h > window.innerHeight ? Math.max(8, r.top - h - 6) : below;
     setPos({ top: top, left: Math.max(8, Math.min(r.right - 230, window.innerWidth - 240)) });
@@ -7412,19 +7644,31 @@ function ChatRowMenu({ onHide, onDelete, onMute, muted }) {
                     <ChatIcon.bell /> {muted ? 'Bildirishnomani yoqish' : 'Bildirishnomani cheklash'}
                   </button>
                 )}
-                <button type="button" role="menuitem" className="chat-rmenu-item danger"
-                  disabled={!onDelete} title={onDelete ? '' : 'Bu kontakt bilan hali suhbat yo‘q'}
-                  onClick={() => setConfirm(true)}>
-                  <ChatIcon.trash /> {onDelete ? 'Suhbatni o‘chirish' : 'Suhbat yo‘q'}
+                <button type="button" role="menuitem" className="chat-rmenu-item"
+                  disabled={!onClear} title={onClear ? '' : 'Bu kontakt bilan hali yozishma yo‘q'}
+                  onClick={() => setConfirm('clear')}>
+                  <ChatIcon.trash /> {onClear ? 'Chatni tozalash' : 'Yozishma yo‘q'}
+                </button>
+                <button type="button" role="menuitem" className="chat-rmenu-item danger" onClick={() => setConfirm('remove')}>
+                  <ChatIcon.x /> Ro‘yxatdan olib tashlash
                 </button>
               </React.Fragment>
             )}
-            {confirm && onDelete && (
+            {confirm === 'clear' && onClear && (
               <div className="chat-rmenu-confirm">
-                <span>Suhbat barcha xabarlari bilan ikkala tomonda ham o‘chadi. Davom etasizmi?</span>
+                <span>«{name}» bilan barcha xabarlar ikkala tomonda ham o‘chadi. Kontakt ro‘yxatda qoladi. Davom etasizmi?</span>
                 <div>
-                  <button type="button" className="chat-ok danger" onClick={() => { close(); onDelete(); }}>Ha, o‘chirish</button>
-                  <button type="button" className="chat-ok" onClick={() => setConfirm(false)}>Bekor</button>
+                  <button type="button" className="chat-ok danger" onClick={() => { close(); onClear(); }}>Ha, tozalash</button>
+                  <button type="button" className="chat-ok" onClick={() => setConfirm(null)}>Bekor</button>
+                </div>
+              </div>
+            )}
+            {confirm === 'remove' && (
+              <div className="chat-rmenu-confirm">
+                <span>«{name}» shu ro‘yxatdan olib tashlanadi va yozishma o‘chadi. Keyin kerak bo‘lsa, «+» tugmasi orqali qayta qo‘shishingiz mumkin. Davom etasizmi?</span>
+                <div>
+                  <button type="button" className="chat-ok danger" onClick={() => { close(); onRemove(); }}>Ha, olib tashlash</button>
+                  <button type="button" className="chat-ok" onClick={() => setConfirm(null)}>Bekor</button>
                 </div>
               </div>
             )}
@@ -7436,7 +7680,81 @@ function ChatRowMenu({ onHide, onDelete, onMute, muted }) {
   );
 }
 
-function ChatPersonRow({ u, conv, active, onOpen, onHide, onDelete, onMute, muted }) {
+/* ---------- Telegram uslubidagi swipe: sanaydan chapga surilganda amallar chiqadi (faqat sensorli ekran) ---------- */
+const TOUCH_UI = typeof window !== 'undefined' && !!(window.matchMedia && window.matchMedia('(hover: none)').matches);
+const SWIPE_ICON = {
+  read: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12.5l5 5L20 6.5" /><path d="M10 12.5l5 5" /></svg>,
+  fwd: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 6l6 6-6 6" /><path d="M20 12H9a5 5 0 0 0-5 5" /></svg>,
+};
+function SwipeRow({ bg, actions, children }) {
+  const W = actions.length * 78;
+  const [dx, setDx] = useState(0);
+  const [drag, setDrag] = useState(false);
+  const st = useRef(null);
+  const dxRef = useRef(0);
+  const openRef = useRef(false);
+  const movedRef = useRef(false);
+  const set = (v) => { dxRef.current = v; setDx(v); };
+  const down = (e) => {
+    if (e.pointerType === 'mouse') return;
+    st.current = { x: e.clientX, y: e.clientY, base: openRef.current ? -W : 0, dir: null };
+    movedRef.current = false;
+  };
+  const move = (e) => {
+    const s = st.current; if (!s) return;
+    const ddx = e.clientX - s.x, ddy = e.clientY - s.y;
+    if (!s.dir) {
+      if (Math.abs(ddx) < 8 && Math.abs(ddy) < 8) return;
+      s.dir = Math.abs(ddx) > Math.abs(ddy) ? 'x' : 'y';
+      if (s.dir === 'x') setDrag(true);
+    }
+    if (s.dir !== 'x') return;
+    movedRef.current = true;
+    set(Math.max(-W - 20, Math.min(0, s.base + ddx)));
+  };
+  const up = () => {
+    const s = st.current; st.current = null; setDrag(false);
+    if (!s || s.dir !== 'x') return;
+    const open = dxRef.current < -W / 2;
+    openRef.current = open;
+    set(open ? -W : 0);
+  };
+  const onClickCapture = (e) => {
+    if (e.target.closest && e.target.closest('.swipe-acts')) return;
+    if (movedRef.current) { e.preventDefault(); e.stopPropagation(); movedRef.current = false; return; }
+    if (openRef.current) { e.preventDefault(); e.stopPropagation(); openRef.current = false; set(0); }
+  };
+  return (
+    <div className={'swipe-wrap' + (dx < -2 || drag ? ' show' : '')} onPointerDown={down} onPointerMove={move} onPointerUp={up} onPointerCancel={up} onClickCapture={onClickCapture}>
+      <div className="swipe-acts" style={{ width: W }}>
+        {actions.map((a) => (
+          <button key={a.label} type="button" className={'swipe-act ' + (a.tone || '')}
+            onClick={() => { openRef.current = false; set(0); a.onClick(); }}>
+            {a.icon}<span>{a.label}</span>
+          </button>
+        ))}
+      </div>
+      <div className="swipe-track" style={{ transform: 'translateX(' + dx + 'px)', transition: drag ? 'none' : 'transform .22s ease', background: bg }}>
+        {children}
+      </div>
+    </div>
+  );
+}
+function ChatPersonSwipe({ onRead, onDelete, ...rest }) {
+  const row = <ChatPersonRow {...rest} />;
+  if (!TOUCH_UI || !rest.conv) return row;
+  const actions = [];
+  if (onRead && rest.conv.unread > 0) actions.push({ label: "O'qildi", tone: 'blue', icon: SWIPE_ICON.read, onClick: onRead });
+  actions.push({ label: "O'chirish", tone: 'red', icon: <Icon.trash width="18" height="18" />, onClick: onDelete });
+  return <SwipeRow bg="var(--cc-side)" actions={actions}>{row}</SwipeRow>;
+}
+function ChatRowSwipe({ onRead, unread, ...rest }) {
+  const row = <ChatRow {...rest} />;
+  if (!TOUCH_UI || !unread || !onRead) return row;
+  return <SwipeRow bg="var(--cc-side)" actions={[{ label: "O'qildi", tone: 'blue', icon: SWIPE_ICON.read, onClick: onRead }]}>{row}</SwipeRow>;
+}
+
+function ChatPersonRow({ u, conv, active, onOpen, onHide, onClear, onRemove, onMute, muted }) {
   const last = conv ? conv.last_message : null;
   const time = last ? chatListTime(last.created_at) : '';
   return (
@@ -7450,13 +7768,16 @@ function ChatPersonRow({ u, conv, active, onOpen, onHide, onDelete, onMute, mute
       <span className="chat-prow-end">
         {time && <small className="chat-row-time">{time}</small>}
         {conv && conv.unread > 0 && <em className="chat-badge">{conv.unread > 99 ? '99+' : conv.unread}</em>}
-        {onHide && <ChatRowMenu onHide={onHide} onDelete={onDelete} onMute={onMute} muted={muted} />}
+        {onHide && <ChatRowMenu name={u.name} onHide={onHide} onClear={onClear} onRemove={onRemove} onMute={onMute} muted={muted} />}
       </span>
     </div>
   );
 }
 
-function ChatUserPicker({ users, directs, generalExists, onClose, onPick, onOpenGeneral }) {
+function ChatUserPicker({ users, allUsers, scope, directs, generalExists, onClose, onPick, onOpenGeneral }) {
+  /* scope: 'staff' | 'students' | 'groups' — qaysi tabdan ochilgan bo'lsa, faqat o'sha toifa ko'rinadi */
+  const scopeWord = scope === 'students' ? 'talaba' : scope === 'groups' ? 'guruh' : 'xodim';
+  const memberPool = allUsers || users;
   const [q, setQ] = useState('');
   const [cur, setCur] = useState(0);
   const needle = q.trim().toLowerCase();
@@ -7472,7 +7793,7 @@ function ChatUserPicker({ users, directs, generalExists, onClose, onPick, onOpen
   const recentU = recentIds.map((id) => pool.find((u) => u.id === id)).filter(Boolean);
   const rest = pool.filter((u) => recentIds.indexOf(u.id) === -1);
   const others = rest.filter((u) => u.online).concat(rest.filter((u) => !u.online));
-  const showGeneral = generalExists && (!needle || 'umumiy chat'.indexOf(needle) !== -1);
+  const showGeneral = generalExists && (!scope || scope === 'groups') && (!needle || 'umumiy chat'.indexOf(needle) !== -1);
   const off0 = showGeneral ? 1 : 0;
   const items = [];
   if (showGeneral) items.push({ general: true });
@@ -7494,7 +7815,7 @@ function ChatUserPicker({ users, directs, generalExists, onClose, onPick, onOpen
     <button type="button" key="general" role="option" aria-selected={cursor === i}
       className={'chat-user' + (cursor === i ? ' cur' : '')} onMouseEnter={() => setCur(i)} onClick={() => choose({ general: true })}>
       <ChatAvatar name="Umumiy chat" general={true} />
-      <span className="chat-user-info"><b>Umumiy chat</b><small>Hamma xodimlar · {users.filter((x) => x.role !== 'student').length + 1} a’zo</small></span>
+      <span className="chat-user-info"><b>Umumiy chat</b><small>Hamma xodimlar · {memberPool.filter((x) => x.role !== 'student').length + 1} a’zo</small></span>
       <span className="chat-go">Ochish</span>
     </button>
   );
@@ -7520,22 +7841,22 @@ function ChatUserPicker({ users, directs, generalExists, onClose, onPick, onOpen
         <div className="chat-picker-head">
           <div className="chat-picker-title">
             <b>Yangi suhbat</b>
-            <small>{pool.length} ta xodim</small>
+            <small>{scope === 'groups' ? (showGeneral ? 1 : 0) : pool.length} ta {scopeWord}</small>
           </div>
           <button type="button" className="chat-icon-btn" onClick={onClose} aria-label="Yopish">×</button>
         </div>
         <div className="chat-picker-search">
           <ChatIcon.search width="18" height="18" />
-          <input type="text" autoFocus autoComplete="off" spellCheck={false} placeholder="Qidirish…" value={q}
+          <input type="text" autoFocus autoComplete="off" spellCheck={false} placeholder={scope === 'students' ? 'Talaba qidirish…' : scope === 'staff' ? 'Xodim qidirish…' : 'Qidirish…'} value={q}
             onChange={(e) => { setQ(e.target.value); setCur(0); }}
             onKeyDown={(e) => { if (['ArrowDown', 'ArrowUp', 'Enter', 'Escape'].indexOf(e.key) === -1) e.stopPropagation(); }} />
           {q && <button type="button" className="chat-clear" onClick={() => { setQ(''); setCur(0); }} aria-label="Tozalash">×</button>}
           <button type="button" className="chat-picker-plus" disabled={!items[cursor]} onClick={() => choose(items[cursor])}
-            title="Tanlangan xodim bilan suhbat" aria-label="Tanlangan xodim bilan suhbat">+</button>
+            title="Tanlanganini ochish" aria-label="Tanlanganini ochish">+</button>
         </div>
         <div className="chat-modal-list" role="listbox">
           {items.length === 0 && (
-            <div className="chat-empty"><b>Hech kim topilmadi</b><small>Qidiruvni o‘zgartirib ko‘ring</small></div>
+            <div className="chat-empty"><b>{scope === 'students' ? 'Talaba topilmadi' : scope === 'staff' ? 'Xodim topilmadi' : scope === 'groups' ? 'Guruh topilmadi' : 'Hech kim topilmadi'}</b><small>Qidiruvni o‘zgartirib ko‘ring</small></div>
           )}
           {showGeneral && <div className="chat-picker-h">Guruh</div>}
           {showGeneral && generalRow(0)}
@@ -7559,7 +7880,7 @@ const chatFmtSize = (n) => (n < 1024 ? n + ' B' : n < 1048576 ? Math.round(n / 1
 
 function ChatPage({ notify, appMe, onOpenProfile, isStudent, brand, canMute }) {
   /* Ilova akkaunti bilan avtomatik kirish: appMe berilgan bo'lsa, token faqat shu akkaunt uchun olinadi */
-  const [token, setToken] = useState(() => { if (appMe) return ''; try { return localStorage.getItem(CHAT_TOKEN_KEY) || ''; } catch (e) { return ''; } });
+  const [token, setToken] = useState(() => (appMe ? '' : chatGetTok()));
   const [autoFailed, setAutoFailed] = useState(false);
   const [sessTick, setSessTick] = useState(0);
   const [me, setMe] = useState(null);
@@ -7575,14 +7896,35 @@ function ChatPage({ notify, appMe, onOpenProfile, isStudent, brand, canMute }) {
   const [picker, setPicker] = useState(false);
   const [editing, setEditing] = useState(null);
   const [confirmId, setConfirmId] = useState(null);
+  const [fwdMsg, setFwdMsg] = useState(null);
   const [showHidden, setShowHidden] = useState(false);
   const [chatTab, setChatTab] = useState('staff');
+  /* Ro'yxatdan «olib tashlangan» kontaktlar (faqat shu foydalanuvchi uchun, login bo'yicha). «+» orqali qaytariladi */
+  const removedKey = chatUserKey('chat_removed', (me && me.username) || (appMe && appMe.username));
+  const [removedList, setRemovedList] = useState(() => loadLS(removedKey, []));
+  useEffect(() => { setRemovedList(loadLS(removedKey, [])); }, [removedKey]);
+  const removingRef = useRef({});
+  const setRemoved = (username, on) => setRemovedList((prev) => {
+    const next = on ? (prev.indexOf(username) === -1 ? prev.concat([username]) : prev) : prev.filter((x) => x !== username);
+    saveLS(removedKey, next);
+    return next;
+  });
+  /* Olib tashlangan kontakt bilan yozishma qayta paydo bo'lsa (u yozsa yoki «+» orqali ochilsa) — ro'yxatga qaytadi */
+  useEffect(() => {
+    if (!removedList.length) return;
+    const back = convs
+      .filter((c) => c.kind === 'direct' && c.other && removedList.indexOf(c.other.username) !== -1 && !removingRef.current[c.other.username])
+      .map((c) => c.other.username);
+    if (back.length) setRemovedList((prev) => { const next = prev.filter((x) => back.indexOf(x) === -1); saveLS(removedKey, next); return next; });
+  }, [convs, removedList]);
+  /* Bildirishnomadan ochilganda: suhbat turiga mos bo'lim (Guruhlar / Xodimlar / Talabalar) ham ochiladi */
+  const pickPending = (cv) => { window.__chatPendingOpen = null; setActiveId(cv.id); setChatTab(cv.kind === 'group' ? 'groups' : (cv.other && cv.other.role === 'student' ? 'students' : 'staff')); };
   useEffect(() => { window.__chatActiveId = activeId; }, [activeId]);
   /* Toastdan bosilganda shu suhbat ochiladi (suhbat ro'yxati yuklangach ham) */
   useEffect(() => {
     const tryOpen = () => {
       const p = window.__chatPendingOpen;
-      if (p && convsRef.current.some((c) => c.id === p)) { window.__chatPendingOpen = null; setActiveId(p); }
+      const pv = p && convsRef.current.find((c) => c.id === p); if (pv) pickPending(pv);
     };
     tryOpen();
     window.addEventListener('chat-open', tryOpen);
@@ -7590,7 +7932,7 @@ function ChatPage({ notify, appMe, onOpenProfile, isStudent, brand, canMute }) {
   }, []);
   useEffect(() => {
     const p = window.__chatPendingOpen;
-    if (p && convs.some((c) => c.id === p)) { window.__chatPendingOpen = null; setActiveId(p); }
+    const pv = p && convs.find((c) => c.id === p); if (pv) pickPending(pv);
   }, [convs]);
   const [typingMap, setTypingMap] = useState({});
   const [replyTo, setReplyTo] = useState(null);
@@ -7647,6 +7989,7 @@ function ChatPage({ notify, appMe, onOpenProfile, isStudent, brand, canMute }) {
     if (typeof lastId !== 'number') return;
     patchConv(convId, (c) => Object.assign({}, c, { unread: 0, my_last_read: Math.max(c.my_last_read || 0, lastId) }));
     chatApi('/conversations/' + convId + '/read', { method: 'POST', token: tokenRef.current, body: { last_message_id: lastId } })
+      .then(() => window.dispatchEvent(new Event('chat-read')))
       .catch(() => {});
   };
 
@@ -7662,8 +8005,10 @@ function ChatPage({ notify, appMe, onOpenProfile, isStudent, brand, canMute }) {
       } else {
         patchMsgs(convId, (e) => chatMergeLoaded(e, data.messages, data.has_more));
       }
-      const newest = data.messages[data.messages.length - 1];
-      if (newest) markRead(convId, newest.id);
+      /* Xabarlar oldindan keshga tushgan bo'lsa (WS orqali), serverdan yangi xabar kelmaydi —
+         shunda oxirgi ko'rilgan xabar keshdan olinadi, aks holda o'qildi belgisi yo'qoladi */
+      const newestId = data.messages.length ? data.messages[data.messages.length - 1].id : lastId;
+      if (newestId) markRead(convId, newestId);
     });
   };
 
@@ -7746,7 +8091,7 @@ function ChatPage({ notify, appMe, onOpenProfile, isStudent, brand, canMute }) {
     clearTimeout(retryRef.current.timer);
     if (wsRef.current) { wsRef.current.onclose = null; try { wsRef.current.close(); } catch (e) {} wsRef.current = null; }
     if (callServer && tok) chatApi('/auth/logout', { method: 'POST', token: tok }).catch(() => {});
-    try { localStorage.removeItem(CHAT_TOKEN_KEY); } catch (e) {}
+    chatSetTok('');
     window.dispatchEvent(new Event('chat-auth'));
     setToken(''); setMe(null); setConvs([]); setUsers([]); setMsgs({}); setActiveId(null); setWsOnline(false); setBootError(false);
     if (appMe) setSessTick((n) => n + 1);
@@ -7911,18 +8256,24 @@ function ChatPage({ notify, appMe, onOpenProfile, isStudent, brand, canMute }) {
     if (activeRef.current === id) setActiveId(null);
   };
 
-  const deleteConv = (id) => {
+  /* Yozishmani tozalash: xabarlar o'chadi, kontakt ro'yxatda qoladi */
+  const clearConv = (id) => {
     if (!id) return;
-    const list = convsRef.current.filter((c) => c.kind === 'direct');
-    const idx = list.findIndex((c) => c.id === id);
-    const next = idx === -1 ? null : (list[idx + 1] || list[idx - 1] || null);
     chatApi('/conversations/' + id, { method: 'DELETE', token: tokenRef.current })
-      .then(() => {
-        removeConvLocal(id);
-        if (next) setActiveId(next.id);
-        if (notify) notify('Suhbat o‘chirildi');
-      })
-      .catch(() => { if (notify) notify('O‘chirib bo‘lmadi', 'danger'); });
+      .then(() => { removeConvLocal(id); if (notify) notify('Yozishma tozalandi'); })
+      .catch(() => { if (notify) notify('Tozalab bo‘lmadi', 'danger'); });
+  };
+
+  /* Ro'yxatdan olib tashlash: yozishma o'chadi va kontakt ro'yxatdan ketadi. «+» orqali qayta qo'shiladi */
+  const removeContact = (u, conv) => {
+    setRemoved(u.username, true);
+    if (conv && activeRef.current === conv.id) setActiveId(null);
+    if (!conv) { if (notify) notify('«' + u.name + '» ro‘yxatdan olib tashlandi'); return; }
+    removingRef.current[u.username] = 1;
+    chatApi('/conversations/' + conv.id, { method: 'DELETE', token: tokenRef.current })
+      .then(() => { removeConvLocal(conv.id); if (notify) notify('«' + u.name + '» ro‘yxatdan olib tashlandi'); })
+      .catch(() => { setRemoved(u.username, false); if (notify) notify('Olib tashlab bo‘lmadi', 'danger'); })
+      .then(() => { delete removingRef.current[u.username]; });
   };
 
   /* Xabar yuborish: avval darhol ko'rsatiladi (optimistik), keyin server tasdiqlaydi */
@@ -8026,6 +8377,30 @@ function ChatPage({ notify, appMe, onOpenProfile, isStudent, brand, canMute }) {
       .catch(() => { if (notify) notify('O‘chirib bo‘lmadi', 'danger'); });
   };
 
+  /* Swipe amallari: o'qildi belgilash, kontaktni o'chirish, xabarni boshqa suhbatga uzatish */
+  const markReadConv = (conv) => {
+    if (!conv) return;
+    const lm = conv.last_message && typeof conv.last_message.id === 'number' ? conv.last_message.id : null;
+    patchConv(conv.id, (c) => Object.assign({}, c, { unread: 0 }));
+    if (lm === null) return;
+    chatApi('/conversations/' + conv.id + '/read', { method: 'POST', token: tokenRef.current, body: { last_message_id: lm } })
+      .then(() => window.dispatchEvent(new Event('chat-read')))
+      .catch(() => {});
+  };
+  const removeContactConfirm = (u, conv) => {
+    if (window.confirm('«' + u.name + '» bilan yozishma ro‘yxatdan o‘chirilsinmi?')) removeContact(u, conv);
+  };
+  const forwardTo = (conv) => {
+    const m = fwdMsg;
+    setFwdMsg(null);
+    if (!m || !conv) return;
+    if (!m.body) { if (notify) notify('Faqat matnli xabarni uzatish mumkin', 'danger'); return; }
+    chatApi('/conversations/' + conv.id + '/messages', { method: 'POST', token: tokenRef.current,
+      body: { body: m.body, client_id: 'fwd-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7) } })
+      .then((r) => { applyServerMessage(conv.id, r); if (notify) notify('Xabar uzatildi'); })
+      .catch(() => { if (notify) notify('Uzatib bo‘lmadi', 'danger'); });
+  };
+
   /* Foydalanuvchi bilan shaxsiy suhbat: mavjud bo'lsa o'shani ochadi, bo'lmasa yaratadi */
   const openWith = (userId) => {
     const existing = convs.find((c) => c.kind === 'direct' && c.other && c.other.id === userId);
@@ -8077,8 +8452,12 @@ function ChatPage({ notify, appMe, onOpenProfile, isStudent, brand, canMute }) {
   const shownGeneral = general && matches(CHAT_GENERAL_TITLE) ? general : null;
   const visibleAll = users.filter((u) => !u.hidden);
   const isStu = (u) => u.role === 'student';
-  const staffList = visibleAll.filter((u) => !isStu(u));
-  const studentList = visibleAll.filter((u) => isStu(u));
+  const isRemoved = (u) => removedList.indexOf(u.username) !== -1;
+  /* pick* — «+» oynasi uchun (olib tashlanganlar ham bor), *List — chap panel uchun */
+  const pickStaff = visibleAll.filter((u) => !isStu(u));
+  const pickStudents = visibleAll.filter((u) => isStu(u));
+  const staffList = pickStaff.filter((u) => !isRemoved(u));
+  const studentList = pickStudents.filter((u) => !isRemoved(u));
   /* Har bir ko'rinadigan foydalanuvchi uchun alohida chat: yozishmasi bor bo'lsa oxirgi faollik bo'yicha,
      bo'lmasa ismi bo'yicha pastda */
   const rowsFor = (list) => list
@@ -8090,7 +8469,7 @@ function ChatPage({ notify, appMe, onOpenProfile, isStudent, brand, canMute }) {
       if (ta !== tb) return tb.localeCompare(ta);
       return a.u.name.localeCompare(b.u.name);
     });
-  const hiddenFor = (wantStudent) => users.filter((u) => u.hidden && isStu(u) === wantStudent && matches(u.name + ' ' + u.username));
+  const hiddenFor = (wantStudent) => users.filter((u) => u.hidden && !isRemoved(u) && isStu(u) === wantStudent && matches(u.name + ' ' + u.username));
   const unreadOf = (list) => list.reduce((a, u) => {
     const c = directs.find((x) => x.other && x.other.id === u.id);
     return a + (c ? c.unread : 0);
@@ -8101,11 +8480,12 @@ function ChatPage({ notify, appMe, onOpenProfile, isStudent, brand, canMute }) {
   const renderPeople = (rows, hiddenList, emptyText) => (
     <React.Fragment>
       <div className="chat-sec">{isStudent ? 'Ustozlar' : 'Profillar'}</div>
-      {rows.length === 0 && <div className="chat-hint pad small">{emptyText}</div>}
+      {rows.length === 0 && <div className="chat-hint pad small">{!needle && removedList.length > 0 ? 'Ro‘yxat bo‘sh. Qayta qo‘shish uchun yuqoridagi «+» tugmasini bosing' : emptyText}</div>}
       {rows.map(({ u, conv }) => (
-        <ChatPersonRow key={'p' + u.id} u={u} conv={conv} active={!!conv && conv.id === activeId}
+        <ChatPersonSwipe key={'p' + u.id} u={u} conv={conv} active={!!conv && conv.id === activeId}
+          onRead={conv ? () => markReadConv(conv) : null} onDelete={() => removeContactConfirm(u, conv)}
           onOpen={() => (conv ? setActiveId(conv.id) : openWith(u.id))}
-          onHide={() => setHidden(u.id, true)} onDelete={conv ? () => deleteConv(conv.id) : null} onMute={conv && canMute ? () => toggleMute(conv) : null} muted={!!conv && isMutedConv(conv)} />
+          onHide={() => setHidden(u.id, true)} onClear={conv ? () => clearConv(conv.id) : null} onRemove={() => removeContact(u, conv)} onMute={conv && canMute ? () => toggleMute(conv) : null} muted={!!conv && isMutedConv(conv)} />
       ))}
       {hiddenList.length > 0 && (
         <React.Fragment>
@@ -8161,7 +8541,12 @@ function ChatPage({ notify, appMe, onOpenProfile, isStudent, brand, canMute }) {
         </button>
       );
     }
-    thread.push(
+    const msgActs = [
+      { label: 'Javob', tone: 'green', icon: <ChatIcon.reply />, onClick: () => { setReplyTo(m); if (taRef.current) taRef.current.focus(); } },
+      { label: 'Uzatish', tone: 'blue', icon: SWIPE_ICON.fwd, onClick: () => setFwdMsg(m) },
+    ];
+    if (mine && !deleted) msgActs.push({ label: "O'chirish", tone: 'red', icon: <ChatIcon.trash />, onClick: () => setConfirmId(m.id) });
+    const msgEl = (
       <div key={String(m.client_id || m.id)} data-mid={m.id} tabIndex={-1}
         className={'chat-msg' + (mine ? ' mine' : '') + (m.failed ? ' failed' : '') + (deleted ? ' deleted' : '') + (flashId === m.id ? ' flash' : '')}>
         {real && !isEditing && !confirming && (
@@ -8237,6 +8622,9 @@ function ChatPage({ notify, appMe, onOpenProfile, isStudent, brand, canMute }) {
         </div>
       </div>
     );
+    thread.push(TOUCH_UI && real && !isEditing && !confirming
+      ? <SwipeRow key={String(m.client_id || m.id)} bg="transparent" actions={msgActs}>{msgEl}</SwipeRow>
+      : msgEl);
   });
 
   const tp = activeId ? typingMap[activeId] : null;
@@ -8245,6 +8633,26 @@ function ChatPage({ notify, appMe, onOpenProfile, isStudent, brand, canMute }) {
 
   return (
     <div className={'chat-root' + (active ? ' has-active' : '')}>
+      {fwdMsg && ReactDOM.createPortal(
+        <div className="chat-fwd-backdrop" onClick={() => setFwdMsg(null)}>
+          <div className="chat-fwd-card" onClick={(e) => e.stopPropagation()}>
+            <div className="chat-fwd-head"><b>Xabarni uzatish</b>
+              <button type="button" className="chat-icon-btn" onClick={() => setFwdMsg(null)} aria-label="Yopish"><ChatIcon.x /></button></div>
+            <div className="chat-fwd-preview">{fwdMsg.body || 'Fayl'}</div>
+            <div className="chat-fwd-list">
+              {convs.map((c) => {
+                const nm = c.kind === 'group' ? CHAT_GENERAL_TITLE : (c.other ? c.other.name : 'Suhbat');
+                return (
+                  <button key={c.id} type="button" className="chat-fwd-item" onClick={() => forwardTo(c)}>
+                    <ChatAvatar name={nm} src={c.kind === 'group' ? null : (c.other && c.other.avatar) || null} general={c.kind === 'group'} />
+                    <span>{nm}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      , document.body)}
       <aside className="chat-side">
         <div className="chat-side-head">
           <div className="chat-title">
@@ -8290,11 +8698,12 @@ function ChatPage({ notify, appMe, onOpenProfile, isStudent, brand, canMute }) {
             <React.Fragment>
               <div className="chat-sec">Guruhlar</div>
               {shownGeneral
-                ? <ChatRow conv={shownGeneral} meId={me.id} active={shownGeneral.id === activeId} onOpen={openGeneral} />
+                ? <ChatRowSwipe conv={shownGeneral} meId={me.id} active={shownGeneral.id === activeId} onOpen={openGeneral}
+                    unread={shownGeneral.unread} onRead={() => markReadConv(shownGeneral)} />
                 : <div className="chat-hint pad small">Guruh topilmadi</div>}
             </React.Fragment>
           )}
-          {tab === 'students' && (studentList.length === 0 && hiddenFor(true).length === 0 ? (
+          {tab === 'students' && (pickStudents.length === 0 && hiddenFor(true).length === 0 ? (
             <div className="chat-empty-tab">
               <span className="chat-ph-icon"><ChatIcon.users width="22" height="22" /></span>
               <b>Talabalar yo‘q</b>
@@ -8390,11 +8799,13 @@ function ChatPage({ notify, appMe, onOpenProfile, isStudent, brand, canMute }) {
 
       {picker && (
         <ChatUserPicker
-          users={visibleAll}
+          users={tab === 'students' ? pickStudents : tab === 'staff' ? pickStaff : []}
+          allUsers={visibleAll}
+          scope={tab}
           directs={directs}
           generalExists={!!general}
           onClose={() => setPicker(false)}
-          onPick={openWith}
+          onPick={(id) => { const pu = users.find((x) => x.id === id); if (pu && isRemoved(pu)) setRemoved(pu.username, false); openWith(id); }}
           onOpenGeneral={() => { setPicker(false); openGeneral(); }}
         />
       )}
@@ -8406,6 +8817,8 @@ function ChatPage({ notify, appMe, onOpenProfile, isStudent, brand, canMute }) {
    Chat kirish/chiqish bo'lganda 'chat-auth' hodisasi orqali qayta ulanadi. */
 function useChatUnread(appMe, notify) {
   const [count, setCount] = useState(0);
+  const [unreadConvs, setUnreadConvs] = useState([]);
+  const markRef = useRef(null);
   const [tick, setTick] = useState(0);
   useEffect(() => {
     const f = () => setTick((n) => n + 1);
@@ -8427,6 +8840,7 @@ function useChatUnread(appMe, notify) {
       chatApi('/conversations', { token: tok }).then((list) => {
         if (!alive) return;
         setCount(list.reduce((a, c) => a + (c.unread || 0), 0));
+        setUnreadConvs(list.filter((c) => (c.unread || 0) > 0));
         if (!incoming || !notify || incoming.sender_id === myChatId) return;
         if (window.__chatActiveId === incoming.conversation_id) return;
         const uname = appMe && appMe.username;
@@ -8445,6 +8859,17 @@ function useChatUnread(appMe, notify) {
           show(su ? su.name : 'Xodim', su ? su.avatar : null, CHAT_GENERAL_TITLE);
         }).catch(() => show('Xodim', null, CHAT_GENERAL_TITLE));
       }).catch(() => {});
+    };
+    /* Bildirishnomadan o'qildi deb belgilash: serverga yuboriladi, ro'yxat darhol yangilanadi */
+    markRef.current = (c) => {
+      if (!tok || !c) return;
+      const lm = c.last_message && typeof c.last_message.id === 'number' ? c.last_message.id : null;
+      setUnreadConvs((prev) => prev.filter((x) => x.id !== c.id));
+      setCount((n) => Math.max(0, n - (c.unread || 0)));
+      if (lm === null) { refresh(); return; }
+      chatApi('/conversations/' + c.id + '/read', { method: 'POST', token: tok, body: { last_message_id: lm } })
+        .catch(() => {})
+        .then(() => refresh());
     };
     const connect = () => {
       if (closed || !tok) return;
@@ -8465,31 +8890,34 @@ function useChatUnread(appMe, notify) {
     };
     const boot = async () => {
       if (appMe && appMe.username) tok = await chatEnsureSession(appMe);
-      else { try { tok = localStorage.getItem(CHAT_TOKEN_KEY) || ''; } catch (e) { tok = ''; } }
+      else { tok = chatGetTok(); }
       if (!alive) return;
       if (!tok) { setCount(0); return; }
       chatApi('/auth/me', { token: tok }).then((r) => { myChatId = r.user.id; }).catch(() => {});
       refresh();
       connect();
     };
+    const onRead = () => refresh(null);
+    window.addEventListener('chat-read', onRead);
     boot();
     return () => {
+      window.removeEventListener('chat-read', onRead);
       alive = false;
       closed = true;
       clearTimeout(timer);
       if (ws) { ws.onclose = null; try { ws.close(); } catch (x) {} }
     };
   }, [tick, appMe && appMe.username]);
-  return count;
+  return { count: count, convs: unreadConvs, markRead: (c) => { if (markRef.current) markRef.current(c); } };
 }
 
 /* Ilovadagi xodim VA talabalar ro'yxatini chatga yuborish.
    Yangi xodim/talaba qo'shilsa yoki o'zgarsa, chatda darhol ko'rinadi; o'chirilsa — yo'qoladi. */
 let chatSyncTimer = null;
-function syncStaffToChat(staff, students) {
-  let tok = '';
-  try { tok = localStorage.getItem(CHAT_TOKEN_KEY) || ''; } catch (e) { tok = ''; }
-  if (!tok || !Array.isArray(staff)) return;
+function syncStaffToChat(staff, students, me, retried) {
+  const tok = chatGetTok();
+  /* Bo'sh ro'yxat yuborilmaydi: aks holda chatdagi hamma xodim o'chib ketardi */
+  if (!tok || !Array.isArray(staff) || !staff.length) return;
   clearTimeout(chatSyncTimer);
   chatSyncTimer = setTimeout(() => {
     const people = staff
@@ -8500,16 +8928,40 @@ function syncStaffToChat(staff, students) {
         .map((s) => ({ username: s.username, name: s.name || s.username, role: 'student', password: s.password || undefined, avatar: s.avatar || null })));
     chatApi('/people', { method: 'PUT', token: tok, body: { people: people } })
       .then(() => window.dispatchEvent(new Event('chat-people')))
-      .catch(() => {});
+      .catch((e) => {
+        /* Token eskirgan bo'lsa — qayta kirib, sinxronlashni bir marta takrorlaymiz */
+        if (e && e.status === 401 && me && !retried) {
+          chatSetTok('');
+          chatEnsureSession(me).then((t) => { if (t) syncStaffToChat(staff, students, me, true); });
+        }
+      });
   }, 600);
 }
 
 function StaffApp({ me, staff, setStaff, roleTpl, setRoleTpl, categories, setCategories, students, setStudents, onLogout, notify, brand }) {
   const [page, setPage] = useState('overview');
-  const chatUnread = useChatUnread(me, notify);
+  const chatInbox = useChatUnread(me, notify);
+  const chatUnread = chatInbox.count;
+  /* Bo'lim almashganda sahifa tepadan boshlanadi (chat oynasining yuqori qismi ko'rinsin) */
+  useEffect(() => {
+    const m = document.querySelector('.app-main > main');
+    if (m) m.scrollTop = 0;
+    window.scrollTo(0, 0);
+  }, [page]);
   useEffect(() => { const f = () => setPage('chat'); window.addEventListener('chat-open', f); return () => window.removeEventListener('chat-open', f); }, []);
   /* Ilovadagi xodim va talabalar chat ro'yxatiga sinxronlanadi */
-  useEffect(() => { chatEnsureSession(me).then((t) => { if (t) syncStaffToChat(staff, students); }); }, [me.id, staff, students]);
+  useEffect(() => { chatEnsureSession(me).then((t) => { if (t) syncStaffToChat(staff, students, me); }); }, [me.id, staff, students]);
+  /* Brauzer xotirasi to'lsa — chat jimgina buzilmasin, foydalanuvchiga aytiladi */
+  useEffect(() => {
+    const f = (e) => {
+      const lv = e && e.detail && e.detail.level;
+      notify(lv === 'memory'
+        ? "Brauzer xotirasi to'lgan: chat ma'lumotlari faqat shu oynada saqlanyapti. Kurslardagi katta rasm/fayllarni kamaytiring"
+        : "Brauzer xotirasi to'lib qoldi: chatdagi eski fayllar va xabarlar tozalandi", 'danger');
+    };
+    window.addEventListener('chat-storage', f);
+    return () => window.removeEventListener('chat-storage', f);
+  }, []);
   const [editingStudentId, setEditingStudentId] = useState(null);
   const [editingStudentTab, setEditingStudentTab] = useState('info');
   const [quickAddCourse, setQuickAddCourse] = useState(false);
@@ -8586,6 +9038,24 @@ function StaffApp({ me, staff, setStaff, roleTpl, setRoleTpl, categories, setCat
   const markAllNotifsRead = () => setReadNotifIds(notifications.map((n) => n.id));
   const markNotifRead = (id) => setReadNotifIds((prev) => (prev.indexOf(id) === -1 ? [...prev, id] : prev));
   const unreadNotifCount = notifications.filter((n) => !n.read).length;
+  /* O'qilmagan chat suhbatlari ham qo'ng'iroqchadagi ro'yxatga tushadi */
+  const chatNotifs = chatInbox.convs.map((c) => {
+    const nm = c.kind === 'group' ? CHAT_GENERAL_TITLE : (c.other ? c.other.name : 'Suhbat');
+    const lm = c.last_message || null;
+    return {
+      id: 'chat-' + c.id, kind: 'chat', convId: c.id, conv: c, count: c.unread || 0, name: nm,
+      avatarSrc: c.kind === 'group' ? null : ((c.other && c.other.avatar) || null),
+      initials: chatInitials(nm),
+      preview: lm ? (lm.body ? String(lm.body).slice(0, 120) : 'Fayl yuborildi') : '',
+      read: false,
+    };
+  });
+  const allNotifs = [...chatNotifs, ...notifications];
+  const markBellRead = (id) => {
+    if (String(id).indexOf('chat-') === 0) { const c = chatNotifs.find((x) => x.id === id); if (c) chatInbox.markRead(c.conv); return; }
+    markNotifRead(id);
+  };
+  const markAllBellRead = () => { markAllNotifsRead(); chatNotifs.forEach((c) => chatInbox.markRead(c.conv)); };
 
   const blockedStudentCount = useMemo(
     () => new Set(studentBlockEntries(students, categories).map((e) => e.student.id)).size,
@@ -8627,9 +9097,9 @@ function StaffApp({ me, staff, setStaff, roleTpl, setRoleTpl, categories, setCat
         mobileOpen={mobileMenuOpen} onCloseMobile={() => setMobileMenuOpen(false)} />
 
       <div className="app-main flex-1 flex flex-col">
-        <Topbar me={me} roleLabel={roleLabel} initials={initials}
+        <Topbar me={me} roleLabel={roleLabel} initials={initials} brand={brand}
           theme={theme} onToggleTheme={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-          notifications={notifications} onMarkAllRead={markAllNotifsRead} onMarkRead={markNotifRead} onGoProfile={() => goTo('profile')} onLogout={onLogout}
+          notifications={allNotifs} onMarkAllRead={markAllBellRead} onMarkRead={markBellRead} onOpenChat={chatOpenConv} onGoProfile={() => goTo('profile')} onLogout={onLogout}
           badgeHidden={intro !== 'done'} onOpenBlocked={() => goTo('blocked')}
           onOpenMenu={() => setMobileMenuOpen(true)} />
 
@@ -10942,7 +11412,7 @@ const formatPhone = (v) => {
   d = d.slice(0, 9);
   if (!d) return '';
   const parts = [d.slice(0, 2), d.slice(2, 5), d.slice(5, 7), d.slice(7, 9)].filter(Boolean);
-  return '+998 ' + parts.join(' ');
+  return '+998-' + parts.join('-');
 };
 
 function SdModal({ title, icon, onClose, children, size }) {
@@ -11242,8 +11712,8 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
 
               <div className="sd-field">
                 <label className="sd-label">Telefon</label>
-                <input className="sd-input" type="tel" inputMode="tel" placeholder="+998 9X XXX XX XX" value={draft.phone}
-                  onFocus={() => { if (!draft.phone) setDraft({ ...draft, phone: '+998 ' }); }}
+                <input className="sd-input" type="tel" inputMode="tel" placeholder="+998-9X-XXX-XX-XX" value={draft.phone}
+                  onFocus={() => { if (!draft.phone) setDraft({ ...draft, phone: '+998-' }); }}
                   onBlur={() => { if (!formatPhone(draft.phone)) setDraft({ ...draft, phone: '' }); }}
                   onChange={(e) => setDraft({ ...draft, phone: formatPhone(e.target.value) })}
                   onKeyDown={(e) => { if (e.key === 'Enter') addStudent(); }} />
@@ -11772,8 +12242,8 @@ function StudentEditor({ student, categories, canEdit, onBack, onSave, staff, in
                   <div key={key}>
                     <label className="sd-label">{label}</label>
                     {key === 'phone' ? (
-                      <input className="sd-input" type="tel" inputMode="tel" disabled={!canEdit} placeholder="+998 9X XXX XX XX" value={form.phone || ''}
-                        onFocus={() => { if (!form.phone) setForm({ ...form, phone: '+998 ' }); }}
+                      <input className="sd-input" type="tel" inputMode="tel" disabled={!canEdit} placeholder="+998-9X-XXX-XX-XX" value={form.phone || ''}
+                        onFocus={() => { if (!form.phone) setForm({ ...form, phone: '+998-' }); }}
                         onBlur={() => { if (!formatPhone(form.phone)) setForm({ ...form, phone: '' }); }}
                         onChange={(e) => setForm({ ...form, phone: formatPhone(e.target.value) })} />
                     ) : key === 'password' ? (
@@ -12546,7 +13016,7 @@ function StaffPage({ me, staff, setStaff, roleTpl, notify, onGoPerms }) {
             <div className="nx-sec"><span className="nx-n">1</span>Profil</div>
             <div className="nx-2"><label>To'liq ism<input value={form.name} onChange={(e) => setName(e.target.value)} placeholder="Aziz Karimov" autoFocus /></label>
               <label>Lavozim<input value={form.position || ''} onChange={(e) => setForm({ ...form, position: e.target.value })} placeholder="Matematika o'qituvchisi" /></label></div>
-            <label>Telefon<input value={form.phone || ''} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="+998 90 123 45 67" /></label>
+            <label>Telefon<input value={form.phone || ''} onChange={(e) => setForm({ ...form, phone: formatPhone(e.target.value) })} placeholder="+998-90-123-45-67" /></label>
 
             <div className="nx-sec"><span className="nx-n">2</span>Kirish ma'lumotlari {form.isNew && <em className="nx-auto">avtomatik</em>}</div>
             <div className="nx-keybox">
@@ -12935,7 +13405,7 @@ function StaffProfile({ me, staff, setStaff, notify, onLogout, canBrand, brand, 
               <span>Telefon</span>
               <div className={'pb-input' + fieldCls(phoneOk, phoneDigits.length > 0)}>
                 <Icon.phone width="15" height="15" />
-                <input inputMode="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: formatPhone(e.target.value) })} placeholder="+998 90 123 45 67" />
+                <input inputMode="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: formatPhone(e.target.value) })} placeholder="+998-90-123-45-67" />
                 {phoneDigits.length > 0 && <i className="pb-chk">{phoneOk ? <Icon.check width="13" height="13" /> : '!'}</i>}
               </div>
               {!phoneOk && <em>Raqam to'liq emas</em>}
@@ -13163,7 +13633,7 @@ function StaffProfile({ me, staff, setStaff, notify, onLogout, canBrand, brand, 
 function StudentApp({ me, staff, categories, students, setStudents, onLogout, notify, brand }) {
   const [page, setPage] = useState('home');
   const chatMe = { ...me, role: 'student' };
-  const chatUnread = useChatUnread(chatMe, notify);
+  const chatUnread = useChatUnread(chatMe, notify).count;
   useEffect(() => { const f = () => setPage('chat'); window.addEventListener('chat-open', f); return () => window.removeEventListener('chat-open', f); }, []);
   useEffect(() => { chatEnsureSession(chatMe).then((t) => { if (t) syncStaffToChat(staff || [], students); }); }, [me.id, staff, students]);
   const [catId, setCatId] = useState(null);
@@ -13174,14 +13644,14 @@ function StudentApp({ me, staff, categories, students, setStudents, onLogout, no
   const student = students.find((s) => s.id === me.id);
   const setStudent = (upd) => setStudents(students.map((s) => (s.id === me.id ? upd : s)));
 
-  const enrolledCategories = categories.filter((c) => student.access[c.id]?.active);
+  const enrolledCategories = categories.filter((c) => student.access?.[c.id]?.active);
   const bill = studentBilling(student, categories);
   const [blockedCat, setBlockedCat] = useState(null);   // to'lov qilinmagan kursga kirishga urinish
   const [attnBlockedCat, setAttnBlockedCat] = useState(null); // darslik nazorati bo'yicha bloklangan kursga urinish
   const [buyCat, setBuyCat] = useState(null);           // hali sotib olinmagan kursga bosilganda
   const courseBill = (cid) => bill.courses.find((c) => c.catId === cid);
 
-  const lessonProgress = (lessonId) => student.progress[lessonId] || { watched: 0, completed: false };
+  const lessonProgress = (lessonId) => student.progress?.[lessonId] || { watched: 0, completed: false };
 
   /* Darslik nazorati: shu kurs bo'yicha talabaning dars kunlarini o'tkazib
      yuborish holati va jarima ballari. Vidjet + darsliklar ro'yxati shu bitta
