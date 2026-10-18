@@ -7739,24 +7739,49 @@ const CHAT_EMOJIS = ['😀', '😁', '😂', '🤣', '😊', '😍', '🥰', '�
   '📌', '📎', '🎬', '🖥️', '☕', '🍀', '🌟', '🚀'];
 
 let chatAudioCtx = null;
-function chatBeep() {
+function chatAudio() {
   try {
     const AC = window.AudioContext || window.webkitAudioContext;
-    if (!AC) return;
+    if (!AC) return null;
     chatAudioCtx = chatAudioCtx || new AC();
     if (chatAudioCtx.state === 'suspended') chatAudioCtx.resume();
-    const t = chatAudioCtx.currentTime;
-    const o = chatAudioCtx.createOscillator();
-    const g = chatAudioCtx.createGain();
-    o.type = 'sine';
-    o.frequency.setValueAtTime(880, t);
-    o.frequency.exponentialRampToValueAtTime(1175, t + 0.12);
-    g.gain.setValueAtTime(0.0001, t);
-    g.gain.exponentialRampToValueAtTime(0.1, t + 0.02);
-    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.26);
-    o.connect(g); g.connect(chatAudioCtx.destination);
-    o.start(t); o.stop(t + 0.28);
-  } catch (e) { /* ovoz ixtiyoriy */ }
+    return chatAudioCtx;
+  } catch (e) { return null; }
+}
+/* iOS/Safari: ovoz faqat foydalanuvchi bosgandan keyin ochiladi -> birinchi tegishda "qulfni ochamiz" */
+(function chatAudioUnlock() {
+  const unlock = () => {
+    const c = chatAudio();
+    if (c) { try { const b = c.createBuffer(1, 1, 22050), n = c.createBufferSource(); n.buffer = b; n.connect(c.destination); n.start(0); } catch (e) {} }
+    ['touchstart', 'touchend', 'pointerdown', 'click', 'keydown'].forEach((ev) => window.removeEventListener(ev, unlock, true));
+  };
+  ['touchstart', 'touchend', 'pointerdown', 'click', 'keydown'].forEach((ev) => window.addEventListener(ev, unlock, true));
+})();
+function chatTone(c, t0, f0, f1, dur, vol, type) {
+  const o = c.createOscillator(), g = c.createGain();
+  o.type = type || 'sine';
+  o.frequency.setValueAtTime(f0, t0);
+  if (f1 && f1 !== f0) o.frequency.exponentialRampToValueAtTime(f1, t0 + dur * 0.6);
+  g.gain.setValueAtTime(0.0001, t0);
+  g.gain.exponentialRampToValueAtTime(vol, t0 + 0.012);
+  g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+  o.connect(g); g.connect(c.destination);
+  o.start(t0); o.stop(t0 + dur + 0.02);
+}
+/* Kelgan xabar (boshqa chatdan yoki sahifa yashirin): ikki notali signal */
+function chatBeep() {
+  const c = chatAudio(); if (!c) return;
+  try { const t = c.currentTime; chatTone(c, t, 880, 1175, 0.2, 0.11); chatTone(c, t + 0.11, 1175, 1320, 0.22, 0.08); } catch (e) { /* ovoz ixtiyoriy */ }
+}
+/* Ochiq chatda kelgan xabar: yumshoq "tik" */
+function chatSoftIn() {
+  const c = chatAudio(); if (!c) return;
+  try { const t = c.currentTime; chatTone(c, t, 740, 988, 0.14, 0.06); } catch (e) {}
+}
+/* Xabar yuborilganda: qisqa "pop" (Telegramdagi kabi) */
+function chatSendSound() {
+  const c = chatAudio(); if (!c) return;
+  try { const t = c.currentTime; chatTone(c, t, 520, 1040, 0.13, 0.12, 'triangle'); } catch (e) {}
 }
 
 /* Matndagi http(s) havolalarni bosiladigan qiladi (React matnni o'zi xavfsiz ekranlaydi) */
@@ -8441,6 +8466,7 @@ function ChatPage({ notify, appMe, onOpenProfile, isStudent, brand, canMute }) {
         if (!atBottomRef.current) setNewBelow((n) => n + 1);
       }
       if (incoming && (!viewing || document.hidden)) chatBeep();
+      else if (incoming && viewing) chatSoftIn();
     } else if (ev.type === 'message_update') {
       applyServerMessage(ev.message.conversation_id, ev.message);
     } else if (ev.type === 'typing') {
@@ -8720,6 +8746,7 @@ function ChatPage({ notify, appMe, onOpenProfile, isStudent, brand, canMute }) {
     };
     setDraft(''); setReplyTo(null); setEmojiOpen(false);
     atBottomRef.current = true;
+    chatSendSound();
     patchConv(convId, (c) => Object.assign({}, c, { last_message: tmp, updated_at: tmp.created_at }));
     postTmp(convId, tmp);
   };
@@ -9732,18 +9759,18 @@ function StatMonthPayments({ students, categories }) {
       {list.length === 0 ? <p className="sx-em" style={{ padding: '18px 0' }}>Bu oy hali to'lov qabul qilinmagan.</p> : (
         <React.Fragment>
           <div className="sx-tw">
-            <table className="sx-t">
+            <table className="sx-t sx-pay">
               <thead><tr><th>#</th><th>O'quvchi</th><th>Kurs / izoh</th><th>Sana</th><th>Asosiy</th><th>Qo'shimcha</th><th>Jami</th></tr></thead>
               <tbody>
                 {shown.map((x, i) => (
                   <tr key={x.id}>
-                    <td className="sx-mut">{(cp - 1) * 10 + i + 1}</td>
-                    <td><b>{x.name}</b></td>
-                    <td>{x.course}{x.note ? <small className="sx-mut" style={{ display: 'block' }}>{x.note}</small> : null}</td>
-                    <td className="sx-mut">{fmtDate(x.date)}</td>
-                    <td>{fmtMoney(x.amount)}</td>
-                    <td>{x.extra > 0 ? <span className="sx-tag warn">+ {fmtMoney(x.extra)}</span> : <span className="sx-mut">—</span>}</td>
-                    <td><b className="ok">{fmtMoney(x.total)}</b></td>
+                    <td className="sx-mut c-n">{(cp - 1) * 10 + i + 1}</td>
+                    <td className="c-name"><b>{x.name}</b></td>
+                    <td className="c-course">{x.course}{x.note ? <small className="sx-mut" style={{ display: 'block' }}>{x.note}</small> : null}</td>
+                    <td className="sx-mut c-date">{fmtDate(x.date)}</td>
+                    <td className="c-main" data-l="Asosiy">{fmtMoney(x.amount)}</td>
+                    <td className={'c-extra' + (x.extra > 0 ? '' : ' is-none')} data-l="Qo'shimcha">{x.extra > 0 ? <span className="sx-tag warn">+ {fmtMoney(x.extra)}</span> : <span className="sx-mut">—</span>}</td>
+                    <td className="c-total"><b className="ok">{fmtMoney(x.total)}</b></td>
                   </tr>
                 ))}
               </tbody>
@@ -11578,10 +11605,8 @@ function CoursesManager({ categories, setCategories, canEdit, notify, students, 
         })()}
         {addSubModalFor && (
           <SdModal title="Yangi bo'lim qo'shish" icon="book" onClose={() => { setAddSubModalFor(null); setNewSubImage({ ...newSubImage, [addSubModalFor]: '' }); setNewSubPosters({ ...newSubPosters, [addSubModalFor]: [] }); }}>
-            <p className="sd-confirm-text">
-              <b>{activeCat.name}</b> kursiga yangi bo'lim qo'shing (masalan: TypeScript).
-            </p>
-            <div className="flex items-center gap-3 mb-4">
+            <p className="ab-intro"><b>{activeCat.name}</b> kursiga yangi bo'lim qo'shing.</p>
+            <div className="ab-logo">
               <label className="topic-logo-pick">
                 <div className="topic-logo-preview">
                   {newSubImage[addSubModalFor] ? (
@@ -11598,14 +11623,18 @@ function CoursesManager({ categories, setCategories, canEdit, notify, students, 
                   </span>
                 )}
               </label>
-              <p className="topic-logo-hint">Ixtiyoriy: bo'lim uchun logotip yuklang.<br/>Yuklanmasa, nomning bosh harflaridan avtomatik belgi yaratiladi.</p>
+              <div className="ab-logo-t"><b>Logotip <em>ixtiyoriy</em></b><span>Yuklanmasa, nomning bosh harflaridan avtomatik belgi yaratiladi.</span></div>
             </div>
-            <input autoFocus placeholder="Bo'lim nomi" value={newSubName[addSubModalFor] || ''}
-              onChange={(e) => setNewSubName({ ...newSubName, [addSubModalFor]: e.target.value })}
-              onKeyDown={(e) => { if (e.key === 'Enter') addSubtopic(addSubModalFor); }}
-              className="w-full border border-line rounded-lg px-3 py-2.5 text-sm bg-white outline-none focus:border-gold" />
-            <div className="mt-4"><div className="text-xs font-semibold text-slate mb-1.5">Video posterlari (ixtiyoriy)</div>
-              <PosterPicker posters={newSubPosters[addSubModalFor] || []} onChange={(v) => setNewSubPosters({ ...newSubPosters, [addSubModalFor]: v })} notify={notify} /></div>
+            <div className="sd-field">
+              <label className="sd-label">Bo'lim nomi</label>
+              <input autoFocus className="sd-input" placeholder="Masalan: TypeScript" value={newSubName[addSubModalFor] || ''}
+                onChange={(e) => setNewSubName({ ...newSubName, [addSubModalFor]: e.target.value })}
+                onKeyDown={(e) => { if (e.key === 'Enter') addSubtopic(addSubModalFor); }} />
+            </div>
+            <div className="sd-field">
+              <label className="sd-label">Video posterlari <em className="ab-opt">ixtiyoriy</em></label>
+              <PosterPicker posters={newSubPosters[addSubModalFor] || []} onChange={(v) => setNewSubPosters({ ...newSubPosters, [addSubModalFor]: v })} notify={notify} />
+            </div>
             <div className="sd-foot">
               <button className="sd-btn sd-btn-ghost" onClick={() => { setAddSubModalFor(null); setNewSubImage({ ...newSubImage, [addSubModalFor]: '' }); setNewSubPosters({ ...newSubPosters, [addSubModalFor]: [] }); }}>Bekor qilish</button>
               <button className="sd-btn sd-btn-primary" onClick={() => addSubtopic(addSubModalFor)}>
@@ -15332,7 +15361,7 @@ function PosterPicker({ posters, onChange, notify }) {
         <label className="pp-add"><Icon.image width="20" height="20" /><b>Poster qo'shish</b>
           <input type="file" accept="image/*" multiple onChange={(e) => { add(e.target.files); e.target.value = ''; }} /></label>
       </div>
-      <p className="topic-logo-hint">Bir nechta rasm tanlash mumkin (16:9 tavsiya etiladi). Bo'limdagi 1-video 1-poster, 2-video 2-poster bilan chiqadi; rasmlar tugasa qaytadan boshlanadi. Yuklanmasa, oddiy qora fon chiqadi.</p>
+      <p className="topic-logo-hint">Bir nechta rasm tanlash mumkin (16:9 tavsiya etiladi). 1-poster 1-videoga, 2-poster 2-videoga biriktiriladi; tugasa qaytadan boshlanadi. Yuklanmasa, qora fon chiqadi.</p>
     </div>
   );
 }
@@ -16430,8 +16459,10 @@ ReactDOM.createRoot(document.getElementById('root')).render(<Root />);
     inset:auto !important; left:0 !important; right:0 !important; bottom:auto !important;
     top:var(--vv-top,0px) !important; height:var(--vv-h,100dvh) !important;
   }
-  html.kb-modal .sd-modal, html.kb-modal .modal-card, html.kb-modal .chat-modal, html.kb-modal .bi-card{
-    max-height:calc(var(--vv-h,100dvh) - 12px) !important;
+  html.kb-modal body .sd-backdrop .sd-modal, html.kb-modal body .modal-backdrop .modal-card,
+  html.kb-modal body .chat-modal-back .chat-modal, html.kb-modal body .chat-modal-back .chat-picker,
+  html.kb-modal body .chat-fwd-backdrop .chat-fwd-card, html.kb-modal body .bi-backdrop .bi-card{
+    max-height:calc(var(--vv-h,100dvh) - 16px) !important;
   }
   html.kb-modal .sd-modal{ padding-bottom:0 !important; }
   html.kb-modal .nx-dw{ height:100% !important; }
@@ -16444,6 +16475,146 @@ body:has(.sd-backdrop), body:has(.modal-backdrop), body:has(.nx-dw-back){ overfl
 @media (max-width:860px){ .modal-card{ max-height:calc(100dvh - 24px) !important; } }
 .modal-backdrop, .sd-backdrop, .chat-modal-back{ height:100dvh; }
 .modal-backdrop, .sd-backdrop, .chat-modal-back, .chat-fwd-backdrop, .nx-dw-back{ overscroll-behavior:contain; }
+
+/* ===== 5) Chat titrashini yo'qotish: klaviatura ochiq paytda og'ir effektlar o'chiriladi ===== */
+html.chat-page.kb-open .nx-aur, html.chat-page.kb-open .nx-aur i{ display:none !important; }
+html.chat-page.kb-open .chat-root,
+html.chat-page.kb-open .chat-root *{
+  -webkit-backdrop-filter:none !important; backdrop-filter:none !important;
+  transition:none !important; animation:none !important;
+}
+html.chat-page.kb-open .chat-thread{ overflow-anchor:none; scroll-behavior:auto !important; -webkit-overflow-scrolling:touch; }
+html.chat-page.kb-open .app-shell, html.chat-page.kb-open .app-main{ transition:none !important; will-change:auto; }
+
+/* ===== 6) Modallar — telefonda ham EKRAN O'RTASIDA (pastdan chiquvchi sheet emas) ===== */
+@media (max-width:720px){
+  html body .sd-backdrop{ align-items:center !important; justify-content:center !important; padding:12px !important; }
+  html body .sd-backdrop .sd-modal{
+    width:min(460px, calc(100vw - 24px)) !important; max-width:min(460px, calc(100vw - 24px)) !important;
+    max-height:calc(100dvh - 24px) !important; margin:0 auto !important;
+    border-radius:1.6rem !important; padding-bottom:0 !important;
+    animation:mdIn .26s cubic-bezier(.2,.8,.2,1) !important;
+  }
+  html body .sd-modal::before{ display:none !important; }
+  html body .chat-modal-back{ align-items:center !important; justify-content:center !important; padding:12px !important; }
+  html body .chat-modal-back .chat-picker, html body .chat-modal-back .chat-modal{
+    width:min(440px, 100%) !important; max-width:min(440px, 100%) !important;
+    border-radius:20px !important; max-height:calc(100dvh - 24px) !important;
+  }
+  html body .chat-fwd-backdrop{ align-items:center !important; padding:12px !important; }
+  html body .chat-fwd-card{ border-radius:20px !important; max-height:calc(100dvh - 24px) !important; }
+}
+
+/* ===== 7) O'quvchi tanlagichi: lupa belgisi ism ustiga tushmasin ===== */
+.sd-input.pk-in{ padding-left:38px !important; padding-right:42px !important; }
+
+/* ===== 8) "Yangi bo'lim qo'shish" oynasi — tartibli bloklar ===== */
+.ab-intro{ margin:0 0 .9rem; font-size:.92rem; line-height:1.5; color:var(--sd-text); }
+.ab-logo{ display:flex; align-items:center; gap:.9rem; padding:.8rem .9rem; margin-bottom:1rem; border-radius:1rem;
+  border:1px solid var(--sd-line); background:rgba(127,127,127,.05); }
+.ab-logo .topic-logo-pick{ width:60px; height:60px; border-radius:1rem; }
+.ab-logo-t{ display:flex; flex-direction:column; gap:.2rem; min-width:0; }
+.ab-logo-t b{ font-size:.86rem; font-weight:800; color:var(--sd-text); }
+.ab-logo-t span{ font-size:.76rem; line-height:1.4; color:var(--sd-muted); }
+.ab-logo-t em, .ab-opt{ font-style:normal; font-weight:600; text-transform:none; letter-spacing:0; opacity:.65; font-size:.9em; margin-left:.25rem; }
+.sd-modal .pp-grid{ grid-template-columns:repeat(auto-fill, minmax(92px, 118px)); gap:.5rem; }
+.sd-modal .pp-add{ aspect-ratio:16/9; min-height:0; padding:.25rem; border-radius:.8rem; font-size:.7rem; gap:.2rem; }
+.sd-modal .pp-add b{ font-weight:700; line-height:1.15; }
+.sd-modal .pp-box .topic-logo-hint{ margin:.55rem 0 0; font-size:.72rem; line-height:1.45; }
+.sd-modal .sd-field:last-of-type{ margin-bottom:0; }
+
+/* ===== 9) Moliya: "Shu oydagi to'lovlar" — telefonda kartalar ko'rinishida ===== */
+@media (max-width:720px){
+  .sx-bh h2 small{ display:block; margin:4px 0 0 !important; }
+  .sx-tw:has(.sx-pay){ overflow:visible; }
+  .sx-t.sx-pay{ min-width:0 !important; display:block; width:100%; }
+  .sx-pay thead{ display:none; }
+  .sx-pay tbody{ display:block; }
+  .sx-pay tr{ display:grid; grid-template-columns:minmax(0,1fr) auto; column-gap:12px; row-gap:3px; align-items:center;
+    padding:12px 2px; border-top:1px solid var(--line); }
+  .sx-pay tr:first-child{ border-top:0; }
+  .sx-pay td{ display:block; padding:0 !important; border:0 !important; white-space:normal !important; min-width:0; }
+  .sx-pay td.c-n{ display:none; }
+  .sx-pay td.c-name{ grid-column:1; grid-row:1; font-size:14px; }
+  .sx-pay td.c-total{ grid-column:2; grid-row:1; text-align:right; white-space:nowrap !important; font-size:14px; }
+  .sx-pay td.c-course{ grid-column:1; grid-row:2; font-size:12.5px; color:var(--mut); }
+  .sx-pay td.c-course small{ display:inline !important; margin-left:6px; }
+  .sx-pay td.c-date{ grid-column:2; grid-row:2; text-align:right; font-size:12px; white-space:nowrap !important; }
+  .sx-pay td.c-main, .sx-pay td.c-extra{ grid-row:3; font-size:12px; color:var(--mut); white-space:nowrap !important; margin-top:2px; }
+  .sx-pay td.c-main{ grid-column:1; }
+  .sx-pay td.c-extra{ grid-column:2; text-align:right; }
+  .sx-pay td.c-main::before, .sx-pay td.c-extra::before{ content:attr(data-l) ": "; opacity:.8; }
+  .sx-pay td.c-extra .sx-tag{ padding:1px 7px; font-size:11px; }
+  .sx-pay td.c-extra.is-none{ display:none; }
+}
+
+/* ===== 10) Sidebar: yoyilganda "Ferdinant" nomi, yig'ilganda faqat logo; qolgan bo'limlar moslashadi ===== */
+@media (min-width:861px){
+  html body .side-modern.is-collapsed .side-top .brand-text{ display:none !important; }
+  html body .side-modern.is-collapsed .side-top{ padding:1rem 0 .4rem !important; }
+  html body .side-modern.is-collapsed .side-top .brand-lockup{ gap:0 !important; justify-content:center; width:100%; }
+  html body .side-modern.is-collapsed .side-top .side-logo-row{ flex-direction:column; align-items:center; justify-content:center; gap:.7rem; }
+  html body .side-modern.is-collapsed nav.flex-1{ padding:.3rem .55rem !important; }
+  html body .side-modern.is-collapsed .nav-pill{ justify-content:center !important; padding:11px 0 !important; gap:0 !important; }
+  html body .side-modern.is-collapsed .nav-pill .side-label{ display:none !important; }
+  html body .side-modern.is-collapsed .nav-pill-icon{ margin:0 !important; }
+  html body .side-modern.is-collapsed .nav-pill .nav-badge{ position:absolute; top:3px; right:7px; min-width:16px; height:16px; padding:0 4px !important; font-size:10px !important; line-height:16px; margin:0; }
+  html body .side-modern.is-collapsed .nav-pill-divider{ margin-left:auto; margin-right:auto; width:28px; }
+  html body .side-modern.is-collapsed .side-footer{ justify-content:center; margin:.5rem .55rem .6rem; padding:.5rem 0; }
+  html body .side-modern.is-collapsed .side-footer-info{ display:none !important; }
+  html body .side-modern.is-collapsed .side-footer .avatar{ margin:0; }
+  html body .side-modern .side-top .brand-text{ white-space:nowrap; }
+}
+
+/* ===== 11) Izohlar bo'limi: qulay va chiroyli ===== */
+.cm-box{ overflow:hidden; }
+.cm-empty{ gap:.45rem; }
+@media (max-width:720px){
+  .cm-box{ padding:1rem .9rem !important; margin:1rem 0 5.5rem !important; border-radius:1.2rem !important; }
+  .cm-head{ margin-bottom:.8rem; }
+  .cm-head h3{ font-size:1.02rem; }
+  .cm-new{ flex-direction:column !important; align-items:stretch !important; gap:0 !important; padding-bottom:.9rem; margin-bottom:.2rem; }
+  .cm-new > .cm-av{ display:none !important; }
+  /* yozish maydoni: butun kenglikda, o'ng tomonda dumaloq "yuborish" tugmasi (Telegramdagidek) */
+  .cm-new .cm-composer{ width:100%; box-sizing:border-box; display:flex; align-items:flex-end; gap:.5rem; padding:.35rem .35rem .35rem .85rem; border-radius:1.4rem; }
+  .cm-new .cm-area{ flex:1; min-width:0; min-height:42px; max-height:140px; padding:.6rem 0 !important; font-size:16px !important; line-height:1.4; }
+  .cm-new .cm-row{ flex:none; padding:0 !important; margin:0 !important; flex-wrap:nowrap; }
+  .cm-new .cm-hint, .cm-new .cm-btn:not(.pri){ display:none !important; }
+  .cm-new .cm-btn.pri{ width:42px; height:42px; padding:0; border-radius:50%; justify-content:center; font-size:0; gap:0; }
+  .cm-new .cm-btn.pri svg{ width:18px; height:18px; }
+  .cm-edit .cm-hint{ display:none; }
+  .cm-edit .cm-row{ justify-content:flex-end; }
+  .cm-empty{ flex-direction:row !important; justify-content:center; text-align:left !important; gap:.7rem !important; padding:1rem .4rem .6rem !important; font-size:.84rem !important; }
+  .cm-empty-ic{ width:34px !important; height:34px !important; flex:none; }
+  .cm-empty-ic svg{ width:17px; height:17px; }
+  .cm-item{ padding:.8rem .2rem !important; gap:.65rem !important; }
+  .cm-item + .cm-item::before{ left:calc(.2rem + 48px) !important; right:.2rem !important; }
+}
+
+/* ===== 12) Modallar telefonda SILLIQ ochilsin (og'ir blur/animatsiyalar olib tashlandi) ===== */
+@keyframes edBdIn{ from{ opacity:0; } to{ opacity:1; } }
+@keyframes edModalIn{ from{ opacity:0; transform:translate3d(0,16px,0) scale(.985); } to{ opacity:1; transform:none; } }
+.sd-backdrop, .modal-backdrop, .chat-modal-back, .chat-fwd-backdrop, .nx-dw-back{ height:100dvh; transition:top .22s ease, height .22s ease; }
+@media (max-width:860px), (hover:none) and (pointer:coarse){
+  html body .sd-backdrop, html body .modal-backdrop, html body .chat-modal-back, html body .chat-fwd-backdrop, html body .nx-dw-back{
+    -webkit-backdrop-filter:none !important; backdrop-filter:none !important;
+    background:rgba(2,8,6,.68) !important;
+    animation:edBdIn .18s ease-out both !important;
+  }
+  html body .sd-backdrop .sd-modal, html body .modal-backdrop .modal-card, html body .chat-modal-back .chat-modal,
+  html body .chat-modal-back .chat-picker, html body .chat-fwd-backdrop .chat-fwd-card{
+    -webkit-backdrop-filter:none !important; backdrop-filter:none !important;
+    animation:edModalIn .24s cubic-bezier(.22,.9,.3,1) both !important;
+    will-change:transform, opacity;
+    box-shadow:0 18px 42px -20px rgba(0,0,0,.65) !important;
+    -webkit-overflow-scrolling:touch; overscroll-behavior:contain;
+  }
+  /* modal ochiq paytida fondagi doimiy animatsiyalar to'xtaydi (jank yo'qoladi) */
+  html:has(.sd-backdrop) .nx-aur i, html:has(.modal-backdrop) .nx-aur i, html:has(.nx-dw-back) .nx-aur i{ animation-play-state:paused !important; }
+}
+@media (prefers-reduced-motion:reduce){
+  html body .sd-backdrop, html body .modal-backdrop, html body .sd-backdrop .sd-modal, html body .modal-backdrop .modal-card{ animation:none !important; }
+}
 </style>
 <script id="edu-kb-js">
 (function () {
@@ -16453,11 +16624,15 @@ body:has(.sd-backdrop), body:has(.modal-backdrop), body:has(.nx-dw-back){ overfl
   var mqChat = window.matchMedia('(max-width: 860px)');
   var mqTouch = window.matchMedia('(max-width: 860px), (hover: none) and (pointer: coarse)');
   var MODAL_SEL = '.sd-backdrop, .modal-backdrop, .nx-dw-back, .chat-modal-back, .chat-fwd-backdrop, .bi-backdrop';
-  var mode = '';                       // '' | 'chat' | 'modal'
-  var last = { h: -1, t: -1 };
-  var raf = 0, closeTimer = 0;
+  var SCROLLER_SEL = '.sd-modal, .modal-card, .nx-dw, .chat-modal, .chat-picker, .chat-fwd-card, .bi-card';
+  var mode = '';
+  var applied = { h: -999, t: -999 };
+  var idleH = vv ? vv.height : window.innerHeight;
+  var raf = 0, tm = 0, closeTimer = 0, relTimer = 0, releasing = false;
 
-  function isField(a) { return !!(a && /^(TEXTAREA|INPUT|SELECT)$/.test(a.tagName) && a.type !== 'checkbox' && a.type !== 'radio' && a.type !== 'button' && a.type !== 'submit'); }
+  function isField(a) {
+    return !!(a && /^(TEXTAREA|INPUT|SELECT)$/.test(a.tagName) && ['checkbox','radio','button','submit','range','file'].indexOf(a.type) < 0);
+  }
   function wanted() {
     var a = document.activeElement;
     if (!isField(a) || !a.closest) return '';
@@ -16467,8 +16642,8 @@ body:has(.sd-backdrop), body:has(.modal-backdrop), body:has(.nx-dw-back){ overfl
   }
   function vvH() { return Math.round(vv ? vv.height : window.innerHeight); }
   function vvTop() { return Math.max(0, Math.round(vv ? vv.offsetTop : 0)); }
+  function resetScroll() { [0, 80, 220, 420].forEach(function (ms) { setTimeout(function () { if (!mode && (window.pageYOffset || vvTop())) window.scrollTo(0, 0); }, ms); }); }
 
-  /* xabarlar pastdan masofasi saqlanadi (faqat o'lcham HAQIQATAN o'zgarganda) */
   function keepDist(fn) {
     var t = document.querySelector('.chat-root .chat-thread');
     if (!t) { fn(); return; }
@@ -16485,51 +16660,80 @@ body:has(.sd-backdrop), body:has(.modal-backdrop), body:has(.nx-dw-back){ overfl
     mode = m;
   }
   function apply(m) {
+    if (releasing) { releasing = false; clearTimeout(relTimer); }   // yopilayotgan paytda qayta fokus: bekor qilamiz
     var h = vvH(), t = vvTop();
-    var changed = h !== last.h || t !== last.t || m !== mode;
-    if (!changed) return;                         // hech narsa o'zgarmasa — tegmaymiz (titrash yo'q)
+    if (m === mode && Math.abs(h - applied.h) < 3 && Math.abs(t - applied.t) < 3) return;
+    var hChanged = Math.abs(h - applied.h) >= 3 || m !== mode;
     var run = function () {
       var s = root.style;
       s.setProperty('--vv-h', h + 'px');
       s.setProperty('--vv-top', t + 'px');
-      s.setProperty('--kb-h', Math.max(0, Math.round(window.innerHeight - h - t)) + 'px');
       setMode(m);
     };
-    if (m === 'chat' && (h !== last.h || mode !== 'chat')) keepDist(run); else run();
-    last.h = h; last.t = t;
+    if (m === 'chat' && hChanged) keepDist(run); else run();
+    applied.h = h; applied.t = t;
   }
+  function finishRelease() {
+    releasing = false;
+    setMode('');
+    root.style.removeProperty('--vv-h'); root.style.removeProperty('--vv-top');
+    applied.h = -999; applied.t = -999;
+    resetScroll();
+  }
+  /* Modal: avval to'liq balandlikka SILLIQ qaytadi (CSS transition), keyin rejim o'chadi -> "qotib qolish" yo'q */
   function release() {
-    if (!mode) return;
-    var wasChat = mode === 'chat';
-    var run = function () {
-      setMode('');
-      root.style.removeProperty('--vv-h'); root.style.removeProperty('--vv-top'); root.style.removeProperty('--kb-h');
-    };
-    if (wasChat) keepDist(run); else run();
-    last.h = -1; last.t = -1;
+    if (!mode || releasing) return;
+    if (mode === 'chat') { keepDist(finishRelease); return; }
+    releasing = true;
+    root.style.setProperty('--vv-h', Math.round(idleH) + 'px');
+    root.style.setProperty('--vv-top', '0px');
+    clearTimeout(relTimer);
+    relTimer = setTimeout(finishRelease, 260);
   }
   function update() {
-    raf = 0;
+    raf = 0; tm = 0;
     var m = wanted();
-    if (m) apply(m); else if (mode && !closeTimer) release();
+    // klaviatura yopildi (Android "orqaga" yoki iOS "tayyor") — fokus qolgan bo'lsa ham
+    if (mode && !releasing && idleH - vvH() < 40) { release(); return; }
+    if (!m) {
+      if (mode && !closeTimer) release();
+      if (!mode && !isField(document.activeElement)) { idleH = vvH(); if (vvTop() > 0) resetScroll(); }
+      return;
+    }
+    if (!mode && idleH - vvH() < 80) return;
+    if (releasing) return;
+    apply(m);
   }
-  function schedule() { if (!raf) raf = requestAnimationFrame(update); }
+  function schedule() {
+    if (mode) { clearTimeout(tm); tm = setTimeout(update, 90); }
+    else if (!raf) raf = requestAnimationFrame(update);
+  }
 
   if (vv) { vv.addEventListener('resize', schedule); vv.addEventListener('scroll', schedule); }
-  window.addEventListener('orientationchange', function () { last.h = -1; setTimeout(schedule, 300); });
+  window.addEventListener('resize', function () { if (!mode && !isField(document.activeElement)) idleH = vvH(); });
+  window.addEventListener('orientationchange', function () { setTimeout(function () { if (!mode) idleH = vvH(); schedule(); }, 400); });
+
   document.addEventListener('focusin', function (e) {
-    clearTimeout(closeTimer); closeTimer = 0; schedule();
-    [80, 250, 500].forEach(function (ms) { setTimeout(schedule, ms); });
-    // modal ichidagi maydon klaviatura ostida qolmasin
+    clearTimeout(closeTimer); closeTimer = 0;
+    [0, 120, 300, 600].forEach(function (ms) { setTimeout(schedule, ms); });
     var el = e.target;
     if (isField(el) && el.closest && el.closest(MODAL_SEL)) {
-      setTimeout(function () { try { el.scrollIntoView({ block: 'center', behavior: 'smooth' }); } catch (x) {} }, 350);
+      setTimeout(function () {
+        var c = el.closest(SCROLLER_SEL);
+        if (!c) return;
+        var r = el.getBoundingClientRect(), cr = c.getBoundingClientRect();
+        if (r.top < cr.top + 8 || r.bottom > cr.bottom - 8) c.scrollTo ? c.scrollTo({ top: c.scrollTop + (r.top - cr.top) - c.clientHeight / 3, behavior: 'smooth' }) : (c.scrollTop += (r.top - cr.top) - c.clientHeight / 3);
+      }, 450);
     }
   });
   document.addEventListener('focusout', function () {
     clearTimeout(closeTimer);
-    closeTimer = setTimeout(function () { closeTimer = 0; if (!wanted()) release(); else schedule(); }, 250);
+    closeTimer = setTimeout(function () { closeTimer = 0; if (!wanted()) release(); else schedule(); }, 200);
   });
+  /* modal butunlay yopilsa (React uni DOMdan olib tashlasa) — rejim ham darhol o'chadi */
+  new MutationObserver(function () {
+    if (mode === 'modal' && !document.querySelector(MODAL_SEL)) { clearTimeout(relTimer); finishRelease(); }
+  }).observe(document.body, { childList: true, subtree: true });
 })();
 </script>
 
