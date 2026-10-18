@@ -5739,7 +5739,16 @@ img,video,canvas,svg{max-width:100%}
   .topbar{padding-left:12px!important;padding-right:12px!important}
 }
 /* Katta ekran: kontent haddan tashqari cho'zilib ketmasin */
-@media (min-width:1600px){.st-page,.cs-main{max-width:1500px;margin-inline:auto}}
+@media (min-width:1600px){
+  .st-page{max-width:1500px;margin-inline:auto}
+  .cs-layout > .cs-main{max-width:none;width:100%;margin-inline:0;justify-self:stretch}
+}
+.cs-layout > .cs-main{min-width:0}
+.cs-layout > .cs-main .cs-stage{min-width:0;width:100%}
+@media (max-width:1023px){
+  .cs-layout > .cs-main{width:100%;max-width:100%;margin-inline:0;justify-self:stretch}
+  .cs-layout > .cs-main .vp{width:100%;max-width:100%}
+}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
 </style>
 <style id="edu-redesign-v3">
@@ -11334,7 +11343,7 @@ function CoursesManager({ categories, setCategories, canEdit, notify, students, 
             <section className="cs-main">
               {previewLessonObj ? (
                 <div className="cs-stage">
-                  <VideoPlayer key={`${previewLessonObj.id}|${previewLessonObj.videoUrl}`} lesson={previewLessonObj} poster={posterOf(activeSub, previewLessonObj)} locked={false} free progress={{ watched: 0 }} onProgress={() => {}} hasNext={false} hasPrev={false} />
+                  <div className="cs-vpband"><VideoPlayer key={`${previewLessonObj.id}|${previewLessonObj.videoUrl}`} lesson={previewLessonObj} poster={posterOf(activeSub, previewLessonObj)} locked={false} free progress={{ watched: 0 }} onProgress={() => {}} hasNext={false} hasPrev={false} /></div>
                   <div className="cs-info"><div><div className="cs-info-sub">{activeSub.name}</div><h2 className="font-display text-2xl text-ink">{previewLessonObj.title}</h2></div></div>
                   <LessonComments key={'cm' + previewLessonObj.id} lessonId={previewLessonObj.id} authorId={'staff:' + (me && me.id)} author={(me && me.name) || 'Xodim'} isStaff />
                 </div>
@@ -16737,5 +16746,87 @@ html.chat-page.kb-open .app-shell, html.chat-page.kb-open .app-main{ transition:
 })();
 </script>
 
+
+<style id="edu-fix-v10">
+/* ===== Kurs ichi (desktop): YouTube uslubi =====
+   - sahifa odatdagidek scroll bo'ladi, video va izohlar ketma-ket joylashadi
+   - dars ro'yxati chapda qotib turadi, faqat o'z ichida scroll bo'ladi
+   - video ko'rinishdan chiqsa, burchakda mini pleyer bo'lib qoladi */
+@media (min-width:1024px){
+  html body .cs-page--ws{display:block;flex:none;min-height:0}
+  html body .cs-page--ws .cs-layout{display:grid;flex:none;align-items:start;grid-template-rows:auto}
+  html body .cs-page--ws .cs-side{
+    position:sticky;top:1rem;align-self:start;height:auto;
+    max-height:calc(100vh - 78px - 4rem);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;
+  }
+  html body .cs-page--ws .cs-main{height:auto;overflow:visible;container-type:normal;padding-right:0}
+  html body .cs-page--ws .cs-stage{width:100%;margin-inline:0}
+  /* video balandligi ekranga sig'adi (video + boshqaruv paneli) */
+  html body .cs-page--ws .cs-layout:not(.cs-wide) .cs-stage .vp{width:min(100%,max(360px,calc((100vh - 390px) * 16 / 9)));margin-inline:auto}
+  html body .cs-page--ws .cs-layout .cs-stage .vp:fullscreen{width:100%;margin:0}
+  html body .cs-page--ws .cs-layout.cs-wide .cs-stage .vp{width:100%}
+  html body .cs-vpband{position:relative}
+  html body .cs-page--ws .cs-info{padding:1rem 0 .25rem}
+
+  /* ---- Mini pleyer ---- */
+  html body .cs-vpband.is-mini .vp{
+    position:fixed !important;right:24px;bottom:24px;width:360px !important;max-width:calc(100vw - 48px);margin:0 !important;
+    z-index:70;box-shadow:0 22px 55px -14px rgba(0,0,0,.65);border:1px solid rgba(255,255,255,.12);
+    animation:vpMiniIn .28s cubic-bezier(.2,.8,.2,1);
+  }
+  @keyframes vpMiniIn{from{opacity:0;transform:translateY(16px) scale(.96)}to{opacity:1;transform:none}}
+  html body .cs-vpband.is-mini .vp-hint,
+  html body .cs-vpband.is-mini .vp-vol,
+  html body .cs-vpband.is-mini .vp-qbtn,
+  html body .cs-vpband.is-mini .vp-q{display:none !important}
+  html body .cs-vpband.is-mini .vp-row{flex-wrap:nowrap;gap:.3rem;justify-content:center}
+  html body .cs-vpband.is-mini .vp-time{white-space:nowrap;font-size:.72rem;flex:none}
+  html body .cs-vpband.is-mini .vp-spacer{display:none}
+  html body .cs-vpband.is-mini .vp-btn{padding-inline:.5rem;min-width:0}
+  html body .cs-vpband.is-mini .vp-bar{padding:.45rem .6rem .55rem}
+  html body .vp-mini-up{
+    display:none;position:absolute;top:8px;right:8px;z-index:80;border:0;cursor:pointer;
+    padding:.3rem .65rem;border-radius:999px;font-size:.72rem;font-weight:700;
+    background:rgba(0,0,0,.6);color:#fff;backdrop-filter:blur(6px);
+  }
+  html body .cs-vpband.is-mini .vp-mini-up{display:block}
+}
+</style>
+<script id="edu-vp-mini">
+/* Video ko'rinishdan chiqib ketganda — mini pleyer; qaytganda joyiga tushadi */
+(function(){
+  var raf=0;
+  function main(){ return document.querySelector('main'); }
+  function reset(b){ b.classList.remove('is-mini'); b.style.minHeight=''; }
+  function upd(){
+    raf=0;
+    var bands=document.querySelectorAll('.cs-vpband');
+    for(var i=0;i<bands.length;i++){
+      var band=bands[i], layout=band.closest('.cs-layout'), vp=band.querySelector('.vp');
+      if(!vp) continue;
+      if(innerWidth<1024 || (layout && layout.classList.contains('cs-wide')) || document.fullscreenElement){ reset(band); continue; }
+      if(!band.querySelector('.vp-mini-up')){
+        var btn=document.createElement('button'); btn.type='button'; btn.className='vp-mini-up'; btn.textContent='↑ Katta ko\u2018rinish';
+        btn.addEventListener('click',function(e){ e.stopPropagation(); var m=main(); if(m) m.scrollTo({top:0,behavior:'smooth'}); });
+        vp.appendChild(btn);
+      }
+      var isMini=band.classList.contains('is-mini');
+      if(!isMini){
+        var r=vp.getBoundingClientRect();
+        /* video yuqoriga chiqib, ko'rinadigan qismi 40% dan kam qolsa — mini pleyer */
+        if(r.bottom<78+r.height*0.4){ band.dataset.h=r.height; band.style.minHeight=r.height+'px'; band.classList.add('is-mini'); }
+      } else {
+        var rb=band.getBoundingClientRect();
+        var h=parseFloat(band.dataset.h)||rb.height;
+        if(rb.bottom>78+h*0.6) reset(band);
+      }
+    }
+  }
+  function sched(){ if(!raf) raf=requestAnimationFrame(upd); }
+  document.addEventListener('scroll',sched,true);
+  window.addEventListener('resize',sched);
+  document.addEventListener('fullscreenchange',sched);
+})();
+</script>
 </body>
 </html>
