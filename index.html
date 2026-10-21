@@ -4839,6 +4839,17 @@ html.theme-dark .pv-period { background: rgba(255,255,255,.04); }
 html.theme-dark .pv-period select { background-color: transparent !important; border: 0 !important; }
 html.theme-dark .pv-period button { color: #eef6f1; }
 </style>
+<!-- ===== Ferdinant PWA ===== -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#022c22">
+<meta name="application-name" content="Ferdinant">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Ferdinant">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="icon" type="image/png" sizes="64x64" href="icons/favicon-64.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 </head>
 <body>
 <div id="root"></div>
@@ -16826,6 +16837,116 @@ html.chat-page.kb-open .app-shell, html.chat-page.kb-open .app-main{ transition:
   document.addEventListener('scroll',sched,true);
   window.addEventListener('resize',sched);
   document.addEventListener('fullscreenchange',sched);
+})();
+</script>
+<!-- ===== Ferdinant PWA: o'rnatish tugmasi ===== -->
+<style>
+#fd-install-btn{position:fixed;right:max(16px,env(safe-area-inset-right));bottom:max(16px,env(safe-area-inset-bottom));z-index:2147483000;display:inline-flex;align-items:center;gap:.6rem;padding:.55rem 1.05rem .55rem .55rem;border:0;border-radius:999px;cursor:pointer;background:linear-gradient(135deg,#022c22,#065f46);color:#ecfdf5;font:700 .85rem/1 'Manrope',system-ui,sans-serif;box-shadow:0 10px 30px -8px rgba(2,44,34,.65),0 0 0 1px rgba(52,211,153,.45);transition:transform .15s ease}
+#fd-install-btn:hover{transform:translateY(-2px)}
+#fd-install-btn img{width:30px;height:30px;border-radius:9px;display:block}
+#fd-install-btn.hide{display:none}
+#fd-ios-modal{position:fixed;inset:0;z-index:2147483001;display:none;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.55);padding:1rem}
+#fd-ios-modal.show{display:flex}
+#fd-ios-card{width:100%;max-width:420px;background:#fff;color:#0f172a;border-radius:1.25rem;padding:1.25rem;font:500 .92rem/1.5 'Manrope',system-ui,sans-serif;box-shadow:0 20px 50px rgba(0,0,0,.35)}
+#fd-ios-card h3{margin:0 0 .5rem;font:800 1.05rem 'Manrope',system-ui,sans-serif;display:flex;align-items:center;gap:.6rem}
+#fd-ios-card h3 img{width:36px;height:36px;border-radius:10px}
+#fd-ios-card ol{margin:.5rem 0 1rem;padding-left:1.2rem}
+#fd-ios-card button{width:100%;padding:.7rem;border:0;border-radius:.8rem;background:#022c22;color:#ecfdf5;font:700 .9rem 'Manrope',system-ui,sans-serif;cursor:pointer}
+</style>
+<button id="fd-install-btn" type="button" aria-label="Ilovani o'rnatish">
+  <img src="data:image/png;base64,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" alt="">
+  <span>Ilovani yuklab olish</span>
+</button>
+<div id="fd-ios-modal" role="dialog" aria-modal="true">
+  <div id="fd-ios-card">
+    <h3><img src="data:image/png;base64,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" alt="">Ferdinant distance learning platform</h3>
+    <div id="fd-ios-steps"></div>
+    <button type="button" id="fd-ios-close">Tushunarli</button>
+  </div>
+</div>
+<script>
+(function () {
+  var btn = document.getElementById('fd-install-btn');
+  var modal = document.getElementById('fd-ios-modal');
+  var steps = document.getElementById('fd-ios-steps');
+  var deferred = null;
+  var FLAG = 'fd_pwa_installed';
+
+  var ua = navigator.userAgent || '';
+  var isIOS = /iphone|ipad|ipod/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  var isAndroid = /android/i.test(ua);
+
+  function standalone() {
+    try {
+      if (window.matchMedia('(display-mode: standalone)').matches) return true;
+      if (window.matchMedia('(display-mode: window-controls-overlay)').matches) return true;
+      if (window.matchMedia('(display-mode: minimal-ui)').matches) return true;
+    } catch (e) {}
+    return window.navigator.standalone === true;
+  }
+  function flagged() { try { return localStorage.getItem(FLAG) === '1'; } catch (e) { return false; } }
+  function setFlag(v) { try { if (v) localStorage.setItem(FLAG, '1'); else localStorage.removeItem(FLAG); } catch (e) {} }
+  function show() { btn.classList.remove('hide'); }
+  function hide() { btn.classList.add('hide'); }
+
+  // Boshida: o'rnatilmagan bo'lsa — tugma ko'rinadi
+  if (standalone() || flagged()) hide(); else show();
+
+  // Brauzer o'rnatishga tayyor bo'lsa (ilova hali o'rnatilmagan / o'chirib tashlangan)
+  window.addEventListener('beforeinstallprompt', function (e) {
+    e.preventDefault();
+    deferred = e;
+    setFlag(false);
+    if (!standalone()) show();
+  });
+
+  // O'rnatilganda — yashirin
+  window.addEventListener('appinstalled', function () {
+    deferred = null;
+    setFlag(true);
+    hide();
+  });
+
+  try {
+    window.matchMedia('(display-mode: standalone)').addEventListener('change', function (m) {
+      if (m.matches) hide();
+    });
+  } catch (e) {}
+
+  // Chrome: ilova o'rnatilgan bo'lsa, oddiy brauzerda ochilganda ham yashirish
+  if (navigator.getInstalledRelatedApps) {
+    navigator.getInstalledRelatedApps().then(function (apps) {
+      if (apps && apps.length) { deferred = null; hide(); }
+    }).catch(function () {});
+  }
+
+  function instructions() {
+    if (isIOS) return '<ol><li>Safari pastidagi <b>Ulashish</b> (⬆️) tugmasini bosing.</li><li><b>«Bosh ekranga qo\u2018shish»</b> (Add to Home Screen) ni tanlang.</li><li><b>«Qo\u2018shish»</b> ni bosing.</li></ol>';
+    if (isAndroid) return '<ol><li>Brauzer menyusini (⋮) oching.</li><li><b>«Ilovani o\u2018rnatish»</b> yoki <b>«Bosh ekranga qo\u2018shish»</b> ni tanlang.</li><li>Tasdiqlang.</li></ol>';
+    return '<ol><li>Chrome yoki Edge\u2019da manzil satrining o\u2018ng tomonidagi <b>o\u2018rnatish</b> belgisini (⊕ / 🖥) bosing.</li><li>Yoki menyu (⋮) → <b>«Ilovani o\u2018rnatish»</b> ni tanlang.</li><li>Tasdiqlang.</li></ol><p style="margin:0 0 1rem;font-size:.8rem;color:#64748b">Eslatma: sayt <b>https://</b> orqali ochilgan bo\u2018lishi kerak. Firefox kompyuterda o\u2018rnatishni qo\u2018llamaydi.</p>';
+  }
+
+  btn.addEventListener('click', function () {
+    if (deferred) {
+      var p = deferred;
+      deferred = null;
+      p.prompt();
+      p.userChoice.then(function (r) {
+        if (r && r.outcome === 'accepted') { setFlag(true); hide(); }
+      }).catch(function () {});
+    } else {
+      steps.innerHTML = instructions();
+      modal.classList.add('show');
+    }
+  });
+  document.getElementById('fd-ios-close').addEventListener('click', function () { modal.classList.remove('show'); });
+  modal.addEventListener('click', function (e) { if (e.target === modal) modal.classList.remove('show'); });
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('sw.js').catch(function () {});
+    });
+  }
 })();
 </script>
 </body>
