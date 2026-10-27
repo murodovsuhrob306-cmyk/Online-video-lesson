@@ -8231,7 +8231,8 @@ function DashV2({ me, canEdit, stats, revenue, students, categories, overdueStud
 }
 
 function Sidebar({ roleLabel, navItems, activePage, onNavigate, footerName, footerSub, footerInitials, footerAvatar, onFooterClick, mobileOpen, onCloseMobile, brand }) {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(() => typeof window !== 'undefined' && window.innerWidth > 860 && window.innerWidth < 1180);
+  useEffect(() => { const f = () => { if (window.innerWidth > 860 && window.innerWidth < 1180) setCollapsed(true); }; window.addEventListener('resize', f); return () => window.removeEventListener('resize', f); }, []);
 
   const handleNavigate = (id) => {
     onNavigate(id);
@@ -8873,20 +8874,32 @@ function chatTone(c, t0, f0, f1, dur, vol, type) {
   o.connect(g); g.connect(c.destination);
   o.start(t0); o.stop(t0 + dur + 0.02);
 }
-/* Kelgan xabar (boshqa chatdan yoki sahifa yashirin): ikki notali signal */
+/* ===== Telegram uslubidagi ovozlar (WebAudio, tashqi fayl kerak emas) ===== */
+function chatNoise(c, t0, dur, f0, f1, vol) {
+  try {
+    const len = Math.max(1, Math.floor(c.sampleRate * dur)), buf = c.createBuffer(1, len, c.sampleRate), d = buf.getChannelData(0);
+    for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / len);
+    const src = c.createBufferSource(); src.buffer = buf;
+    const bp = c.createBiquadFilter(); bp.type = 'bandpass'; bp.Q.value = 1.2;
+    bp.frequency.setValueAtTime(f0, t0); bp.frequency.exponentialRampToValueAtTime(f1, t0 + dur);
+    const g = c.createGain(); g.gain.setValueAtTime(vol, t0); g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    src.connect(bp); bp.connect(g); g.connect(c.destination); src.start(t0);
+  } catch (e) {}
+}
+/* Kelgan xabar (boshqa chatdan yoki sahifa yashirin): Telegramdagi kabi "ding-dong" */
 function chatBeep() {
   const c = chatAudio(); if (!c) return;
-  try { const t = c.currentTime; chatTone(c, t, 880, 1175, 0.2, 0.11); chatTone(c, t + 0.11, 1175, 1320, 0.22, 0.08); } catch (e) { /* ovoz ixtiyoriy */ }
+  try { const t = c.currentTime; chatTone(c, t, 1318, 1318, 0.34, 0.32); chatTone(c, t + 0.13, 1760, 1760, 0.42, 0.26); chatTone(c, t, 2637, 2637, 0.2, 0.06); if (navigator.vibrate) navigator.vibrate(20); } catch (e) { /* ovoz ixtiyoriy */ }
 }
-/* Ochiq chatda kelgan xabar: yumshoq "tik" */
+/* Ochiq chatda kelgan xabar: yumshoq "tuk-tuk" */
 function chatSoftIn() {
   const c = chatAudio(); if (!c) return;
-  try { const t = c.currentTime; chatTone(c, t, 740, 988, 0.14, 0.06); } catch (e) {}
+  try { const t = c.currentTime; chatTone(c, t, 988, 988, 0.16, 0.26); chatTone(c, t + 0.075, 1480, 1480, 0.2, 0.22); } catch (e) {}
 }
-/* Xabar yuborilganda: qisqa "pop" (Telegramdagi kabi) */
+/* Xabar yuborilganda: qisqa "vuush" + "pop" (Telegramdagi kabi) */
 function chatSendSound() {
   const c = chatAudio(); if (!c) return;
-  try { const t = c.currentTime; chatTone(c, t, 520, 1040, 0.13, 0.12, 'triangle'); } catch (e) {}
+  try { const t = c.currentTime; chatNoise(c, t, 0.16, 700, 3200, 0.28); chatTone(c, t + 0.04, 420, 980, 0.12, 0.3, 'sine'); } catch (e) {}
 }
 
 /* Matndagi http(s) havolalarni bosiladigan qiladi (React matnni o'zi xavfsiz ekranlaydi) */
@@ -9497,6 +9510,7 @@ function ChatPage({ notify, appMe, onOpenProfile, isStudent, brand, canMute }) {
   const convsRef = useRef(convs); convsRef.current = convs;
   const msgsRef = useRef(msgs); msgsRef.current = msgs;
   const activeRef = useRef(activeId); activeRef.current = activeId;
+  useEffect(() => { if (!activeId) return; try { const t = sessionStorage.getItem('fd_chat_prefill'); if (t) { sessionStorage.removeItem('fd_chat_prefill'); setDraft(t); } } catch (e) {} }, [activeId]);
   const wsRef = useRef(null);
   const retryRef = useRef({ timer: null, delay: 1000, closed: false });
   const threadRef = useRef(null);
@@ -10616,6 +10630,176 @@ function syncStaffToChat(staff, students, me, retried) {
   }, 600);
 }
 
+/* =========================================================================
+   XODIMLAR / CEO PANELI — TELEFON (ilova ko'rinishi, sm7)
+   ========================================================================= */
+const SM7_AVC = ['linear-gradient(135deg,#22d3ee,#2f6df0)', 'linear-gradient(135deg,#f472b6,#fb923c)', 'linear-gradient(135deg,#34d399,#0ea5e9)', 'linear-gradient(135deg,#a78bfa,#6366f1)', 'linear-gradient(135deg,#fbbf24,#f97316)', 'linear-gradient(135deg,#f43f5e,#a855f7)'];
+const sm7Ini = (n) => String(n || '?').trim().split(/\s+/).map((w) => w[0]).slice(0, 2).join('').toUpperCase();
+const sm7Hash = (s) => { let h = 0; s = String(s || ''); for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0; return h; };
+function Sm7Av({ name, src, size, round, k }) {
+  const st = { background: SM7_AVC[(k != null ? k : sm7Hash(name)) % SM7_AVC.length] };
+  return <span className={'sm7-av' + (size ? ' ' + size : '') + (round ? ' round' : '')} style={st}>{src ? <img src={src} alt="" /> : sm7Ini(name)}</span>;
+}
+const sm7Money = (n) => Math.round(n || 0).toLocaleString('ru-RU').replace(/,/g, ' ').replace(/ /g, ' ');
+const SM7_MON = ['yanvar', 'fevral', 'mart', 'aprel', 'may', 'iyun', 'iyul', 'avgust', 'sentabr', 'oktabr', 'noyabr', 'dekabr'];
+const SM7_MON_S = ['Yan', 'Fev', 'Mar', 'Apr', 'May', 'Iyn', 'Iyl', 'Avg', 'Sen', 'Okt', 'Noy', 'Dek'];
+function sm7PayList(students) {
+  const out = [];
+  (students || []).forEach((s) => (s.payments || []).forEach((p) => out.push({ ...p, stu: s, total: (Number(p.amount) || 0) + (Number(p.extra) || 0) })));
+  return out.sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')));
+}
+function sm7MonthSum(pays, y, m) {
+  return pays.reduce((a, p) => { const d = String(p.date || ''); return d.slice(0, 7) === y + '-' + String(m + 1).padStart(2, '0') ? a + p.total : a; }, 0);
+}
+
+/* ---------- yuqori panel ---------- */
+function Sm7Top({ me, title, kicker, back, onBack, chatUnread, bellCount, onChat, onBell, onProfile }) {
+  return (
+    <header className="sm7-hd">
+      {back
+        ? <button type="button" className="sm7-ib" onClick={onBack} aria-label="Orqaga"><M6Icon n="back" s={20} /></button>
+        : <button type="button" className="sm7-b sm7-me-av" onClick={onProfile} aria-label="Profil"><Sm7Av name={me.name} src={me.avatar} k={0} /><i className="sm7-on" /></button>}
+      <div className="sm7-tt"><span className="sm7-k">{kicker}</span><b>{title}</b></div>
+      <div className="sm7-hr topbar-right">
+        <button type="button" className="sm7-ib" onClick={onChat} aria-label="Chat"><M6Icon n="chat" s={19} />{chatUnread > 0 && <span className="sm7-n">{chatUnread > 99 ? '99+' : chatUnread}</span>}</button>
+        <button type="button" className="sm7-ib" onClick={onBell} aria-label="Bildirishnomalar"><M6Icon n="bell" s={19} />{bellCount > 0 && <i className="sm7-dot" />}</button>
+      </div>
+    </header>
+  );
+}
+
+/* ---------- Dashboard (telefon) ---------- */
+function Sm7Dash({ me, students, categories, stats, revenue, blockedCount, blockedReasons, goTo, can, onQuick }) {
+  const now = new Date(); const y = now.getFullYear(); const m = now.getMonth();
+  const pays = useMemo(() => sm7PayList(students), [students]);
+  const cur = sm7MonthSum(pays, y, m);
+  const pm = m === 0 ? 11 : m - 1, py = m === 0 ? y - 1 : y;
+  const prev = sm7MonthSum(pays, py, pm);
+  const delta = prev ? Math.round(((cur - prev) / prev) * 100) : (cur ? 100 : 0);
+  const series = [];
+  for (let i = 6; i >= 0; i--) { const d = new Date(y, m - i, 1); series.push(sm7MonthSum(pays, d.getFullYear(), d.getMonth())); }
+  const mx = Math.max(1, ...series);
+  const pts = series.map((v, i) => [i * (96 / 6), 36 - (v / mx) * 30 + 2]);
+  let path = `M${pts[0][0]} ${pts[0][1]}`; for (let i = 1; i < pts.length; i++) { const [x0, y0] = pts[i - 1], [x1, y1] = pts[i], cx = (x0 + x1) / 2; path += ` C${cx} ${y0} ${cx} ${y1} ${x1} ${y1}`; }
+  const todayIso = todayISO();
+  const activeStu = students.filter((s) => Object.values(s.access || {}).some((a) => a && a.active)).length;
+  const newStu = students.filter((s) => Object.values(s.access || {}).some((a) => a && String(a.enrolledAt || '').slice(0, 7) === todayIso.slice(0, 7))).length;
+  const watchedToday = students.reduce((a, s) => a + Object.values(s.progress || {}).filter((p) => p && p.completed && p.completedAt === todayIso).length, 0);
+  const recent = pays.slice(0, 4);
+  const crs = categories.map((c, i) => ({ c, i, n: students.filter((s) => s.access && s.access[c.id] && s.access[c.id].active).length })).sort((a, b) => b.n - a.n).slice(0, 4);
+  const crMax = Math.max(1, ...crs.map((x) => x.n));
+  const CICON = ['book', 'chart', 'server', 'code', 'layout', 'terminal'];
+  return (
+    <div className="sm7-dash">
+      <section className="sm7-hero">
+        <small>// {SM7_MON[m]} tushumi</small>
+        <h3>{sm7Money(cur)} <span>so'm</span></h3>
+        <span className="sm7-up"><M6Icon n="trend" s={13} /> {delta >= 0 ? '+' : ''}{delta}% o'tgan oydan</span>
+        <svg className="sm7-spark" viewBox="0 0 96 40" preserveAspectRatio="none"><defs><linearGradient id="sm7ar" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#fff" stopOpacity=".45" /><stop offset="1" stopColor="#fff" stopOpacity="0" /></linearGradient></defs><path d={path + ' L96 40 L0 40Z'} fill="url(#sm7ar)" /><path d={path} fill="none" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" /></svg>
+        <div className="sm7-hq">
+          {can('students.edit') && <button type="button" className="sm7-b" onClick={() => onQuick('student')}><i><M6Icon n="users" s={16} /></i>O'quvchi</button>}
+          {can('payments.view') && <button type="button" className="sm7-b" onClick={() => onQuick('pay')}><i><M6Icon n="cash" s={16} /></i>To'lov</button>}
+          {can('courses.edit') && <button type="button" className="sm7-b" onClick={() => onQuick('lesson')}><i><M6Icon n="upload" s={16} /></i>Dars</button>}
+          {!can('students.edit') && !can('courses.edit') && <button type="button" className="sm7-b" onClick={() => goTo('chat')}><i><M6Icon n="chat" s={16} /></i>Chat</button>}
+        </div>
+      </section>
+
+      <div className="sm7-sec"><b>Bugun</b>{can('statistics.view') && <button type="button" className="sm7-b" onClick={() => goTo('statistics')}>Hisobot</button>}</div>
+      <div className="sm7-kpi">
+        <button type="button" className="sm7-b sm7-kp" style={{ '--c': '#22d3ee' }} onClick={() => can('students.view') && goTo('students')}><span className="sm7-kp-i"><M6Icon n="users" s={19} /></span><b>{activeStu}</b><small>Faol o'quvchi</small>{newStu > 0 && <em>+{newStu}</em>}</button>
+        <button type="button" className="sm7-b sm7-kp" style={{ '--c': '#a78bfa' }} onClick={() => can('courses.view') && goTo('courses')}><span className="sm7-kp-i"><M6Icon n="book" s={19} /></span><b>{stats.categories}</b><small>Kurs · {stats.lessonsCount} dars</small></button>
+        <div className="sm7-kp" style={{ '--c': '#22c55e' }}><span className="sm7-kp-i"><M6Icon n="check" s={19} /></span><b>{watchedToday}</b><small>Bugun ko'rilgan dars</small></div>
+        <button type="button" className="sm7-b sm7-kp" style={{ '--c': '#f43f5e' }} onClick={() => can('payments.view') && goTo('payments')}><span className="sm7-kp-i"><M6Icon n="alert" s={19} /></span><b>{stats.overdue}</b><small>To'lov kutilmoqda</small></button>
+      </div>
+      {blockedCount > 0 && can('blocked.view') && (
+        <button type="button" className="sm7-b sm7-alr" onClick={() => goTo('blocked')}><M6Icon n="lock" s={19} /><span><b>{blockedCount} ta o'quvchi bloklangan</b><small>{blockedReasons || "To'lov yoki darslik nazorati"}</small></span><M6Icon n="right" s={16} /></button>
+      )}
+
+      {can('payments.view') && (
+        <React.Fragment>
+          <div className="sm7-sec"><b>So'nggi to'lovlar</b><button type="button" className="sm7-b" onClick={() => goTo('payments')}>Barchasi</button></div>
+          <div className="sm7-card sm7-list">
+            {recent.length === 0 && <p className="sm7-empty">Hali to'lov qabul qilinmagan.</p>}
+            {recent.map((p) => (
+              <div key={p.id || (p.stu.id + p.date + p.total)} className="sm7-li">
+                <Sm7Av name={p.stu.name} src={p.stu.avatar} size="xs" />
+                <span className="sm7-li-x"><b>{p.stu.name}</b><small>{p.courseName || "Oylik to'lov"}</small></span>
+                <span className="sm7-li-r"><b className="pos">+{sm7Money(p.total)}</b><small>{p.date === todayIso ? 'bugun' : fmtDate(p.date)}</small></span>
+              </div>
+            ))}
+          </div>
+        </React.Fragment>
+      )}
+
+      {can('courses.view') && crs.length > 0 && (
+        <React.Fragment>
+          <div className="sm7-sec"><b>Faol kurslar</b><button type="button" className="sm7-b" onClick={() => goTo('courses')}>Kurslar</button></div>
+          <div className="sm7-card sm7-list">
+            {crs.map((x) => (
+              <div key={x.c.id} className="sm7-li">
+                <span className="sm7-av xs" style={{ background: SM7_AVC[x.i % SM7_AVC.length] }}><M6Icon n={CICON[x.i % CICON.length]} s={16} /></span>
+                <span className="sm7-li-x"><b>{x.c.name}</b><i className="sm7-bar"><b style={{ width: Math.round((x.n / crMax) * 100) + '%' }} /></i></span>
+                <span className="sm7-li-r"><b>{x.n}</b><small>o'quvchi</small></span>
+              </div>
+            ))}
+          </div>
+        </React.Fragment>
+      )}
+      <p className="sm7-copy">© {new Date().getFullYear()} Ferdinant darsliklari</p>
+    </div>
+  );
+}
+
+/* ---------- Ko'proq ---------- */
+function Sm7More({ me, roleLabel, items, goTo, theme, setTheme, onLogout }) {
+  const I18 = window.EDU_I18N;
+  const [lang, setLang] = useState(() => (I18 ? I18.lang : 'uz'));
+  useEffect(() => { const f = (e) => setLang((e && e.detail && e.detail.lang) || (I18 ? I18.lang : 'uz')); window.addEventListener('edu-lang', f); return () => window.removeEventListener('edu-lang', f); }, []);
+  const tKey = chatUserKey('chat_toast', me.username);
+  const [toast, setToast] = useState(() => loadLS(tKey, true) !== false);
+  const COL = { overview: '#2f6df0', chat: '#2f6df0', students: '#22d3ee', courses: '#a78bfa', statistics: '#22d3ee', payments: '#22c55e', blocked: '#f43f5e', staff: '#22c55e', permissions: '#f59e0b', profile: '#0ea5e9', brand: '#ec4899' };
+  const ICO = { overview: 'home', chat: 'chat', students: 'users', courses: 'book', statistics: 'chart', payments: 'wallet', blocked: 'ban', staff: 'idc', permissions: 'shield', profile: 'user', brand: 'brush' };
+  return (
+    <div className="sm7-more">
+      <button type="button" className="sm7-b sm7-mecard" onClick={() => goTo('profile')}>
+        <Sm7Av name={me.name} src={me.avatar} k={0} />
+        <span><b>{me.name}</b><small>@{me.username} · {roleLabel}</small></span>
+        <span className="sm7-ib glass"><M6Icon n="right" s={18} /></span>
+      </button>
+      <div className="sm7-grid">
+        {items.map((n) => (
+          <button key={n.id} type="button" className="sm7-b" style={{ '--c': COL[n.id] || '#2f6df0' }} onClick={() => goTo(n.id)}>
+            <i><M6Icon n={ICO[n.id] || 'grid'} s={20} /></i>{n.label}{n.badge > 0 && <em>{n.badge > 99 ? '99+' : n.badge}</em>}
+          </button>
+        ))}
+      </div>
+      <div className="sm7-sec"><b>Sozlamalar</b></div>
+      <div className="sm7-menu">
+        <div className="sm7-menu-r"><i style={{ '--c': '#0ea5e9' }}><M6Icon n="globe" s={18} /></i>Til
+          <span className="sm7-lng" data-no-i18n="1">{((I18 && I18.LANGS) || []).map((l) => <button key={l.code} type="button" className={'sm7-b' + (lang === l.code ? ' on' : '')} onClick={() => { try { I18.set(l.code); } catch (e) {} setLang(l.code); }}>{l.code.toUpperCase()}</button>)}</span></div>
+        <button type="button" className="sm7-b" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}><i style={{ '--c': '#a855f7' }}><M6Icon n="moon" s={18} /></i>Qorong'i rejim<span className={'sm7-tg' + (theme === 'dark' ? ' on' : '')} /></button>
+        <button type="button" className="sm7-b" onClick={() => { const v = !toast; setToast(v); saveLS(tKey, v); }}><i style={{ '--c': '#f97316' }}><M6Icon n="bell" s={18} /></i>Chat bildirishnomalari<span className={'sm7-tg' + (toast ? ' on' : '')} /></button>
+        <button type="button" className="sm7-b" onClick={() => goTo('profile')}><i style={{ '--c': '#f59e0b' }}><M6Icon n="key" s={18} /></i>Parolni o'zgartirish<em><M6Icon n="right" s={15} /></em></button>
+      </div>
+      <div className="sm7-menu"><button type="button" className="sm7-b out" onClick={onLogout}><i style={{ '--c': '#f43f5e' }}><M6Icon n="logout" s={18} /></i>Chiqish</button></div>
+      <p className="sm7-copy">© {new Date().getFullYear()} Ferdinant darsliklari</p>
+    </div>
+  );
+}
+
+/* ---------- pastdan chiqadigan oyna ---------- */
+function Sm7Sheet({ title, sub, onClose, children }) {
+  useEffect(() => { const f = (e) => { if (e.key === 'Escape') onClose(); }; window.addEventListener('keydown', f); return () => window.removeEventListener('keydown', f); }, []);
+  return (
+    <div className="sm7-dim" onClick={onClose}>
+      <div className="sm7-sheet" role="dialog" aria-modal="true" aria-label={title} onClick={(e) => e.stopPropagation()}>
+        <h4>{title}</h4>{sub && <p>{sub}</p>}
+        {children}
+      </div>
+    </div>
+  );
+}
+
 function StaffApp({ me, staff, setStaff, roleTpl, setRoleTpl, categories, setCategories, students, setStudents, onLogout, notify, brand }) {
   const [page, setPage] = useState('overview');
   const chatInbox = useChatUnread(me, notify);
@@ -10645,6 +10829,9 @@ function StaffApp({ me, staff, setStaff, roleTpl, setRoleTpl, categories, setCat
   const [quickAddCourse, setQuickAddCourse] = useState(false);
   const [theme, setTheme] = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const isMob = useMobileView(860);
+  const [sheet, setSheet] = useState(null); // 'quick' | 'bell'
+  const [quickAddStudent, setQuickAddStudent] = useState(false);
   const myPerms = permsOf(me, roleTpl); const can = (k) => myPerms.includes(k);
   const canEditCourses = can('courses.edit'), canEditStudents = can('students.edit');
 
@@ -10712,7 +10899,7 @@ function StaffApp({ me, staff, setStaff, roleTpl, setRoleTpl, categories, setCat
 
   /* Saytga kirganda bloklanganlar bo'lsa — modal chiqadi, so'ng qo'ng'iroqchaga "so'rilib" ketadi */
   const [intro, setIntro] = useState('pending'); // pending -> show -> done
-  useEffect(() => { setIntro(notifications.some((n) => !n.read) ? 'show' : 'done'); }, []);
+  useEffect(() => { let seen = false; try { seen = sessionStorage.getItem('fd_blk_intro_' + (me && me.id)) === '1'; } catch (e) {} setIntro(!seen && notifications.some((n) => !n.read) ? 'show' : 'done'); }, []);
   const markAllNotifsRead = () => setReadNotifIds(notifications.map((n) => n.id));
   const markNotifRead = (id) => setReadNotifIds((prev) => (prev.indexOf(id) === -1 ? [...prev, id] : prev));
   const unreadNotifCount = notifications.filter((n) => !n.read).length;
@@ -10752,39 +10939,75 @@ function StaffApp({ me, staff, setStaff, roleTpl, setRoleTpl, categories, setCat
     isTopRole(me.role) && { id: 'permissions', label: 'Ruxsatlar', icon: Icon.shield },
     { id: 'profile', label: 'Profil', icon: Icon.userCircle, dividerBefore: true },
   ].filter(Boolean);
-  const curPage = nav.some((n) => n.id === page) ? page : nav[0].id;
+  const curPage = (isMob && page === 'more') ? 'more' : (nav.some((n) => n.id === page) ? page : nav[0].id);
   const roleLabel = (ROLE_META[me.role] || ROLE_META.support).l;
   const initials = me.name.split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase();
 
   const goTo = (id) => {
     setEditingStudentId(null);
     setQuickAddCourse(false);
+    setQuickAddStudent(false);
+    setSheet(null);
     setPage(id);
   };
+  /* ---- telefon: pastki menyu va tezkor amallar ---- */
+  const mTabs = [
+    nav.find((n) => n.id === 'overview') || nav.find((n) => n.id === 'chat'),
+    nav.find((n) => n.id === 'students'),
+    { id: 'mid' },
+    nav.find((n) => n.id === 'payments'),
+    { id: 'more', label: "Ko'proq", icon: null },
+  ].filter(Boolean);
+  const mTabIds = mTabs.map((t) => t.id);
+  const moreItems = nav.filter((n) => mTabIds.indexOf(n.id) === -1 && n.id !== 'profile');
+  const moreBadge = moreItems.reduce((a, n) => a + (n.badge || 0), 0);
+  const onQuick = (k) => {
+    setSheet(null);
+    if (k === 'student') { setEditingStudentId(null); setPage('students'); setQuickAddStudent(true); }
+    else if (k === 'pay') { setEditingStudentId(null); setPage(can('students.edit') ? 'students' : 'payments'); if (can('students.edit')) notify("O'quvchini tanlang va qatordagi «To'lov» tugmasini bosing", 'info'); }
+    else if (k === 'course') { setQuickAddCourse(true); setPage('courses'); }
+    else if (k === 'lesson') { setPage('courses'); notify("Kursni tanlang — «Dars qo'shish» orqali video yuklang", 'info'); }
+    else if (k === 'chat') { setPage('chat'); }
+  };
+  const blockedReasons = (() => { const r = {}; studentBlockEntries(students, categories).forEach((e) => e.reasons.forEach((x) => { r[x.title] = (r[x.title] || 0) + 1; })); return Object.keys(r).map((k) => r[k] + ' — ' + k.toLowerCase()).join(', '); })();
+  const mTitle = curPage === 'overview' ? me.name : curPage === 'more' ? "Ko'proq" : ((nav.find((n) => n.id === curPage) || {}).label || '');
+  const mKicker = curPage === 'overview' ? '// ' + roleLabel + ' · ' + (new Date().getHours() < 12 ? 'xayrli tong' : new Date().getHours() < 18 ? 'xayrli kun' : 'xayrli kech')
+    : curPage === 'more' ? '// barcha bo\'limlar' : curPage === 'students' ? '// ' + students.length + " ta o'quvchi" : curPage === 'courses' ? '// ' + stats.categories + ' ta kurs · ' + stats.lessonsCount + ' dars' : curPage === 'chat' ? (chatUnread ? '// ' + chatUnread + " ta o'qilmagan" : '// suhbatlar') : '// Ferdinant darsliklari';
+  const mBack = isMob && mTabIds.indexOf(curPage) === -1 && curPage !== 'more';
 
   return (
-    <div className="min-h-screen bg-paper flex app-shell">
+    <div className={'min-h-screen bg-paper flex app-shell' + (isMob ? ' sm7' : '') + (isMob && curPage === 'chat' ? ' sm7-chat' : '')}>
       {intro === 'show' && (
         <BlockedIntroModal items={notifications}
-          onFinish={(goBlocked) => { setIntro('done'); if (goBlocked) goTo('blocked'); }} />
+          onFinish={(goBlocked) => { try { sessionStorage.setItem('fd_blk_intro_' + (me && me.id), '1'); } catch (e) {} setIntro('done'); if (goBlocked) goTo('blocked'); }} />
       )}
-      <Sidebar roleLabel={roleLabel} navItems={nav} brand={brand}
+      {!isMob && <Sidebar roleLabel={roleLabel} navItems={nav} brand={brand}
         activePage={curPage} onNavigate={goTo}
         footerName={me.name} footerSub="Profilni ko'rish" footerInitials={initials} footerAvatar={me.avatar}
         onFooterClick={() => goTo('profile')}
-        mobileOpen={mobileMenuOpen} onCloseMobile={() => setMobileMenuOpen(false)} />
+        mobileOpen={mobileMenuOpen} onCloseMobile={() => setMobileMenuOpen(false)} />}
 
       <div className="app-main flex-1 flex flex-col">
-        <Topbar me={me} roleLabel={roleLabel} initials={initials} brand={brand}
+        {isMob ? (
+          <Sm7Top me={me} title={mTitle} kicker={mKicker} back={mBack} onBack={() => (editingStudentId ? setEditingStudentId(null) : goTo('more'))}
+            chatUnread={chatUnread} bellCount={allNotifs.filter((n) => !n.read).length} onChat={() => goTo('chat')} onBell={() => setSheet('bell')} onProfile={() => goTo('profile')} />
+        ) : <Topbar me={me} roleLabel={roleLabel} initials={initials} brand={brand}
           pageTitle={(nav.find((n) => n.id === curPage) || {}).label} PageIcon={(nav.find((n) => n.id === curPage) || {}).icon}
           theme={theme} onToggleTheme={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
           notifications={allNotifs} onMarkAllRead={markAllBellRead} onMarkRead={markBellRead} onOpenChat={chatOpenConv} onGoProfile={() => goTo('profile')} onLogout={onLogout}
           badgeHidden={intro !== 'done'} onOpenBlocked={() => goTo('blocked')}
-          onOpenMenu={() => setMobileMenuOpen(true)} />
+          onOpenMenu={() => setMobileMenuOpen(true)} />}
 
         <main className="flex-1 p-8 overflow-y-auto max-h-screen">
           <div key={curPage + (editingStudentId || '')} className="page-enter">
-          {curPage === 'overview' && (
+          {curPage === 'overview' && isMob && (
+            <Sm7Dash me={me} students={students} categories={categories} stats={stats} revenue={revenue} blockedCount={blockedStudentCount}
+              blockedReasons={blockedReasons} goTo={goTo} can={can} onQuick={onQuick} />
+          )}
+          {curPage === 'more' && isMob && (
+            <Sm7More me={me} roleLabel={roleLabel} items={moreItems} goTo={goTo} theme={theme} setTheme={setTheme} onLogout={onLogout} />
+          )}
+          {curPage === 'overview' && !isMob && (
             <DashV2 me={me} canEdit={canEditCourses} stats={stats} revenue={revenue} students={students} categories={categories}
               overdueStudents={overdueStudents} overdueShown={overdueShown} overdueCurPage={overdueCurPage}
               overduePageCount={overduePageCount} setOverduePage={setOverduePage} goTo={goTo}
@@ -10817,6 +11040,7 @@ function StaffApp({ me, staff, setStaff, roleTpl, setRoleTpl, categories, setCat
 
         {curPage === 'students' && !editingStudentId && (
           <StudentsList students={students} setStudents={setStudents} categories={categories} canEdit={canEditStudents}
+            quickAdd={quickAddStudent} onQuickAddDone={() => setQuickAddStudent(false)}
             onOpen={(id, tab) => { setEditingStudentTab(tab || 'info'); setEditingStudentId(id); }} notify={notify} staff={staff} me={me} />
         )}
         {curPage === 'students' && editingStudentId && (
@@ -10833,6 +11057,43 @@ function StaffApp({ me, staff, setStaff, roleTpl, setRoleTpl, categories, setCat
           </div>
         </main>
       </div>
+      {isMob && (
+        <nav className="sm7-tab" aria-label="Pastki menyu">
+          {mTabs.map((t) => t.id === 'mid'
+            ? <button key="mid" type="button" className="sm7-b mid" onClick={() => setSheet('quick')} aria-label="Tezkor amallar"><span className="sm7-ti"><M6Icon n="plus" s={26} w={2.4} /></span></button>
+            : <button key={t.id} type="button" className={'sm7-b' + (curPage === t.id || (t.id === 'more' && mTabIds.indexOf(curPage) === -1) ? ' on' : '')} onClick={() => goTo(t.id)}>
+                <span className="sm7-ti"><M6Icon n={{ overview: 'home', chat: 'chat', students: 'users', payments: 'wallet', more: 'grid' }[t.id] || 'grid'} s={21} />{(t.id === 'more' ? moreBadge : t.id === 'payments' ? stats.overdue : t.badge) > 0 && <em>{(t.id === 'more' ? moreBadge : t.id === 'payments' ? stats.overdue : t.badge) > 99 ? '99+' : (t.id === 'more' ? moreBadge : t.id === 'payments' ? stats.overdue : t.badge)}</em>}</span>
+                {t.id === 'overview' ? 'Asosiy' : t.label}</button>)}
+        </nav>
+      )}
+      {isMob && sheet === 'quick' && (
+        <Sm7Sheet title="Tezkor amallar" sub="Eng ko'p ishlatiladigan amallar bir bosishda" onClose={() => setSheet(null)}>
+          <div className="sm7-qg">
+            {can('students.edit') && <button type="button" className="sm7-b" onClick={() => onQuick('student')}><i style={{ background: 'linear-gradient(135deg,#22d3ee,#2f6df0)' }}><M6Icon n="users" s={22} /></i>Yangi o'quvchi</button>}
+            {can('payments.view') && <button type="button" className="sm7-b" onClick={() => onQuick('pay')}><i style={{ background: 'linear-gradient(135deg,#34d399,#16a34a)' }}><M6Icon n="cash" s={22} /></i>To'lov qabul</button>}
+            {can('courses.edit') && <button type="button" className="sm7-b" onClick={() => onQuick('course')}><i style={{ background: 'linear-gradient(135deg,#a78bfa,#6366f1)' }}><M6Icon n="book" s={22} /></i>Yangi kurs</button>}
+            {can('courses.edit') && <button type="button" className="sm7-b" onClick={() => onQuick('lesson')}><i style={{ background: 'linear-gradient(135deg,#fb923c,#f43f5e)' }}><M6Icon n="video" s={22} /></i>Dars yuklash</button>}
+            <button type="button" className="sm7-b" onClick={() => onQuick('chat')}><i style={{ background: 'linear-gradient(135deg,#38bdf8,#0ea5e9)' }}><M6Icon n="mail" s={22} /></i>Xabar yozish</button>
+            {can('statistics.view') && <button type="button" className="sm7-b" onClick={() => goTo('statistics')}><i style={{ background: 'linear-gradient(135deg,#f472b6,#a855f7)' }}><M6Icon n="chart" s={22} /></i>Statistika</button>}
+          </div>
+          <button type="button" className="sm7-b sm7-btn g" onClick={() => setSheet(null)}>Yopish</button>
+        </Sm7Sheet>
+      )}
+      {isMob && sheet === 'bell' && (
+        <Sm7Sheet title="Bildirishnomalar" sub={allNotifs.length ? allNotifs.length + ' ta xabar' : "Hozircha yangi xabar yo'q"} onClose={() => setSheet(null)}>
+          <div className="sm7-nl">
+            {allNotifs.length === 0 && <p className="sm7-empty">Hammasi joyida — bildirishnoma yo'q.</p>}
+            {allNotifs.slice(0, 30).map((n) => (
+              <button key={n.id} type="button" className={'sm7-b sm7-ni' + (n.read ? ' read' : '')} onClick={() => { markBellRead(n.id); setSheet(null); if (n.kind === 'chat') { setPage('chat'); setTimeout(() => chatOpenConv(n.convId), 60); } else goTo('blocked'); }}>
+                <span className={'sm7-ni-i' + (n.kind === 'chat' ? ' chat' : ' bad')}><M6Icon n={n.kind === 'chat' ? 'chat' : 'lock'} s={17} /></span>
+                <span className="sm7-ni-x"><b>{n.name}</b><small>{n.kind === 'chat' ? (n.preview || 'Yangi xabar') : (n.courses + ' ta kurs bloklangan · ' + n.reasonText)}</small></span>
+                {n.kind === 'chat' && n.count > 0 && <em>{n.count}</em>}
+              </button>
+            ))}
+          </div>
+          {allNotifs.length > 0 && <button type="button" className="sm7-b sm7-btn g" onClick={() => { markAllBellRead(); setSheet(null); }}>Hammasini o'qildi deb belgilash</button>}
+        </Sm7Sheet>
+      )}
     </div>
   );
 }
@@ -13200,7 +13461,7 @@ function SdModal({ title, icon, onClose, children, size }) {
   );
 }
 
-function StudentsList({ students, setStudents, categories, canEdit, onOpen, notify, staff, me }) {
+function StudentsList({ students, setStudents, categories, canEdit, onOpen, notify, staff, me, quickAdd, onQuickAddDone }) {
   const staffList = staff && staff.length ? staff : (me ? [me] : []);
   const emptyDraft = () => ({
     fullName: '',
@@ -13211,6 +13472,7 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
   const [pg, setPg] = useState(1);
   const STU_PAGE_SIZE = 10;
   const [showAdd, setShowAdd] = useState(false);
+  useEffect(() => { if (quickAdd) { setShowAdd(true); if (onQuickAddDone) onQuickAddDone(); } }, [quickAdd]);
   const [draft, setDraft] = useState(emptyDraft);
   const [created, setCreated] = useState(null);      // { name, username, password }
   const [copied, setCopied] = useState(false);
@@ -13429,6 +13691,7 @@ function StudentsList({ students, setStudents, categories, canEdit, onOpen, noti
                 <div className="stu-meta">
                   <span className="stu-courses">{metaOf(s)}</span>
                   <span className={`stu-pill ${st.cls}`}>{st.icon && Icon[st.icon] ? React.createElement(Icon[st.icon], { width: 12, height: 12 }) : null}{st.text}</span>
+                  {(s.enrollReq || []).length > 0 && <span className="stu-pill stu-pill-req" title={(s.enrollReq || []).map((r) => r.catName + ' · ' + r.phone).join('\n')}>Yozilmoqchi: {s.enrollReq[s.enrollReq.length - 1].catName} · {s.enrollReq[s.enrollReq.length - 1].phone}</span>}
                 </div>
               </div>
               <div className="stu-acts">
@@ -14606,7 +14869,7 @@ const PERM_GROUPS = [
 ];
 const ALL_PERMS = PERM_GROUPS.flatMap((g) => g.items.map((i) => i[0]));
 const DEFAULT_ROLE_PERMS = {
-  admin_teacher: ALL_PERMS.filter((k) => k !== 'staff.manage' && k !== 'branding.edit'),
+  admin_teacher: ALL_PERMS.filter((k) => !/^(staff|branding|statistics|payments)\./.test(k)),
   support: ['dashboard.view', 'students.view', 'courses.view', 'statistics.view', 'payments.view', 'blocked.view'],
 };
 const isTopRole = (r) => r === 'ceo' || r === 'ceo_support';
@@ -15408,6 +15671,94 @@ function StaffProfile({ me, staff, setStaff, notify, onLogout, canBrand, brand, 
 /* =========================================================================
    STUDENT APP
    ========================================================================= */
+/* ===== To'lov cheki (yangi dizayn): modal va "To'lovlarim" uchun umumiy ===== */
+const rcptSum = (p) => (Number(p.amount) || 0) + (Number(p.extra) || 0);
+function rcptBars(seed) {
+  const str = String(seed || 'x'); const out = []; let h = 7;
+  for (let i = 0; i < 46; i++) { h = (h * 31 + str.charCodeAt(i % str.length) + i * 13) % 997; out.push(1 + (h % 4)); }
+  return out;
+}
+function printStudentReceipt(student, p, brandName) {
+  const w = window.open('', '_blank', 'width=460,height=760'); if (!w) return;
+  const esc = (v) => String(v == null ? '' : v).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const rows = [["O'quvchi", student.name], ['Kurs', p.courseName || '—'], ['Davr', p.month + ' ' + p.year], ['Sana', fmtDate(p.date)], ['Asosiy summa', fmtMoney(p.amount || 0)]]
+    .concat(Number(p.extra) > 0 ? [["Qo'shimcha", fmtMoney(p.extra)]] : []).concat(p.note ? [['Izoh', p.note]] : []);
+  const bars = rcptBars(rcptNoOf(p)).map((n) => '<i style="width:' + n + 'px"></i>').join('');
+  w.document.write('<!doctype html><meta charset="utf-8"><title>Chek ' + esc(rcptNoOf(p)) + '</title><style>*{box-sizing:border-box}body{font:14px system-ui,sans-serif;margin:0;padding:24px;background:#eef2f9;color:#0f172a}.t{max-width:360px;margin:0 auto;background:#fff;border-radius:22px;overflow:hidden;box-shadow:0 10px 30px rgba(15,23,42,.15)}.h{padding:26px 22px 22px;text-align:center;color:#fff;background:linear-gradient(135deg,#2563eb,#06b6d4)}.s{width:54px;height:54px;border-radius:50%;background:#fff;color:#16a34a;font-size:30px;font-weight:800;display:grid;place-items:center;margin:0 auto 10px}.a{font-size:32px;font-weight:800;margin:6px 0}.m{opacity:.9;font-size:13px}.c{border-top:2px dashed #cbd5e1;margin:0 18px}.b{padding:18px 22px}.r{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid #eef2f7}.r span{color:#64748b}.r b{text-align:right}.bars{display:flex;gap:2px;justify-content:center;height:42px;margin:18px 0 8px}.bars i{display:block;height:100%;background:#0f172a}.f{text-align:center;color:#64748b;font-size:12px;padding-bottom:6px}@media print{body{background:#fff;padding:0}.t{box-shadow:none}}</style><div class="t"><div class="h"><div class="s">✓</div><div class="m">' + esc(brandName) + ' · TO\'LOV CHEKI</div><div class="a">' + esc(fmtMoney(rcptSum(p))) + '</div><div class="m">№ ' + esc(rcptNoOf(p)) + '</div></div><div class="c"></div><div class="b">' + rows.map(([k, v]) => '<div class="r"><span>' + esc(k) + '</span><b>' + esc(v) + '</b></div>').join('') + '<div class="bars">' + bars + '</div><div class="f">To\'landi · Rahmat!</div></div></div><script>setTimeout(function(){window.print()},400)<\/script>');
+  w.document.close();
+}
+function ReceiptTicket({ p, student, brandName }) {
+  const rows = [['user', "O'quvchi", student.name], ['book', 'Kurs', p.courseName || '—'], ['cal', 'Davr', p.month + ' ' + p.year], ['clock', 'Sana', fmtDate(p.date)], ['cash', 'Asosiy summa', fmtMoney(p.amount || 0)]]
+    .concat(Number(p.extra) > 0 ? [['plus', "Qo'shimcha", fmtMoney(p.extra)]] : []).concat(p.note ? [['note', 'Izoh', p.note]] : []);
+  const ic = { user: '👤', book: '📚', cal: '🗓', clock: '🕒', cash: '💵', plus: '➕', note: '📝' };
+  return (
+    <div className="tk">
+      <div className="tk-top">
+        <div className="tk-brand">{brandName}</div>
+        <div className="tk-seal"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5" /></svg></div>
+        <div className="tk-st">To'lov qabul qilindi</div>
+        <div className="tk-amt">{fmtMoney(rcptSum(p))}</div>
+        <div className="tk-no">№ {rcptNoOf(p)}</div>
+      </div>
+      <div className="tk-cut"><i /><u /><i /></div>
+      <div className="tk-body">
+        {rows.map(([k, l, v]) => <div key={l} className="tk-row"><span><em>{ic[k]}</em>{l}</span><b>{v}</b></div>)}
+        <div className="tk-bars" aria-hidden="true">{rcptBars(rcptNoOf(p)).map((n, i) => <i key={i} style={{ width: n }} />)}</div>
+        <div className="tk-foot">To'landi · Rahmat!</div>
+      </div>
+    </div>
+  );
+}
+function ReceiptModal({ p, student, brand, onClose }) {
+  const brandName = (brand && brand.name) || 'Ferdinant';
+  return (
+    <Modal title="To'lov cheki" onClose={onClose}>
+      <ReceiptTicket p={p} student={student} brandName={brandName} />
+      <div className="rc-acts">
+        <button type="button" className="sp-pay-btn ghost" onClick={onClose}>Yopish</button>
+        <button type="button" className="sp-pay-btn" onClick={() => printStudentReceipt(student, p, brandName)}>Chop etish / PDF</button>
+      </div>
+    </Modal>
+  );
+}
+
+/* Bildirishnomalar: ekran o'rtasida modal (xabarlar, to'lov cheklari, eslatmalar) */
+function StudentNotifModal({ student, bill, onClose, onOpenReceipt, onReadAll, onPay }) {
+  const items = [];
+  (student.alerts || []).forEach((a) => items.push({ k: 'a' + a.id, t: a.createdAt || 0, type: 'msg', title: "O'qituvchidan xabar", text: a.text, unread: !a.read }));
+  const now = Date.now();
+  (student.payments || []).forEach((p) => {
+    const t = p.date ? new Date(p.date + (String(p.date).length === 10 ? 'T12:00:00' : '')).getTime() : 0;
+    if (now - t < 60 * 864e5) items.push({ k: 'p' + p.id, t, type: 'pay', title: "To'lov qabul qilindi", text: fmtMoney(rcptSum(p)) + ' · ' + (p.courseName || "Oylik to'lov") + ' · ' + p.month + ' ' + p.year, pay: p });
+  });
+  ((bill && bill.courses) || []).filter((c) => c.fee > 0).forEach((c) => items.push(c.blocked
+    ? { k: 'b' + c.catId, t: now, type: 'bad', title: 'Kurs bloklangan', text: '«' + c.name + '» — ' + bill.month + ' oyi uchun ' + fmtMoney(c.debt) + ' to\'lov qilinmagan.', go: true }
+    : { k: 'r' + c.catId, t: now - 1, type: 'info', title: "To'lov eslatmasi", text: '«' + c.name + '» uchun oylik to\'lov (' + fmtMoney(c.fee) + ')' + (c.nextDate ? ' — keyingi sana: ' + fmtDate(c.nextDate) : '') + '.' }));
+  (student.enrollReq || []).forEach((r) => items.push({ k: 'e' + r.id, t: new Date(r.date).getTime(), type: 'enr', title: "Yozilish so'rovi yuborildi", text: '«' + r.catName + '» · ' + r.phone }));
+  items.sort((a, b) => b.t - a.t);
+  const icon = { msg: '💬', pay: '🧾', bad: '🔒', info: '⏰', enr: '📞' };
+  const unread = items.filter((i) => i.unread).length;
+  return (
+    <Modal title="Bildirishnomalar" onClose={onClose} size="lg">
+      <div className="nf">
+        {items.length === 0 && <div className="nf-empty"><span>🔔</span><b>Hozircha bildirishnoma yo'q</b><small>Yangi xabarlar va to'lov cheklari shu yerda ko'rinadi.</small></div>}
+        {items.map((i) => (
+          <div key={i.k} className={'nf-item t-' + i.type + (i.unread ? ' unread' : '')}>
+            <i>{icon[i.type]}</i>
+            <div><b>{i.title}</b><p>{i.text}</p>{i.t > 0 && i.type !== 'bad' && i.type !== 'info' && <small>{fmtDate(new Date(i.t).toISOString().slice(0, 10))}</small>}</div>
+            {i.pay && <button type="button" className="nf-btn" onClick={() => onOpenReceipt(i.pay)}>Chek</button>}
+            {i.go && <button type="button" className="nf-btn" onClick={onPay}>To'lov</button>}
+          </div>
+        ))}
+      </div>
+      <div className="sp-modal-acts">
+        {unread > 0 && <button type="button" className="sp-btn ghost" onClick={onReadAll}>Hammasini o'qilgan deb belgilash</button>}
+        <button type="button" className="sp-btn" onClick={onClose}>Yopish</button>
+      </div>
+    </Modal>
+  );
+}
+
 function StudentPayments({ student, brand }) {
   const [view, setView] = useState(null);
   const list = [...(student.payments || [])].sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')) || String(b.id).localeCompare(String(a.id)));
@@ -15432,34 +15783,18 @@ function StudentPayments({ student, brand }) {
       {list.length === 0 && <div className="sp-pay-empty"><Icon.cash width="26" height="26" /><b>Hozircha to'lov yo'q</b><span>O'qituvchi to'lovni qabul qilgach, chek shu yerda paydo bo'ladi.</span></div>}
       <div className="sp-pay-list">
         {list.map((p) => (
-          <div key={p.id} className="sp-pay-card">
-            <span className="sp-pay-ic"><Icon.check width="18" height="18" /></span>
-            <div className="sp-pay-main">
+          <div key={p.id} className="rcl">
+            <span className="rcl-ic"><Icon.check width="18" height="18" /></span>
+            <div className="rcl-m">
               <b>{fmtMoney(sum(p))}</b>
               <span>{p.courseName || "Oylik to'lov"} · {p.month} {p.year}</span>
               <small>{fmtDate(p.date)} · № {rcptNoOf(p)}</small>
             </div>
-            <button type="button" className="sp-pay-btn" onClick={() => setView(p)}>Chekni ko'rish</button>
+            <button type="button" className="rcl-btn" onClick={() => setView(p)}>Chekni ko'rish</button>
           </div>
         ))}
       </div>
-      {view && (
-        <Modal title="To'lov cheki" onClose={() => setView(null)}>
-          <div className="rc-paper">
-            <div className="rc-brand">{brandName}</div>
-            <div className="rc-sub">TO'LOV CHEKI · № {rcptNoOf(view)}</div>
-            {[["O'quvchi", student.name], ['Kurs', view.courseName || '—'], ['Davr', view.month + ' ' + view.year], ['Sana', fmtDate(view.date)], ['Asosiy summa', fmtMoney(view.amount || 0)]]
-              .concat(Number(view.extra) > 0 ? [["Qo'shimcha", fmtMoney(view.extra)]] : []).concat(view.note ? [['Izoh', view.note]] : [])
-              .map(([k, v]) => <div key={k} className="rc-row"><span>{k}</span><b>{v}</b></div>)}
-            <div className="rc-total"><span>Jami</span><b>{fmtMoney(sum(view))}</b></div>
-            <div className="rc-ok"><Icon.check width="15" height="15" /> To'landi</div>
-          </div>
-          <div className="rc-acts">
-            <button type="button" className="sp-pay-btn ghost" onClick={() => setView(null)}>Yopish</button>
-            <button type="button" className="sp-pay-btn" onClick={() => printReceipt(view)}>Chop etish / PDF</button>
-          </div>
-        </Modal>
-      )}
+      {view && <ReceiptModal p={view} student={student} brand={brand} onClose={() => setView(null)} />}
     </div>
   );
 }
@@ -15898,8 +16233,62 @@ const M6_LOGO = {
   py: '<path d="M-2-30c-14 0-14 6-14 12v8H2v3h-24c-8 0-12 6-12 16s4 16 12 16h6V14c0-6 4-10 10-10h16c6 0 10-4 10-10v-12c0-6-4-12-20-12z" fill="#fff"/><path d="M2 30c14 0 14-6 14-12v-8H-2v-3h24c8 0 12-6 12-16S30-25 22-25h-6v11c0 6-4 10-10 10h-16c-6 0-10 4-10 10v12c0 6 4 12 22 12z" fill="url(#G)"/>',
   react: '<circle r="7" fill="#fff"/><g fill="none" stroke="#fff" stroke-width="3.5"><ellipse rx="32" ry="12"/><ellipse rx="32" ry="12" transform="rotate(60)"/><ellipse rx="32" ry="12" transform="rotate(-60)"/></g>',
 };
+const M6P = {
+  flame: '<path d="M12 22c4 0 7-2.7 7-6.8 0-3.2-2-5.6-3.6-7.3-.4 1.9-1.4 3.1-2.6 3.6.3-3.3-1-6.3-3.8-8.5.1 3.3-1.6 5.4-3.2 7.3C4.6 11.7 5 13 5 15.2 5 19.3 8 22 12 22z"/>',
+  cap: '<path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5"/><path d="M22 9v6"/>',
+  target: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/>',
+  card: '<rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 10h19M6 15h4"/>',
+  globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
+  moon: '<path d="M20 14.5A8.5 8.5 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5z"/>',
+  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+  logout: '<path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M10 17l-5-5 5-5M5 12h11"/>',
+  rocket: '<path d="M5 15c-1.5 1.5-2 5-2 5s3.5-.5 5-2"/><path d="M9 15l-3-3c1-4 4-8.5 9-9.5 1.5-.3 3-.3 3-.3s0 1.5-.3 3c-1 5-5.5 8-9.7 9.8z"/><circle cx="15" cy="9" r="1.6"/>',
+  star: '<path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.3 6.5 20.2l1-6.2L3 9.6l6.2-.9z"/>',
+  trophy: '<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5.5h2.5V7a3 3 0 0 1-3 3M7 5.5H4.5V7a3 3 0 0 0 3 3"/>',
+  code: '<path d="M8 8l-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/>',
+  bolt: '<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>',
+  books: '<path d="M4 4h5v16H4zM9 4h5v16H9z"/><path d="M14 5.5l4.5-1 3 15-4.5 1z"/>',
+  check: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  checkc: '<circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.8 2.8L16.5 9.5"/>',
+  playc: '<circle cx="12" cy="12" r="9"/><path d="M10 8.5v7l5.5-3.5z" fill="currentColor"/>',
+  lock: '<rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+  user: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+  bell: '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21h4"/>',
+  key: '<circle cx="8" cy="15" r="4"/><path d="M10.8 12.2 20 3M16 7l3 3M14 9l2 2"/>',
+  alert: '<path d="M12 3.5 2.5 20h19z"/><path d="M12 10v4.5M12 17.4v.1"/>',
+  sparkle: '<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/>',
+  chart: '<path d="M4 20V11M10 20V5M16 20v-7M21 20H3"/>',
+  atom: '<circle cx="12" cy="12" r="1.8"/><ellipse cx="12" cy="12" rx="10" ry="4"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(-60 12 12)"/>',
+  layout: '<rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M3 9h18M9 9v11"/>',
+  terminal: '<rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M7 9l3 3-3 3M12 15h5"/>',
+  server: '<rect x="3" y="4" width="18" height="7" rx="2"/><rect x="3" y="13" width="18" height="7" rx="2"/><path d="M7 7.5h.01M7 16.5h.01"/>',
+  grid: '<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>',
+  clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+};
+Object.assign(M6P, {
+  users: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M21.5 20a6.5 6.5 0 0 0-4-6"/>',
+  cash: '<rect x="2.5" y="6" width="19" height="12" rx="2.5"/><circle cx="12" cy="12" r="2.8"/><path d="M6 9.5v.01M18 14.5v.01"/>',
+  upload: '<path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/>',
+  trend: '<path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/>',
+  chat: '<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1.1-4.2A8 8 0 1 1 21 12z"/>',
+  back: '<path d="M15 6l-6 6 6 6"/>', right: '<path d="m9 6 6 6-6 6"/>', plus: '<path d="M12 5v14M5 12h14"/>',
+  wallet: '<rect x="3" y="6" width="18" height="14" rx="2.5"/><path d="M16 13h2M3 10h18M6 6l9-3 2 3"/>',
+  ban: '<circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/>',
+  idc: '<rect x="3" y="5" width="18" height="14" rx="2.5"/><circle cx="9" cy="11" r="2"/><path d="M6 16a3 3 0 0 1 6 0M14 10h4M14 14h3"/>',
+  shield: '<path d="M12 3 4.5 6v6c0 4.5 3.2 8 7.5 9 4.3-1 7.5-4.5 7.5-9V6z"/><path d="M9 12l2 2 4-4"/>',
+  brush: '<path d="M18.4 2.6a2 2 0 0 1 2.9 2.9L12 14.9 9.1 12z"/><path d="M9 12.5c-2.5 0-4 1.6-4 4 0 1.4-.8 2.5-2 3 5 1 8-1 8-4.5"/>',
+  home: '<path d="M3.5 10.5 12 4l8.5 6.5V19a1.5 1.5 0 0 1-1.5 1.5h-4v-6h-6v6H5A1.5 1.5 0 0 1 3.5 19z"/>',
+  video: '<rect x="3" y="6" width="13" height="12" rx="2.5"/><path d="M16 10l5-3v10l-5-3"/>',
+  mail: '<rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m3.5 6.5 8.5 6.5 8.5-6.5"/>',
+  group: '<circle cx="8" cy="9" r="3"/><circle cx="16" cy="9" r="3"/><path d="M2.5 19a5.5 5.5 0 0 1 11 0M10.5 19a5.5 5.5 0 0 1 11 0"/>',
+  book: '<path d="M4 19.5V5a2 2 0 0 1 2-2h13v17H6a2 2 0 0 0-2 2z"/><path d="M8 7h7"/>',
+  x: '<path d="M6 6l12 12M18 6 6 18"/>',
+});
+function M6Icon({ n, s, w, className, style }) {
+  return <svg className={'m6-ic ' + (className || '')} style={style} width={s || 18} height={s || 18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={w || 2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" dangerouslySetInnerHTML={{ __html: M6P[n] || '' }} />;
+}
 const M6_PAL = { web: ['#6d28d9', '#2563eb'], react: ['#0891b2', '#7c3aed'], py: ['#0e7490', '#1d4ed8'], data: ['#be185d', '#ea580c'], backend: ['#0369a1', '#4338ca'] };
-const M6_KIND = { web: ['Front', '🌐', 'rgba(249,115,22,.15)'], react: ['React', '⚛️', 'rgba(34,211,238,.15)'], py: ['Python', '🐍', 'rgba(56,189,248,.15)'], data: ['Data', '📊', 'rgba(168,85,247,.15)'], backend: ['Back', '⚙️', 'rgba(34,197,94,.15)'] };
+const M6_KIND = { web: ['Front', 'layout', '#f97316'], react: ['React', 'atom', '#22d3ee'], py: ['Python', 'terminal', '#38bdf8'], data: ['Data', 'chart', '#a855f7'], backend: ['Back', 'server', '#22c55e'] };
 const m6ArtCache = {};
 let m6Uid = 0;
 function m6Art(k, a, b, code) {
@@ -15936,6 +16325,84 @@ const M6_ARROW = () => <svg width="15" height="15" viewBox="0 0 24 24" fill="non
 const M6_BELL = () => <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" /><path d="M10 21h4" /></svg>;
 const M6_X = () => <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round"><path d="M6 6l12 12M18 6 6 18" /></svg>;
 
+/* Kursga yozilish: o'quvchi ikki yo'ldan birini tanlaydi — chat orqali yoki telefon raqam qoldirib (faqat localStorage) */
+function EnrollModal({ cat, student, onClose, onChat, onPhone }) {
+  const [mode, setMode] = useState('chat');
+  const [phone, setPhone] = useState(student.phone || '+998 ');
+  const [err, setErr] = useState('');
+  const [done, setDone] = useState(false);
+  const digits = String(phone).replace(/\D/g, '');
+  const fmtPhone = (v) => {
+    let d = String(v).replace(/\D/g, '');
+    if (d.startsWith('998')) d = d.slice(3);
+    d = d.slice(0, 9);
+    const g = [d.slice(0, 2), d.slice(2, 5), d.slice(5, 7), d.slice(7, 9)].filter(Boolean);
+    return '+998' + (g.length ? ' ' + g.join(' ') : ' ');
+  };
+  const submit = () => {
+    if (mode === 'chat') { onChat(cat); return; }
+    if (digits.length < 12) { setErr("Telefon raqamni to'liq kiriting: +998 90 123 45 67"); return; }
+    onPhone(cat, fmtPhone(phone));
+    setDone(true);
+  };
+  const opt = (id, ic, t, d) => (
+    <button type="button" className={'enr-opt' + (mode === id ? ' on' : '')} onClick={() => { setMode(id); setErr(''); }}>
+      <i>{ic}</i><span><b>{t}</b><small>{d}</small></span><em aria-hidden="true" />
+    </button>
+  );
+  return (
+    <Modal title={'«' + cat.name + '» kursiga yozilish'} onClose={onClose} size="lg">
+      {done ? (
+        <div className="enr-done">
+          <div className="enr-ok">✓</div>
+          <p className="sp-modal-p"><b>So'rovingiz qabul qilindi.</b><br />O'qituvchi tez orada {fmtPhone(phone)} raqamiga qo'ng'iroq qiladi.</p>
+          <div className="sp-modal-acts"><button type="button" className="sp-btn" onClick={onClose}>Yaxshi</button></div>
+        </div>
+      ) : (
+        <div className="enr">
+          <p className="sp-modal-p">Qulay bo'lgan bog'lanish usulini tanlang:</p>
+          <div className="enr-opts">
+            {opt('chat', '💬', "Chat orqali bog'lanish", "O'qituvchiga chatda yozasiz, savollaringizga shu yerning o'zida javob olasiz")}
+            {opt('phone', '📞', 'Telefon raqamimni qoldiraman', "O'qituvchi sizga o'zi qo'ng'iroq qiladi")}
+          </div>
+          {mode === 'phone' && (
+            <label className="enr-ph"><span>Telefon raqamingiz</span>
+              <input type="tel" inputMode="tel" autoComplete="tel" value={phone} placeholder="+998 90 123 45 67" onChange={(e) => { setPhone(fmtPhone(e.target.value)); setErr(''); }} />
+            </label>
+          )}
+          {err && <p className="sp-msg bad">{err}</p>}
+          <div className="sp-modal-acts">
+            <button type="button" className="sp-btn ghost" onClick={onClose}>Bekor qilish</button>
+            <button type="button" className="sp-btn" onClick={submit}>{mode === 'chat' ? 'Chatga o\'tish' : 'Yuborish'}</button>
+          </div>
+        </div>
+      )}
+    </Modal>
+  );
+}
+
+/* Har safar saytga kirganda o'quvchiga to'lov eslatmasi modal bo'lib chiqadi */
+function PayRemindModal({ bill, onClose, onPay }) {
+  const rows = ((bill && bill.courses) || []).filter((c) => c.fee > 0);
+  return (
+    <Modal title="To'lov eslatmasi" onClose={onClose} size="lg">
+      <div className="prm">
+        {rows.map((c) => c.blocked ? (
+          <div key={c.catId} className="prm-row bad"><Icon.lock width="18" height="18" />
+            <div><b>«{c.name}»</b> kursi bloklangan — {bill.month} oyi uchun <b>{fmtMoney(c.debt)}</b> to'lov qilinmagan. To'lovni o'qituvchingizga topshiring.</div></div>
+        ) : (
+          <div key={c.catId} className="prm-row"><Icon.clock width="18" height="18" />
+            <div><b>«{c.name}»</b> kursi uchun oylik to'lovni ({fmtMoney(c.fee)}) qilish esdan chiqmasin.{c.nextDate ? ` Keyingi to'lov sanasi: ${fmtDate(c.nextDate)}.` : ''}</div></div>
+        ))}
+      </div>
+      <div className="sp-modal-acts">
+        <button type="button" className="sp-btn ghost" onClick={onPay}>To'lovlarim</button>
+        <button type="button" className="sp-btn" onClick={onClose}>Tushunarli</button>
+      </div>
+    </Modal>
+  );
+}
+
 function StudentApp({ me, staff, categories, students, setStudents, onLogout, notify, brand }) {
   const [page, setPage] = useState('home');
   const chatMe = { ...me, role: 'student' };
@@ -15955,6 +16422,25 @@ function StudentApp({ me, staff, categories, students, setStudents, onLogout, no
   const [blockedCat, setBlockedCat] = useState(null);   // to'lov qilinmagan kursga kirishga urinish
   const [attnBlockedCat, setAttnBlockedCat] = useState(null); // darslik nazorati bo'yicha bloklangan kursga urinish
   const [buyCat, setBuyCat] = useState(null);           // hali sotib olinmagan kursga bosilganda
+  const [enrollCat, setEnrollCat] = useState(null);     // kursga yozilish modali (chat yoki telefon)
+  const [notifOpen, setNotifOpen] = useState(false);    // bildirishnomalar modali
+  const [rcptView, setRcptView] = useState(null);       // ochilgan chek
+  const seenKey = 'edustream_rcpt_seen_' + student.id;
+  const readSeen = () => { try { const r = localStorage.getItem(seenKey); return r === null ? null : JSON.parse(r); } catch (e) { return null; } };
+  const [seenR, setSeenR] = useState(readSeen);
+  const rcptRecent = (p) => { const t = p.date ? new Date(p.date + (String(p.date).length === 10 ? 'T12:00:00' : '')).getTime() : 0; return Date.now() - t < 7 * 864e5; };
+  const unseenRcpts = (student.payments || []).filter((p) => (seenR ? seenR.indexOf(p.id) < 0 : rcptRecent(p)));
+  const newRcpt = unseenRcpts[0] || null;
+  const markSeen = (ids) => { const base = seenR || (student.payments || []).filter((p) => !rcptRecent(p)).map((p) => p.id); const nx = Array.from(new Set(base.concat(ids))); try { localStorage.setItem(seenKey, JSON.stringify(nx)); } catch (e) {} setSeenR(nx); };
+  const readAllAlerts = () => setStudent({ ...student, alerts: (student.alerts || []).map((a) => ({ ...a, read: true })) });
+  const [payRemind, setPayRemind] = useState(true);     // har safar saytga kirganda to'lov eslatmasi modali
+  const enrollViaChat = (c) => { try { sessionStorage.setItem('fd_chat_prefill', "Salom! «" + c.name + "» kursiga yozilmoqchiman."); } catch (e) {} setEnrollCat(null); go('chat'); };
+  const enrollViaPhone = (c, ph) => {
+    const rec = { id: 'er' + Date.now(), catId: c.id, catName: c.name, phone: ph, date: new Date().toISOString() };
+    try { const k = 'edustream_enroll_requests'; const a = JSON.parse(localStorage.getItem(k) || '[]'); a.push({ ...rec, studentId: student.id, studentName: student.name }); localStorage.setItem(k, JSON.stringify(a)); } catch (e) {}
+    const reqs = [...(student.enrollReq || []).filter((x) => x.catId !== c.id), rec];
+    setStudent({ ...student, phone: student.phone || ph, enrollReq: reqs });
+  };
   const courseBill = (cid) => bill.courses.find((c) => c.catId === cid);
 
   const lessonProgress = (lessonId) => student.progress?.[lessonId] || { watched: 0, completed: false };
@@ -16001,6 +16487,14 @@ function StudentApp({ me, staff, categories, students, setStudents, onLogout, no
   const [buyTab, setBuyTab] = useState('about');
   const [calOff, setCalOff] = useState(0);
   const isMob = useMobileView(1023);
+  const [mScrolled, setMScrolled] = useState(false);
+  useEffect(() => {
+    if (!isMob) return undefined;
+    const f = () => { const sh = document.querySelector('.m6.student-shell'); const y = Math.max(window.pageYOffset || 0, sh ? sh.scrollTop : 0); setMScrolled(y > 190); };
+    const sh = document.querySelector('.m6.student-shell');
+    window.addEventListener('scroll', f, { passive: true }); if (sh) sh.addEventListener('scroll', f, { passive: true }); f();
+    return () => { window.removeEventListener('scroll', f); if (sh) sh.removeEventListener('scroll', f); };
+  }, [isMob, catId, buyCat]);
   const [mKind, setMKind] = useState('all');
   const [mSearch, setMSearch] = useState(false);
   const [fav, setFav] = useState(() => loadLS('fav_' + me.id, {}) || {});
@@ -16134,9 +16628,9 @@ function StudentApp({ me, staff, categories, students, setStudents, onLogout, no
         <div className="sp5-cc-t"><div><b>{cat.name}</b><small>{cat.subtitle || `${cat.subtopics.length} bo'lim`}</small></div><Grade g={ev.grade} score={ev.score} /></div>
         <div className="sp5-cs"><div><b>{String(cat.subtopics.length).padStart(2, '0')}</b><small>Bo'lim</small></div><div><b>{ev.done}/{ev.total}</b><small>Dars</small></div><div><b>~{hours(cat)}</b><small>Soat</small></div></div>
         <div className="sp5-segs">{(ev.subs.length ? ev.subs : [{ id: 'x', pct: ev.pct, name: '' }]).map((s) => <i key={s.id} title={s.name + ' ' + s.pct + '%'}><b style={{ width: s.pct + '%' }} /></i>)}</div>
-        {!ev.locked && ev.pace === 'behind' && ev.diff < 0 && <div className="sp5-warn">⚠ Rejadan {-ev.diff} ta dars orqada</div>}
+        {!ev.locked && ev.pace === 'behind' && ev.diff < 0 && <div className="sp5-warn"><M6Icon n="alert" s={14} /> Rejadan {-ev.diff} ta dars orqada</div>}
         <div className="sp5-nb">
-          <span className="sp5-nx">{ev.locked ? <React.Fragment><Icon.lock width="12" height="12" /> <b>{ev.status.label}</b></React.Fragment> : ev.next ? <React.Fragment>▶ Keyingi: <b>{ev.next.title}</b></React.Fragment> : <React.Fragment>🎓 <b className="ok">Kurs yakunlandi</b></React.Fragment>}</span>
+          <span className="sp5-nx">{ev.locked ? <React.Fragment><Icon.lock width="12" height="12" /> <b>{ev.status.label}</b></React.Fragment> : ev.next ? <React.Fragment>▶ Keyingi: <b>{ev.next.title}</b></React.Fragment> : <React.Fragment><M6Icon n="cap" s={14} /> <b className="ok">Kurs yakunlandi</b></React.Fragment>}</span>
           <button type="button" className="sp5-go" onClick={(e) => { e.stopPropagation(); continueCourse(cat, ev); }} aria-label="Davom ettirish">{ev.next && !ev.locked ? <Icon.play width="16" height="16" /> : <Icon.arrowRight width="17" height="17" />}</button>
         </div>
       </div>
@@ -16145,7 +16639,7 @@ function StudentApp({ me, staff, categories, students, setStudents, onLogout, no
   const MyRow = ({ cat, ci, ev }) => (
     <button type="button" className={'sp5-mr' + (ev.locked ? ' is-locked' : '')} onClick={() => openCourse(cat)}>
       <span className="sp5-mr-th"><Ill cat={cat} ci={ci} />{ev.locked && <i><Icon.lock width="14" height="14" /></i>}</span>
-      <span className="sp5-mr-tx"><b>{cat.name}</b><small>{ev.locked ? ev.status.label : ev.next ? 'Keyingi: ' + ev.next.title : 'Kurs yakunlandi 🎉'}</small><Grade g={ev.grade} score={ev.score} /></span>
+      <span className="sp5-mr-tx"><b>{cat.name}</b><small>{ev.locked ? ev.status.label : ev.next ? 'Keyingi: ' + ev.next.title : 'Kurs yakunlandi'}</small><Grade g={ev.grade} score={ev.score} /></span>
       <RingG pct={ev.pct} size={54} w={5} />
     </button>
   );
@@ -16167,10 +16661,10 @@ function StudentApp({ me, staff, categories, students, setStudents, onLogout, no
   );
   const Sec = ({ icon, title, more, onMore, children }) => <div className="sp5-sec"><b>{icon && <span className="sp5-si">{icon}</span>}{title}</b>{children}{more && <button type="button" onClick={onMore}>{more} <Icon.arrowRight width="13" height="13" /></button>}</div>;
   const badges = [
-    { on: allDone >= 1, e: '🚀', t: 'Birinchi qadam', c: '#22c55e' }, { on: act.streak >= 3, e: '🔥', t: 'Seriya 3 kun', c: '#f97316' },
-    { on: allDone >= 10, e: '⭐', t: '10 ta dars', c: '#facc15' }, { on: finished >= 1, e: '🏆', t: 'Bitiruvchi', c: '#6366f1' },
-    { on: allDone >= 25, e: '💻', t: 'Kod ustasi', c: '#22d3ee' }, { on: myCourses.length > 0 && myCourses.every((x) => x.ev.pace !== 'behind'), e: '🎯', t: "Reja bo'yicha", c: '#a855f7' },
-    { on: act.streak >= 7, e: '⚡', t: 'Seriya 7 kun', c: '#f43f5e' }, { on: myCourses.length >= 3, e: '📚', t: '3 ta kurs', c: '#38bdf8' },
+    { on: allDone >= 1, e: 'rocket', t: 'Birinchi qadam', c: '#22c55e' }, { on: act.streak >= 3, e: 'flame', t: 'Seriya 3 kun', c: '#f97316' },
+    { on: allDone >= 10, e: 'star', t: '10 ta dars', c: '#facc15' }, { on: finished >= 1, e: 'trophy', t: 'Bitiruvchi', c: '#6366f1' },
+    { on: allDone >= 25, e: 'code', t: 'Kod ustasi', c: '#22d3ee' }, { on: myCourses.length > 0 && myCourses.every((x) => x.ev.pace !== 'behind'), e: 'target', t: "Reja bo'yicha", c: '#a855f7' },
+    { on: act.streak >= 7, e: 'bolt', t: 'Seriya 7 kun', c: '#f43f5e' }, { on: myCourses.length >= 3, e: 'books', t: '3 ta kurs', c: '#38bdf8' },
   ];
   const Week = () => (
     <div className="sp5-week">{act.days.slice(-7).map((d) => {
@@ -16204,7 +16698,7 @@ function StudentApp({ me, staff, categories, students, setStudents, onLogout, no
     <div className="sp5-d">
       <section className="sp5-hero">
         <div className="sp5-hero-tx">
-          <span className="sp5-pill">🎯 Bugungi maqsad: {doneToday} / {goalTotal} dars</span>
+          <span className="sp5-pill"><M6Icon n="target" s={14} /> Bugungi maqsad: {doneToday} / {goalTotal} dars</span>
           {resumeTarget ? <h2>{resumeTarget.title}<br /><span>darsini davom ettiring</span></h2> : <h2>Birinchi kursingizni<br /><span>tanlang va boshlang</span></h2>}
           <p>{resumeTarget ? `${resumeTarget.cat.name} · ${resumeTarget.ev.done}/${resumeTarget.ev.total} dars. ${motto}` : motto}</p>
           {resumeTarget && <div className="sp5-hp"><i><b style={{ width: resumeTarget.ev.pct + '%' }} /></i><span>{resumeTarget.ev.pct}%</span></div>}
@@ -16214,7 +16708,7 @@ function StudentApp({ me, staff, categories, students, setStudents, onLogout, no
           {codeScene}
         </div>
       </section>
-      {behind.length > 0 && <div className="sp5-alert">⚠ <b>{behind.map((x) => x.cat.name).join(', ')}</b> — rejadan orqada qolyapsiz. Bugun kamida bitta darsni tugating.</div>}
+      {behind.length > 0 && <div className="sp5-alert"><M6Icon n="alert" s={15} /> <b>{behind.map((x) => x.cat.name).join(', ')}</b> — rejadan orqada qolyapsiz. Bugun kamida bitta darsni tugating.</div>}
       <Sec icon="</>" title="Mening kurslarim" more={myCourses.length > 3 ? 'Barchasi' : null} onMore={() => go('courses')} />
       {myCourses.length ? <div className="sp5-cards">{myCourses.slice(0, 3).map((x) => <CourseCard key={x.cat.id} {...x} />)}</div>
         : <Empty title="Hali kurs yo'q" text="Sizga hali birorta kurs ochilmagan. «Yangi kurslar» bo'limidan o'zingizga mosini tanlang." action="Yangi kurslar" onAction={() => go('catalog')} />}
@@ -16223,7 +16717,7 @@ function StudentApp({ me, staff, categories, students, setStudents, onLogout, no
         <div className="sp5-sum"><svg className="sp5-dev" viewBox="0 0 240 110" dangerouslySetInnerHTML={{ __html: SP5_DEV.replace('14 commit', allDone + ' dars').replace('dars: 8/17', 'seriya: ' + act.streak + ' kun').replace('+120 XP', '+' + xp + ' XP') }} />
           <small>Shu hafta o'qildi</small><b>{fmtMin(weekMin)}</b>
           <span className={'sp5-up' + (weekDelta < 0 ? ' dn' : '')}>{weekDelta >= 0 ? '▲' : '▼'} {Math.abs(weekDelta)}% o'tgan haftadan</span>
-          <div className="sp5-mbadges">{badges.slice(0, 4).map((b) => <span key={b.t} className={b.on ? 'on' : ''} title={b.t}>{b.e}</span>)}</div></div>
+          <div className="sp5-mbadges">{badges.slice(0, 4).map((b) => <span key={b.t} className={b.on ? 'on' : ''} title={b.t} style={{ color: b.on ? b.c : undefined }}><M6Icon n={b.e} s={17} /></span>)}</div></div>
         <Chart />
       </section>
       <section className="sp5-prac">
@@ -16241,7 +16735,7 @@ function StudentApp({ me, staff, categories, students, setStudents, onLogout, no
   );
   const HomeMobile = () => (
     <div className="sp5-m">
-      <div className="sp5-goal"><RingG pct={goalPct} size={58} w={7}>{doneToday}/{goalTotal}</RingG><div className="sp5-goal-tx"><b>Bugungi maqsad</b><small>{doneToday >= goalTotal ? 'Reja bajarildi! 🎉' : `Yana ${goalTotal - doneToday} ta dars — reja bajariladi`}</small></div><span className="sp5-fire">🔥 {act.streak}<small>KUN</small></span></div>
+      <div className="sp5-goal"><RingG pct={goalPct} size={58} w={7}>{doneToday}/{goalTotal}</RingG><div className="sp5-goal-tx"><b>Bugungi maqsad</b><small>{doneToday >= goalTotal ? 'Reja bajarildi!' : `Yana ${goalTotal - doneToday} ta dars — reja bajariladi`}</small></div><span className="sp5-fire"><M6Icon n="flame" s={15} /> {act.streak}<small>KUN</small></span></div>
       <div className="sp5-mcode sp5-code">{codeScene}</div>
       {resumeTarget ? (
         <button type="button" className="sp5-cont" onClick={resumeGo}>
@@ -16250,7 +16744,7 @@ function StudentApp({ me, staff, categories, students, setStudents, onLogout, no
           <span className="sp5-cont-ov"><small>// davom ettirish · {resumeTarget.cat.name}</small><b>{resumeTarget.title}</b><span className="sp5-cont-pr"><i><b style={{ width: resumeTarget.ev.pct + '%' }} /></i><em>{resumeTarget.ev.pct}%</em></span></span>
         </button>
       ) : <Empty title="Hali kurs yo'q" text="«Yangi kurslar»dan o'zingizga mosini tanlang." action="Yangi kurslar" onAction={() => go('catalog')} />}
-      {behind.length > 0 && <div className="sp5-alert">⚠ <b>{behind.map((x) => x.cat.name).join(', ')}</b> — rejadan orqada.</div>}
+      {behind.length > 0 && <div className="sp5-alert"><M6Icon n="alert" s={15} /> <b>{behind.map((x) => x.cat.name).join(', ')}</b> — rejadan orqada.</div>}
       {otherCourses.length > 0 && <React.Fragment><Sec title="Yangi kurslar" more="Barchasi" onMore={() => go('catalog')} /><div className="sp5-hs">{otherCourses.map((x) => <ShopCard key={x.cat.id} {...x} />)}</div></React.Fragment>}
       {myCourses.length > 0 && <React.Fragment><Sec title="Kurslarim" more="Barchasi" onMore={() => go('courses')} /><div className="sp5-ml">{myCourses.map((x) => <MyRow key={x.cat.id} {...x} />)}</div></React.Fragment>}
       <Sec title="Bu hafta" more="Natijalar" onMore={() => go('results')} />
@@ -16273,7 +16767,7 @@ function StudentApp({ me, staff, categories, students, setStudents, onLogout, no
         {plan.length === 0 ? <p className="sp5-mut">Bugun uchun reja yo'q. Kurs tanlang va boshlang.</p> : (
           <div className="sp5-tl">{plan.map((p) => (
             <button type="button" key={p.id + (p.ok ? 'd' : 'n')} className="sp5-ti" onClick={p.go} disabled={!p.go}>
-              <span className="sp5-dt" style={{ background: p.ok ? '#ecfdf3' : '#ede9fe' }}>{p.ok ? '✅' : '▶️'}</span>
+              <span className="sp5-dt" style={{ background: p.ok ? '#ecfdf3' : '#ede9fe' }}>{p.ok ? <M6Icon n="check" s={16} w={2.6} /> : <M6Icon n="playc" s={18} />}</span>
               <span className="sp5-ti-x"><b>{p.t}</b><small>{p.c}{p.d ? ' · ' + p.d : ''}</small></span>
               <span className={'sp5-ti-s ' + (p.ok ? 'ok' : p.now ? 'now' : '')}>{p.ok ? 'Bajarildi' : p.now ? 'Hozir' : 'Keyin'}</span>
             </button>))}</div>)}
@@ -16283,6 +16777,13 @@ function StudentApp({ me, staff, categories, students, setStudents, onLogout, no
 
   const modalsEl = (
     <React.Fragment>
+      {enrollCat && <EnrollModal cat={enrollCat} student={student} onClose={() => setEnrollCat(null)} onChat={enrollViaChat} onPhone={enrollViaPhone} />}
+      {newRcpt && !unreadAlert && <ReceiptModal p={newRcpt} student={student} brand={brand} onClose={() => markSeen([newRcpt.id])} />}
+      {rcptView && <ReceiptModal p={rcptView} student={student} brand={brand} onClose={() => setRcptView(null)} />}
+      {notifOpen && !rcptView && <StudentNotifModal student={student} bill={bill} onClose={() => setNotifOpen(false)} onOpenReceipt={(p) => setRcptView(p)} onReadAll={readAllAlerts} onPay={() => { setNotifOpen(false); go('payments'); }} />}
+      {payRemind && !unreadAlert && !enrollCat && !newRcpt && ((bill && bill.courses) || []).some((c) => c.fee > 0) && (
+        <PayRemindModal bill={bill} onClose={() => setPayRemind(false)} onPay={() => { setPayRemind(false); go('payments'); }} />
+      )}
       {unreadAlert && (
         <Modal title="Xabar" onClose={dismissAlert} size="lg">
           <div className="sp-modal-k"><Icon.bell width="16" height="16" /> O'qituvchidan xabar</div>
@@ -16333,7 +16834,7 @@ function StudentApp({ me, staff, categories, students, setStudents, onLogout, no
     const grade = (g, score) => <span className="m6-grade" style={{ '--g': g.color }}>{g.label}{g.key !== 'new' && score != null ? <i>{score}</i> : null}</span>;
     const toneCls = (t) => ({ ok: 'c-ok', warn: 'c-warn', bad: 'c-bad', red: 'c-bad', info: 'c-info', blue: 'c-info' }[t] || 'c-mut');
     const chip = (s, glass) => <span className={'m6-chip ' + toneCls(s.tone) + (glass ? ' glass' : '')}>● {s.label}</span>;
-    const avatar = (cls) => <span className={'m6-av ' + (cls || '')}>{student.avatar ? <img src={student.avatar} alt="" /> : initials}<em>L{level}</em></span>;
+    const avatar = (cls) => <span className={'m6-av ' + (cls || '')}><span className="m6-av-in">{student.avatar ? <img src={student.avatar} alt="" /> : initials}</span><em>L{level}</em></span>;
     const empty = (title, text, action, onAction) => (
       <div className="m6-empty"><span className="m6-empty-a" dangerouslySetInnerHTML={{ __html: SP5_EMPTY }} /><b>{title}</b><span>{text}</span>{action && <button type="button" className="m6-b m6-btn" onClick={onAction}>{action}<M6_ARROW /></button>}</div>
     );
@@ -16342,8 +16843,8 @@ function StudentApp({ me, staff, categories, students, setStudents, onLogout, no
     const kindOk = (cat) => mKind === 'all' || kindOf(cat) === mKind;
     const cats = () => kindsHere.length > 1 && (
       <div className="m6-cats">
-        <button type="button" className={'m6-b' + (mKind === 'all' ? ' on' : '')} onClick={() => setMKind('all')}>Hammasi</button>
-        {kindsHere.map((k) => <button key={k} type="button" className={'m6-b' + (mKind === k ? ' on' : '')} onClick={() => setMKind(k)}><i style={{ background: M6_KIND[k][2] }}>{M6_KIND[k][1]}</i>{M6_KIND[k][0]}</button>)}
+        <button type="button" className={'m6-b' + (mKind === 'all' ? ' on' : '')} onClick={() => setMKind('all')}><M6Icon n="grid" s={15} />Hammasi</button>
+        {kindsHere.map((k) => <button key={k} type="button" className={'m6-b' + (mKind === k ? ' on' : '')} onClick={() => setMKind(k)}><i style={{ color: M6_KIND[k][2], background: 'color-mix(in srgb,' + M6_KIND[k][2] + ' 16%,transparent)' }}><M6Icon n={M6_KIND[k][1]} s={14} /></i>{M6_KIND[k][0]}</button>)}
       </div>
     );
     const searchBox = (ph) => (
@@ -16363,7 +16864,7 @@ function StudentApp({ me, staff, categories, students, setStudents, onLogout, no
     const myRow = ({ cat, ci, ev }) => (
       <button type="button" key={cat.id} className={'m6-b m6-mr' + (ev.locked ? ' is-off' : '')} onClick={() => openCourse(cat)}>
         <span className="m6-mr-th">{art(cat, ci)}{ev.locked && <i><Icon.lock width="14" height="14" /></i>}</span>
-        <span className="m6-mr-tx"><b>{cat.name}</b><small>{ev.locked ? ev.status.label : ev.next ? 'Keyingi: ' + ev.next.title : 'Kurs yakunlandi 🎉'}</small>{grade(ev.grade, ev.score)}</span>
+        <span className="m6-mr-tx"><b>{cat.name}</b><small>{ev.locked ? ev.status.label : ev.next ? 'Keyingi: ' + ev.next.title : 'Kurs yakunlandi'}</small>{grade(ev.grade, ev.score)}</span>
         {ring(ev.pct, 54, 5)}
       </button>
     );
@@ -16374,8 +16875,8 @@ function StudentApp({ me, staff, categories, students, setStudents, onLogout, no
           <div className="m6-big-h"><div><b>{cat.name}</b><small>{cat.subtitle || `${cat.subtopics.length} bo'lim`}</small></div>{grade(ev.grade, ev.score)}</div>
           <div className="m6-segs">{(ev.subs.length ? ev.subs : [{ id: 'x', pct: ev.pct }]).map((s) => <i key={s.id}><b style={{ width: s.pct + '%' }} /></i>)}</div>
           <div className="m6-meta"><span><b>{ev.done}/{ev.total}</b> dars</span><span><b>{ev.pct}%</b> tugallangan</span></div>
-          {!ev.locked && ev.pace === 'behind' && ev.diff < 0 && <div className="m6-warn">⚠ Rejadan {-ev.diff} ta dars orqada</div>}
-          {ev.locked ? <div className="m6-nx bad"><em>🔒</em><span>{ev.status.label}</span></div>
+          {!ev.locked && ev.pace === 'behind' && ev.diff < 0 && <div className="m6-warn"><M6Icon n="alert" s={14} /> Rejadan {-ev.diff} ta dars orqada</div>}
+          {ev.locked ? <div className="m6-nx bad"><em><M6Icon n="lock" s={13} /></em><span>{ev.status.label}</span></div>
             : ev.next ? <div className="m6-nx"><em>›</em>keyingi:&nbsp;<b>{ev.next.title}</b><span className="m6-caret" /></div>
               : <div className="m6-nx"><em>✓</em><span className="ok">kurs yakunlandi — barakalla!</span></div>}
           <button type="button" className={'m6-b m6-btn' + (ev.locked || !ev.next ? ' g' : '')} onClick={(e) => { e.stopPropagation(); if (!ev.locked && ev.next) continueCourse(cat, ev); else openCourse(cat); }}>
@@ -16398,8 +16899,8 @@ function StudentApp({ me, staff, categories, students, setStudents, onLogout, no
         {right}
       </div>
     );
-    const bellGo = () => { const a = (student.alerts || []).find((x) => !x.read); if (a) notify && notify(a.text, 'info'); else go('payments'); };
-    const bellDot = (bill.blocked || (student.alerts || []).some((x) => !x.read));
+    const bellGo = () => setNotifOpen(true);
+    const bellDot = (bill.blocked || unseenRcpts.length > 0 || (student.alerts || []).some((x) => !x.read));
     const favOn = (id) => !!fav[id];
     const toggleFav = (id) => { const n = { ...fav }; if (n[id]) delete n[id]; else n[id] = 1; setFav(n); saveLS('fav_' + me.id, n); };
     const diffAll = myCourses.reduce((a, x) => a + x.ev.diff, 0);
@@ -16445,7 +16946,7 @@ function StudentApp({ me, staff, categories, students, setStudents, onLogout, no
           })() : (
             <React.Fragment>
               <PaymentNotice bill={bill} />
-              <div className="m6-goal">{ring(goalPct, 58, 7, doneToday + '/' + goalTotal)}<div className="m6-goal-tx"><b>Bugungi maqsad</b><small>{doneToday >= goalTotal ? 'Reja bajarildi! 🎉' : `Yana ${goalTotal - doneToday} ta dars — reja bajariladi`}</small></div><span className="m6-fire">🔥 {act.streak}<small>KUN</small></span></div>
+              <div className="m6-goal">{ring(goalPct, 58, 7, doneToday + '/' + goalTotal)}<div className="m6-goal-tx"><b>Bugungi maqsad</b><small>{doneToday >= goalTotal ? 'Reja bajarildi!' : `Yana ${goalTotal - doneToday} ta dars — reja bajariladi`}</small></div><span className="m6-fire"><M6Icon n="flame" s={16} /> {act.streak}<small>KUN</small></span></div>
               {rt ? (
                 <button type="button" className="m6-b m6-cont" onClick={resumeGo}>
                   {art(rt.cat, rt.ci, true)}
@@ -16454,7 +16955,7 @@ function StudentApp({ me, staff, categories, students, setStudents, onLogout, no
                   <span className="m6-ov"><small>// davom ettirish · {rt.cat.name}</small><b>{rt.title}</b><span className="m6-pr"><i className="m6-bar"><b style={{ width: rt.ev.pct + '%' }} /></i><em>{rt.ev.pct}%</em></span></span>
                 </button>
               ) : empty("Hali kurs yo'q", "Sizga hali birorta kurs ochilmagan. Pastdagi «Yangi kurslar»dan o'zingizga mosini tanlang.", 'Yangi kurslar', () => go('catalog'))}
-              {behind.length > 0 && <div className="m6-alert">⚠ <b>{behind.map((x) => x.cat.name).join(', ')}</b> — rejadan orqada. Bugun kamida bitta darsni tugating.</div>}
+              {behind.length > 0 && <div className="m6-alert"><M6Icon n="alert" s={15} /> <b>{behind.map((x) => x.cat.name).join(', ')}</b> — rejadan orqada. Bugun kamida bitta darsni tugating.</div>}
               <div className="sp5-mcode sp5-code m6-code">{codeScene}</div>
               {kindsHere.length > 1 && <React.Fragment>{sec("Yo'nalishlar")}{cats()}</React.Fragment>}
               {others.length > 0 && <React.Fragment>{sec('Yangi kurslar', 'Barchasi', () => go('catalog'))}<div className="m6-hs">{others.map((x) => shopCard(x))}</div></React.Fragment>}
@@ -16505,14 +17006,14 @@ function StudentApp({ me, staff, categories, students, setStudents, onLogout, no
       const noteItems = cat.subtopics.flatMap((sb) => sb.lessons.filter((l) => allNotes[l.id] && String(allNotes[l.id]).trim()).map((l) => ({ sb, l, t: String(allNotes[l.id]) })));
       const dlNotes = () => { const txt = noteItems.map((x) => '# ' + x.sb.name + ' — ' + x.l.title + '\n' + x.t).join('\n\n'); if (!txt) return; try { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([txt], { type: 'text/plain;charset=utf-8' })); a.download = cat.name + '-konspekt.txt'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 1500); } catch (e) {} };
       return (
-        <div className="m6-detail">
-          <div className="m6-dh">{art(cat, ci, k === 'web' || k === 'react')}
-            <div className="m6-dh-tb"><button type="button" className="m6-b" onClick={() => { setCatId(null); setPage('courses'); scrollTop(); }} aria-label="Orqaga"><M6_BACK /></button><button type="button" className={'m6-b' + (favOn(cat.id) ? ' on' : '')} onClick={() => toggleFav(cat.id)} aria-label="Sevimli"><M6_HEART on={favOn(cat.id)} /></button></div>
-          </div>
+        <div className="m6-detail" data-no-rv="1">
+          <div className="m6-dh">{art(cat, ci, k === 'web' || k === 'react')}</div>
+          <div className="m6-dh-sp" />
+            <div className={'m6-dh-tb' + (mScrolled ? ' on' : '')}><span className="m6-dh-t">{cat.name}</span><button type="button" className="m6-b" onClick={() => { setCatId(null); setPage('courses'); scrollTop(); }} aria-label="Orqaga"><M6_BACK /></button><button type="button" className={'m6-b' + (favOn(cat.id) ? ' on' : '')} onClick={() => toggleFav(cat.id)} aria-label="Sevimli"><M6_HEART on={favOn(cat.id)} /></button></div>
           <div className="m6-sheet">
             <div className="m6-row">{chip(ev.status)}{grade(ev.grade, ev.score)}</div>
             <h2>{cat.name}</h2><p className="m6-sub">{cat.subtitle || `${cat.subtopics.length} bo'lim · ${ev.total} dars`}</p>
-            <button type="button" className="m6-b m6-tchr" onClick={() => go('chat')}><span className="m6-av sm">{teacher && teacher.avatar ? <img src={teacher.avatar} alt="" /> : tIni}</span><span><b>{tName}</b><small>Kurs o'qituvchisi · savol bo'lsa yozing</small></span><span className="m6-ib sm"><I.chat /></span></button>
+            <button type="button" className="m6-b m6-tchr" onClick={() => go('chat')}><span className="m6-av sm"><span className="m6-av-in">{teacher && teacher.avatar ? <img src={teacher.avatar} alt="" /> : tIni}</span></span><span><b>{tName}</b><small>Kurs o'qituvchisi · savol bo'lsa yozing</small></span><span className="m6-ib sm"><I.chat /></span></button>
             <div className="m6-f3"><div><b style={{ color: '#22d3ee' }}>{String(cat.subtopics.length).padStart(2, '0')}</b><small>Bo'lim</small></div><div><b style={{ color: '#f97316' }}>{String(ev.total).padStart(2, '0')}</b><small>Dars</small></div><div><b style={{ color: '#22c55e' }}>{ev.pct}%</b><small>Tugallandi</small></div></div>
             <div className="m6-seg">{[['plan', 'Dastur'], ['res', 'Natija'], ['notes', 'Konspekt']].map(([kk, l]) => <button key={kk} type="button" className={'m6-b' + (detailTab === kk ? ' on' : '')} onClick={() => setDetailTab(kk)}>{l}</button>)}</div>
             {detailTab === 'plan' && (
@@ -16569,7 +17070,7 @@ function StudentApp({ me, staff, categories, students, setStudents, onLogout, no
           <div className="m6-cta">
             {ev.locked ? <React.Fragment><span><small>Holat</small><b>{ev.status.label}</b></span><button type="button" className="m6-b m6-btn" onClick={() => openCourse(cat)}>Batafsil</button></React.Fragment>
               : ev.next ? <React.Fragment><span><small>Keyingi dars{nl && nl.duration ? ' · ' + nl.duration : ''}</small><b>{ev.next.title}</b></span><button type="button" className="m6-b m6-btn" onClick={() => continueCourse(cat, ev)}><M6_PLAY s={16} />{ev.done === 0 ? 'Boshlash' : 'Davom'}</button></React.Fragment>
-                : <React.Fragment><span><small>Kurs yakunlandi 🎓</small><b>{ev.total} / {ev.total} dars</b></span><button type="button" className="m6-b m6-btn g" onClick={() => { const f = cat.subtopics.find((s) => s.lessons.length); if (f) startLesson(cat, f.id, f.lessons[0].id); }}>Qayta ko'rish</button></React.Fragment>}
+                : <React.Fragment><span><small>Kurs yakunlandi</small><b>{ev.total} / {ev.total} dars</b></span><button type="button" className="m6-b m6-btn g" onClick={() => { const f = cat.subtopics.find((s) => s.lessons.length); if (f) startLesson(cat, f.id, f.lessons[0].id); }}>Qayta ko'rish</button></React.Fragment>}
           </div>
         </div>
       );
@@ -16579,12 +17080,12 @@ function StudentApp({ me, staff, categories, students, setStudents, onLogout, no
     const vBuy = () => {
       const cat = buyCat; const ci = categories.indexOf(cat); const lessons = spLessonsOf(cat); const k = kindOf(cat);
       return (
-        <div className="m6-detail">
-          <div className="m6-dh">{art(cat, ci, k === 'web' || k === 'react')}
-            <div className="m6-dh-tb"><button type="button" className="m6-b" onClick={() => { setBuyCat(null); scrollTop(); }} aria-label="Orqaga"><M6_BACK /></button><button type="button" className={'m6-b' + (favOn(cat.id) ? ' on' : '')} onClick={() => toggleFav(cat.id)} aria-label="Sevimli"><M6_HEART on={favOn(cat.id)} /></button></div>
-          </div>
+        <div className="m6-detail" data-no-rv="1">
+          <div className="m6-dh">{art(cat, ci, k === 'web' || k === 'react')}</div>
+          <div className="m6-dh-sp" />
+            <div className={'m6-dh-tb' + (mScrolled ? ' on' : '')}><span className="m6-dh-t">{cat.name}</span><button type="button" className="m6-b" onClick={() => { setBuyCat(null); scrollTop(); }} aria-label="Orqaga"><M6_BACK /></button><button type="button" className={'m6-b' + (favOn(cat.id) ? ' on' : '')} onClick={() => toggleFav(cat.id)} aria-label="Sevimli"><M6_HEART on={favOn(cat.id)} /></button></div>
           <div className="m6-sheet">
-            <div className="m6-row"><span className="m6-chip c-info">✦ Yangi</span>{cat.frozen ? <span className="m6-chip c-mut">Vaqtincha yopiq</span> : <span className="m6-chip c-warn">~{hours(cat)} soat</span>}</div>
+            <div className="m6-row"><span className="m6-chip c-info"><M6Icon n="sparkle" s={13} /> Yangi</span>{cat.frozen ? <span className="m6-chip c-mut">Vaqtincha yopiq</span> : <span className="m6-chip c-warn">~{hours(cat)} soat</span>}</div>
             <h2>{cat.name}</h2><p className="m6-sub">{cat.subtitle || 'Video kurs'}</p>
             <div className="m6-f3"><div><b style={{ color: '#22d3ee' }}>{String(cat.subtopics.length).padStart(2, '0')}</b><small>Bo'lim</small></div><div><b style={{ color: '#f97316' }}>{String(lessons.length).padStart(2, '0')}</b><small>Dars</small></div><div><b style={{ color: '#22c55e' }}>~{hours(cat)}</b><small>Soat</small></div></div>
             <div className="m6-seg">{[['about', 'Kurs haqida'], ['plan', 'Dastur']].map(([kk, l]) => <button key={kk} type="button" className={'m6-b' + (buyTab === kk ? ' on' : '')} onClick={() => setBuyTab(kk)}>{l}</button>)}</div>
@@ -16592,14 +17093,14 @@ function StudentApp({ me, staff, categories, students, setStudents, onLogout, no
               <div>
                 <p className="m6-about">«{cat.name}» kursi {cat.subtopics.length} ta bo'lim va {lessons.length} ta video darsdan iborat. Darslar ketma-ket ochiladi, natijangiz avtomatik baholanadi.</p>
                 {['Video darslar va konspektlar', 'Jarayon va baho avtomatik', "O'qituvchi bilan chat"].map((t) => <div key={t} className="m6-okr"><i>✓</i><b>{t}</b></div>)}
-                <p className="m6-mut sm">Yozilish uchun administratsiyaga yozing — to'lov tasdiqlangach kurs avtomatik «Kurslarim»ga qo'shiladi.</p>
+                <p className="m6-mut sm">Yozilish uchun chat orqali yozing yoki telefon raqamingizni qoldiring — to'lov tasdiqlangach kurs avtomatik «Kurslarim»ga qo'shiladi.</p>
               </div>
             ) : (
               <div>{cat.subtopics.map((s, i) => <div key={s.id} className="m6-mod"><span className="m6-mod-n">{String(i + 1).padStart(2, '0')}</span><span className="m6-mod-x"><b>{s.name}</b><small>{s.lessons.length} ta dars</small></span><Icon.lock width="15" height="15" /></div>)}
                 {cat.subtopics.length === 0 && <p className="m6-mut">Dastur tez orada qo'shiladi.</p>}</div>
             )}
           </div>
-          <div className="m6-cta"><span><small>Oylik narx</small><b className="lg">{fmtMoney(cat.monthlyPrice)}</b></span><button type="button" className="m6-b m6-btn" disabled={cat.frozen} onClick={() => { setBuyCat(null); go('chat'); }}>Yozilish</button></div>
+          <div className="m6-cta"><span><small>Oylik narx</small><b className="lg">{fmtMoney(cat.monthlyPrice)}</b></span><button type="button" className="m6-b m6-btn" disabled={cat.frozen} onClick={() => { const c0 = cat; setBuyCat(null); setEnrollCat(c0); }}>Yozilish</button></div>
         </div>
       );
     };
@@ -16622,7 +17123,7 @@ function StudentApp({ me, staff, categories, students, setStudents, onLogout, no
               <M6_RIGHT />
             </button>))}
         {sec('Yutuqlar', badges.filter((b) => b.on).length + ' / ' + badges.length)}
-        <div className="m6-bdg">{badges.map((b) => <div key={b.t} className={'m6-bd' + (b.on ? ' on' : '')} style={{ '--c': b.c }}><span>{b.e}</span>{b.t}</div>)}</div>
+        <div className="m6-bdg">{badges.map((b) => <div key={b.t} className={'m6-bd' + (b.on ? ' on' : '')} style={{ '--c': b.c }}><span><M6Icon n={b.e} s={22} /></span>{b.t}</div>)}</div>
         <div className="m6-how"><b>Baho qanday hisoblanadi?</b><p><b>45%</b> — tugatilgan darslar · <b>45%</b> — rejaga rioya (har dars kuni bitta dars) · <b>10%</b> — darslik nazorati. A'lo 85+, Yaxshi 70+, Qoniqarli 50+.</p></div>
       </React.Fragment>
     );
@@ -16632,18 +17133,18 @@ function StudentApp({ me, staff, categories, students, setStudents, onLogout, no
       <React.Fragment>
         <div className="m6-pf">{avatar('xl')}<b>{student.name}</b><small>@{student.username} · O'quvchi</small>
           <div className="m6-lv"><div><span>{level}-daraja · {levelName}</span><span>{xpIn} / 250 XP</span></div><i className="m6-bar"><b style={{ width: (xpIn / 250) * 100 + '%' }} /></i></div></div>
-        <div className="m6-rk three"><div><b>{myCourses.length}</b><small>Kurs</small></div><div><b>{allDone}</b><small>Dars</small></div><div><b>{act.streak}🔥</b><small>Seriya</small></div></div>
+        <div className="m6-rk three"><div><b>{myCourses.length}</b><small>Kurs</small></div><div><b>{allDone}</b><small>Dars</small></div><div><b className="m6-fl-n">{act.streak}<M6Icon n="flame" s={18} /></b><small>Seriya</small></div></div>
         <div className="m6-menu">
-          <button type="button" className="m6-b" onClick={() => go('account')}><i style={{ background: 'rgba(99,102,241,.15)' }}>👤</i>Shaxsiy ma'lumotlar<em>›</em></button>
-          <button type="button" className="m6-b" onClick={() => go('payments')}><i style={{ background: 'rgba(34,197,94,.15)' }}>💳</i>To'lovlarim<em className={bill.blocked ? 'bad' : ''}>{bill.blocked ? 'Qarz bor' : bill.debt > 0 ? fmtMoney(bill.debt) : '✓'}</em></button>
-          <button type="button" className="m6-b" onClick={() => { const v = !notifOn; setNotifOn(v); saveLS(chatUserKey('chat_toast', student.username), v); notify && notify(v ? 'Chat bildirishnomalari yoqildi' : "Chat bildirishnomalari o'chirildi", 'info'); }}><i style={{ background: 'rgba(249,115,22,.15)' }}>🔔</i>Bildirishnomalar<span className={'m6-tg' + (notifOn ? ' on' : '')} /></button>
+          <button type="button" className="m6-b" onClick={() => go('account')}><i style={{ background: 'rgba(99,102,241,.15)', color: '#6366f1' }}><M6Icon n="user" s={18} /></i>Shaxsiy ma'lumotlar<em>›</em></button>
+          <button type="button" className="m6-b" onClick={() => go('payments')}><i style={{ background: 'rgba(34,197,94,.15)', color: '#22c55e' }}><M6Icon n="card" s={18} /></i>To'lovlarim<em className={bill.blocked ? 'bad' : ''}>{bill.blocked ? 'Qarz bor' : bill.debt > 0 ? fmtMoney(bill.debt) : '✓'}</em></button>
+          <button type="button" className="m6-b" onClick={() => { const v = !notifOn; setNotifOn(v); saveLS(chatUserKey('chat_toast', student.username), v); notify && notify(v ? 'Chat bildirishnomalari yoqildi' : "Chat bildirishnomalari o'chirildi", 'info'); }}><i style={{ background: 'rgba(249,115,22,.15)', color: '#f97316' }}><M6Icon n="bell" s={18} /></i>Bildirishnomalar<span className={'m6-tg' + (notifOn ? ' on' : '')} /></button>
         </div>
         <div className="m6-menu">
-          <div className="m6-menu-r"><i style={{ background: 'rgba(56,189,248,.15)' }}>🌐</i>Til<span className="m6-lng" data-no-i18n="1">{langs.map((l) => <button key={l.code} type="button" className={'m6-b' + (mLang === l.code ? ' on' : '')} onClick={() => setLangM(l.code)}>{l.code.toUpperCase()}</button>)}</span></div>
-          <button type="button" className="m6-b" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}><i style={{ background: 'rgba(168,85,247,.15)' }}>🌙</i>Qorong'i rejim<span className={'m6-tg' + (theme === 'dark' ? ' on' : '')} /></button>
-          <button type="button" className="m6-b" onClick={() => go('account')}><i style={{ background: 'rgba(245,158,11,.15)' }}>🔑</i>Parolni o'zgartirish<em>›</em></button>
+          <div className="m6-menu-r"><i style={{ background: 'rgba(56,189,248,.15)', color: '#0ea5e9' }}><M6Icon n="globe" s={18} /></i>Til<span className="m6-lng" data-no-i18n="1">{langs.map((l) => <button key={l.code} type="button" className={'m6-b' + (mLang === l.code ? ' on' : '')} onClick={() => setLangM(l.code)}>{l.code.toUpperCase()}</button>)}</span></div>
+          <button type="button" className="m6-b" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}><i style={{ background: 'rgba(168,85,247,.15)', color: '#a855f7' }}><M6Icon n="moon" s={18} /></i>Qorong'i rejim<span className={'m6-tg' + (theme === 'dark' ? ' on' : '')} /></button>
+          <button type="button" className="m6-b" onClick={() => go('account')}><i style={{ background: 'rgba(245,158,11,.15)', color: '#f59e0b' }}><M6Icon n="key" s={18} /></i>Parolni o'zgartirish<em>›</em></button>
         </div>
-        <div className="m6-menu"><button type="button" className="m6-b out" onClick={onLogout}><i style={{ background: 'rgba(244,63,94,.12)' }}>⎋</i>Chiqish</button></div>
+        <div className="m6-menu"><button type="button" className="m6-b out" onClick={onLogout}><i style={{ background: 'rgba(244,63,94,.12)', color: '#f43f5e' }}><M6Icon n="logout" s={18} /></i>Chiqish</button></div>
       </React.Fragment>
     );
 
@@ -16715,8 +17216,8 @@ function StudentApp({ me, staff, categories, students, setStudents, onLogout, no
                   <div className="sp5-syl">{buyCat.subtopics.map((s, i) => <div key={s.id} className="sp5-mod"><span className="sp5-mod-n">{String(i + 1).padStart(2, '0')}</span><span className="sp5-mod-x"><b>{s.name}</b><small>{s.lessons.length} ta dars</small></span><Icon.lock width="14" height="14" /></div>)}
                     {buyCat.subtopics.length === 0 && <p className="sp5-mut">Dastur tez orada qo'shiladi.</p>}</div>
                 )}
-                <div className="sp5-sheet-f"><span className="sp5-price"><small>Oylik narx</small><b>{fmtMoney(buyCat.monthlyPrice)}</b></span><button type="button" className="sp5-btn" disabled={buyCat.frozen} onClick={() => { setBuyCat(null); go('chat'); }}><I.chat />Kursga yozilish</button></div>
-                <p className="sp5-mut sm">Yozilish uchun administratsiyaga yozing — to'lov tasdiqlangach kurs avtomatik «Kurslarim»ga qo'shiladi.</p>
+                <div className="sp5-sheet-f"><span className="sp5-price"><small>Oylik narx</small><b>{fmtMoney(buyCat.monthlyPrice)}</b></span><button type="button" className="sp5-btn" disabled={buyCat.frozen} onClick={() => { const c0 = buyCat; setBuyCat(null); setEnrollCat(c0); }}><I.chat />Kursga yozilish</button></div>
+                <p className="sp5-mut sm">Yozilish uchun chat orqali yozing yoki telefon raqamingizni qoldiring — to'lov tasdiqlangach kurs avtomatik «Kurslarim»ga qo'shiladi.</p>
               </div>
             </div>
           </div>
@@ -16757,7 +17258,7 @@ function StudentApp({ me, staff, categories, students, setStudents, onLogout, no
             <div className="sp5-top-r sp-top-r">
               <span className="sp5-d-only sp5-lang"><LangSwitch variant="ls-light" /></span>
               <button type="button" className="sp5-ib" onClick={() => go('chat')} aria-label="Chat"><I.chat />{chatUnread > 0 && <i className="dot" />}</button>
-              <button type="button" className="sp5-ib" onClick={() => { const a = (student.alerts || []).find((x) => !x.read); if (a) notify && notify(a.text, 'info'); else go('payments'); }} aria-label="Xabarlar"><Icon.bell width="19" height="19" />{(bill.blocked || (student.alerts || []).some((x) => !x.read)) && <i className="dot" />}</button>
+              <button type="button" className="sp5-ib" onClick={() => setNotifOpen(true)} aria-label="Xabarlar"><Icon.bell width="19" height="19" />{(bill.blocked || unseenRcpts.length > 0 || (student.alerts || []).some((x) => !x.read)) && <i className="dot" />}</button>
             </div>
           </header>
 
@@ -16836,27 +17337,28 @@ function StudentApp({ me, staff, categories, students, setStudents, onLogout, no
                     {ev.subs.map((s) => <div key={s.id} className="sp5-sub"><span>{s.name}</span><i><b style={{ width: s.pct + '%' }} /></i><small>{s.done}/{s.total}</small></div>)}
                   </section>))}</div>
                 <Sec title="Yutuqlar" />
-                <div className="sp5-bdg">{badges.map((b) => <div key={b.t} className={'sp5-bd' + (b.on ? ' on' : '')} style={{ '--c': b.c }}><span>{b.e}</span>{b.t}</div>)}</div>
+                <div className="sp5-bdg">{badges.map((b) => <div key={b.t} className={'sp5-bd' + (b.on ? ' on' : '')} style={{ '--c': b.c }}><span style={{ color: b.on ? b.c : undefined }}><M6Icon n={b.e} s={24} /></span>{b.t}</div>)}</div>
                 <section className="sp5-box sp5-how"><b>Baho qanday hisoblanadi?</b><p><b>45%</b> — tugatilgan darslar ulushi · <b>45%</b> — rejaga rioya (har dars kuni bitta dars) · <b>10%</b> — darslik nazorati. A'lo 85+, Yaxshi 70+, Qoniqarli 50+.</p></section>
               </div>
             )}
 
             {page === 'payments' && <div className="sp5-page"><StudentPayments student={student} brand={brand} /></div>}
             {(page === 'profile' || page === 'account') && (
-              <div className="sp5-page">
+              <div className="sp5-page sp5-profile-page"><div className="sp5-pcol-l">
                 <section className="sp5-pf">
                   <span className="sp5-k">// daraja va tajriba</span>
                   <b>{level}-daraja · {levelName}</b><small>Jami {xp} XP — har bir tugatilgan dars +40 XP, tugatilgan kurs +200 XP</small>
                   <div className="sp5-lv"><div><span>{levelName}</span><span>{xpIn} / 250 XP</span></div><i><b style={{ width: (xpIn / 250) * 100 + '%' }} /></i></div>
                 </section>
-                <div className="sp5-rk three"><div><small>Kurs</small><b>{myCourses.length}</b></div><div><small>Dars</small><b>{allDone}</b></div><div><small>Seriya</small><b className="or">{act.streak}🔥</b></div></div>
+                <div className="sp5-rk three"><div><small>Kurs</small><b>{myCourses.length}</b></div><div><small>Dars</small><b>{allDone}</b></div><div><small>Seriya</small><b className="or">{act.streak} <M6Icon n="flame" s={18} /></b></div></div>
                 <div className="sp5-menu">
-                  <button type="button" onClick={() => go('payments')}><i style={{ background: 'rgba(34,197,94,.15)' }}>💳</i>To'lovlarim<em>{bill.blocked ? 'Qarz bor' : bill.debt > 0 ? fmtMoney(bill.debt) : '✓'}</em></button>
-                  <button type="button" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}><i style={{ background: 'rgba(168,85,247,.15)' }}>{theme === 'dark' ? '☀️' : '🌙'}</i>{theme === 'dark' ? "Yorug' rejim" : "Qorong'i rejim"}<span className={'sp5-tg' + (theme === 'dark' ? ' on' : '')} /></button>
-                  <div className="sp5-menu-l"><i style={{ background: 'rgba(56,189,248,.15)' }}>🌐</i>Til<span className="sp5-menu-r"><LangSwitch variant="ls-light" /></span></div>
-                  <button type="button" className="out" onClick={onLogout}><i style={{ background: 'rgba(244,63,94,.12)' }}>⎋</i>Chiqish</button>
+                  <button type="button" onClick={() => go('payments')}><i style={{ background: 'rgba(34,197,94,.15)', color: '#22c55e' }}><M6Icon n="card" s={18} /></i>To'lovlarim<em>{bill.blocked ? 'Qarz bor' : bill.debt > 0 ? fmtMoney(bill.debt) : '✓'}</em></button>
+                  <button type="button" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}><i style={{ background: 'rgba(168,85,247,.15)', color: '#a855f7' }}><M6Icon n={theme === 'dark' ? 'sun' : 'moon'} s={18} /></i>{theme === 'dark' ? "Yorug' rejim" : "Qorong'i rejim"}<span className={'sp5-tg' + (theme === 'dark' ? ' on' : '')} /></button>
+                  <div className="sp5-menu-l"><i style={{ background: 'rgba(56,189,248,.15)', color: '#0ea5e9' }}><M6Icon n="globe" s={18} /></i>Til<span className="sp5-menu-r"><LangSwitch variant="ls-light" /></span></div>
+                  <button type="button" className="out" onClick={onLogout}><i style={{ background: 'rgba(244,63,94,.12)', color: '#f43f5e' }}><M6Icon n="logout" s={18} /></i>Chiqish</button>
                 </div>
-                <StudentProfile student={student} onSave={(u) => { setStudent(u); notify('Profil yangilandi'); }} />
+              </div>
+              <div className="sp5-pcol-r"><StudentProfile student={student} onSave={(u) => { setStudent(u); notify('Profil yangilandi'); }} /></div>
               </div>
             )}
             {page === 'chat' && <ChatPage notify={notify} appMe={chatMe} isStudent brand={brand} canMute onOpenProfile={() => go('profile')} />}
@@ -19032,12 +19534,16 @@ html.chat-page.kb-open .app-shell, html.chat-page.kb-open .app-main{ transition:
     var a = document.activeElement;
     if (!isField(a) || !a.closest) return '';
     if (a.closest(MODAL_SEL)) return mqTouch.matches ? 'modal' : '';
-    if (a.closest('.chat-root') && root.classList.contains('chat-page') && mqChat.matches) return 'chat';
+    /* chat klaviaturasi endi alohida (edu-chat-fit) boshqariladi */
+    if (a.closest('.chat-root')) return '';
     return '';
   }
   function vvH() { return Math.round(vv ? vv.height : window.innerHeight); }
   function vvTop() { return Math.max(0, Math.round(vv ? vv.offsetTop : 0)); }
-  function resetScroll() { [0, 80, 220, 420].forEach(function (ms) { setTimeout(function () { if (!mode && (window.pageYOffset || vvTop())) window.scrollTo(0, 0); }, ms); }); }
+  /* Faqat qotirilgan balandlikdagi chat sahifasida (yoki skroll bo'lmaydigan sahifada) tepaga qaytaramiz —
+     oddiy sahifalarda foydalanuvchi pastga skroll qilganda sahifa tepaga sakrab ketmasligi kerak */
+  function canReset() { var de = document.documentElement; return root.classList.contains('chat-page') || de.scrollHeight <= window.innerHeight + 4; }
+  function resetScroll() { [0, 80, 220, 420].forEach(function (ms) { setTimeout(function () { if (!mode && canReset() && (window.pageYOffset || vvTop())) window.scrollTo(0, 0); }, ms); }); }
 
   function keepDist(fn) {
     var t = document.querySelector('.chat-root .chat-thread');
@@ -20832,6 +21338,670 @@ html.chat-conv-open .m6.is-chat .m6-body{ padding-bottom:calc(16px + env(safe-ar
 @media (prefers-reduced-motion:reduce){ .m6 *{ animation:none !important; } }
 /* o'rnatish tugmasi faqat bosh sahifa sarlavhasida — boshqa sahifalarda pastki menyuni to'smaydi */
 body:has(.m6) #fd-install-btn:not(.fd-in-topbar){ display:none !important; }
+/* ===== v6.1 tuzatishlar ===== */
+/* pastki menyu va CTA — barcha qurilmalarda pastdan ~16px */
+.m6-tab, .m6-cta{ bottom:16px; }
+.m6-body{ padding-bottom:calc(112px + env(safe-area-inset-bottom,0px)); }
+.m6.no-tab .m6-body{ padding-bottom:calc(108px + env(safe-area-inset-bottom,0px)); }
+html body .sp2.m6 .chat-root{ height:calc(100dvh - 90px - 104px - env(safe-area-inset-top,0px)) !important; }
+/* profil rasmi — har doim qutiga kesilgan holda */
+.m6-av-in{ position:absolute; inset:0; border-radius:inherit; overflow:hidden; display:grid; place-items:center; }
+.m6-av-in{ display:flex !important; align-items:center; justify-content:center; }
+.m6 .m6-av-in img{ position:absolute; inset:0; width:100% !important; height:100% !important; max-width:none !important; max-height:none !important; object-fit:cover; object-position:center; display:block; border-radius:0; }
+.m6-av.xl{ box-shadow:0 18px 34px -16px rgba(99,102,241,.7); }
+/* ikonkalar */
+.m6-ic{ display:inline-block; flex:none; vertical-align:middle; }
+.m6-menu i, .m6-cats button i{ font-style:normal; }
+.m6-fire{ flex-direction:row; align-items:center; gap:4px; flex-wrap:wrap; justify-content:center; width:52px; padding:6px 6px 5px; }
+.m6-fire small{ width:100%; text-align:center; }
+.m6-fl-n{ display:inline-flex !important; align-items:center; justify-content:center; gap:3px; } .m6-fl-n .m6-ic{ color:#f97316; }
+.m6-alert, .m6-warn{ display:block; } .m6-alert .m6-ic, .m6-warn .m6-ic{ vertical-align:-3px; margin-right:2px; }
+.m6-nx em .m6-ic{ vertical-align:-2px; }
+.m6-chip .m6-ic{ margin-right:-2px; }
+.m6-bd span{ filter:grayscale(1); opacity:.45; color:var(--mut); display:grid; place-items:center; }
+.m6-bd.on span{ color:var(--c); filter:none; opacity:1; }
+/* kurs ichi: rasm joyida qotib turadi, oq blok uning ustidan skroll bo'ladi */
+.m6-detail{ position:relative; }
+.m6-detail .m6-dh{ position:fixed; top:0; left:0; right:0; margin:0 auto; max-width:640px; height:calc(300px + env(safe-area-inset-top,0px)); z-index:0; overflow:hidden; }
+.m6-dh-sp{ height:calc(260px + env(safe-area-inset-top,0px)); }
+.m6-detail .m6-dh-tb{ position:fixed; z-index:70; left:0; right:0; margin:0 auto; max-width:640px; padding:0 18px; top:calc(16px + env(safe-area-inset-top,0px)); pointer-events:none; }
+.m6-detail .m6-dh-tb button{ pointer-events:auto; background:rgba(6,9,22,.55); box-shadow:0 10px 24px -12px rgba(0,0,0,.6); }
+.m6-detail .m6-sheet{ position:relative; z-index:2; margin-top:0; min-height:calc(100vh - 60px); min-height:calc(100dvh - 60px); box-shadow:0 -18px 40px -24px rgba(0,0,0,.45); }
+@media (max-width:370px){ .m6-detail .m6-dh-tb{ padding:0 14px; } }
+/* sp5 desktop yutuqlar ikonkasi */
+.sp5-bd span{ display:grid; place-items:center; } .sp5-mbadges span{ display:inline-grid; place-items:center; }
+.sp5-pill .m6-ic, .sp5-alert .m6-ic, .sp5-warn .m6-ic, .sp5-fire .m6-ic{ vertical-align:-3px; }
+.sp5-dt .m6-ic{ color:#16a34a; } .sp5-ti .sp5-dt{ color:#7c3aed; }
+.m6-detail .m6-dh-tb{ display:flex; align-items:center; justify-content:space-between; height:60px; top:0; padding:calc(8px + env(safe-area-inset-top,0px)) 18px 8px; height:calc(64px + env(safe-area-inset-top,0px)); transition:background .25s, box-shadow .25s; }
+.m6-detail .m6-dh-tb.on{ background:color-mix(in srgb,var(--bg) 88%,transparent); -webkit-backdrop-filter:blur(18px) saturate(1.5); backdrop-filter:blur(18px) saturate(1.5); box-shadow:0 1px 0 var(--line), 0 12px 24px -18px rgba(0,0,0,.5); pointer-events:auto; }
+.m6-detail .m6-dh-tb.on button{ background:var(--soft); color:var(--ink); border-color:var(--line); box-shadow:none; }
+.m6-dh-t{ position:absolute; left:76px; right:76px; bottom:18px; text-align:center; font-weight:800; font-size:16px; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; opacity:0; transform:translateY(6px); transition:opacity .25s, transform .25s; pointer-events:none; }
+.m6-dh-tb.on .m6-dh-t{ opacity:1; transform:none; }
+.m6-rk.three b.m6-fl-n{ display:flex !important; }
+
+
 </style>
+<style id="edu-chat-fit-v1">
+/* ===== Chat: blok pastdan 16px qoladi (desktop + mobil) — balandlikni JS (edu-chat-fit) hisoblaydi ===== */
+html.chat-fit.chat-fit body .chat-root.chat-root.chat-root{ height:var(--chat-h) !important; min-height:0 !important; max-height:none !important; }
+html.chat-fit.chat-page .app-main > main{ padding-bottom:0 !important; }
+/* ===== Telefon klaviaturasi (Telegram kabi): suhbat ko'rinadigan oynani to'liq egallaydi,
+   tepada suhbatdosh, o'rtada xabarlar, pastda input — aynan klaviatura ustida ===== */
+html.ckb, html.ckb body{ overflow:hidden !important; overscroll-behavior:none !important; }
+html.ckb.ckb.ckb body .chat-root.chat-root.chat-root{
+  position:fixed !important; left:0 !important; right:0 !important; top:0 !important; bottom:auto !important;
+  transform:translate3d(0,var(--ckb-top,0px),0) !important;
+  width:100% !important; max-width:none !important; height:var(--ckb-h,100dvh) !important; min-height:0 !important; max-height:none !important;
+  margin:0 !important; border-radius:0 !important; border:0 !important; box-shadow:none !important; z-index:2147482000 !important;
+  transition:none !important; animation:none !important; will-change:transform; -webkit-backface-visibility:hidden; backface-visibility:hidden;
+}
+html.ckb body .chat-root.chat-root.chat-root *{ transition-property:none !important; }
+html.ckb body .chat-root .chat-thread{ overscroll-behavior:contain !important; -webkit-overflow-scrolling:touch; }
+html.ckb body .chat-root .chat-side{ display:none !important; }
+html.ckb body .chat-root .chat-main{ display:flex !important; width:100% !important; height:100% !important; min-height:0 !important; }
+html.ckb body .chat-root .chat-head{ padding-top:calc(8px + max(0px, env(safe-area-inset-top,0px) - var(--ckb-top,0px))) !important; flex:none !important; }
+html.ckb body .chat-root .chat-thread{ flex:1 1 auto !important; min-height:0 !important; }
+html.ckb body .chat-root .chat-composer{ flex:none !important; padding-bottom:8px !important; }
+html.ckb .mobile-bottom-nav, html.ckb .sm7-tab, html.ckb .m6-tab, html.ckb .sp5-tab, html.ckb #fd-install-btn{ visibility:hidden !important; pointer-events:none !important; }
+</style>
+<script id="edu-chat-fit">
+/* 1) Chat blokining balandligi: ekran pastidan (yoki pastki menyudan) 16px qoladi.
+   2) Telefonda input fokusda va klaviatura ochiq: suhbat visualViewport'ga yopishadi (Telegram kabi). */
+(function () {
+  'use strict';
+  var root = document.documentElement;
+  var GAP = 16;
+  var touch = window.matchMedia('(hover: none) and (pointer: coarse), (max-width: 1023px)');
+  var NAV_SEL = '.mobile-bottom-nav, .m6-tab, .sp5-tab, .sp-tabbar, .sm7-tab';
+  var idleH = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+  var kb = false, last = { h: -1, t: -1 };
+
+  function chatRoot() { return document.querySelector('.chat-root'); }
+  function visible(el) { if (!el) return false; var cs = getComputedStyle(el); if (cs.display === 'none' || cs.visibility === 'hidden') return false; var r = el.getBoundingClientRect(); return r.height > 0 && r.top < window.innerHeight; }
+
+  /* ---------- 1) oddiy holat: balandlikni hisoblash ---------- */
+  var fitT = 0;
+  function fit() {
+    fitT = 0;
+    if (kb) return;
+    var el = chatRoot();
+    if (!el) { if (root.classList.contains('chat-fit')) { root.classList.remove('chat-fit'); root.style.removeProperty('--chat-h'); } return; }
+    var vh = window.innerHeight;
+    var bottom = vh - GAP;
+    var navs = document.querySelectorAll(NAV_SEL);
+    for (var i = 0; i < navs.length; i++) { if (visible(navs[i])) { var nt = navs[i].getBoundingClientRect().top; if (nt > vh * 0.5) bottom = Math.min(bottom, nt - 12); } }
+    var top = layoutTop(el);
+    var h = Math.round(Math.max(300, bottom - top));
+    root.style.setProperty('--chat-h', h + 'px');
+    root.classList.add('chat-fit');
+    /* chat-fit qo'shilgach joylashuv o'zgarishi mumkin — bir marta qayta tekshiramiz */
+    var top2 = layoutTop(el);
+    if (Math.abs(top2 - top) > 1) root.style.setProperty('--chat-h', Math.round(Math.max(300, bottom - top2)) + 'px');
+  }
+  /* transform (kirish animatsiyalari) ta'sir qilmasligi uchun joylashuvni offsetTop orqali olamiz */
+  function layoutTop(el) {
+    var y = 0, e = el, fixed = false;
+    while (e) { y += e.offsetTop; if (getComputedStyle(e).position === 'fixed') fixed = true; e = e.offsetParent; }
+    for (var a = el.parentElement; a && a !== document.body && a !== root; a = a.parentElement) y -= a.scrollTop;
+    return fixed ? y : y - (window.pageYOffset || 0);
+  }
+  function schedFit() { if (!fitT) fitT = setTimeout(fit, 40); }
+  setInterval(function () { if (!kb && document.visibilityState === 'visible' && chatRoot()) fit(); }, 1500);
+
+  /* ---------- 2) klaviatura ---------- */
+  function isComposerField(a) {
+    return !!(a && a.closest && /^(TEXTAREA|INPUT)$/.test(a.tagName) && a.closest('.chat-root') && (a.closest('.chat-composer') || a.closest('.chat-main')));
+  }
+  function thread() { return document.querySelector('.chat-root .chat-thread'); }
+  var pendRaf = 0;
+  function setVars() {
+    pendRaf = 0;
+    var vv = window.visualViewport;
+    var h = Math.round(vv ? vv.height : window.innerHeight);
+    var t = Math.max(0, Math.round(vv ? vv.offsetTop : 0));
+    if (h === last.h && t === last.t) return;
+    var th = thread(), dist = th ? th.scrollHeight - th.scrollTop - th.clientHeight : 0;
+    var rs = root.style;
+    rs.setProperty('--ckb-h', h + 'px');
+    rs.setProperty('--ckb-top', t + 'px');
+    last.h = h; last.t = t;
+    /* oxirgi xabarlar ko'rinib tursin (balandlik o'zgarganda) */
+    if (th && dist < 80) th.scrollTop = th.scrollHeight;
+  }
+  /* MUHIM: iOS o'zi sahifani surayotganda unga qarshi kurashmaymiz (scrollTo yo'q, doimiy sikl yo'q) —
+     faqat visualViewport hodisalarida o'sha kadrning o'zida o'lchamni yangilaymiz. Titrash shundan yo'qoladi. */
+  function nudge() { setVars(); if (!pendRaf) pendRaf = requestAnimationFrame(setVars); }
+  var timers = [];
+  function settle() { timers.forEach(clearTimeout); timers = [60, 160, 320, 520, 800].map(function (ms) { return setTimeout(function () { if (kb) setVars(); }, ms); }); }
+  function open() {
+    if (!touch.matches) return;
+    if (!kb) { kb = true; last = { h: -1, t: -1 }; setVars(); root.classList.add('ckb'); }
+    settle();
+  }
+  function close() {
+    if (!kb) return;
+    kb = false; timers.forEach(clearTimeout);
+    root.classList.remove('ckb');
+    root.style.removeProperty('--ckb-h'); root.style.removeProperty('--ckb-top');
+    var th = thread(); if (th) { var d = th.scrollHeight - th.scrollTop - th.clientHeight; requestAnimationFrame(function () { if (d < 80) th.scrollTop = th.scrollHeight; }); }
+    schedFit();
+  }
+  var closeT = 0;
+  document.addEventListener('focusin', function (e) { if (isComposerField(e.target)) { clearTimeout(closeT); open(); } }, true);
+  document.addEventListener('focusout', function (e) {
+    if (!isComposerField(e.target)) return;
+    clearTimeout(closeT);
+    closeT = setTimeout(function () { if (!isComposerField(document.activeElement)) close(); }, 180);
+  }, true);
+  if (window.visualViewport) {
+    var vvChange = function () {
+      if (kb) {
+        /* klaviatura yopildi (iOS "Tayyor" / Android "orqaga"), fokus qolgan bo'lsa ham */
+        if (window.visualViewport.height > idleH - 60 && !isComposerField(document.activeElement)) { close(); return; }
+        nudge();
+      } else { idleH = Math.max(idleH * 0.6, window.visualViewport.height); schedFit(); }
+    };
+    window.visualViewport.addEventListener('resize', vvChange);
+    window.visualViewport.addEventListener('scroll', vvChange);
+  }
+  window.addEventListener('resize', function () { if (!kb) { idleH = window.visualViewport ? window.visualViewport.height : window.innerHeight; schedFit(); } });
+  window.addEventListener('orientationchange', function () { setTimeout(function () { idleH = window.visualViewport ? window.visualViewport.height : window.innerHeight; schedFit(); }, 350); });
+  /* ckb holatida suhbatdan tashqarida barmoq bilan sahifani surish bo'lmasin */
+  document.addEventListener('touchmove', function (e) {
+    if (!kb) return;
+    var t = e.target;
+    if (t && t.closest && (t.closest('.chat-thread') || t.closest('.chat-composer textarea') || t.closest('.chat-emoji') || t.closest('[class*="chat-pick"]'))) return;
+    if (e.cancelable) e.preventDefault();
+  }, { passive: false });
+  new MutationObserver(function () { schedFit(); }).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
+  schedFit();
+})();
+</script>
+<style id="edu-staff-mobile-v7">
+/* ===== Xodimlar / CEO paneli — telefon ilova ko'rinishi ===== */
+.sm7{ --bg:#f3f6fc; --card:#ffffff; --line:rgba(20,40,90,.08); --line2:rgba(20,40,90,.14); --ink:#0b1630; --mut:#64718f; --soft:#edf2fc; --tab:rgba(255,255,255,.92); --acc:#2563eb;
+  --gr:linear-gradient(135deg,#22d3ee,#2f6df0 62%,#4f46e5); --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; }
+html.theme-dark .sm7{ --bg:#050b18; --card:#0d1630; --line:rgba(140,180,255,.11); --line2:rgba(140,180,255,.2); --ink:#f1f5ff; --mut:#8796b8; --soft:rgba(255,255,255,.05); --tab:rgba(13,22,46,.9); --acc:#60a5fa; }
+html body .app-shell.sm7{ display:block; min-height:100dvh; background:radial-gradient(420px 360px at 100% -5%,rgba(47,109,240,.14),transparent 60%),radial-gradient(360px 360px at -10% 45%,rgba(34,211,238,.08),transparent 60%),var(--bg) !important; color:var(--ink); font-family:Manrope,system-ui,sans-serif; overflow-x:hidden; }
+html.theme-dark body .app-shell.sm7{ background:radial-gradient(420px 360px at 100% -5%,rgba(47,109,240,.30),transparent 60%),radial-gradient(360px 360px at -10% 45%,rgba(34,211,238,.10),transparent 60%),var(--bg) !important; }
+html body .sm7 .app-main{ display:block; min-width:0; width:100%; background:transparent !important; padding:0 !important; }
+html body .sm7 .app-main > main{ display:block; max-height:none !important; overflow:visible !important; padding:4px 16px calc(112px + env(safe-area-inset-bottom,0px)) !important; background:transparent !important; }
+html body .sm7.sm7-chat .app-main > main{ padding-bottom:0 !important; }
+.sm7 *{ box-sizing:border-box; }
+.sm7-b{ appearance:none; -webkit-appearance:none; border:0; background:none; padding:0; margin:0; font:inherit; color:inherit; cursor:pointer; text-align:inherit; -webkit-tap-highlight-color:transparent; touch-action:manipulation; }
+/* sarlavha */
+.sm7-hd{ position:sticky; top:0; z-index:45; display:flex; align-items:center; gap:12px; padding:calc(10px + env(safe-area-inset-top,0px)) 16px 10px; background:color-mix(in srgb,var(--bg) 80%,transparent); -webkit-backdrop-filter:blur(18px) saturate(1.5); backdrop-filter:blur(18px) saturate(1.5); }
+.sm7-tt{ flex:1; min-width:0; }
+.sm7-k{ display:block; font:700 11px var(--mono); color:var(--acc); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+html.theme-dark .sm7-k{ color:#22d3ee; }
+.sm7-tt b{ display:block; font-size:19px; font-weight:800; letter-spacing:-.02em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--ink); }
+.sm7-hr{ display:flex; align-items:center; gap:8px; flex:none; }
+.sm7-ib{ position:relative; width:44px; height:44px; border-radius:14px; display:grid; place-items:center; background:var(--soft); border:1px solid var(--line); color:var(--ink); flex:none; cursor:pointer; }
+.sm7-ib.glass{ background:rgba(255,255,255,.18); border-color:rgba(255,255,255,.25); color:#fff; }
+.sm7-n{ position:absolute; top:-5px; right:-5px; min-width:18px; height:18px; padding:0 5px; border-radius:9px; background:#f43f5e; color:#fff; font:800 10px/18px Manrope,sans-serif; box-shadow:0 0 0 3px var(--bg); }
+.sm7-dot{ position:absolute; top:9px; right:10px; width:8px; height:8px; border-radius:50%; background:#f43f5e; box-shadow:0 0 0 3px var(--bg); }
+.sm7-me-av{ position:relative; flex:none; }
+.sm7-on{ position:absolute; right:-2px; bottom:-2px; width:12px; height:12px; border-radius:50%; background:#22c55e; box-shadow:0 0 0 3px var(--bg); }
+.sm7-hd #fd-install-btn.fd-in-topbar{ width:44px !important; height:44px !important; min-width:44px; border-radius:14px !important; background:var(--soft) !important; border:1px solid var(--line) !important; box-shadow:none !important; }
+.sm7-av{ position:relative; width:46px; height:46px; border-radius:15px; display:grid; place-items:center; flex:none; color:#fff; font-weight:800; font-size:14px; overflow:hidden; }
+.sm7-av img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; max-width:none; }
+.sm7-av.xs{ width:36px; height:36px; border-radius:12px; font-size:12px; }
+/* umumiy */
+.sm7-sec{ display:flex; align-items:center; justify-content:space-between; margin:20px 0 11px; }
+.sm7-sec b{ font-size:17px; font-weight:800; color:var(--ink); }
+.sm7-sec button{ font-size:12.5px; font-weight:700; color:var(--acc); }
+.sm7-card{ background:var(--card); border:1px solid var(--line); border-radius:22px; }
+.sm7-list{ display:flex; flex-direction:column; overflow:hidden; }
+.sm7-li{ display:flex; align-items:center; gap:12px; padding:11px 12px; border-bottom:1px solid var(--line); }
+.sm7-li:last-child{ border-bottom:0; }
+.sm7-li-x{ flex:1; min-width:0; } .sm7-li-x b{ display:block; font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--ink); } .sm7-li-x small{ display:block; color:var(--mut); font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.sm7-li-r{ text-align:right; flex:none; } .sm7-li-r b{ display:block; font:700 13px var(--mono); color:var(--ink); } .sm7-li-r small{ color:var(--mut); font-size:11px; }
+.sm7 .pos{ color:#22c55e !important; }
+.sm7-bar{ display:block; height:6px; border-radius:6px; margin-top:6px; background:color-mix(in srgb,var(--ink) 9%,transparent); overflow:hidden; }
+.sm7-bar b{ display:block; height:100%; border-radius:6px; background:var(--gr); }
+.sm7-empty{ margin:0; padding:16px; text-align:center; color:var(--mut); font-size:13px; }
+.sm7-copy{ text-align:center; color:var(--mut); font-size:11.5px; margin:22px 0 0; }
+.sm7-btn{ display:flex; align-items:center; justify-content:center; gap:8px; width:100%; height:50px; border-radius:16px; font:800 14.5px Manrope,sans-serif; color:#fff; background:var(--gr); }
+.sm7-btn.g{ background:var(--soft); color:var(--ink); box-shadow:inset 0 0 0 1px var(--line2); }
+/* hero */
+.sm7-hero{ position:relative; overflow:hidden; border-radius:28px; padding:18px 18px 16px; color:#fff; background:radial-gradient(300px 200px at 100% 0%,rgba(255,255,255,.22),transparent 60%),linear-gradient(135deg,#0ea5e9,#2f6df0 55%,#4338ca); box-shadow:0 30px 50px -30px rgba(47,109,240,.8); }
+.sm7-hero::before{ content:""; position:absolute; inset:0; background-image:radial-gradient(rgba(255,255,255,.16) 1px,transparent 1.4px); background-size:20px 20px; -webkit-mask-image:linear-gradient(90deg,#000,transparent 70%); mask-image:linear-gradient(90deg,#000,transparent 70%); pointer-events:none; }
+.sm7-hero > *{ position:relative; }
+.sm7-hero small{ font:700 11px var(--mono); opacity:.85; }
+.sm7-hero h3{ margin:6px 0 6px; font-size:30px; font-weight:800; letter-spacing:-.02em; line-height:1.1; } .sm7-hero h3 span{ font-size:15px; opacity:.85; }
+.sm7-up{ display:inline-flex; align-items:center; gap:5px; height:24px; padding:0 9px; border-radius:999px; background:rgba(255,255,255,.2); font-size:11.5px; font-weight:800; }
+.sm7-hero .sm7-spark{ position:absolute; right:16px; top:14px; width:96px; height:40px; }
+.sm7-hq{ display:grid; grid-template-columns:repeat(auto-fit,minmax(0,1fr)); gap:8px; margin-top:16px; }
+.sm7-hq button{ display:flex; flex-direction:column; align-items:center; gap:6px; padding:10px 4px; border-radius:16px; background:rgba(255,255,255,.14); color:#fff; font-size:11.5px; font-weight:700; -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px); text-align:center; }
+.sm7-hq i{ width:32px; height:32px; border-radius:11px; display:grid; place-items:center; background:rgba(255,255,255,.2); font-style:normal; }
+/* kpi */
+.sm7-kpi{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+.sm7-kp{ position:relative; display:block; padding:14px; border-radius:22px; background:var(--card); border:1px solid var(--line); overflow:hidden; text-align:left; color:var(--ink); }
+.sm7-kp-i{ width:38px; height:38px; border-radius:12px; display:grid; place-items:center; color:var(--c); background:color-mix(in srgb,var(--c) 15%,transparent); }
+.sm7-kp b{ display:block; font:700 22px var(--mono); margin-top:10px; } .sm7-kp small{ color:var(--mut); font-size:12px; font-weight:600; }
+.sm7-kp em{ position:absolute; right:12px; top:14px; font-style:normal; font-size:11px; font-weight:800; color:var(--c); }
+.sm7-alr{ display:flex; align-items:center; gap:12px; width:100%; padding:12px 14px; border-radius:20px; background:rgba(244,63,94,.1); border:1px solid rgba(244,63,94,.25); color:#f43f5e; margin-top:12px; text-align:left; }
+.sm7-alr > span{ flex:1; min-width:0; } .sm7-alr b{ display:block; font-size:13.5px; } .sm7-alr small{ display:block; font-size:12px; opacity:.85; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+/* tab */
+.sm7-tab{ position:fixed; left:14px; right:14px; bottom:16px; z-index:60; height:74px; border-radius:27px; display:flex; align-items:center; justify-content:space-around; background:var(--tab); border:1px solid var(--line2); -webkit-backdrop-filter:blur(20px) saturate(1.5); backdrop-filter:blur(20px) saturate(1.5); box-shadow:0 20px 40px -16px rgba(0,0,0,.55); max-width:600px; margin:0 auto; }
+.sm7-tab > button{ display:flex; flex-direction:column; align-items:center; gap:4px; width:20%; min-width:0; color:var(--mut); font-size:10.5px; font-weight:700; white-space:nowrap; text-align:center; }
+.sm7-ti{ position:relative; width:46px; height:30px; border-radius:12px; display:grid; place-items:center; transition:background .2s,color .2s; }
+.sm7-ti em{ position:absolute; top:-5px; right:2px; min-width:16px; height:16px; padding:0 4px; border-radius:8px; background:#f43f5e; color:#fff; font:800 9.5px/16px Manrope,sans-serif; font-style:normal; }
+.sm7-tab > button.on{ color:var(--ink); } .sm7-tab > button.on .sm7-ti{ background:var(--soft); color:var(--acc); }
+.sm7-tab > button.mid .sm7-ti{ width:58px; height:58px; border-radius:20px; margin-top:-30px; background:var(--gr); color:#fff; box-shadow:0 14px 28px -8px rgba(47,109,240,.9),0 0 0 6px var(--bg); }
+html.chat-conv-open .sm7-tab{ display:none; }
+/* ko'proq */
+.sm7-mecard{ display:flex; align-items:center; gap:14px; width:100%; padding:16px; border-radius:24px; margin-bottom:12px; color:#fff; text-align:left; background:radial-gradient(240px 160px at 100% 0%,rgba(255,255,255,.2),transparent 60%),linear-gradient(135deg,#0ea5e9,#2f6df0 55%,#4338ca); box-shadow:0 24px 40px -26px rgba(47,109,240,.8); }
+.sm7-mecard .sm7-av{ width:58px; height:58px; border-radius:19px; font-size:18px; box-shadow:0 0 0 2px rgba(255,255,255,.35); }
+.sm7-mecard > span:nth-child(2){ flex:1; min-width:0; } .sm7-mecard b{ display:block; font-size:17px; } .sm7-mecard small{ opacity:.85; font-size:12.5px; }
+.sm7-grid{ display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; }
+.sm7-grid button{ position:relative; display:flex; flex-direction:column; align-items:center; gap:7px; padding:12px 4px; border-radius:18px; background:var(--card); border:1px solid var(--line); font-size:11px; font-weight:700; text-align:center; color:var(--ink); line-height:1.15; }
+.sm7-grid i{ width:40px; height:40px; border-radius:13px; display:grid; place-items:center; font-style:normal; color:var(--c); background:color-mix(in srgb,var(--c) 15%,transparent); }
+.sm7-grid em{ position:absolute; top:6px; right:6px; min-width:18px; height:18px; padding:0 5px; border-radius:9px; background:#f43f5e; color:#fff; font:800 10px/18px Manrope,sans-serif; font-style:normal; }
+.sm7-menu{ border-radius:22px; overflow:hidden; background:var(--card); border:1px solid var(--line); margin-bottom:12px; }
+.sm7-menu > button, .sm7-menu-r{ display:flex; align-items:center; gap:12px; width:100%; min-height:56px; padding:0 14px; border-bottom:1px solid var(--line); font-size:14.5px; font-weight:700; color:var(--ink); text-align:left; }
+.sm7-menu > :last-child{ border-bottom:0; }
+.sm7-menu i{ width:36px; height:36px; border-radius:11px; display:grid; place-items:center; font-style:normal; color:var(--c); background:color-mix(in srgb,var(--c) 15%,transparent); flex:none; }
+.sm7-menu em{ margin-left:auto; font-style:normal; color:var(--mut); display:flex; }
+.sm7-menu > button.out{ color:#f43f5e; }
+.sm7-tg{ width:44px; height:26px; border-radius:13px; background:color-mix(in srgb,var(--ink) 16%,transparent); position:relative; margin-left:auto; flex:none; transition:background .25s; }
+.sm7-tg::after{ content:""; position:absolute; left:3px; top:3px; width:20px; height:20px; border-radius:50%; background:#fff; box-shadow:0 2px 6px rgba(0,0,0,.25); transition:transform .25s cubic-bezier(.3,1.4,.5,1); }
+.sm7-tg.on{ background:var(--gr); } .sm7-tg.on::after{ transform:translateX(18px); }
+.sm7-lng{ margin-left:auto; display:flex; gap:3px; padding:3px; border-radius:11px; background:var(--soft); }
+.sm7-lng button{ height:28px; min-width:36px; padding:0 8px; border-radius:8px; font:800 11.5px Manrope,sans-serif; color:var(--mut); text-align:center; }
+.sm7-lng button.on{ background:var(--gr); color:#fff; }
+/* sheet */
+.sm7-dim{ position:fixed; inset:0; z-index:2147480000; background:rgba(2,6,16,.55); -webkit-backdrop-filter:blur(2px); backdrop-filter:blur(2px); animation:sm7f .2s ease both; }
+.sm7-sheet{ position:absolute; left:0; right:0; bottom:0; max-height:86dvh; overflow-y:auto; padding:12px 18px calc(22px + env(safe-area-inset-bottom,0px)); border-radius:30px 30px 0 0; background:var(--bg); border-top:1px solid var(--line2); color:var(--ink); animation:sm7u .32s cubic-bezier(.2,.9,.3,1) both; max-width:640px; margin:0 auto; }
+.sm7-sheet::before{ content:""; display:block; width:40px; height:5px; border-radius:5px; background:var(--line2); margin:0 auto 14px; }
+.sm7-sheet h4{ margin:0 0 4px; font-size:19px; font-weight:800; } .sm7-sheet > p{ margin:0 0 14px; color:var(--mut); font-size:13px; }
+@keyframes sm7f{ from{ opacity:0; } } @keyframes sm7u{ from{ transform:translateY(40px); opacity:.4; } }
+.sm7-qg{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin-bottom:14px; }
+.sm7-qg button{ display:flex; flex-direction:column; align-items:center; gap:8px; padding:14px 6px; border-radius:20px; background:var(--card); border:1px solid var(--line); font-size:12px; font-weight:700; text-align:center; color:var(--ink); }
+.sm7-qg i{ width:46px; height:46px; border-radius:15px; display:grid; place-items:center; font-style:normal; color:#fff; }
+.sm7-nl{ display:flex; flex-direction:column; gap:8px; margin-bottom:14px; }
+.sm7-ni{ display:flex; align-items:center; gap:12px; width:100%; padding:11px 12px; border-radius:18px; background:var(--card); border:1px solid var(--line); text-align:left; color:var(--ink); }
+.sm7-ni.read{ opacity:.6; }
+.sm7-ni-i{ width:38px; height:38px; border-radius:12px; display:grid; place-items:center; flex:none; }
+.sm7-ni-i.chat{ background:rgba(47,109,240,.15); color:#60a5fa; } .sm7-ni-i.bad{ background:rgba(244,63,94,.14); color:#f43f5e; }
+.sm7-ni-x{ flex:1; min-width:0; } .sm7-ni-x b{ display:block; font-size:14px; } .sm7-ni-x small{ display:block; color:var(--mut); font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.sm7-ni em{ min-width:22px; height:22px; padding:0 7px; border-radius:11px; background:#2f6df0; color:#fff; font:800 11px/22px Manrope,sans-serif; font-style:normal; text-align:center; flex:none; }
+/* o'rni bosilgan eski elementlar */
+.sm7 .mobile-bottom-nav, .sm7 .topbar{ display:none !important; }
+body:has(.sm7) #fd-install-btn:not(.fd-in-topbar){ display:none !important; }
+@media (max-width:370px){
+  html body .sm7 .app-main > main{ padding-left:12px !important; padding-right:12px !important; }
+  .sm7-hd{ padding-left:12px; padding-right:12px; }
+  .sm7-tt b{ font-size:17px; } .sm7-ib{ width:40px; height:40px; }
+  .sm7-tab > button{ font-size:9.5px; } .sm7-grid{ grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .sm7-hero h3{ font-size:26px; }
+}
+</style>
+<style id="edu-fix-v11">
+/* =====================================================================
+   v10 — mobil/desktop tuzatishlar (zoom va backendga tegilmagan)
+   ===================================================================== */
+
+/* ---- 1. Kirish sahifasi: setka olib tashlandi → yumshoq "aurora" nur fon ---- */
+@media (min-width:861px){
+  html body .lx .lx-aside::before{
+    inset:-12%;
+    background-image:
+      radial-gradient(38% 34% at 18% 22%,rgba(34,211,238,.30),transparent 70%),
+      radial-gradient(42% 38% at 82% 72%,rgba(99,102,241,.34),transparent 70%),
+      radial-gradient(34% 30% at 58% 12%,rgba(59,130,246,.28),transparent 70%),
+      radial-gradient(30% 28% at 12% 85%,rgba(20,184,166,.20),transparent 70%);
+    background-size:100% 100%;background-repeat:no-repeat;
+    -webkit-mask-image:none;mask-image:none;filter:blur(26px);
+    animation:fdAurora 20s ease-in-out infinite alternate;
+  }
+}
+@keyframes fdAurora{from{transform:translate3d(-2%,2%,0) scale(1)}to{transform:translate3d(3%,-3%,0) scale(1.1)}}
+@media (prefers-reduced-motion:reduce){html body .lx .lx-aside::before{animation:none}}
+
+/* ---- 2. Kichik matnlar: kamida 12px ---- */
+.sx-eye,.stu-pill,.stu-cash-t,.course-card-kicker,.course-card-kicker *,
+.sx-d,.pv-cnt,.pv-sub,.sx-mut,.pv-st,.blk-tile-lbl,.blk-kind,.pill,.nx-role,.nx-rail-lh,.pb-tag.sm,
+.sm7-k,.sm7-up,.sm7-copy,.stu-courses,.sp5-st,.sp5-grade,.sp5-k,.sp5-tag,
+.m6-k,.m6-tag,.m6-rt,.m6-grade,.m6-copy,.m6-chip,.v2-bd,.sp-eyebrow,
+.sx-t th,.sx-t small,.sx-t em,.nx-sub small,.sx-bh small{font-size:12px !important}
+.sm7-b,.m6-b:not(.m6-ib):not(.m6-btn){font-size:12px !important;letter-spacing:0 !important}
+.sm7-b span,.m6-b span{font-size:inherit}
+svg text.v2-ax,svg text.sx-tx{font-size:12px}
+.nav-badge,.notif-badge,.sm7-b i,.sm7-b em,.sp5-ri em{font-size:11px !important}
+/* sarlavha eyebrow (mono "//") */
+.m6-k,.sm7-k{letter-spacing:0}
+
+/* ---- 3. Bosish joylari (touch) ---- */
+@media (max-width:860px){
+  .stu-row{grid-template-areas:"ava main" "acts acts" !important}
+  .stu-acts{gap:.45rem !important}
+  .stu-acts .stu-ib,.stu-row .stu-acts .stu-ib.stu-ib-cash.stu-cash{height:44px !important;min-height:44px;border-radius:.7rem !important}
+  .stu-acts .stu-ib.stu-ib-trash,.stu-acts .stu-ib[title="O'chirish"]{margin-left:.35rem}
+  .course-card-menu-btn{width:44px !important;height:44px !important}
+  .pv-act{min-height:44px;min-width:44px;display:inline-flex;align-items:center;justify-content:center}
+  .sx-pgn button,.pg-btn,.page-btn{min-width:44px;min-height:44px}
+  .sm7-b{min-height:48px}
+  .sm7 .sm7-seg button,.sm7 [class*="lang"] button,.sm7 .sm7-lang button{min-height:44px;min-width:48px}
+  .sm7 button.sm7-link,.m6-sec button.m6-lnk,.m6-h button,.sm7-sh button{min-height:40px;padding-left:.6rem;padding-right:.6rem}
+  .sx-seg button,.sx-tabs button,.nx-pill,.nx-seg button{min-height:40px}
+}
+@media (pointer:coarse){
+  .side-collapse-btn,.side-expand-btn{width:40px;height:40px}
+  .chat-root button[aria-label="Amallar"],.chat-q+button{min-width:40px;min-height:40px}
+  input[type=checkbox],input[type=radio]{min-width:20px;min-height:20px}
+}
+@media (pointer:fine){ .side-collapse-btn{width:34px;height:34px} }
+
+/* ---- 4. To'lovlar (va boshqa .sx-t) jadvallari: telefonda KARTA ko'rinishi ---- */
+@media (max-width:1180px){
+  .sx-tw{overflow:visible !important}
+  .sx-t,.pv-tbl{min-width:0 !important;width:100% !important;display:block;border:0}
+  .sx-t thead{display:none}
+  .sx-t tbody{display:grid;gap:12px;width:100%}
+  .sx-t tr{display:block;width:100%;padding:14px;border-radius:16px;border:1px solid rgba(148,163,184,.22);background:rgba(148,163,184,.07)}
+  .sx-t td{display:flex !important;align-items:center;justify-content:space-between;gap:14px;width:100%;min-width:0 !important;padding:7px 0 !important;border:0 !important;text-align:right;font-size:14px}
+  .sx-t td[data-label]::before{content:attr(data-label);flex:none;text-align:left;font-size:12px;font-weight:600;color:var(--mut,#94a3b8);opacity:.9}
+  .sx-t td:first-child{padding-top:0 !important;padding-bottom:10px !important;margin-bottom:4px;border-bottom:1px solid rgba(148,163,184,.18) !important;justify-content:flex-start;text-align:left}
+  .sx-t td:first-child::before{display:none}
+  .sx-t td[colspan]{display:block !important;text-align:center}
+  .sx-t td[colspan]::before{display:none}
+  .sx-t td.pv-r,.sx-t td:last-child:has(.pv-acts){display:block !important;padding-top:12px !important;margin-top:4px;border-top:1px solid rgba(148,163,184,.18) !important}
+  .sx-t td.pv-r::before{display:none}
+  .sx-t .pv-acts{display:flex;gap:8px;justify-content:stretch;width:100%}
+  .sx-t .pv-act{flex:1 1 0;height:44px}
+  .sx-t .pv-act.ghost{flex:0 0 52px}
+  .sx-t .pv-who{min-width:0}
+  .sx-t .pv-who b{white-space:normal;overflow-wrap:anywhere}
+  .sx-t td .sx-pr{min-width:90px;flex:1}
+}
+
+@media (min-width:700px) and (max-width:1180px){ .sx-t tbody{grid-template-columns:repeat(2,minmax(0,1fr))} }
+
+/* ---- 5. Gorizontal siljiydigan qatorlar: chekka "so'nish" belgisi (JS qo'shadi) ---- */
+[data-fade~="r"]{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 34px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 34px),transparent)}
+[data-fade~="l"]{-webkit-mask-image:linear-gradient(270deg,#000 calc(100% - 34px),transparent);mask-image:linear-gradient(270deg,#000 calc(100% - 34px),transparent)}
+[data-fade~="l"][data-fade~="r"]{-webkit-mask-image:linear-gradient(90deg,transparent,#000 34px,#000 calc(100% - 34px),transparent);mask-image:linear-gradient(90deg,transparent,#000 34px,#000 calc(100% - 34px),transparent)}
+
+/* ---- 6. CEO / xodim paneli ---- */
+.pb-hero,.pb-hero-wrap,[class*="pb-hero"]{overflow:clip}
+.pb-hero-glow{max-width:100%;clip-path:inset(0)}
+@media (min-width:861px){
+  html body .topbar .ls-wrap .ls-btn,html body .topbar .profile-btn{max-width:280px}
+  html body .topbar .ls-wrap .ls-btn span,html body .topbar .profile-btn span{max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+}
+@media (max-width:860px){
+  .sm7 .app-main>main{padding-bottom:calc(120px + env(safe-area-inset-bottom,0px)) !important}
+}
+/* 360px va undan tor ekranlar */
+@media (max-width:380px){
+  .sm7-b{font-size:11.5px !important}
+  .nx-sub{min-width:200px}
+}
+
+/* ---- 7. O'quvchi paneli ---- */
+/* yon menyu: ikonka tagida yozuv (oldin faqat hover'da chiqardi) */
+@media (min-width:861px) and (min-height:700px){
+  .sp5-rail{gap:4px}
+  .sp5-ri{width:78px;height:auto;min-height:62px;padding:8px 2px 6px;grid-auto-flow:row;align-content:center;gap:3px;border-radius:16px}
+  .sp5-ri .sp5-tip{position:static;opacity:1;background:none;color:inherit;padding:0;border-radius:0;font-size:11.5px;font-weight:700;line-height:1.1;text-align:center;pointer-events:none;max-width:76px;white-space:normal;overflow:visible}
+  .sp5-ri.on::before{left:-9px;top:12px;bottom:12px}
+  .sp5-ri em{top:4px;right:10px}
+  .sp5-logo{margin-bottom:10px}
+}
+.sp5-top-r{margin-left:auto}
+.sp5-hero{min-height:240px}
+.sp5-hero-tx{padding-top:26px;padding-bottom:22px}
+@media (max-width:860px){
+  .m6-grid2:has(>:only-child){grid-template-columns:minmax(0,1fr)}
+  .m6-grid2>.m6-hc{width:auto}
+  .m6-body{padding-bottom:calc(110px + env(safe-area-inset-bottom,0px))}
+  .m6-rk small{font-size:12px}
+}
+
+/* ===================== v12 ===================== */
+/* ---- Chat: klaviatura ochilganda fixed chat ota-elementlarning transform/filter'i ichida qolib ketmasin ---- */
+html.ckb :has(> .chat-root), html.ckb :has(.chat-root){
+  transform:none !important; filter:none !important; perspective:none !important; contain:none !important;
+  will-change:auto !important; animation:none !important; backdrop-filter:none !important; -webkit-backdrop-filter:none !important;
+}
+html.ckb body .chat-root .chat-composer{padding-bottom:calc(8px + env(safe-area-inset-bottom,0px) * 0) !important}
+html.ckb body .chat-root .chat-composer textarea{scroll-margin-bottom:0}
+
+/* ---- O'quvchi: chap menyu doim joyida (scroll qilganda yuqoriga chiqib ketmasin) ---- */
+@media (min-width:1024px){
+  .sp5-rail{position:fixed;left:0;top:0;height:100vh;height:100dvh;overflow-y:auto;overflow-x:visible;scrollbar-width:none}
+  .sp5-rail::-webkit-scrollbar{display:none}
+  .sp5-body{margin-left:96px}
+  .sp5-right{position:sticky;top:18px;align-self:start;max-height:calc(100vh - 36px);overflow:auto;scrollbar-width:none}
+  .sp5-right::-webkit-scrollbar{display:none}
+}
+@media (min-width:1024px) and (max-height:700px){ .sp5-ri{height:50px;min-height:0} }
+/* yuqori panel ham scroll paytida ko'rinib tursin */
+@media (min-width:1024px){
+  .sp5-top{position:sticky;top:0;z-index:25;padding:12px 0 12px;margin-top:-12px;background:linear-gradient(var(--bg) 90%,transparent)}
+}
+@media (max-width:860px){
+  .m6-hd,.sm7-hd{position:fixed !important;top:0;left:0;right:0;z-index:40;margin:0 !important;box-sizing:border-box;padding-top:calc(8px + env(safe-area-inset-top,0px)) !important;padding-bottom:8px !important;padding-left:18px;padding-right:18px;background:var(--bg,#060914);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+  .sm7-hd{padding-left:16px;padding-right:16px}
+  html:has(.m6-hd) .m6-body{padding-top:calc(70px + env(safe-area-inset-top,0px)) !important}
+  html:has(.sm7-hd) .sm7 .app-main > main{padding-top:calc(76px + env(safe-area-inset-top,0px)) !important}
+  html.ckb .m6-hd,html.ckb .sm7-hd{display:none}
+}
+
+/* ---- Keng ekranlar: kartalar bo'sh joyni to'ldirsin ---- */
+.sp5-shop{grid-template-columns:repeat(auto-fit,minmax(380px,1fr))}
+@media (min-width:1700px){
+  .sp5-col{max-width:1900px}
+  .sp5-home{grid-template-columns:minmax(0,1fr) 400px;gap:28px}
+  .sp5-cards{grid-template-columns:repeat(auto-fill,minmax(340px,1fr))}
+  .sp5-cat-grid{grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
+  .sp5-hero{min-height:300px}
+  .sp5-hero h2{font-size:38px}
+  .sp5-hero p{max-width:520px;font-size:16px}
+}
+@media (min-width:2200px){
+  .sp5-col{max-width:2300px}
+  .sp5-home{grid-template-columns:minmax(0,1fr) 460px}
+  .sp5-cards{grid-template-columns:repeat(auto-fill,minmax(400px,1fr))}
+  .sp5-cat-grid{grid-template-columns:repeat(auto-fill,minmax(330px,1fr))}
+}
+
+/* ---- O'quvchi PROFIL sahifasi: kompyuterda ikki ustunli ---- */
+@media (min-width:1024px){
+  .sp5-profile-page{display:grid;grid-template-columns:minmax(320px,400px) minmax(0,1fr);gap:24px;align-items:start}
+  .sp5-pcol-l{display:flex;flex-direction:column;gap:18px;position:sticky;top:84px;min-width:0}
+  .sp5-pcol-l .sp5-pf{padding:26px 24px;text-align:left;align-items:flex-start}
+  .sp5-pcol-l .sp5-rk.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .sp5-pcol-l .sp5-rk.three>div{padding:14px 16px}
+  .sp5-pcol-r{min-width:0}
+  .sp5-pcol-r .sp-prof{gap:22px}
+  .sp5-pcol-r .sp-prof-h{padding:24px 28px;border-radius:28px;background:var(--card);box-shadow:var(--sh)}
+  .sp5-pcol-r .sp-prof-grid{grid-template-columns:1fr;gap:20px}
+}
+@media (min-width:1500px){ .sp5-pcol-r .sp-prof-grid{grid-template-columns:1fr 1fr} }
+@media (max-width:1023px){ .sp5-pcol-r{margin-top:18px} }
+
+/* ---- Kursga yozilish va to'lov eslatmasi modallari ---- */
+.enr,.prm,.enr-done{color:#0f172a}html.theme-dark .enr,html.theme-dark .prm,html.theme-dark .enr-done{color:#e8edf7}
+.enr-opts{display:grid;gap:10px;margin:12px 0}
+.enr-opt{display:flex;align-items:center;gap:14px;width:100%;text-align:left;padding:14px 16px;border-radius:16px;border:1.5px solid rgba(148,163,184,.35);background:rgba(148,163,184,.08);color:inherit;cursor:pointer;min-height:64px;transition:border-color .15s,background .15s}
+.enr-opt:hover{border-color:rgba(99,102,241,.6)}
+.enr-opt.on{border-color:#6366f1;background:rgba(99,102,241,.14);box-shadow:0 0 0 3px rgba(99,102,241,.18)}
+.enr-opt i{flex:none;display:grid;place-items:center;width:44px;height:44px;border-radius:14px;background:rgba(99,102,241,.16);font-style:normal;font-size:22px}
+.enr-opt span{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.enr-opt b{font-size:15px}.enr-opt small{font-size:12.5px;opacity:.75;line-height:1.35}
+.enr-opt em{flex:none;width:22px;height:22px;border-radius:50%;border:2px solid rgba(148,163,184,.6);position:relative}
+.enr-opt.on em{border-color:#6366f1;background:#6366f1;box-shadow:inset 0 0 0 4px #fff}
+.enr-ph{display:flex;flex-direction:column;gap:6px;margin:4px 0 8px}
+.enr-ph span{font-size:12.5px;font-weight:700;opacity:.8}
+.enr-ph input{height:50px;border-radius:14px;border:1.5px solid rgba(148,163,184,.45);background:rgba(148,163,184,.08);color:inherit;padding:0 16px;font:700 17px Manrope,system-ui,sans-serif;letter-spacing:.02em;outline:none}
+.enr-ph input:focus{border-color:#6366f1;box-shadow:0 0 0 3px rgba(99,102,241,.2)}
+.enr-done{text-align:center}.enr-ok{width:64px;height:64px;margin:6px auto 10px;border-radius:50%;display:grid;place-items:center;background:rgba(34,197,94,.16);color:#22c55e;font-size:32px;font-weight:800}
+.prm{display:grid;gap:10px;margin:6px 0 14px}
+.prm-row{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border-radius:14px;border:1px solid rgba(59,130,246,.35);background:rgba(59,130,246,.1);font-size:14.5px;line-height:1.5}
+.prm-row svg{flex:none;margin-top:3px}
+.prm-row.bad{border-color:rgba(244,63,94,.4);background:rgba(244,63,94,.1)}
+.stu-pill-req{background:rgba(99,102,241,.16) !important;color:#818cf8 !important;border:1px solid rgba(99,102,241,.4) !important}
+
+/* ===================== v13 ===================== */
+/* yuqori panel: to'liq yopiq fon (kontent ostidan ko'rinmasin) */
+@media (min-width:1024px){
+  .sp5-top{background:var(--bg) !important;margin-left:-6px;margin-right:-26px;padding-left:6px;padding-right:26px;padding-bottom:14px;margin-top:-22px;padding-top:22px;border-bottom:1px solid var(--line,rgba(148,163,184,.14));box-shadow:0 10px 24px -22px rgba(0,0,0,.5)}
+  .sp5-col{padding-top:22px}
+}
+/* "Til" ochiladigan menyu kartada kesilib qolmasin */
+.sp5-menu,.m6-menu,.m6-set,.m6-list,[class*="m6-"][class*="menu"],[class*="sp5-menu"]{overflow:visible !important}
+.sp5-menu-r .ls-menu,.sp5-menu-l .ls-menu,.m6-menu .ls-menu,.m6 .ls-menu.profile-dropdown{top:auto !important;bottom:calc(100% + 8px) !important;right:0 !important;left:auto !important;position:absolute !important;z-index:80 !important;width:210px}
+.sp5-menu-l,.sp5-menu-r{position:relative}
+@media (max-width:860px){ .m6 .ls-wrap{position:relative} }
+
+/* ---- To'lov cheki: yangi "bilet" dizayni ---- */
+.tk{--tk-a:#2563eb;--tk-b:#06b6d4;max-width:380px;margin:4px auto 14px;border-radius:26px;overflow:hidden;background:#fff;color:#0f172a;box-shadow:0 24px 50px -24px rgba(37,99,235,.55),0 0 0 1px rgba(148,163,184,.25);position:relative}
+.tk-top{position:relative;padding:20px 22px 26px;text-align:center;color:#fff;background:radial-gradient(120% 90% at 100% 0,rgba(255,255,255,.28),transparent 55%),linear-gradient(135deg,var(--tk-a),var(--tk-b))}
+.tk-brand{font:800 12px Manrope,sans-serif;letter-spacing:.16em;text-transform:uppercase;opacity:.9}
+.tk-seal{width:60px;height:60px;margin:14px auto 10px;border-radius:50%;display:grid;place-items:center;background:#fff;color:#16a34a;box-shadow:0 0 0 7px rgba(255,255,255,.25),0 10px 20px -8px rgba(0,0,0,.35);animation:tkPop .5s cubic-bezier(.3,1.5,.5,1) both}
+@keyframes tkPop{from{transform:scale(.3);opacity:0}to{transform:none;opacity:1}}
+.tk-st{font:700 14px Manrope,sans-serif;opacity:.95}
+.tk-amt{font:800 34px/1.15 Manrope,sans-serif;margin:6px 0 4px;letter-spacing:-.02em}
+.tk-no{display:inline-block;padding:4px 12px;border-radius:999px;background:rgba(255,255,255,.2);font:700 12px ui-monospace,Menlo,Consolas,monospace}
+.tk-cut{position:relative;height:0;margin:0 0;border-top:2px dashed #cbd5e1}
+.tk-cut i{position:absolute;top:-13px;width:26px;height:26px;border-radius:50%;background:var(--tk-hole,#0f141a)}
+.tk-cut i:first-child{left:-13px}.tk-cut i:last-child{right:-13px}
+html:not(.theme-dark) .tk-cut i{background:#fff;box-shadow:inset 0 0 0 1px rgba(148,163,184,.3)}
+.tk-body{padding:18px 22px 16px}
+.tk-row{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:9px 0;border-bottom:1px dashed #e2e8f0;font-size:14px}
+.tk-row span{display:flex;align-items:center;gap:8px;color:#64748b;font-weight:600}
+.tk-row span em{font-style:normal;font-size:15px}
+.tk-row b{text-align:right;color:#0f172a;word-break:break-word}
+.tk-bars{display:flex;justify-content:center;gap:2px;height:44px;margin:18px 0 8px;opacity:.85}
+.tk-bars i{display:block;height:100%;background:#0f172a;border-radius:1px}
+.tk-foot{text-align:center;color:#16a34a;font:800 13px Manrope,sans-serif;letter-spacing:.04em}
+.rc-acts .sp-pay-btn{height:44px;padding:0 20px;border-radius:12px;font:800 14px Manrope,sans-serif;cursor:pointer;border:0;color:#fff;background:linear-gradient(135deg,#2563eb,#06b6d4)}
+.rc-acts .sp-pay-btn.ghost{background:transparent;color:#0f172a;border:1.5px solid rgba(148,163,184,.55)}html.theme-dark .rc-acts .sp-pay-btn.ghost{color:#e8edf7}
+.rc-acts{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+
+/* "To'lovlarim" ro'yxati: chek-kartalar */
+.rcl{position:relative;display:flex;align-items:center;gap:14px;padding:16px 18px 16px 26px;border-radius:18px;background:var(--card,rgba(148,163,184,.1));box-shadow:var(--sh,0 0 0 1px rgba(148,163,184,.2));overflow:hidden}
+.rcl::before{content:"";position:absolute;left:0;top:0;bottom:0;width:8px;background:linear-gradient(180deg,#22c55e,#06b6d4)}
+.rcl::after{content:"";position:absolute;right:150px;top:10px;bottom:10px;border-left:2px dashed rgba(148,163,184,.4)}
+.rcl-ic{flex:none;display:grid;place-items:center;width:42px;height:42px;border-radius:14px;background:rgba(34,197,94,.15);color:#22c55e}
+.rcl-m{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.rcl-m b{font:800 20px Manrope,sans-serif}
+.rcl-m span{font-size:13.5px;font-weight:600}
+.rcl-m small{font-size:12px;opacity:.7;font-family:ui-monospace,Menlo,monospace}
+.rcl-btn{flex:none;width:128px;height:42px;border:0;border-radius:12px;cursor:pointer;font:800 13px Manrope,sans-serif;color:#fff;background:linear-gradient(135deg,#2563eb,#06b6d4);box-shadow:0 10px 20px -10px rgba(37,99,235,.7)}
+@media (max-width:620px){ .rcl{flex-wrap:wrap;padding-right:16px}.rcl::after{display:none}.rcl-btn{width:100%} }
+.sp-pay-list{display:grid;gap:12px}
+
+/* ---- Bildirishnomalar modali ---- */
+.nf{display:grid;gap:10px;margin:4px 0 14px;max-height:min(60vh,520px);overflow:auto;padding-right:2px;color:#0f172a}
+html.theme-dark .nf{color:#e8edf7}
+.nf-item{display:flex;gap:12px;align-items:flex-start;padding:13px 14px;border-radius:16px;border:1px solid rgba(148,163,184,.28);background:rgba(148,163,184,.08)}
+.nf-item i{flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:12px;font-style:normal;font-size:19px;background:rgba(99,102,241,.16)}
+.nf-item > div{flex:1;min-width:0}
+.nf-item b{font-size:14.5px}.nf-item p{margin:3px 0 2px;font-size:13.5px;line-height:1.45;opacity:.9}.nf-item small{font-size:12px;opacity:.65}
+.nf-item.unread{border-color:#6366f1;background:rgba(99,102,241,.12);box-shadow:0 0 0 3px rgba(99,102,241,.12)}
+.nf-item.t-pay i{background:rgba(34,197,94,.18)}.nf-item.t-bad{border-color:rgba(244,63,94,.4);background:rgba(244,63,94,.09)}.nf-item.t-bad i{background:rgba(244,63,94,.18)}.nf-item.t-info i{background:rgba(59,130,246,.18)}
+.nf-btn{flex:none;align-self:center;height:38px;padding:0 14px;border:0;border-radius:11px;cursor:pointer;font:800 13px Manrope,sans-serif;color:#fff;background:linear-gradient(135deg,#2563eb,#06b6d4)}
+.nf-empty{display:grid;justify-items:center;gap:4px;padding:30px 10px;text-align:center}.nf-empty span{font-size:38px}.nf-empty small{opacity:.7}
+</style>
+<script id="edu-fix-v11-js">
+(function(){
+  /* A) jadval kataklariga sarlavha nomlarini (data-label) qo'yish — telefonda karta ko'rinishi uchun */
+  function labelTables(){
+    document.querySelectorAll('table.sx-t').forEach(function(t){
+      var hs=[].map.call(t.querySelectorAll('thead th'),function(h){return (h.textContent||'').replace(/[↑↓▲▼]/g,'').trim()});
+      if(!hs.length) return;
+      t.querySelectorAll('tbody tr').forEach(function(tr){
+        [].forEach.call(tr.children,function(td,i){
+          var l=hs[i]||''; if(td.getAttribute('data-label')!==l){ if(l) td.setAttribute('data-label',l); else td.removeAttribute('data-label'); }
+        });
+      });
+    });
+  }
+  /* B) gorizontal siljiydigan qatorlar uchun chekka belgisi */
+  var CAND='[class*="chip"],[class*="tabs"],[class*="rail"],[class*="subs"],[class*="seg"],.m6-hs,.m6-row,.sx-tw,.nx-tabs,[class*="scroll"],[class*="filters"]';
+  function fade(el){
+    var ov=getComputedStyle(el).overflowX; if(ov!=='auto'&&ov!=='scroll'){ if(el.hasAttribute('data-fade')) el.removeAttribute('data-fade'); return; }
+    var max=el.scrollWidth-el.clientWidth; if(max<6){ el.removeAttribute('data-fade'); return; }
+    var v=[]; if(el.scrollLeft>6) v.push('l'); if(el.scrollLeft<max-6) v.push('r');
+    var s=v.join(' '); if(el.getAttribute('data-fade')!==s){ if(s) el.setAttribute('data-fade',s); else el.removeAttribute('data-fade'); }
+    if(!el.__fdf){ el.__fdf=1; el.addEventListener('scroll',function(){fade(el)},{passive:true}); }
+  }
+  function scan(){ labelTables(); document.querySelectorAll(CAND).forEach(fade); }
+
+  /* C) kichik matn (<12px) va kichik bosish joylari (<40px) ni avtomatik tuzatish */
+  var coarse=window.matchMedia('(max-width:860px),(pointer:coarse)');
+  var SKIP='.lx,.sp5-hero,.m6-hero,.sp-win,[class*="sp-term"],[class*="sp-win"],[class*="sp-file"],[class*="sp-live"],[class^="c-"],[class*=" c-"],[class*="lx-"],svg,[aria-hidden="true"],.nt-switch,.pb-switch,.bc-sw,.sm7-b.mid,.m6-b.mid,.sp5-ri em,.vp,.vp *';
+  function enforce(root){
+    if(!root||root.nodeType!==1) return;
+    var list=[root].concat([].slice.call(root.querySelectorAll('*')));
+    var mob=coarse.matches;
+    list.forEach(function(el){
+      if(el.__fdOk===1) return;
+      var tag=el.tagName; if(tag==='SCRIPT'||tag==='STYLE'||tag==='svg'||tag==='path'||tag==='INPUT') return;
+      if(el.closest&&el.closest(SKIP)) return;
+      var cs=getComputedStyle(el);
+      if(cs.display==='none'||cs.position==='fixed') return;
+      var own=false; for(var i=0;i<el.childNodes.length;i++){var n=el.childNodes[i]; if(n.nodeType===3&&n.textContent.trim()){own=true;break}}
+      if(own&&parseFloat(cs.fontSize)<12){
+        var w=el.getBoundingClientRect().width;
+        if(w>24||el.textContent.trim().length>2){ el.style.setProperty('font-size','12px','important'); }
+      }
+      if(mob&&(tag==='BUTTON'||(tag==='A'&&el.hasAttribute('href'))||el.getAttribute('role')==='button')){
+        var r=el.getBoundingClientRect();
+        if(r.width>0&&r.height>0&&(r.height<40||r.width<40)&&cs.position!=='absolute'){
+          if(r.height<40) el.style.setProperty('min-height','40px','important');
+          if(r.width<40) el.style.setProperty('min-width','40px','important');
+        }
+      }
+    });
+  }
+  var pend=[]; var pq=0;
+  function flush(){ pq=0; var l=pend; pend=[]; l.forEach(function(n){ try{ enforce(n) }catch(e){} }); }
+  function queue(n){ pend.push(n); if(!pq) pq=requestAnimationFrame(flush); }
+  new MutationObserver(function(ms){ ms.forEach(function(m){ [].forEach.call(m.addedNodes,function(n){ if(n.nodeType===1) queue(n); }); }); }).observe(document.documentElement,{childList:true,subtree:true});
+  queue(document.body);
+  var q=0; function sched(){ if(q) return; q=setTimeout(function(){q=0; try{scan()}catch(e){}},250); }
+  new MutationObserver(sched).observe(document.documentElement,{childList:true,subtree:true});
+  window.addEventListener('resize',sched); sched();
+})();
+</script>
+
+<script id="edu-paste-creds">
+/* Login sahifasi: "Login: x / Parol: y" (yoki "x y", "x<Tab>y", ikki qator) nusxasini CTRL+V qilinsa —
+   login → login maydoniga, parol → parol maydoniga avtomatik joylashadi. */
+(function(){
+  function parse(t){
+    t=String(t||'').trim(); if(!t||t.length>200) return null;
+    var lm=t.match(/\b(?:login|username|user|foydalanuvchi|логин)\s*(?:[:=]|\s[-–]\s)\s*([^\s,;|]+)/i);
+    var pm=t.match(/\b(?:parol|password|pass|pwd|пароль)\s*(?:[:=]|\s[-–]\s)\s*(\S+)/i);
+    if(lm&&pm) return [lm[1],pm[1]];
+    var parts=t.split(/[\r\n\t]+|\s*[|;,]\s*|\s+\/\s+/).map(function(x){return x.trim()}).filter(Boolean);
+    if(parts.length<2) parts=t.split(/\s+/);
+    if(parts.length!==2) return null;
+    return parts.map(function(x){return x.replace(/^(?:login|parol|password|username)\s*[:=]\s*/i,'')});
+  }
+  function setVal(el,v){ var d=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value'); d.set.call(el,v); el.dispatchEvent(new Event('input',{bubbles:true})); }
+  document.addEventListener('paste',function(e){
+    var t=e.target; if(!t||t.tagName!=='INPUT'||!t.closest) return;
+    var box=t.closest('.lx'); if(!box) return;
+    var ins=box.querySelectorAll('input.lx-in'); if(ins.length<2) return;
+    var cd=e.clipboardData||window.clipboardData; if(!cd) return;
+    var r=parse(cd.getData('text')); if(!r) return;
+    e.preventDefault();
+    setVal(ins[0],r[0]); setVal(ins[1],r[1]);
+    try{ ins[1].focus(); }catch(x){}
+  },true);
+  var q=0,obs=new MutationObserver(function(){ if(q)return; q=setTimeout(function(){ q=0;
+    document.querySelectorAll('.lx input.lx-in').forEach(function(el,i){
+      if(i===0){ el.setAttribute('autocomplete','username'); el.setAttribute('autocapitalize','none'); el.setAttribute('autocorrect','off'); el.setAttribute('spellcheck','false'); }
+      if(i===1){ el.setAttribute('autocomplete','current-password'); }
+    });},300); });
+  obs.observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+
 </body>
 </html>
