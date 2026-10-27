@@ -15878,6 +15878,64 @@ const SP5_I = {
 };
 const SP5_EMPTY = `<svg viewBox="0 0 320 180" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="spe" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8b6cff"/><stop offset="1" stop-color="#22d3ee"/></linearGradient></defs><rect width="320" height="180" fill="url(#spe)"/><circle cx="290" cy="10" r="70" fill="#fff" opacity=".14"/><g transform="translate(140 30) rotate(35 30 60)"><path d="M30 0c18 14 26 40 26 70H4C4 40 12 14 30 0z" fill="#fff"/><circle cx="30" cy="46" r="11" fill="#5b3df5"/><circle cx="30" cy="46" r="6" fill="#a5f3fc"/><path d="M4 70l-14 26 22-8zM56 70l14 26-22-8z" fill="#f472b6"/><path d="M14 78h32l-6 18H20z" fill="#1e1b4b"/><path d="M22 96h16l-8 26z" fill="#facc15"/></g><g transform="translate(40 60)"><rect width="66" height="36" rx="10" fill="#1e1b4b"/><text x="33" y="24" text-anchor="middle" fill="#67e8f9" font-size="14" font-weight="800" font-family="JetBrains Mono,monospace">{ }</text></g><g fill="#fff"><circle cx="90" cy="140" r="3"/><circle cx="260" cy="130" r="4"/><circle cx="230" cy="40" r="2.5"/></g></svg>`;
 
+/* ---------- O'quvchi ilovasi (telefon) v6 — tasdiqlangan mobil konsept asosida ---------- */
+function useMobileView(bp) {
+  const q = '(max-width:' + (bp || 1023) + 'px)';
+  const get = () => { try { return window.matchMedia(q).matches; } catch (e) { return (window.innerWidth || 1200) <= (bp || 1023); } };
+  const [m, setM] = useState(get);
+  useEffect(() => {
+    let mq; try { mq = window.matchMedia(q); } catch (e) { return undefined; }
+    const f = () => setM(mq.matches); f();
+    if (mq.addEventListener) mq.addEventListener('change', f); else if (mq.addListener) mq.addListener(f);
+    return () => { if (mq.removeEventListener) mq.removeEventListener('change', f); else if (mq.removeListener) mq.removeListener(f); };
+  }, []);
+  return m;
+}
+const M6_LOGO = {
+  web: '<path d="M-26-30h52l-5 52-21 8-21-8z" fill="#fff"/><path d="M-14-16h28l-1 9h-18l1 8h16l-2 16-10 4-10-4-1-8h8l.5 3 3 1 3-1 .5-5h-17z" fill="url(#G)"/>',
+  backend: '<rect x="-28" y="-30" width="56" height="16" rx="5" fill="#fff"/><rect x="-28" y="-8" width="56" height="16" rx="5" fill="#fff" opacity=".85"/><rect x="-28" y="14" width="56" height="16" rx="5" fill="#fff" opacity=".7"/><circle cx="-18" cy="-22" r="3" fill="#22c55e"/><circle cx="-18" cy="0" r="3" fill="#22c55e"/><circle cx="-18" cy="22" r="3" fill="#facc15"/><rect x="-8" y="-24" width="28" height="4" rx="2" fill="url(#G)"/><rect x="-8" y="-2" width="20" height="4" rx="2" fill="url(#G)"/><rect x="-8" y="20" width="24" height="4" rx="2" fill="url(#G)"/>',
+  data: '<rect x="-30" y="-30" width="60" height="60" rx="12" fill="#fff"/><rect x="-20" y="2" width="8" height="18" rx="2" fill="url(#G)"/><rect x="-6" y="-8" width="8" height="28" rx="2" fill="url(#G)"/><rect x="8" y="-18" width="8" height="38" rx="2" fill="url(#G)"/><path d="M-22-6 -6-16 8-10 22-24" stroke="#f59e0b" stroke-width="3" fill="none" stroke-linecap="round"/>',
+  py: '<path d="M-2-30c-14 0-14 6-14 12v8H2v3h-24c-8 0-12 6-12 16s4 16 12 16h6V14c0-6 4-10 10-10h16c6 0 10-4 10-10v-12c0-6-4-12-20-12z" fill="#fff"/><path d="M2 30c14 0 14-6 14-12v-8H-2v-3h24c8 0 12-6 12-16S30-25 22-25h-6v11c0 6-4 10-10 10h-16c-6 0-10 4-10 10v12c0 6 4 12 22 12z" fill="url(#G)"/>',
+  react: '<circle r="7" fill="#fff"/><g fill="none" stroke="#fff" stroke-width="3.5"><ellipse rx="32" ry="12"/><ellipse rx="32" ry="12" transform="rotate(60)"/><ellipse rx="32" ry="12" transform="rotate(-60)"/></g>',
+};
+const M6_PAL = { web: ['#6d28d9', '#2563eb'], react: ['#0891b2', '#7c3aed'], py: ['#0e7490', '#1d4ed8'], data: ['#be185d', '#ea580c'], backend: ['#0369a1', '#4338ca'] };
+const M6_KIND = { web: ['Front', '🌐', 'rgba(249,115,22,.15)'], react: ['React', '⚛️', 'rgba(34,211,238,.15)'], py: ['Python', '🐍', 'rgba(56,189,248,.15)'], data: ['Data', '📊', 'rgba(168,85,247,.15)'], backend: ['Back', '⚙️', 'rgba(34,197,94,.15)'] };
+const m6ArtCache = {};
+let m6Uid = 0;
+function m6Art(k, a, b, code) {
+  const key = k + '|' + a + '|' + b + '|' + (code ? 1 : 0);
+  if (m6ArtCache[key]) return m6ArtCache[key];
+  const id = 'm6g' + (++m6Uid);
+  const logo = (M6_LOGO[k] || M6_LOGO.web).replace(/url\(#G\)/g, 'url(#' + id + 'g)');
+  const s = `<svg viewBox="0 0 640 360" preserveAspectRatio="xMidYMid slice"><defs>
+  <linearGradient id="${id}b" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient>
+  <linearGradient id="${id}g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient>
+  <radialGradient id="${id}r" cx=".5" cy=".46" r=".5"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".45" stop-color="${b}" stop-opacity=".3"/><stop offset="1" stop-color="${b}" stop-opacity="0"/></radialGradient>
+  <pattern id="${id}p" width="30" height="30" patternUnits="userSpaceOnUse"><path d="M30 0H0V30" fill="none" stroke="#fff" stroke-opacity=".08"/></pattern></defs>
+  <rect width="640" height="360" fill="url(#${id}b)"/><rect width="640" height="360" fill="url(#${id}p)"/>
+  <circle cx="560" cy="20" r="120" fill="#fff" opacity=".08"/><circle cx="60" cy="360" r="110" fill="#000" opacity=".12"/>
+  <circle cx="320" cy="165" r="210" fill="url(#${id}r)"/>
+  <g transform="translate(320 165)">
+   <ellipse rx="200" ry="58" fill="none" stroke="#fff" stroke-opacity=".25" stroke-width="2" transform="rotate(-12)"/>
+   <ellipse rx="150" ry="42" fill="none" stroke="#fff" stroke-opacity=".32" stroke-width="2" stroke-dasharray="5 8" transform="rotate(12)"/>
+   <circle cx="-150" cy="-30" r="7" fill="#a5f3fc"/><circle cx="170" cy="30" r="6" fill="#fde68a"/><circle cx="110" cy="-60" r="4" fill="#fff"/>
+   <g class="m6-fl"><rect x="-66" y="-66" width="132" height="132" rx="38" fill="#fff" fill-opacity=".16" stroke="#fff" stroke-opacity=".5" stroke-width="2"/>
+   <rect x="-52" y="-52" width="104" height="104" rx="28" fill="#0b1226" fill-opacity=".5"/><g transform="scale(1.18)">${logo}</g></g>
+  </g>
+  ${code ? `<g transform="translate(332 254)"><rect width="190" height="74" rx="14" fill="#060a16" fill-opacity=".8" stroke="#fff" stroke-opacity=".15"/><circle cx="18" cy="16" r="4.5" fill="#ff5f57"/><circle cx="32" cy="16" r="4.5" fill="#febc2e"/><circle cx="46" cy="16" r="4.5" fill="#28c840"/><text x="16" y="44" font-family="JetBrains Mono,ui-monospace,monospace" font-size="14"><tspan fill="#c4a1ff">display</tspan><tspan fill="#cbd5f5">: </tspan><tspan fill="#fcd34d">flex</tspan></text><text x="16" y="62" font-family="JetBrains Mono,ui-monospace,monospace" font-size="14"><tspan fill="#7dd3fc">gap</tspan><tspan fill="#cbd5f5">: </tspan><tspan fill="#fcd34d">16px</tspan></text></g>` : ''}
+  </svg>`;
+  m6ArtCache[key] = s;
+  return s;
+}
+const M6_HEART = ({ on }) => <svg width="19" height="19" viewBox="0 0 24 24" fill={on ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinejoin="round"><path d="M12 21s-7-4.4-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.6-9.5 9-9.5 9z" /></svg>;
+const M6_BACK = () => <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 6l-6 6 6 6" /></svg>;
+const M6_RIGHT = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 6 6 6-6 6" /></svg>;
+const M6_DOWN = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6" /></svg>;
+const M6_PLAY = ({ s }) => <svg width={s || 22} height={s || 22} viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z" /></svg>;
+const M6_ARROW = () => <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>;
+const M6_BELL = () => <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" /><path d="M10 21h4" /></svg>;
+const M6_X = () => <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round"><path d="M6 6l12 12M18 6 6 18" /></svg>;
+
 function StudentApp({ me, staff, categories, students, setStudents, onLogout, notify, brand }) {
   const [page, setPage] = useState('home');
   const chatMe = { ...me, role: 'student' };
@@ -15942,6 +16000,13 @@ function StudentApp({ me, staff, categories, students, setStudents, onLogout, no
   const [openSub, setOpenSub] = useState(null);
   const [buyTab, setBuyTab] = useState('about');
   const [calOff, setCalOff] = useState(0);
+  const isMob = useMobileView(1023);
+  const [mKind, setMKind] = useState('all');
+  const [mSearch, setMSearch] = useState(false);
+  const [fav, setFav] = useState(() => loadLS('fav_' + me.id, {}) || {});
+  const [notifOn, setNotifOn] = useState(() => loadLS(chatUserKey('chat_toast', student.username), true) !== false);
+  const [mLang, setMLang] = useState(() => (window.EDU_I18N && window.EDU_I18N.lang) || 'uz');
+  useEffect(() => { const f = (e) => setMLang((e && e.detail && e.detail.lang) || (window.EDU_I18N && window.EDU_I18N.lang) || 'uz'); window.addEventListener('edu-lang', f); return () => window.removeEventListener('edu-lang', f); }, []);
   const year = new Date().getFullYear();
   const todayIso = todayISO();
   const evalOf = (cat) => spEval(student, cat, student.access[cat.id], courseBill(cat.id));
@@ -16007,7 +16072,7 @@ function StudentApp({ me, staff, categories, students, setStudents, onLogout, no
   const tip = TIPS[Math.floor(Date.now() / 86400000) % TIPS.length];
 
   const scrollTop = () => { try { window.scrollTo({ top: 0 }); const m = document.querySelector('.student-shell'); if (m) m.scrollTop = 0; } catch (e) {} };
-  const go = (p) => { setPage(p); setCatId(null); setSubId(null); setLessonId(null); setQ(''); scrollTop(); };
+  const go = (p) => { setPage(p); setCatId(null); setSubId(null); setLessonId(null); setQ(''); setBuyCat(null); setMSearch(false); scrollTop(); };
   const openCourse = (cat) => {
     const access = student.access[cat.id];
     const ev = evalOf(cat);
@@ -16216,12 +16281,8 @@ function StudentApp({ me, staff, categories, students, setStudents, onLogout, no
     </aside>
   );
 
-  const NAV = [['home', 'Bosh sahifa', I.home], ['courses', 'Kurslarim', I.courses], ['catalog', 'Yangi kurslar', I.store], ['results', 'Natijalarim', I.res], ['chat', 'Chat', I.chat], ['payments', "To'lovlarim", I.wallet]];
-  const TABS = [['home', 'Asosiy', I.home], ['courses', 'Kurslarim', I.courses], ['mid', 'Davom', null], ['results', 'Natijalar', I.res], ['profile', 'Profil', I.user]];
-
-  return (
-    <div className={'sp2 sp5 student-shell' + (studying ? ' is-study' : '') + (page === 'chat' ? ' is-chatpage' : '') + (inDetail ? ' is-detail' : '')}>
-      <svg width="0" height="0" style={{ position: 'absolute' }} aria-hidden="true"><defs><linearGradient id="sp5RG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#22d3ee" /><stop offset=".6" stopColor="#7c5cff" /><stop offset="1" stopColor="#a855f7" /></linearGradient></defs></svg>
+  const modalsEl = (
+    <React.Fragment>
       {unreadAlert && (
         <Modal title="Xabar" onClose={dismissAlert} size="lg">
           <div className="sp-modal-k"><Icon.bell width="16" height="16" /> O'qituvchidan xabar</div>
@@ -16253,6 +16314,389 @@ function StudentApp({ me, staff, categories, students, setStudents, onLogout, no
           </Modal>
         );
       })()}
+    </React.Fragment>
+  );
+  /* ================= TELEFON: ilova ko'rinishi (konsept v2 asosida) ================= */
+  const renderMobile = () => {
+    const kindPal = (cat, ci) => { const k = kindOf(cat); const p = M6_PAL[k] || palOf(ci); return [k, p[0], p[1]]; };
+    const art = (cat, ci, code) => {
+      if (cat && cat.image) return <img className="m6-img" src={cat.image} alt="" />;
+      const [k, a, b] = kindPal(cat, ci);
+      return <span className="m6-art" dangerouslySetInnerHTML={{ __html: m6Art(k, a, b, code) }} />;
+    };
+    const ring = (p, s, w, inner, grad) => { const r = (s - w) / 2, C = 2 * Math.PI * r, v = Math.max(0, Math.min(100, p || 0)); return (
+      <span className="m6-ring" style={{ width: s, height: s }}>
+        <svg width={s} height={s}><circle cx={s / 2} cy={s / 2} r={r} fill="none" stroke="currentColor" strokeOpacity=".1" strokeWidth={w} />
+          <circle cx={s / 2} cy={s / 2} r={r} fill="none" stroke={'url(#' + (grad || 'm6RG') + ')'} strokeWidth={w} strokeLinecap="round" strokeDasharray={C} strokeDashoffset={C - (C * v) / 100} transform={`rotate(-90 ${s / 2} ${s / 2})`} /></svg>
+        <span>{inner != null ? inner : v + '%'}</span>
+      </span>); };
+    const grade = (g, score) => <span className="m6-grade" style={{ '--g': g.color }}>{g.label}{g.key !== 'new' && score != null ? <i>{score}</i> : null}</span>;
+    const toneCls = (t) => ({ ok: 'c-ok', warn: 'c-warn', bad: 'c-bad', red: 'c-bad', info: 'c-info', blue: 'c-info' }[t] || 'c-mut');
+    const chip = (s, glass) => <span className={'m6-chip ' + toneCls(s.tone) + (glass ? ' glass' : '')}>● {s.label}</span>;
+    const avatar = (cls) => <span className={'m6-av ' + (cls || '')}>{student.avatar ? <img src={student.avatar} alt="" /> : initials}<em>L{level}</em></span>;
+    const empty = (title, text, action, onAction) => (
+      <div className="m6-empty"><span className="m6-empty-a" dangerouslySetInnerHTML={{ __html: SP5_EMPTY }} /><b>{title}</b><span>{text}</span>{action && <button type="button" className="m6-b m6-btn" onClick={onAction}>{action}<M6_ARROW /></button>}</div>
+    );
+    const sec = (title, more, onMore) => <div className="m6-sec"><b>{title}</b>{more && <button type="button" className="m6-b" onClick={onMore}>{more}</button>}</div>;
+    const kindsHere = Object.keys(M6_KIND).filter((k) => categories.some((c) => kindOf(c) === k));
+    const kindOk = (cat) => mKind === 'all' || kindOf(cat) === mKind;
+    const cats = () => kindsHere.length > 1 && (
+      <div className="m6-cats">
+        <button type="button" className={'m6-b' + (mKind === 'all' ? ' on' : '')} onClick={() => setMKind('all')}>Hammasi</button>
+        {kindsHere.map((k) => <button key={k} type="button" className={'m6-b' + (mKind === k ? ' on' : '')} onClick={() => setMKind(k)}><i style={{ background: M6_KIND[k][2] }}>{M6_KIND[k][1]}</i>{M6_KIND[k][0]}</button>)}
+      </div>
+    );
+    const searchBox = (ph) => (
+      <label className="m6-srch">
+        <I.search />
+        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={ph || 'Kurs yoki mavzu qidirish'} enterKeyHint="search" />
+        {q ? <button type="button" className="m6-b m6-srch-x" onClick={() => setQ('')} aria-label="Tozalash"><M6_X /></button> : <span className="m6-srch-f"><I.filter /></span>}
+      </label>
+    );
+    const shopCard = ({ cat, ci }, wide) => (
+      <button type="button" key={cat.id} className={'m6-b m6-hc' + (wide ? ' wide' : '') + (cat.frozen ? ' is-off' : '')} onClick={() => { setBuyTab('about'); setBuyCat(cat); scrollTop(); }}>
+        <span className="m6-hc-a">{art(cat, ci)}<span className="m6-tag">{spLessonsOf(cat).length} dars</span><span className="m6-rt">{cat.subtopics.length} bo'lim</span></span>
+        <span className="m6-hc-b"><b>{cat.name}</b><small>~{hours(cat)} soat · video kurs</small>
+          <span className="m6-hc-p"><em>{fmtMoney(cat.monthlyPrice)} <small>/oy</small></em><i><M6_ARROW /></i></span></span>
+      </button>
+    );
+    const myRow = ({ cat, ci, ev }) => (
+      <button type="button" key={cat.id} className={'m6-b m6-mr' + (ev.locked ? ' is-off' : '')} onClick={() => openCourse(cat)}>
+        <span className="m6-mr-th">{art(cat, ci)}{ev.locked && <i><Icon.lock width="14" height="14" /></i>}</span>
+        <span className="m6-mr-tx"><b>{cat.name}</b><small>{ev.locked ? ev.status.label : ev.next ? 'Keyingi: ' + ev.next.title : 'Kurs yakunlandi 🎉'}</small>{grade(ev.grade, ev.score)}</span>
+        {ring(ev.pct, 54, 5)}
+      </button>
+    );
+    const bigCard = ({ cat, ci, ev }) => (
+      <article key={cat.id} className={'m6-big' + (ev.locked ? ' is-off' : '')} onClick={() => openCourse(cat)}>
+        <div className="m6-big-a">{art(cat, ci)}{chip(ev.status, true)}<span className="m6-pc">{ev.pct}%</span>{ev.locked && <span className="m6-lock"><Icon.lock width="18" height="18" /></span>}</div>
+        <div className="m6-big-b">
+          <div className="m6-big-h"><div><b>{cat.name}</b><small>{cat.subtitle || `${cat.subtopics.length} bo'lim`}</small></div>{grade(ev.grade, ev.score)}</div>
+          <div className="m6-segs">{(ev.subs.length ? ev.subs : [{ id: 'x', pct: ev.pct }]).map((s) => <i key={s.id}><b style={{ width: s.pct + '%' }} /></i>)}</div>
+          <div className="m6-meta"><span><b>{ev.done}/{ev.total}</b> dars</span><span><b>{ev.pct}%</b> tugallangan</span></div>
+          {!ev.locked && ev.pace === 'behind' && ev.diff < 0 && <div className="m6-warn">⚠ Rejadan {-ev.diff} ta dars orqada</div>}
+          {ev.locked ? <div className="m6-nx bad"><em>🔒</em><span>{ev.status.label}</span></div>
+            : ev.next ? <div className="m6-nx"><em>›</em>keyingi:&nbsp;<b>{ev.next.title}</b><span className="m6-caret" /></div>
+              : <div className="m6-nx"><em>✓</em><span className="ok">kurs yakunlandi — barakalla!</span></div>}
+          <button type="button" className={'m6-b m6-btn' + (ev.locked || !ev.next ? ' g' : '')} onClick={(e) => { e.stopPropagation(); if (!ev.locked && ev.next) continueCourse(cat, ev); else openCourse(cat); }}>
+            {ev.locked ? 'Batafsil' : ev.next ? <React.Fragment><M6_PLAY s={16} />{ev.done ? 'Davom ettirish' : 'Boshlash'}</React.Fragment> : "Qayta ko'rish"}</button>
+        </div>
+      </article>
+    );
+    const week = (days) => (
+      <div className="m6-week">{days.map((d) => <span key={d.k} className={d.c}><i>{d.i}</i>{d.l}</span>)}</div>
+    );
+    const weekDays = act.days.slice(-7).map((d) => {
+      const sched = myCourses.some(({ cat }) => { const a = student.access[cat.id]; return a && isScheduleDateFor(a, new Date(d.iso + 'T00:00:00'), false) && String(a.enrolledAt || '').slice(0, 10) <= d.iso; });
+      const c = d.today ? 't' : d.n ? 'd' : sched ? 'm' : '';
+      return { k: d.iso, c, i: d.today ? (d.n ? '✓' : '•') : d.n ? '✓' : sched ? '✕' : '', l: d.day };
+    });
+    const hdr = (k, title, right, back) => (
+      <div className="m6-hd">
+        {back && <button type="button" className="m6-b m6-ib" onClick={back} aria-label="Orqaga"><M6_BACK /></button>}
+        <div className="m6-tt"><span className="m6-k">{k}</span><b>{title}</b></div>
+        {right}
+      </div>
+    );
+    const bellGo = () => { const a = (student.alerts || []).find((x) => !x.read); if (a) notify && notify(a.text, 'info'); else go('payments'); };
+    const bellDot = (bill.blocked || (student.alerts || []).some((x) => !x.read));
+    const favOn = (id) => !!fav[id];
+    const toggleFav = (id) => { const n = { ...fav }; if (n[id]) delete n[id]; else n[id] = 1; setFav(n); saveLS('fav_' + me.id, n); };
+    const diffAll = myCourses.reduce((a, x) => a + x.ev.diff, 0);
+    const maxPen = myCourses.reduce((a, x) => Math.max(a, x.ev.penalty), 0);
+    const teacher = (staff || []).find((s) => /teacher/.test(s.role || '')) || (staff || []).find((s) => /ceo/.test(s.role || '')) || null;
+    const tName = (teacher && teacher.name) || 'Ferdinant';
+    const tIni = tName.split(' ').map((w) => w[0]).slice(0, 2).join('').toUpperCase();
+    const langs = (window.EDU_I18N && window.EDU_I18N.LANGS) || [];
+    const setLangM = (c) => { try { window.EDU_I18N.set(c); } catch (e) {} setMLang(c); };
+
+    let view = 'home';
+    if (studying) view = 'study';
+    else if (buyCat) view = 'buy';
+    else if (inDetail && curCat) view = 'detail';
+    else view = page;
+    const hideTab = view === 'study' || view === 'detail' || view === 'buy';
+
+    /* ---------- bosh sahifa ---------- */
+    const vHome = () => {
+      const rt = resumeTarget; const rl = rt && lessonById[rt.lessonId];
+      const mine = myCourses.filter((x) => kindOk(x.cat)); const others = otherCourses.filter((x) => kindOk(x.cat));
+      return (
+        <React.Fragment>
+          <div className="m6-hd">
+            <button type="button" className="m6-b" onClick={() => go('profile')} aria-label="Profil">{avatar()}</button>
+            <div className="m6-tt"><span className="m6-k">Ferdinant darsliklari</span><b>{student.name}</b></div>
+            <div className="m6-hr sp-top-r">
+              <button type="button" className="m6-b m6-ib" onClick={() => go('chat')} aria-label="Chat"><I.chat />{chatUnread > 0 && <i className="dot" />}</button>
+              <button type="button" className="m6-b m6-ib" onClick={bellGo} aria-label="Xabarlar"><M6_BELL />{bellDot && <i className="dot" />}</button>
+            </div>
+          </div>
+          {searchBox()}
+          {needle ? (() => {
+            const fm = myCourses.filter((x) => match(x.cat)); const fo = otherCourses.filter((x) => match(x.cat));
+            return (
+              <React.Fragment>
+                {sec(`«${q.trim()}» bo'yicha`)}
+                {fm.length === 0 && fo.length === 0 && empty('Hech narsa topilmadi', "Boshqa so'z bilan qidirib ko'ring: masalan «HTML», «Python» yoki kurs nomi.")}
+                {fm.length > 0 && <div className="m6-ml">{fm.map(myRow)}</div>}
+                {fo.length > 0 && <React.Fragment>{sec('Yangi kurslar')}<div className="m6-grid2">{fo.map((x) => shopCard(x, true))}</div></React.Fragment>}
+              </React.Fragment>
+            );
+          })() : (
+            <React.Fragment>
+              <PaymentNotice bill={bill} />
+              <div className="m6-goal">{ring(goalPct, 58, 7, doneToday + '/' + goalTotal)}<div className="m6-goal-tx"><b>Bugungi maqsad</b><small>{doneToday >= goalTotal ? 'Reja bajarildi! 🎉' : `Yana ${goalTotal - doneToday} ta dars — reja bajariladi`}</small></div><span className="m6-fire">🔥 {act.streak}<small>KUN</small></span></div>
+              {rt ? (
+                <button type="button" className="m6-b m6-cont" onClick={resumeGo}>
+                  {art(rt.cat, rt.ci, true)}
+                  <span className="m6-lb">▶ {rl && rl.duration ? rl.duration : rt.ev.done + '/' + rt.ev.total + ' dars'}</span>
+                  <span className="m6-pb"><M6_PLAY /></span>
+                  <span className="m6-ov"><small>// davom ettirish · {rt.cat.name}</small><b>{rt.title}</b><span className="m6-pr"><i className="m6-bar"><b style={{ width: rt.ev.pct + '%' }} /></i><em>{rt.ev.pct}%</em></span></span>
+                </button>
+              ) : empty("Hali kurs yo'q", "Sizga hali birorta kurs ochilmagan. Pastdagi «Yangi kurslar»dan o'zingizga mosini tanlang.", 'Yangi kurslar', () => go('catalog'))}
+              {behind.length > 0 && <div className="m6-alert">⚠ <b>{behind.map((x) => x.cat.name).join(', ')}</b> — rejadan orqada. Bugun kamida bitta darsni tugating.</div>}
+              <div className="sp5-mcode sp5-code m6-code">{codeScene}</div>
+              {kindsHere.length > 1 && <React.Fragment>{sec("Yo'nalishlar")}{cats()}</React.Fragment>}
+              {others.length > 0 && <React.Fragment>{sec('Yangi kurslar', 'Barchasi', () => go('catalog'))}<div className="m6-hs">{others.map((x) => shopCard(x))}</div></React.Fragment>}
+              {mine.length > 0 && <React.Fragment>{sec('Kurslarim', 'Barchasi', () => go('courses'))}<div className="m6-ml">{mine.map(myRow)}</div></React.Fragment>}
+              {mine.length === 0 && others.length === 0 && mKind !== 'all' && empty("Bu yo'nalishda kurs yo'q", "Boshqa yo'nalishni tanlang.")}
+              {myCourses.length > 0 && <React.Fragment>{sec('Bu hafta', 'Natijalar', () => go('results'))}{week(weekDays)}</React.Fragment>}
+            </React.Fragment>
+          )}
+        </React.Fragment>
+      );
+    };
+
+    /* ---------- kurslarim ---------- */
+    const vCourses = () => {
+      const list = myCourses.filter((x) => (courseFilter === 'all' || (courseFilter === 'done' ? x.ev.status.key === 'done' : x.ev.status.key !== 'done')) && match(x.cat));
+      return (
+        <React.Fragment>
+          {hdr('// sotib olingan', 'Kurslarim', <button type="button" className={'m6-b m6-ib' + (mSearch ? ' on' : '')} onClick={() => { if (mSearch) setQ(''); setMSearch(!mSearch); }} aria-label="Qidirish">{mSearch ? <M6_X /> : <I.search />}</button>)}
+          {mSearch && searchBox('Kurslarim ichidan qidirish')}
+          {myCourses.length > 0 && <div className="m6-seg">{[['all', 'Hammasi', myCourses.length], ['going', 'Jarayonda', myCourses.filter((x) => x.ev.status.key !== 'done').length], ['done', 'Tugagan', finished]].map(([k, l, n]) => <button key={k} type="button" className={'m6-b' + (courseFilter === k ? ' on' : '')} onClick={() => setCourseFilter(k)}>{l} · {n}</button>)}</div>}
+          {myCourses.length === 0 ? empty('Hali kurs sotib olinmagan', "Kurs sotib olgach, u shu yerda paydo bo'ladi va jarayoningiz avtomatik baholanadi.", 'Yangi kurslar', () => go('catalog'))
+            : list.length ? list.map(bigCard)
+              : empty(needle ? 'Hech narsa topilmadi' : courseFilter === 'done' ? "Hali tugagan kurs yo'q" : 'Barcha kurslar tugagan', needle ? "Boshqa so'z bilan qidirib ko'ring." : courseFilter === 'done' ? "Kursning barcha darslarini tugatsangiz, u shu yerga o'tadi." : 'Tabriklaymiz! Yangi kurs tanlang.')}
+        </React.Fragment>
+      );
+    };
+
+    /* ---------- yangi kurslar ---------- */
+    const vCatalog = () => {
+      const list = otherCourses.filter((x) => kindOk(x.cat) && match(x.cat));
+      return (
+        <React.Fragment>
+          {hdr("// yangi yo'nalishlar", 'Yangi kurslar', null, () => go('home'))}
+          {searchBox()}
+          {cats()}
+          <div style={{ height: 14 }} />
+          {otherCourses.length === 0 ? empty('Barcha kurslar sizda bor', "Yangi kurslar qo'shilganda shu yerda ko'rinadi.", "Kurslarimga o'tish", () => go('courses'))
+            : list.length ? <div className="m6-grid2">{list.map((x) => shopCard(x, true))}</div> : empty('Hech narsa topilmadi', "Boshqa yo'nalish yoki so'zni tanlang.")}
+        </React.Fragment>
+      );
+    };
+
+    /* ---------- kurs ichi ---------- */
+    const vDetail = () => {
+      const cat = curCat; const ci = categories.indexOf(cat); const ev = evalOf(cat); const k = kindOf(cat);
+      const nl = ev.next && lessonById[ev.next.id];
+      const allNotes = loadLS('notes_' + me.id, {}) || {};
+      const noteItems = cat.subtopics.flatMap((sb) => sb.lessons.filter((l) => allNotes[l.id] && String(allNotes[l.id]).trim()).map((l) => ({ sb, l, t: String(allNotes[l.id]) })));
+      const dlNotes = () => { const txt = noteItems.map((x) => '# ' + x.sb.name + ' — ' + x.l.title + '\n' + x.t).join('\n\n'); if (!txt) return; try { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([txt], { type: 'text/plain;charset=utf-8' })); a.download = cat.name + '-konspekt.txt'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 1500); } catch (e) {} };
+      return (
+        <div className="m6-detail">
+          <div className="m6-dh">{art(cat, ci, k === 'web' || k === 'react')}
+            <div className="m6-dh-tb"><button type="button" className="m6-b" onClick={() => { setCatId(null); setPage('courses'); scrollTop(); }} aria-label="Orqaga"><M6_BACK /></button><button type="button" className={'m6-b' + (favOn(cat.id) ? ' on' : '')} onClick={() => toggleFav(cat.id)} aria-label="Sevimli"><M6_HEART on={favOn(cat.id)} /></button></div>
+          </div>
+          <div className="m6-sheet">
+            <div className="m6-row">{chip(ev.status)}{grade(ev.grade, ev.score)}</div>
+            <h2>{cat.name}</h2><p className="m6-sub">{cat.subtitle || `${cat.subtopics.length} bo'lim · ${ev.total} dars`}</p>
+            <button type="button" className="m6-b m6-tchr" onClick={() => go('chat')}><span className="m6-av sm">{teacher && teacher.avatar ? <img src={teacher.avatar} alt="" /> : tIni}</span><span><b>{tName}</b><small>Kurs o'qituvchisi · savol bo'lsa yozing</small></span><span className="m6-ib sm"><I.chat /></span></button>
+            <div className="m6-f3"><div><b style={{ color: '#22d3ee' }}>{String(cat.subtopics.length).padStart(2, '0')}</b><small>Bo'lim</small></div><div><b style={{ color: '#f97316' }}>{String(ev.total).padStart(2, '0')}</b><small>Dars</small></div><div><b style={{ color: '#22c55e' }}>{ev.pct}%</b><small>Tugallandi</small></div></div>
+            <div className="m6-seg">{[['plan', 'Dastur'], ['res', 'Natija'], ['notes', 'Konspekt']].map(([kk, l]) => <button key={kk} type="button" className={'m6-b' + (detailTab === kk ? ' on' : '')} onClick={() => setDetailTab(kk)}>{l}</button>)}</div>
+            {detailTab === 'plan' && (
+              <div>
+                {cat.subtopics.map((sub, si) => {
+                  const done = sub.lessons.filter((l) => lessonProgress(l.id).completed).length;
+                  const pct = sub.lessons.length ? Math.round((done / sub.lessons.length) * 100) : 0;
+                  const open = openSub === sub.id;
+                  const firstOpenIdx = sub.lessons.findIndex((l) => !lessonProgress(l.id).completed);
+                  const isCur = ev.next && ev.next.subId === sub.id;
+                  return (
+                    <React.Fragment key={sub.id}>
+                      <button type="button" className={'m6-b m6-mod' + (open ? ' open' : '')} onClick={() => setOpenSub(open ? null : sub.id)} disabled={!sub.lessons.length}>
+                        <span className={'m6-mod-n' + (pct === 100 ? ' ok' : isCur ? ' cur' : '')}>{pct === 100 ? '✓' : String(si + 1).padStart(2, '0')}</span>
+                        <span className="m6-mod-x"><b>{sub.name}</b><small>{sub.lessons.length} ta dars · {pct === 100 ? 'tugallandi' : done + ' tugallangan'}</small><i className="m6-bar"><b style={{ width: pct + '%' }} /></i></span>
+                        {open ? <M6_DOWN /> : <M6_RIGHT />}
+                      </button>
+                      {open && (
+                        <div className="m6-les">{sub.lessons.map((l, li) => {
+                          const dn = lessonProgress(l.id).completed; const cur = !dn && li === firstOpenIdx;
+                          return <button type="button" key={l.id} className={'m6-b' + (dn ? ' d' : cur ? ' c' : '')} onClick={() => { if (ev.locked) openCourse(cat); else startLesson(cat, sub.id, l.id); }}><i>{dn ? '✓' : cur ? '▶' : li + 1}</i><span>{l.title}</span><small>{l.duration || ''}</small></button>;
+                        })}</div>
+                      )}
+                    </React.Fragment>
+                  );
+                })}
+                {cat.subtopics.length === 0 && empty("Hali bo'lim qo'shilmagan", "O'qituvchi darslarni qo'shgach, ular shu yerda chiqadi.")}
+              </div>
+            )}
+            {detailTab === 'res' && (
+              <div>
+                <div className="m6-rk"><div><small>Tugatildi</small><b>{ev.done}/{ev.total}</b></div><div><small>Reja bo'yicha</small><b className={ev.diff < 0 ? 'bad' : 'ok'}>{ev.pace === 'none' ? '—' : ev.diff > 0 ? '+' + ev.diff : ev.diff === 0 ? '0' : ev.diff}</b></div><div><small>Baho</small><b style={{ color: ev.grade.color }}>{ev.grade.key === 'new' ? '—' : ev.score}</b></div><div><small>Nazorat</small><b className={ev.penalty ? 'bad' : 'ok'}>{ev.penalty}/{ATTEND_MAX_POINTS}</b></div></div>
+                {ev.attn && ev.attn.strip.length > 0 && <React.Fragment>{sec('Dars kunlari')}{week(ev.attn.strip.map((d) => ({ k: d.date, c: d.status === 'done' ? 'd' : d.status === 'missed' ? 'm' : 't', i: d.status === 'done' ? '✓' : d.status === 'missed' ? '✕' : '•', l: d.weekday })))}</React.Fragment>}
+                {sec("Bo'limlar bo'yicha")}
+                <div className="m6-card">{ev.subs.map((s) => <div key={s.id} className="m6-sub-r"><span>{s.name}</span><i className="m6-bar"><b style={{ width: s.pct + '%' }} /></i><small>{s.done}/{s.total}</small></div>)}{ev.subs.length === 0 && <p className="m6-mut">Hali bo'lim yo'q.</p>}</div>
+              </div>
+            )}
+            {detailTab === 'notes' && (
+              <div className="m6-notes">
+                <p className="m6-mut">Har bir dars ostidagi «Konspekt» bo'limiga yozgan qaydlaringiz shu yerda kurs bo'yicha jamlanadi.</p>
+                {noteItems.length === 0 ? empty("Hali konspekt yo'q", "Darsni oching va video ostidagi «Konspekt» maydoniga yozing — avtomatik saqlanadi.", ev.locked || !ev.next ? null : 'Darsni ochish', () => continueCourse(cat, ev))
+                  : <React.Fragment>
+                    {noteItems.map((x) => (
+                      <button type="button" key={x.l.id} className="m6-b m6-note" onClick={() => { if (ev.locked) openCourse(cat); else startLesson(cat, x.sb.id, x.l.id); }}>
+                        <span className="m6-note-h"><b>{x.l.title}</b><small>{x.sb.name}</small></span>
+                        <span className="m6-note-t">{x.t}</span>
+                      </button>
+                    ))}
+                    <button type="button" className="m6-b m6-btn g m6-wide" onClick={dlNotes}>⬇ Konspektni yuklab olish (.txt)</button>
+                  </React.Fragment>}
+              </div>
+            )}
+          </div>
+          <div className="m6-cta">
+            {ev.locked ? <React.Fragment><span><small>Holat</small><b>{ev.status.label}</b></span><button type="button" className="m6-b m6-btn" onClick={() => openCourse(cat)}>Batafsil</button></React.Fragment>
+              : ev.next ? <React.Fragment><span><small>Keyingi dars{nl && nl.duration ? ' · ' + nl.duration : ''}</small><b>{ev.next.title}</b></span><button type="button" className="m6-b m6-btn" onClick={() => continueCourse(cat, ev)}><M6_PLAY s={16} />{ev.done === 0 ? 'Boshlash' : 'Davom'}</button></React.Fragment>
+                : <React.Fragment><span><small>Kurs yakunlandi 🎓</small><b>{ev.total} / {ev.total} dars</b></span><button type="button" className="m6-b m6-btn g" onClick={() => { const f = cat.subtopics.find((s) => s.lessons.length); if (f) startLesson(cat, f.id, f.lessons[0].id); }}>Qayta ko'rish</button></React.Fragment>}
+          </div>
+        </div>
+      );
+    };
+
+    /* ---------- yangi kurs (sotib olish) ---------- */
+    const vBuy = () => {
+      const cat = buyCat; const ci = categories.indexOf(cat); const lessons = spLessonsOf(cat); const k = kindOf(cat);
+      return (
+        <div className="m6-detail">
+          <div className="m6-dh">{art(cat, ci, k === 'web' || k === 'react')}
+            <div className="m6-dh-tb"><button type="button" className="m6-b" onClick={() => { setBuyCat(null); scrollTop(); }} aria-label="Orqaga"><M6_BACK /></button><button type="button" className={'m6-b' + (favOn(cat.id) ? ' on' : '')} onClick={() => toggleFav(cat.id)} aria-label="Sevimli"><M6_HEART on={favOn(cat.id)} /></button></div>
+          </div>
+          <div className="m6-sheet">
+            <div className="m6-row"><span className="m6-chip c-info">✦ Yangi</span>{cat.frozen ? <span className="m6-chip c-mut">Vaqtincha yopiq</span> : <span className="m6-chip c-warn">~{hours(cat)} soat</span>}</div>
+            <h2>{cat.name}</h2><p className="m6-sub">{cat.subtitle || 'Video kurs'}</p>
+            <div className="m6-f3"><div><b style={{ color: '#22d3ee' }}>{String(cat.subtopics.length).padStart(2, '0')}</b><small>Bo'lim</small></div><div><b style={{ color: '#f97316' }}>{String(lessons.length).padStart(2, '0')}</b><small>Dars</small></div><div><b style={{ color: '#22c55e' }}>~{hours(cat)}</b><small>Soat</small></div></div>
+            <div className="m6-seg">{[['about', 'Kurs haqida'], ['plan', 'Dastur']].map(([kk, l]) => <button key={kk} type="button" className={'m6-b' + (buyTab === kk ? ' on' : '')} onClick={() => setBuyTab(kk)}>{l}</button>)}</div>
+            {buyTab === 'about' ? (
+              <div>
+                <p className="m6-about">«{cat.name}» kursi {cat.subtopics.length} ta bo'lim va {lessons.length} ta video darsdan iborat. Darslar ketma-ket ochiladi, natijangiz avtomatik baholanadi.</p>
+                {['Video darslar va konspektlar', 'Jarayon va baho avtomatik', "O'qituvchi bilan chat"].map((t) => <div key={t} className="m6-okr"><i>✓</i><b>{t}</b></div>)}
+                <p className="m6-mut sm">Yozilish uchun administratsiyaga yozing — to'lov tasdiqlangach kurs avtomatik «Kurslarim»ga qo'shiladi.</p>
+              </div>
+            ) : (
+              <div>{cat.subtopics.map((s, i) => <div key={s.id} className="m6-mod"><span className="m6-mod-n">{String(i + 1).padStart(2, '0')}</span><span className="m6-mod-x"><b>{s.name}</b><small>{s.lessons.length} ta dars</small></span><Icon.lock width="15" height="15" /></div>)}
+                {cat.subtopics.length === 0 && <p className="m6-mut">Dastur tez orada qo'shiladi.</p>}</div>
+            )}
+          </div>
+          <div className="m6-cta"><span><small>Oylik narx</small><b className="lg">{fmtMoney(cat.monthlyPrice)}</b></span><button type="button" className="m6-b m6-btn" disabled={cat.frozen} onClick={() => { setBuyCat(null); go('chat'); }}>Yozilish</button></div>
+        </div>
+      );
+    };
+
+    /* ---------- natijalar ---------- */
+    const vResults = () => (
+      <React.Fragment>
+        {hdr('// avtomatik baholash', 'Natijalarim')}
+        <div className="m6-rh">{ring(graded.length ? avgScore : allPct, 156, 13, <React.Fragment><b>{graded.length ? avgScore : allPct}</b><small>{graded.length ? 'ball / 100' : '% jarayon'}</small></React.Fragment>)}
+          <div style={{ marginTop: 12 }}>{grade(overall)}</div><p>{motto}</p></div>
+        <div className="m6-rk"><div><small>Tugatildi</small><b>{allDone}/{allTotal}</b></div><div><small>Reja bo'yicha</small><b className={diffAll < 0 ? 'bad' : 'ok'}>{diffAll > 0 ? '+' + diffAll : diffAll}</b></div><div><small>Seriya</small><b className="or">{act.streak} kun</b></div><div><small>Nazorat</small><b className={maxPen ? 'bad' : 'ok'}>{maxPen}/{ATTEND_MAX_POINTS}</b></div></div>
+        {sec('Bu hafta', 'Dars kunlari')}
+        {week(weekDays)}
+        {sec("Kurslar bo'yicha")}
+        {myCourses.length === 0 ? empty("Baholanadigan kurs yo'q", "Kurs sotib olib darslarni boshlaganingizdan so'ng natijalar shu yerda chiqadi.", 'Yangi kurslar', () => go('catalog'))
+          : myCourses.map(({ cat, ev }) => (
+            <button type="button" key={cat.id} className="m6-b m6-cr" onClick={() => { openCourse(cat); setDetailTab('res'); }}>
+              {ring(ev.pct, 52, 5)}
+              <span className="m6-cr-tx"><b>{cat.name}</b><span className="m6-row">{chip(ev.status)}{grade(ev.grade, ev.score)}</span></span>
+              <M6_RIGHT />
+            </button>))}
+        {sec('Yutuqlar', badges.filter((b) => b.on).length + ' / ' + badges.length)}
+        <div className="m6-bdg">{badges.map((b) => <div key={b.t} className={'m6-bd' + (b.on ? ' on' : '')} style={{ '--c': b.c }}><span>{b.e}</span>{b.t}</div>)}</div>
+        <div className="m6-how"><b>Baho qanday hisoblanadi?</b><p><b>45%</b> — tugatilgan darslar · <b>45%</b> — rejaga rioya (har dars kuni bitta dars) · <b>10%</b> — darslik nazorati. A'lo 85+, Yaxshi 70+, Qoniqarli 50+.</p></div>
+      </React.Fragment>
+    );
+
+    /* ---------- profil ---------- */
+    const vProfile = () => (
+      <React.Fragment>
+        <div className="m6-pf">{avatar('xl')}<b>{student.name}</b><small>@{student.username} · O'quvchi</small>
+          <div className="m6-lv"><div><span>{level}-daraja · {levelName}</span><span>{xpIn} / 250 XP</span></div><i className="m6-bar"><b style={{ width: (xpIn / 250) * 100 + '%' }} /></i></div></div>
+        <div className="m6-rk three"><div><b>{myCourses.length}</b><small>Kurs</small></div><div><b>{allDone}</b><small>Dars</small></div><div><b>{act.streak}🔥</b><small>Seriya</small></div></div>
+        <div className="m6-menu">
+          <button type="button" className="m6-b" onClick={() => go('account')}><i style={{ background: 'rgba(99,102,241,.15)' }}>👤</i>Shaxsiy ma'lumotlar<em>›</em></button>
+          <button type="button" className="m6-b" onClick={() => go('payments')}><i style={{ background: 'rgba(34,197,94,.15)' }}>💳</i>To'lovlarim<em className={bill.blocked ? 'bad' : ''}>{bill.blocked ? 'Qarz bor' : bill.debt > 0 ? fmtMoney(bill.debt) : '✓'}</em></button>
+          <button type="button" className="m6-b" onClick={() => { const v = !notifOn; setNotifOn(v); saveLS(chatUserKey('chat_toast', student.username), v); notify && notify(v ? 'Chat bildirishnomalari yoqildi' : "Chat bildirishnomalari o'chirildi", 'info'); }}><i style={{ background: 'rgba(249,115,22,.15)' }}>🔔</i>Bildirishnomalar<span className={'m6-tg' + (notifOn ? ' on' : '')} /></button>
+        </div>
+        <div className="m6-menu">
+          <div className="m6-menu-r"><i style={{ background: 'rgba(56,189,248,.15)' }}>🌐</i>Til<span className="m6-lng" data-no-i18n="1">{langs.map((l) => <button key={l.code} type="button" className={'m6-b' + (mLang === l.code ? ' on' : '')} onClick={() => setLangM(l.code)}>{l.code.toUpperCase()}</button>)}</span></div>
+          <button type="button" className="m6-b" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}><i style={{ background: 'rgba(168,85,247,.15)' }}>🌙</i>Qorong'i rejim<span className={'m6-tg' + (theme === 'dark' ? ' on' : '')} /></button>
+          <button type="button" className="m6-b" onClick={() => go('account')}><i style={{ background: 'rgba(245,158,11,.15)' }}>🔑</i>Parolni o'zgartirish<em>›</em></button>
+        </div>
+        <div className="m6-menu"><button type="button" className="m6-b out" onClick={onLogout}><i style={{ background: 'rgba(244,63,94,.12)' }}>⎋</i>Chiqish</button></div>
+      </React.Fragment>
+    );
+
+    const TABS6 = [['home', 'Asosiy', I.home], ['courses', 'Kurslarim', I.courses], ['mid', 'Davom', null], ['results', 'Natijalar', I.res], ['profile', 'Profil', I.user]];
+    const tabOn = (id) => (id === 'home' ? (view === 'home' || view === 'catalog') : id === 'courses' ? view === 'courses' : id === 'profile' ? (view === 'profile' || view === 'account' || view === 'payments') : view === id);
+
+    return (
+      <div className={'sp2 m6 student-shell' + (hideTab ? ' no-tab' : '') + (view === 'chat' ? ' is-chat' : '') + (view === 'study' ? ' is-study' : '')}>
+        <svg width="0" height="0" style={{ position: 'absolute' }} aria-hidden="true"><defs><linearGradient id="m6RG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#22d3ee" /><stop offset=".6" stopColor="#6366f1" /><stop offset="1" stopColor="#a855f7" /></linearGradient><linearGradient id="sp5RG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#22d3ee" /><stop offset=".6" stopColor="#7c5cff" /><stop offset="1" stopColor="#a855f7" /></linearGradient></defs></svg>
+        {modalsEl}
+        <main className={'m6-body m6-v-' + view}>
+          {view === 'home' && vHome()}
+          {view === 'courses' && vCourses()}
+          {view === 'catalog' && vCatalog()}
+          {view === 'detail' && vDetail()}
+          {view === 'buy' && vBuy()}
+          {view === 'results' && vResults()}
+          {view === 'profile' && vProfile()}
+          {view === 'account' && <React.Fragment>{hdr('// profil', "Shaxsiy ma'lumotlar", null, () => go('profile'))}<div className="m6-embed"><StudentProfile student={student} onSave={(u) => { setStudent(u); notify('Profil yangilandi'); }} /></div></React.Fragment>}
+          {view === 'payments' && <React.Fragment>{hdr('// hisob', "To'lovlarim", null, () => go('profile'))}<div className="m6-embed"><StudentPayments student={student} brand={brand} /></div></React.Fragment>}
+          {view === 'chat' && <React.Fragment>{hdr('// savol-javob', 'Chat', null, () => go('home'))}<div className="m6-chat"><ChatPage notify={notify} appMe={chatMe} isStudent brand={brand} canMute onOpenProfile={() => go('profile')} /></div></React.Fragment>}
+          {view === 'study' && curCat && (
+            <React.Fragment>
+              {hdr('// ' + curCat.name, (lessonById[lessonId] && lessonById[lessonId].title) || 'Dars', null, () => { setSubId(null); setLessonId(null); scrollTop(); })}
+              <div className="m6-embed m6-study">
+                <CourseStudy uid={me.id} userName={me.name} category={curCat} initialSubId={subId} access={student.access[catId]}
+                  payBlocked={!!(courseBill(catId) && courseBill(catId).blocked)} payDebt={courseBill(catId) ? courseBill(catId).debt : 0}
+                  attendance={attendanceFor(catId)} forceSunday={false} lessonId={lessonId} setLessonId={setLessonId}
+                  progressOf={lessonProgress} onProgress={markProgress} onBack={() => { setSubId(null); setLessonId(null); }} />
+              </div>
+            </React.Fragment>
+          )}
+          {(view === 'profile' || view === 'home' || view === 'results' || view === 'courses' || view === 'catalog') && <p className="m6-copy">© {year} Ferdinant darsliklari</p>}
+        </main>
+        {!hideTab && (
+          <nav className="m6-tab" aria-label="Pastki menyu">
+            {TABS6.map(([id, l, Ic]) => id === 'mid'
+              ? <button key={id} type="button" className="m6-b mid" onClick={resumeGo} aria-label="Davom ettirish"><span className="m6-ti"><M6_PLAY s={24} /></span>{l}</button>
+              : <button key={id} type="button" className={'m6-b' + (tabOn(id) ? ' on' : '')} onClick={() => go(id)}><span className="m6-ti"><Ic />{id === 'profile' && bill.blocked && <em>!</em>}</span>{l}</button>)}
+          </nav>
+        )}
+      </div>
+    );
+  };
+  if (isMob) return renderMobile();
+
+  const NAV = [['home', 'Bosh sahifa', I.home], ['courses', 'Kurslarim', I.courses], ['catalog', 'Yangi kurslar', I.store], ['results', 'Natijalarim', I.res], ['chat', 'Chat', I.chat], ['payments', "To'lovlarim", I.wallet]];
+  const TABS = [['home', 'Asosiy', I.home], ['courses', 'Kurslarim', I.courses], ['mid', 'Davom', null], ['results', 'Natijalar', I.res], ['profile', 'Profil', I.user]];
+
+  return (
+    <div className={'sp2 sp5 student-shell' + (studying ? ' is-study' : '') + (page === 'chat' ? ' is-chatpage' : '') + (inDetail ? ' is-detail' : '')}>
+      <svg width="0" height="0" style={{ position: 'absolute' }} aria-hidden="true"><defs><linearGradient id="sp5RG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#22d3ee" /><stop offset=".6" stopColor="#7c5cff" /><stop offset="1" stopColor="#a855f7" /></linearGradient></defs></svg>
+      {modalsEl}
       {buyCat && (() => {
         const lessons = spLessonsOf(buyCat); const ci = categories.indexOf(buyCat);
         return (
@@ -16398,7 +16842,7 @@ function StudentApp({ me, staff, categories, students, setStudents, onLogout, no
             )}
 
             {page === 'payments' && <div className="sp5-page"><StudentPayments student={student} brand={brand} /></div>}
-            {page === 'profile' && (
+            {(page === 'profile' || page === 'account') && (
               <div className="sp5-page">
                 <section className="sp5-pf">
                   <span className="sp5-k">// daraja va tajriba</span>
@@ -20120,6 +20564,274 @@ html.theme-dark .sp5-bgcode span{ opacity:.12; color:#a78bfa; }
 .sp5-mcode .sp-chip-t{ display:none; }
 @media (max-width:360px){ .sp5-mcode .sp-ed-code{ font-size:10px; } }
 @media (prefers-reduced-motion:reduce){ .sp5-code *{ animation:none !important; clip-path:none !important; } }
+</style>
+<style id="edu-student-mobile-v6">
+/* ===== O'quvchi ilovasi — telefon (mobil konsept v2) ===== */
+.sp2.m6{ --bg:#f4f6fd; --card:#ffffff; --card2:#f7f8fe; --line:rgba(30,40,90,.08); --line2:rgba(30,40,90,.14); --ink:#101634; --mut:#6b7491; --soft:#eef1fb; --tab:rgba(255,255,255,.92);
+  --a1:#22d3ee; --a2:#6366f1; --a3:#a855f7; --ok:#22c55e; --warn:#f59e0b; --bad:#f43f5e; --acc:#4f46e5; --gr:linear-gradient(135deg,#22d3ee,#6366f1 60%,#a855f7);
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  position:relative; min-height:100vh; min-height:100dvh; width:100%; max-width:100%; overflow-x:hidden; padding:0; color:var(--ink); font-family:Manrope,system-ui,sans-serif;
+  background:radial-gradient(420px 360px at 100% -5%,rgba(99,102,241,.14),transparent 60%),radial-gradient(360px 360px at -10% 45%,rgba(34,211,238,.10),transparent 60%),var(--bg); }
+html.theme-dark .sp2.m6{ --bg:#060914; --card:#101830; --card2:#141d38; --line:rgba(150,175,255,.11); --line2:rgba(150,175,255,.2); --ink:#f2f5ff; --mut:#8b97b6; --soft:rgba(255,255,255,.05); --tab:rgba(16,23,44,.88); --acc:#818cf8;
+  background:radial-gradient(420px 360px at 100% -5%,rgba(99,102,241,.28),transparent 60%),radial-gradient(360px 360px at -10% 45%,rgba(34,211,238,.10),transparent 60%),var(--bg); }
+.sp2.m6 *{ box-sizing:border-box; }
+html body .sp2.m6.student-shell{ height:auto; min-height:100vh; min-height:100dvh; overflow-y:visible; overflow-x:hidden; padding-bottom:0; }
+@media (min-width:861px){ html body .sp2.m6.student-shell{ height:100vh; height:100dvh; overflow-y:auto; } }
+.m6-b{ appearance:none; -webkit-appearance:none; border:0; background:none; padding:0; margin:0; font:inherit; color:inherit; cursor:pointer; text-align:inherit; -webkit-tap-highlight-color:transparent; touch-action:manipulation; }
+.m6-b:disabled{ cursor:default; }
+.m6-body{ display:block; width:100%; max-width:640px; margin:0 auto; padding:calc(14px + env(safe-area-inset-top,0px)) 18px calc(118px + env(safe-area-inset-bottom,0px)); }
+.m6.no-tab .m6-body{ padding-bottom:calc(112px + env(safe-area-inset-bottom,0px)); }
+.m6.is-study .m6-body, .m6.is-chat .m6-body{ padding-bottom:calc(16px + env(safe-area-inset-bottom,0px)); }
+.m6.is-chat .m6-body{ padding-bottom:calc(104px + env(safe-area-inset-bottom,0px)); }
+.m6 .m6-mut{ color:var(--mut); font-size:13px; line-height:1.55; margin:0 0 10px; } .m6 .m6-mut.sm{ font-size:12px; margin-top:12px; }
+.m6 .ok{ color:#22c55e; } .m6 b.bad, .m6 em.bad{ color:#f43f5e !important; } .m6 b.ok{ color:#22c55e; } .m6 b.or{ color:#f97316; }
+.m6-k{ display:block; font:700 11px var(--mono); color:var(--acc); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+html.theme-dark .m6-k{ color:var(--a1); }
+.m6-row{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.m6-bar{ display:block; height:7px; border-radius:7px; background:color-mix(in srgb,var(--ink) 9%,transparent); overflow:hidden; }
+.m6-bar b{ display:block; height:100%; border-radius:7px; background:var(--gr); transition:width .8s cubic-bezier(.2,.8,.2,1); }
+/* sarlavha */
+.m6-hd{ display:flex; align-items:center; gap:12px; margin:6px 0 18px; min-height:48px; }
+.m6-tt{ flex:1; min-width:0; }
+.m6-tt b{ display:block; font-size:19px; font-weight:800; letter-spacing:-.02em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.m6-hr{ display:flex; align-items:center; gap:8px; flex:none; }
+.m6-av{ position:relative; width:48px; height:48px; border-radius:16px; display:grid; place-items:center; font-weight:800; font-size:15px; color:#fff; background:var(--gr); flex:none; }
+.m6-av img{ width:100%; height:100%; object-fit:cover; border-radius:inherit; }
+.m6-av em{ position:absolute; right:-6px; bottom:-6px; font:800 9px var(--mono); font-style:normal; padding:2px 5px; border-radius:6px; background:#facc15; color:#1a1300; box-shadow:0 0 0 2px var(--bg); }
+.m6-av.sm{ width:38px; height:38px; border-radius:12px; font-size:12px; }
+.m6-av.xl{ width:92px; height:92px; border-radius:30px; font-size:30px; margin:0 auto 12px; }
+.m6-av.xl em{ font-size:10px; }
+.m6-ib{ position:relative; width:46px; height:46px; border-radius:15px; display:grid; place-items:center; background:var(--soft); border:1px solid var(--line); color:var(--ink); flex:none; }
+.m6-ib.on{ background:var(--gr); color:#fff; border-color:transparent; }
+.m6-ib.sm{ width:38px; height:38px; border-radius:12px; margin-left:auto; }
+.m6-ib .dot{ position:absolute; top:10px; right:11px; width:8px; height:8px; border-radius:50%; background:var(--bad); box-shadow:0 0 0 3px var(--bg); }
+.m6-hr #fd-install-btn.fd-in-topbar{ width:46px !important; height:46px !important; min-width:46px; border-radius:15px !important; background:var(--soft) !important; border:1px solid var(--line) !important; box-shadow:none !important; }
+/* qidiruv */
+.m6-srch{ display:flex; align-items:center; gap:10px; height:52px; padding:0 6px 0 16px; border-radius:18px; background:var(--card); border:1px solid var(--line); color:var(--mut); margin-bottom:16px; }
+.m6-srch input{ flex:1; min-width:0; height:100%; border:0; outline:0; background:none; color:var(--ink); font:600 15px Manrope,sans-serif; }
+.m6-srch input::placeholder{ color:var(--mut); font-weight:500; }
+.m6-srch-f, .m6-srch-x{ width:40px; height:40px; border-radius:13px; display:grid; place-items:center; flex:none; }
+.m6-srch-f{ background:var(--gr); color:#fff; } .m6-srch-x{ background:var(--soft); color:var(--ink); }
+.m6-srch:focus-within{ border-color:rgba(99,102,241,.55); box-shadow:0 0 0 3px rgba(99,102,241,.14); }
+.m6-sec{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin:22px 0 12px; }
+.m6-sec b{ font-size:17.5px; font-weight:800; letter-spacing:-.01em; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.m6-sec button{ font-size:12.5px; font-weight:700; color:#818cf8; flex:none; padding:4px 0; }
+.m6 .pay-notice{ margin-bottom:14px !important; } .m6 .pay-notice > div{ border-radius:18px !important; }
+/* chip / baho / tugma */
+.m6-chip{ display:inline-flex; align-items:center; gap:6px; height:26px; padding:0 10px; border-radius:999px; font-size:11.5px; font-weight:800; white-space:nowrap; }
+.m6-chip.c-ok{ background:rgba(34,197,94,.14); color:#22c55e; } .m6-chip.c-warn{ background:rgba(245,158,11,.15); color:#f59e0b; } .m6-chip.c-bad{ background:rgba(244,63,94,.14); color:#f43f5e; } .m6-chip.c-info{ background:rgba(99,102,241,.16); color:#818cf8; } .m6-chip.c-mut{ background:var(--soft); color:var(--mut); }
+.m6-chip.glass{ background:rgba(6,9,22,.55); -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px); }
+.m6-chip.glass.c-info{ color:#a5b4fc; } .m6-chip.glass.c-mut{ color:#cbd5e1; }
+.m6-grade{ display:inline-flex; align-items:center; gap:6px; height:24px; padding:0 4px 0 9px; border-radius:999px; font-size:11px; font-weight:800; color:var(--g); background:color-mix(in srgb,var(--g) 14%,transparent); white-space:nowrap; flex:none; width:fit-content; }
+.m6-grade:not(:has(i)){ padding-right:9px; }
+.m6-grade i{ font-style:normal; padding:1px 7px; border-radius:999px; background:var(--g); color:#fff; font-size:10.5px; }
+.m6-btn{ display:inline-flex; align-items:center; justify-content:center; gap:8px; height:50px; padding:0 20px; border-radius:16px; font:800 14.5px Manrope,sans-serif; color:#fff !important; background:var(--gr); box-shadow:0 14px 26px -12px rgba(99,102,241,.85); white-space:nowrap; }
+.m6-btn.g{ background:var(--soft); color:var(--ink) !important; box-shadow:inset 0 0 0 1px var(--line2); }
+.m6-btn:disabled{ opacity:.5; }
+.m6-btn:active, .m6-cont:active, .m6-mr:active, .m6-hc:active, .m6-big:active{ transform:scale(.985); }
+/* ring */
+.m6-ring{ position:relative; flex:none; display:grid; place-items:center; color:var(--ink); }
+.m6-ring svg{ position:absolute; inset:0; }
+.m6-ring > span{ position:relative; font:800 12px Manrope,sans-serif; text-align:center; line-height:1.05; }
+/* maqsad */
+.m6-goal{ display:flex; align-items:center; gap:14px; padding:14px 16px; border-radius:22px; background:var(--card); border:1px solid var(--line); margin-bottom:14px; }
+.m6-goal-tx{ flex:1; min-width:0; } .m6-goal-tx b{ display:block; font-size:15px; } .m6-goal-tx small{ color:var(--mut); font-size:12.5px; }
+.m6-fire{ display:flex; flex-direction:column; align-items:center; padding:6px 10px; border-radius:14px; background:rgba(249,115,22,.12); color:#fb923c; font:800 15px Manrope,sans-serif; flex:none; }
+.m6-fire small{ font:700 9.5px var(--mono); color:#fdba74; }
+/* davom ettirish */
+.m6-cont{ position:relative; display:block; width:100%; overflow:hidden; border-radius:28px; height:214px; box-shadow:0 30px 50px -30px rgba(79,70,229,.7); transition:transform .2s; isolation:isolate; }
+.m6-art, .m6-img{ position:absolute; inset:0; width:100%; height:100%; display:block; }
+.m6-art > svg{ width:100%; height:100%; display:block; } .m6-img{ object-fit:cover; }
+.m6-ov{ position:absolute; inset:0; padding:16px 18px; display:flex; flex-direction:column; justify-content:flex-end; color:#fff; text-align:left; background:linear-gradient(180deg,transparent 25%,rgba(6,9,22,.92)); }
+.m6-ov small{ font:700 10.5px var(--mono); color:#a5f3fc; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.m6-ov > b{ font-size:20px; font-weight:800; margin:4px 0 12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.m6-pr{ display:flex; align-items:center; gap:10px; } .m6-pr .m6-bar{ flex:1; background:rgba(255,255,255,.2); } .m6-pr em{ font:700 12px var(--mono); font-style:normal; }
+.m6-pb{ position:absolute; right:16px; top:16px; width:50px; height:50px; border-radius:50%; display:grid; place-items:center; background:#fff; color:#4338ca; animation:m6pu 2.4s ease-out infinite; }
+@keyframes m6pu{ 0%{ box-shadow:0 0 0 0 rgba(255,255,255,.4); } 70%{ box-shadow:0 0 0 14px rgba(255,255,255,0); } 100%{ box-shadow:0 0 0 0 rgba(255,255,255,0); } }
+.m6-lb{ position:absolute; left:16px; top:16px; display:flex; align-items:center; gap:7px; padding:6px 11px; border-radius:999px; background:rgba(6,9,22,.55); -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px); font:700 11px var(--mono); color:#fff; }
+.m6-alert{ margin-top:12px; padding:12px 14px; border-radius:16px; background:rgba(245,158,11,.12); border:1px solid rgba(245,158,11,.3); color:#f59e0b; font-size:13px; font-weight:600; line-height:1.45; }
+.m6-alert b{ color:inherit; }
+.m6 .m6-code{ margin-top:14px; border-radius:26px; }
+/* yo'nalishlar */
+.m6-cats{ display:flex; gap:8px; overflow-x:auto; margin:0 -18px; padding:0 18px 2px; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
+.m6-cats::-webkit-scrollbar, .m6-hs::-webkit-scrollbar{ display:none; }
+.m6-cats button{ flex:none; height:40px; padding:0 14px; border-radius:14px; display:inline-flex; align-items:center; gap:8px; font-size:13px; font-weight:700; background:var(--card); border:1px solid var(--line); color:var(--mut); }
+.m6-cats button.on{ background:var(--ink); color:var(--bg); border-color:var(--ink); }
+.m6-cats button i{ width:22px; height:22px; border-radius:7px; display:grid; place-items:center; font-style:normal; font-size:12px; }
+/* yangi kurslar */
+.m6-hs{ display:flex; gap:12px; overflow-x:auto; margin:0 -18px; padding:0 18px 6px; scrollbar-width:none; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; }
+.m6-hc{ display:flex; flex-direction:column; flex:none; width:200px; border-radius:24px; overflow:hidden; background:var(--card); border:1px solid var(--line); scroll-snap-align:start; transition:transform .2s; }
+.m6-hc.wide{ width:auto; }
+.m6-hc-a{ position:relative; display:block; height:126px; margin:6px 6px 0; border-radius:19px; overflow:hidden; }
+.m6-tag{ position:absolute; left:10px; top:10px; padding:4px 9px; border-radius:999px; background:rgba(6,9,22,.55); color:#fff; font:700 10px var(--mono); -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px); }
+.m6-rt{ position:absolute; right:10px; top:10px; padding:4px 8px; border-radius:999px; background:#fff; color:#1a1300; font:800 10.5px Manrope,sans-serif; }
+.m6-hc-b{ display:block; padding:10px 12px 12px; text-align:left; }
+.m6-hc-b > b{ display:block; font-size:14.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.m6-hc-b > small{ display:block; color:var(--mut); font-size:11.5px; }
+.m6-hc-p{ display:flex; align-items:center; justify-content:space-between; gap:8px; margin-top:10px; }
+.m6-hc-p em{ font-style:normal; font-weight:800; font-size:14px; color:#818cf8; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0; }
+.m6-hc-p em small{ color:var(--mut); font-weight:600; font-size:10.5px; }
+.m6-hc-p i{ width:32px; height:32px; border-radius:11px; display:grid; place-items:center; background:var(--gr); color:#fff; flex:none; }
+.m6-grid2{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+.m6-grid2 .m6-hc-a{ height:110px; }
+.is-off{ opacity:.72; }
+/* kurslarim (qator) */
+.m6-ml{ display:flex; flex-direction:column; gap:10px; }
+.m6-mr{ display:flex; align-items:center; gap:12px; width:100%; padding:10px 12px 10px 10px; border-radius:22px; background:var(--card); border:1px solid var(--line); transition:transform .2s; }
+.m6-mr-th{ position:relative; width:64px; height:64px; border-radius:17px; overflow:hidden; flex:none; }
+.m6-mr-th > i{ position:absolute; inset:0; display:grid; place-items:center; background:rgba(6,9,22,.5); color:#fff; }
+.m6-mr-tx{ flex:1; min-width:0; display:flex; flex-direction:column; align-items:flex-start; }
+.m6-mr-tx b{ display:block; font-size:15px; max-width:100%; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.m6-mr-tx small{ display:block; max-width:100%; color:var(--mut); font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin:2px 0 6px; }
+/* hafta */
+.m6-week{ display:flex; justify-content:space-between; gap:4px; padding:14px 12px; border-radius:22px; background:var(--card); border:1px solid var(--line); }
+.m6-week span{ display:flex; flex-direction:column; align-items:center; gap:6px; font:600 10.5px var(--mono); color:var(--mut); min-width:0; }
+.m6-week i{ width:36px; height:36px; border-radius:12px; display:grid; place-items:center; font-style:normal; background:var(--soft); }
+.m6-week .d i{ background:rgba(34,197,94,.16); color:#22c55e; } .m6-week .m i{ background:rgba(244,63,94,.16); color:#f43f5e; } .m6-week .t i{ background:var(--gr); color:#fff; }
+/* tab bar */
+.m6-tab{ position:fixed; left:max(14px,calc(50% - 306px)); right:max(14px,calc(50% - 306px)); bottom:calc(14px + env(safe-area-inset-bottom,0px)); z-index:60; height:76px; border-radius:28px; display:flex; align-items:center; justify-content:space-around; background:var(--tab); border:1px solid var(--line2); -webkit-backdrop-filter:blur(20px) saturate(1.5); backdrop-filter:blur(20px) saturate(1.5); box-shadow:0 20px 40px -16px rgba(0,0,0,.55); }
+.m6-tab > button{ display:flex; flex-direction:column; align-items:center; gap:4px; width:20%; min-width:0; color:var(--mut); font-size:10.5px; font-weight:700; white-space:nowrap; }
+.m6-ti{ width:46px; height:30px; border-radius:12px; display:grid; place-items:center; position:relative; transition:background .2s,color .2s; }
+.m6-ti em{ position:absolute; top:-4px; right:4px; min-width:16px; height:16px; padding:0 4px; border-radius:8px; background:var(--bad); color:#fff; font:800 9.5px/16px Manrope,sans-serif; font-style:normal; }
+.m6-tab > button.on{ color:var(--ink); } .m6-tab > button.on .m6-ti{ background:var(--soft); color:#818cf8; }
+.m6-tab > button.mid .m6-ti{ width:58px; height:58px; border-radius:20px; margin-top:-34px; background:var(--gr); color:#fff; box-shadow:0 14px 28px -8px rgba(99,102,241,.9),0 0 0 6px var(--bg); }
+html.chat-conv-open .m6-tab{ display:none; }
+/* kurslarim (katta karta) */
+.m6-seg{ display:flex; gap:4px; padding:4px; border-radius:16px; background:var(--card); border:1px solid var(--line); margin-bottom:14px; }
+.m6-seg button{ flex:1; min-width:0; height:38px; border-radius:12px; display:grid; place-items:center; font-size:13px; font-weight:700; color:var(--mut); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding:0 4px; }
+.m6-seg button.on{ background:var(--ink); color:var(--bg); }
+.m6-big{ border-radius:26px; overflow:hidden; background:var(--card); border:1px solid var(--line); margin-bottom:14px; cursor:pointer; transition:transform .2s; }
+.m6-big-a{ position:relative; height:160px; margin:7px 7px 0; border-radius:21px; overflow:hidden; }
+.m6-big-a .m6-chip{ position:absolute; left:12px; top:12px; }
+.m6-pc{ position:absolute; right:12px; top:12px; padding:5px 10px; border-radius:999px; background:#fff; color:#111; font:800 12px Manrope,sans-serif; }
+.m6-lock{ position:absolute; left:50%; top:50%; width:50px; height:50px; margin:-25px 0 0 -25px; border-radius:50%; display:grid; place-items:center; background:rgba(15,10,50,.6); color:#fff; -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px); }
+.m6-big-b{ padding:14px 16px 16px; display:flex; flex-direction:column; gap:10px; }
+.m6-big-h{ display:flex; justify-content:space-between; align-items:flex-start; gap:10px; }
+.m6-big-h > div{ min-width:0; } .m6-big-h b{ display:block; font-size:18px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; } .m6-big-h small{ display:block; color:var(--mut); font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.m6-segs{ display:flex; gap:4px; height:7px; }
+.m6-segs i{ flex:1; border-radius:7px; background:color-mix(in srgb,var(--ink) 9%,transparent); overflow:hidden; }
+.m6-segs i b{ display:block; height:100%; background:var(--gr); border-radius:7px; }
+.m6-meta{ display:flex; justify-content:space-between; font-size:12.5px; color:var(--mut); font-weight:600; } .m6-meta b{ color:var(--ink); }
+.m6-warn{ font-size:12px; font-weight:700; color:#f59e0b; }
+.m6-nx{ display:flex; align-items:center; gap:8px; padding:10px 12px; border-radius:13px; background:var(--soft); font:500 12px var(--mono); color:var(--mut); white-space:nowrap; overflow:hidden; min-width:0; }
+.m6-nx em{ font-style:normal; color:#818cf8; font-weight:700; } .m6-nx b{ color:var(--ink); overflow:hidden; text-overflow:ellipsis; min-width:0; } .m6-nx.bad{ color:#f43f5e; }
+.m6-caret{ display:inline-block; width:7px; height:14px; background:var(--a1); animation:m6bl 1s steps(1) infinite; flex:none; }
+@keyframes m6bl{ 50%{ opacity:0; } }
+.m6-big .m6-btn{ width:100%; }
+/* kurs ichi */
+.m6-detail{ margin:calc(-14px - env(safe-area-inset-top,0px)) -18px 0; }
+.m6-dh{ position:relative; height:calc(300px + env(safe-area-inset-top,0px)); overflow:hidden; }
+.m6-dh .m6-art, .m6-dh .m6-img{ position:absolute; }
+.m6-dh-tb{ position:absolute; left:18px; right:18px; top:calc(16px + env(safe-area-inset-top,0px)); display:flex; justify-content:space-between; }
+.m6-dh-tb button{ width:44px; height:44px; border-radius:15px; display:grid; place-items:center; background:rgba(6,9,22,.5); border:1px solid rgba(255,255,255,.18); -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px); color:#fff; }
+.m6-dh-tb button.on{ color:#fb7185; }
+.m6-sheet{ position:relative; margin-top:-40px; padding:22px 18px 0; border-radius:32px 32px 0 0; background:var(--bg); }
+.m6-sheet::before{ content:""; position:absolute; top:10px; left:50%; transform:translateX(-50%); width:40px; height:5px; border-radius:5px; background:var(--line2); }
+.m6-sheet h2{ margin:10px 0 4px; font-size:24px; font-weight:800; letter-spacing:-.02em; color:var(--ink); }
+.m6-sub{ margin:0 0 14px; color:var(--mut); font-size:13px; }
+.m6-tchr{ display:flex; align-items:center; gap:10px; width:100%; padding:10px 12px; border-radius:16px; background:var(--card); border:1px solid var(--line); margin-bottom:14px; text-align:left; }
+.m6-tchr > span:nth-child(2){ min-width:0; } .m6-tchr b{ display:block; font-size:13.5px; } .m6-tchr small{ display:block; color:var(--mut); font-size:11.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.m6-f3{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin-bottom:14px; }
+.m6-f3 > div{ padding:12px 6px; border-radius:18px; text-align:center; background:var(--card); border:1px solid var(--line); }
+.m6-f3 b{ display:block; font:700 20px var(--mono); } .m6-f3 small{ color:var(--mut); font-size:11.5px; font-weight:600; }
+.m6-mod{ display:flex; align-items:center; gap:12px; width:100%; padding:12px; border-radius:20px; background:var(--card); border:1px solid var(--line); margin-bottom:10px; color:var(--ink); text-align:left; }
+.m6-mod > svg{ color:var(--mut); flex:none; }
+.m6-mod.open{ border-color:rgba(99,102,241,.45); box-shadow:0 0 0 3px rgba(99,102,241,.12); }
+.m6-mod-n{ width:44px; height:44px; border-radius:14px; display:grid; place-items:center; font:700 13px var(--mono); flex:none; background:var(--soft); color:var(--mut); }
+.m6-mod-n.ok{ background:rgba(34,197,94,.16); color:#22c55e; } .m6-mod-n.cur{ background:var(--gr); color:#fff; }
+.m6-mod-x{ flex:1; min-width:0; display:block; }
+.m6-mod-x b{ display:block; font-size:14.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; } .m6-mod-x small{ display:block; color:var(--mut); font-size:11.5px; } .m6-mod-x .m6-bar{ margin-top:7px; height:5px; }
+.m6-les{ margin:-4px 0 10px 56px; display:flex; flex-direction:column; gap:6px; }
+.m6-les button{ display:flex; align-items:center; gap:10px; width:100%; padding:9px 11px; border-radius:13px; background:var(--soft); font-size:13px; font-weight:600; color:var(--ink); text-align:left; }
+.m6-les button > span{ flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.m6-les i{ width:22px; height:22px; border-radius:7px; display:grid; place-items:center; font-style:normal; font-size:11px; flex:none; background:color-mix(in srgb,var(--ink) 8%,transparent); color:var(--mut); }
+.m6-les .d i{ background:rgba(34,197,94,.18); color:#22c55e; } .m6-les .c{ color:#818cf8; } .m6-les .c i{ background:var(--gr); color:#fff; }
+.m6-les small{ margin-left:auto; font:500 11px var(--mono); color:var(--mut); flex:none; }
+.m6-cta{ position:fixed; left:max(14px,calc(50% - 306px)); right:max(14px,calc(50% - 306px)); bottom:calc(14px + env(safe-area-inset-bottom,0px)); z-index:60; display:flex; align-items:center; gap:12px; padding:12px 12px 12px 18px; border-radius:26px; background:var(--tab); border:1px solid var(--line2); -webkit-backdrop-filter:blur(20px) saturate(1.5); backdrop-filter:blur(20px) saturate(1.5); box-shadow:0 20px 40px -16px rgba(0,0,0,.5); }
+.m6-cta > span{ flex:1; min-width:0; } .m6-cta small{ display:block; color:var(--mut); font-size:11px; font-weight:600; } .m6-cta b{ display:block; font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; } .m6-cta b.lg{ font-size:18px; }
+.m6-cta .m6-btn{ flex:none; }
+.m6-about{ color:var(--mut); font-size:13.5px; line-height:1.6; margin:0 0 12px; }
+.m6-okr{ display:flex; align-items:center; gap:12px; padding:10px 12px; border-radius:18px; background:var(--card); border:1px solid var(--line); margin-bottom:10px; }
+.m6-okr i{ width:34px; height:34px; border-radius:11px; display:grid; place-items:center; font-style:normal; background:rgba(34,197,94,.16); color:#22c55e; flex:none; } .m6-okr b{ font-size:13.5px; }
+.m6-card{ padding:14px; border-radius:20px; background:var(--card); border:1px solid var(--line); }
+.m6-sub-r{ display:grid; grid-template-columns:minmax(0,1fr) 34% auto; align-items:center; gap:10px; padding:7px 0; font-size:13px; font-weight:600; }
+.m6-sub-r span{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; } .m6-sub-r small{ font:600 11px var(--mono); color:var(--mut); }
+.m6-notes textarea{ width:100%; min-height:220px; padding:14px; border-radius:18px; background:var(--card); border:1px solid var(--line); color:var(--ink); font:500 13.5px/1.65 var(--mono); resize:vertical; outline:0; }
+.m6-notes textarea:focus{ border-color:rgba(99,102,241,.55); box-shadow:0 0 0 3px rgba(99,102,241,.14); }
+.m6-notes small{ display:block; margin-top:8px; }
+/* natijalar */
+.m6-rh{ border-radius:30px; padding:22px 20px; text-align:center; margin-bottom:14px; display:flex; flex-direction:column; align-items:center; background:radial-gradient(260px 180px at 50% 0%,rgba(99,102,241,.32),transparent 70%),var(--card); border:1px solid var(--line); }
+.m6-rh .m6-ring b{ display:block; font-size:44px; font-weight:800; line-height:1; } .m6-rh .m6-ring small{ display:block; font:600 11px var(--mono); color:var(--mut); margin-top:4px; }
+.m6-rh p{ margin:10px 0 0; color:var(--mut); font-size:13px; line-height:1.5; }
+.m6-rk{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+.m6-rk > div{ padding:14px; border-radius:20px; background:var(--card); border:1px solid var(--line); min-width:0; }
+.m6-rk small{ color:var(--mut); font-size:11.5px; font-weight:600; } .m6-rk b{ display:block; font:700 21px var(--mono); margin-top:4px; }
+.m6-rk.three{ grid-template-columns:repeat(3,minmax(0,1fr)); margin-bottom:14px; } .m6-rk.three > div{ text-align:center; } .m6-rk.three b{ margin:0 0 2px; }
+.m6-cr{ display:flex; align-items:center; gap:12px; width:100%; padding:12px; border-radius:20px; background:var(--card); border:1px solid var(--line); margin-bottom:10px; text-align:left; color:var(--ink); }
+.m6-cr > svg{ color:var(--mut); flex:none; }
+.m6-cr-tx{ flex:1; min-width:0; } .m6-cr-tx > b{ display:block; font-size:14.5px; margin-bottom:5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.m6-cr .m6-chip{ height:22px; font-size:10.5px; }
+.m6-bdg{ display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; }
+.m6-bd{ aspect-ratio:1; border-radius:20px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px; padding:4px; background:var(--card); border:1px solid var(--line); font-size:9.5px; font-weight:700; color:var(--mut); text-align:center; line-height:1.15; }
+.m6-bd span{ font-size:22px; filter:grayscale(1); opacity:.4; }
+.m6-bd.on{ border-color:color-mix(in srgb,var(--c) 45%,transparent); background:radial-gradient(circle at 50% 30%,color-mix(in srgb,var(--c) 22%,transparent),transparent 70%),var(--card); color:var(--ink); }
+.m6-bd.on span{ filter:none; opacity:1; }
+.m6-how{ margin-top:14px; padding:14px 16px; border-radius:20px; background:var(--card); border:1px solid var(--line); }
+.m6-how > b{ font-size:14px; } .m6-how p{ margin:6px 0 0; color:var(--mut); font-size:12.5px; line-height:1.6; } .m6-how p b{ color:var(--ink); }
+/* profil */
+.m6-pf{ text-align:center; padding:12px 0 18px; display:flex; flex-direction:column; align-items:center; }
+.m6-pf > b{ display:block; font-size:21px; font-weight:800; } .m6-pf > small{ color:var(--mut); font-size:13px; }
+.m6-lv{ margin:14px auto 0; width:100%; max-width:280px; } .m6-lv > div{ display:flex; justify-content:space-between; font:600 11px var(--mono); color:var(--mut); margin-bottom:6px; }
+.m6-lv .m6-bar b{ background:linear-gradient(90deg,#facc15,#f97316); }
+.m6-menu{ border-radius:22px; overflow:hidden; background:var(--card); border:1px solid var(--line); margin-bottom:12px; }
+.m6-menu > button, .m6-menu-r{ display:flex; align-items:center; gap:12px; width:100%; min-height:56px; padding:0 16px; border-bottom:1px solid var(--line); font-size:14.5px; font-weight:700; color:var(--ink); text-align:left; }
+.m6-menu > :last-child{ border-bottom:0; }
+.m6-menu i{ width:34px; height:34px; border-radius:11px; display:grid; place-items:center; font-style:normal; font-size:15px; flex:none; }
+.m6-menu em{ margin-left:auto; font-style:normal; color:var(--mut); font-size:12.5px; font-weight:600; }
+.m6-menu > button.out{ color:#f43f5e; }
+.m6-tg{ width:44px; height:26px; border-radius:13px; background:color-mix(in srgb,var(--ink) 16%,transparent); position:relative; margin-left:auto; flex:none; transition:background .25s; }
+.m6-tg::after{ content:""; position:absolute; left:3px; top:3px; width:20px; height:20px; border-radius:50%; background:#fff; box-shadow:0 2px 6px rgba(0,0,0,.25); transition:transform .25s cubic-bezier(.3,1.4,.5,1); }
+.m6-tg.on{ background:var(--gr); } .m6-tg.on::after{ transform:translateX(18px); }
+.m6-lng{ margin-left:auto; display:flex; gap:3px; padding:3px; border-radius:11px; background:var(--soft); }
+.m6-lng button{ height:28px; min-width:36px; padding:0 8px; border-radius:8px; font:800 11.5px Manrope,sans-serif; color:var(--mut); }
+.m6-lng button.on{ background:var(--gr); color:#fff; }
+.m6-copy{ text-align:center; color:var(--mut); font-size:11.5px; margin:22px 0 0; }
+/* bo'sh holat */
+.m6-empty{ display:flex; flex-direction:column; align-items:center; gap:8px; text-align:center; padding:16px 16px 20px; border-radius:24px; background:var(--card); border:1px solid var(--line); margin-bottom:14px; }
+.m6-empty-a{ display:block; width:100%; max-width:300px; height:130px; border-radius:18px; overflow:hidden; margin-bottom:6px; }
+.m6-empty-a svg{ width:100%; height:100%; display:block; }
+.m6-empty > b{ font-size:16px; } .m6-empty > span{ color:var(--mut); font-size:13px; line-height:1.5; max-width:320px; }
+.m6-empty .m6-btn{ margin-top:8px; height:44px; }
+/* ichki komponentlar */
+.m6-embed{ min-width:0; }
+.m6-embed > *{ max-width:100%; }
+.m6-chat{ min-width:0; }
+html body .sp2.m6 .chat-root{ height:calc(100dvh - 90px - 112px - env(safe-area-inset-bottom,0px) - env(safe-area-inset-top,0px)) !important; min-height:320px !important; }
+html.chat-conv-open body .sp2.m6 .chat-root{ height:calc(100dvh - 90px - 24px - env(safe-area-inset-bottom,0px) - env(safe-area-inset-top,0px)) !important; }
+html.chat-conv-open .m6.is-chat .m6-body{ padding-bottom:calc(16px + env(safe-area-inset-bottom,0px)); }
+@keyframes m6fl{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-7px); } }
+.m6 .m6-fl{ animation:m6fl 5s ease-in-out infinite; }
+.m6-body > *{ animation:m6in .35s ease both; }
+@keyframes m6in{ from{ opacity:0; } to{ opacity:1; } }
+@media (max-width:370px){
+  .m6-body{ padding-left:14px; padding-right:14px; }
+  .m6-cats, .m6-hs{ margin:0 -14px; padding-left:14px; padding-right:14px; }
+  .m6-detail{ margin-left:-14px; margin-right:-14px; }
+  .m6-tt b{ font-size:17px; } .m6-ib{ width:42px; height:42px; } .m6-av{ width:44px; height:44px; }
+  .m6-week i{ width:32px; height:32px; } .m6-tab > button{ font-size:9.5px; }
+  .m6-grid2{ grid-template-columns:1fr; }
+  .m6-bdg{ gap:8px; } .m6-f3 b{ font-size:18px; } .m6-rk b{ font-size:19px; }
+  .m6-cta .m6-btn{ padding:0 16px; }
+}
+.m6 .m6-srch input, .m6 .m6-srch input:focus{ border:0 !important; box-shadow:none !important; outline:0 !important; padding:0 !important; background:transparent !important; border-radius:0 !important; height:100% !important; min-height:0 !important; }
+.m6-grid2 .m6-hc-p{ align-items:flex-end; } .m6-grid2 .m6-hc-p em{ white-space:normal; font-size:13px; line-height:1.2; } .m6-grid2 .m6-hc-p em small{ display:block; }
+.m6-note{ display:block; width:100%; padding:12px 14px; border-radius:18px; background:var(--card); border:1px solid var(--line); margin-bottom:10px; text-align:left; color:var(--ink); }
+.m6-note-h{ display:flex; align-items:baseline; justify-content:space-between; gap:10px; margin-bottom:6px; } .m6-note-h b{ font-size:14px; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; } .m6-note-h small{ color:var(--mut); font-size:11px; flex:none; }
+.m6-note-t{ display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; overflow:hidden; font:500 12.5px/1.6 var(--mono); color:var(--mut); white-space:pre-wrap; word-break:break-word; }
+.m6-wide{ width:100%; margin-top:4px; }
+@media (prefers-reduced-motion:reduce){ .m6 *{ animation:none !important; } }
+/* o'rnatish tugmasi faqat bosh sahifa sarlavhasida — boshqa sahifalarda pastki menyuni to'smaydi */
+body:has(.m6) #fd-install-btn:not(.fd-in-topbar){ display:none !important; }
 </style>
 </body>
 </html>
